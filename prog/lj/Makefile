@@ -1,4 +1,4 @@
-deps = $(wildcard *.h) $(wildcard ../*.h)
+deps = $(wildcard *.h) $(wildcard ../*.h) Makefile
 
 csrcs = $(wildcard *.c)
 progs = $(patsubst %.c, %, $(csrcs))

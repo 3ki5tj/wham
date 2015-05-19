@@ -27,6 +27,7 @@ typedef struct {
   int itmax;
   double tol;
   int mdiis_nbases; /* number of bases in MDIIS */
+  double mdiis_damp; /* mixing factor in MDIIS */
   char *fnlndos;
   char *fneav;
   double actmax; /* cutoff time of the autocorrelation function */
@@ -47,8 +48,9 @@ __inline static void model_default(model_t *m)
   m->de = 1.0;
   m->wham_method = WHAM_DIRECT;
   m->itmax = 100000;
-  m->tol = 1e-7;
+  m->tol = 1e-10;
   m->mdiis_nbases = 5;
+  m->mdiis_damp = 1.0;
   m->fnlndos = NULL;
   m->fneav = NULL;
   m->actmax = 0;
@@ -90,17 +92,18 @@ __inline static int model_select(const char *s, int n, const char **arr)
 /* print help message and die */
 __inline static void model_help(const model_t *m)
 {
-  fprintf(stderr, "Integral equations on a sphere\n");
+  fprintf(stderr, "WHAM for xvg file\n");
   fprintf(stderr, "Usage:\n");
-  fprintf(stderr, "  %s [Options] [input.xvg]\n\n", m->prog);
+  fprintf(stderr, "  %s [Options] input\n\n", m->prog);
   fprintf(stderr, "Options:\n");
-  fprintf(stderr, "  -i:            set the input energy file, default: %s\n", m->fninp);
+  fprintf(stderr, "  -i:            set the input file, default: %s\n", m->fninp);
   fprintf(stderr, "  --fnhis=:      set the histogram file, default: %s\n", m->fnhis);
   fprintf(stderr, "  --de=:         set the energy bin size, default %g\n", m->de);
   fprintf(stderr, "  --wham=:       set the WHAM method, 'direct' or 'mdiis', default: %s\n", wham_methods[m->wham_method]);
   fprintf(stderr, "  --itmax=:      set the maximal number of iterations, default %d\n", m->itmax);
   fprintf(stderr, "  --tol=:        set the tolerance of error, default %g\n", m->tol);
   fprintf(stderr, "  --nbases=:     set the number of bases in the MDIIS method, default: %d\n", m->mdiis_nbases);
+  fprintf(stderr, "  --mdamp=:      set the mixing factor in the MDIIS method, default: %g\n", m->mdiis_damp);
   fprintf(stderr, "  --fndos=:      set the file for the density of states, default %s\n", m->fnlndos);
   fprintf(stderr, "  --fneav=:      set the file for the average energy, default %s\n", m->fneav);
   fprintf(stderr, "  --actmax=:     set the time cutoff of the autocorrelation function, default: %g\n", m->actmax);
@@ -156,6 +159,8 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->tol = atof(q);
       } else if ( strcmp(p, "nbases") == 0 ) {
         m->mdiis_nbases = atoi(q);
+      } else if ( strcmp(p, "mdamp") == 0 ) {
+        m->mdiis_damp = atof(q);
       } else if ( strcmp(p, "fndos") == 0 ) {
         m->fnlndos = q;
       } else if ( strcmp(p, "fneav") == 0 ) {

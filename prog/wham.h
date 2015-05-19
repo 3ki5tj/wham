@@ -219,21 +219,23 @@ static double wham_step(wham_t *w, double *lnz, double *res, int update)
 
 /* iteratively compute the logarithm of the density of states
  * using the weighted histogram method */
-static double wham_getlndos(wham_t *w, double *lnz, int itmax, double tol)
+static double wham_getlndos(wham_t *w, double *lnz,
+    int itmax, double tol, int verbose)
 {
-  hist_t *hist = w->hist;
-  int j, it, nbeta = hist->rows;
-  double err;
+  int it;
+  double err, errp = 1e30;
 
-  for ( j = 0; j < nbeta; j++ )
-    if ( fabs(lnz[j]) > 0 )
+  for ( it = 1; it <= itmax; it++ ) {
+    err = wham_step(w, lnz, w->res, 1);
+    if ( verbose ) {
+      fprintf(stderr, "it %d, err %g -> %g\n", it, errp, err);
+    }
+    if ( err < tol ) {
       break;
-  if ( j == nbeta ) /* if lnz is not set, estimate it */
-    wham_estimatelnz(w, lnz);
+    }
+    errp = err;
+  }
 
-  for ( it = 1; it <= itmax; it++ )
-    if ( (err = wham_step(w, lnz, w->res, 1)) < tol )
-      break;
   fprintf(stderr, "WHAM converged at step %d, error %g\n", it, err);
   return err;
 }
@@ -242,12 +244,17 @@ static double wham_getlndos(wham_t *w, double *lnz, int itmax, double tol)
 
 /* weighted histogram analysis method */
 static double wham(hist_t *hist, const double *beta, double *lnz,
-    int itmax, double tol,
+    int itmax, double tol, int verbose,
     const char *fnlndos, const char *fneav)
 {
   wham_t *w = wham_open(beta, hist);
-  double err = wham_getlndos(w, lnz, itmax, tol);
-  if ( fnlndos ) wham_savelndos(w, fnlndos);
+  double err;
+ 
+  wham_estimatelnz(w, lnz);
+  err = wham_getlndos(w, lnz, itmax, tol, verbose);
+  if ( fnlndos ) {
+    wham_savelndos(w, fnlndos);
+  }
   wham_getav(w, fneav);
   wham_close(w);
   return err;
@@ -273,7 +280,10 @@ static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
     const char *fnlndos, const char *fneav)
 {
   wham_t *w = wham_open(beta, hist);
-  double err = iter_mdiis(lnz, hist->rows, wham_getres, w,
+  double err;
+ 
+  wham_estimatelnz(w, lnz);
+  err = iter_mdiis(lnz, hist->rows, wham_getres, w,
       nbases, damp, itmax, tol, verbose);
   if ( fnlndos ) wham_savelndos(w, fnlndos);
   wham_getav(w, fneav);
@@ -282,6 +292,7 @@ static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
 }
 
 #endif /* WHAM_MDIIS */
+
 
 
 #endif /* WHAM_H__ */

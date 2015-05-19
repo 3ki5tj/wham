@@ -282,9 +282,10 @@ static double iter_mdiis(double *f, int npt,
     err = mdiis->getres(obj, f, res);
     ib = mdiis_update(mdiis, f, res, err);
 
-    if ( verbose )
+    if ( verbose ) {
       fprintf(stderr, "it %d, err %g -> %g, ib %d -> %d\n",
           it, errp, err, ibp, ib);
+    }
     ibp = ib;
     errp = err;
   }

@@ -8,7 +8,7 @@
 
 
 
-/* according src/gromacs/legacyheaders/physics.h */
+/* according to src/gromacs/legacyheaders/physics.h */
 #define BOLTZ (1.380658e-23*6.0221367e23/1e3)
 
 
@@ -43,10 +43,15 @@ static char **getls(const char *fn,
   xnew(*beta, *nbeta);
 
   for ( i = 0; i < *nbeta; i++ ) {
-    if ( fgets(buf, sizeof buf, fp) == NULL ) {
-      fprintf(stderr, "cannot read line %d from %s\n", i, fn);
-      fclose(fp);
-      return NULL;
+    while ( 1 ) {
+      if ( fgets(buf, sizeof buf, fp) == NULL ) {
+        fprintf(stderr, "cannot read line %d from %s\n", i, fn);
+        fclose(fp);
+        return NULL;
+      }
+      if ( buf[0] != '#' ) {
+        break;
+      }
     }
 
     /* copy the line */
@@ -63,7 +68,8 @@ static char **getls(const char *fn,
 
 
 /* construct the histogram */
-static hist_t *mkhist(model_t *m, double **beta)
+static hist_t *mkhist(const char *fnls,
+    double **beta, double de, const char *fnhis)
 {
   hist_t *hs;
   int i, j, nbeta;
@@ -71,7 +77,10 @@ static hist_t *mkhist(model_t *m, double **beta)
   xvg_t **xvg;
   double emin = 1e30, emax = -1e30, emin1 = 1e30, emax1 = -1e30;
 
-  fns = getls(m->fninp, &nbeta, beta);
+  if ( (fns = getls(fnls, &nbeta, beta)) == NULL ) {
+    return NULL;
+  }
+
   xnew(xvg, nbeta);
   for ( i = 0; i < nbeta; i++ ) {
     xvg[i] = xvg_load(fns[i]);
@@ -84,10 +93,10 @@ static hist_t *mkhist(model_t *m, double **beta)
     }
   }
 
-  emin = ((int) (emin / m->de) - 1) * m->de;
-  emax = ((int) (emax / m->de) + 1) * m->de;
+  emin = ((int) (emin / de) - 1) * de;
+  emax = ((int) (emax / de) + 1) * de;
 
-  hs = hist_open(nbeta, emin, emax, m->de);
+  hs = hist_open(nbeta, emin, emax, de);
 
   for ( i = 0; i < nbeta; i++ ) {
     for ( j = 0; j < xvg[i]->n; j++ ) {
@@ -95,7 +104,7 @@ static hist_t *mkhist(model_t *m, double **beta)
     }
   }
 
-  hist_save(hs, m->fnhis, HIST_ADDAHALF|HIST_VERBOSE);
+  hist_save(hs, fnhis, HIST_ADDAHALF|HIST_VERBOSE);
 
   for ( i = 0; i < nbeta; i++ ) {
     xvg_close(xvg[i]);
@@ -119,7 +128,14 @@ int main(int argc, char **argv)
   model_default(m);
   model_doargs(m, argc, argv);
 
-  hs = mkhist(m, &beta);
+  if ( m->fninp == NULL ) {
+    model_help(m);
+  }
+
+  hs = mkhist(m->fninp, &beta, m->de, m->fnhis);
+  if ( hs == NULL ) {
+    return -1;
+  }
   xnew(lnz, hs->rows);
   for ( i = 0; i < hs->rows; i++ ) {
     lnz[i] = 0;
@@ -127,10 +143,10 @@ int main(int argc, char **argv)
 
   if ( m->wham_method == WHAM_DIRECT ) {
     wham(hs, beta, lnz,
-        m->itmax, m->tol, m->fnlndos, m->fneav);
+        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
   } else {
-    wham_mdiis(hs, beta, lnz, m->mdiis_nbases, 1.0,
-        m->itmax, m->tol, 0, m->fnlndos, m->fneav);
+    wham_mdiis(hs, beta, lnz, m->mdiis_nbases, m->mdiis_damp,
+        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
   }
 
   hist_close(hs);
