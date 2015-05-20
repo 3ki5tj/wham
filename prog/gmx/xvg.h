@@ -142,7 +142,7 @@ __inline static double xvg_act(xvg_t *xvg,
 {
   int i, k, n = xvg->n;
   double av, dy1, dy2, syy, var = 0, at, act;
-  FILE *fp;
+  FILE *fp = NULL;
 
   av = xvg_mean(xvg);
   act = 0.5 * xvg->dx;

@@ -1,0 +1,20 @@
+On office computer
+------------------
+
+export gmxdir=$HOME/lwork/gmx
+export GMXLIB=$gmxlib/gromacs5.0/src/top
+$gmxdir/gromacs5.0/buildgcc/bin/gmx grompp -f nvt.mdp -c init.gro -o 300.tpr
+$gmxdir/gromacs5.0/buildgcc/bin/gmx mdrun -deffnm 300
+$gmxdir/gromacs5.0/buildgcc/bin/gmx energy -f *.edr -o e.xvg
+
+
+On lonestar
+-----------
+
+export gmxdir=$HOME/work/gmx
+export GMXLIB=$gmxlib/gromacs5.0/src/top
+$gmxdir/gromacs5.0/buildicc/bin/gmx grompp -f nvt.mdp -c init.gro -o 300.tpr
+$gmxdir/gromacs5.0/buildicc/bin/gmx mdrun -deffnm 300
+$gmxdir/gromacs5.0/buildicc/bin/gmx energy -f *.edr -o e.xvg
+
+
