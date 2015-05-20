@@ -6,13 +6,20 @@ progs = $(patsubst %.c, %, $(csrcs))
 all: $(progs)
 
 $(progs): % : %.c $(deps)
-	icc -Wall -Wremarks -DLDBL -DFFTW $< -o $@ -lfftw3l
+	icc -Wall -Wremarks $< -o $@
 
 remote = cz1@129.109.88.204
-remoteBossman = $(remote):/Bossman/cz1/mu
+remoteBossman = $(remote):/Bossman/cz1/wham
 
 Bossman: clean
-	rsync -avLz *.[ch] *.py Makefile $(remoteBossman)/prog/ie/
+	rsync -avLz *.[ch] Makefile $(remoteBossman)/prog/gmx/
+	rsync -avLz ../*.[ch] $(remoteBossman)/prog/
+
+remotelonestar = oo1@lonestar.tacc.utexas.edu:scratch/wham
+
+lonestar: clean
+	rsync -avLz *.[ch] Makefile $(remotelonestar)/prog/gmx/
+	rsync -avLz ../*.[ch] $(remotelonestar)/prog/
 
 clean:
 	find . -name "*~" | xargs rm -f

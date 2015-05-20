@@ -54,7 +54,7 @@ __inline static xvg_t *xvg_load(const char *fn)
   FILE *fp;
 
   if ( fn == NULL || (fp = fopen(fn, "r")) == NULL ) {
-    fprintf(stderr, "cannot open %s\n", fn);
+    fprintf(stderr, "xvg_load: cannot open %s\n", fn);
     return xvg;
   }
 

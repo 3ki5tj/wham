@@ -1,5 +1,5 @@
 /* WHAM for a set of xvg files */
-#include "model.h"
+#include "xvgmodel.h"
 #include "xvg.h"
 #define WHAM_MDIIS
 #include "../wham.h"
@@ -15,7 +15,57 @@
 
 
 
-/* load the file list */
+/* determine the temperature and file name from the input line */
+static double parsefn(char *buf, char *fn)
+{
+  char *p, *q;
+  double temp = 300;
+
+  /* remove trailing spaces */
+  for ( p = buf + strlen(buf) - 1; isspace(*p); p-- ) {
+    *p = '\0';
+  }
+
+  /* check if there is a space */
+  for ( p = buf; *p != '\0' && *p != '\n'; p++ ) {
+    if ( isspace(*p) ) {
+      break;
+    }
+  }
+
+  /* if there is a space */
+  if ( *p != '\0' && *p != '\n' ) {
+    sscanf(buf, "%lf %s", &temp, fn);
+    return temp;
+  }
+
+  strcpy(fn, buf);
+
+  /* try to determine the temperature from the file name */
+  q = strrchr(buf, '/');
+  if ( q == NULL ) return temp;
+  *q = '\0';
+
+  /* let p point to the directory containing the file */
+  p = strrchr(buf, '/');
+  if ( p == NULL ) {
+    p = buf;
+  } else {
+    p++;
+  }
+
+  /* skip the character 'T' */
+  if ( *p == 'T' ) {
+    p++;
+  }
+  sscanf(p, "%lf", &temp);
+
+  return temp;
+}
+
+
+
+/* load the list of energy files */
 static char **getls(const char *fn,
     int *nbeta, double **beta)
 {
@@ -30,20 +80,27 @@ static char **getls(const char *fn,
     return NULL;
   }
 
-  if ( fgets(buf, sizeof buf, fp) == NULL
-    || buf[0] != '#' ) {
-    fprintf(stderr, "no leading line in %s\n", fn);
-    fclose(fp);
+  /* determine the number of lines */
+  *nbeta = 0;
+  while ( fgets(buf, sizeof buf, fp) ) {
+    if ( buf[0] == '#' || isspace(buf[0]) ) { /* skip a comment */
+      continue;
+    }
+    *nbeta += 1;
+  }
+  if ( *nbeta <= 1 ) {
+    fprintf(stderr, "insufficient number of lines, %d\n", *nbeta);
     return NULL;
   }
+  printf("%d temperatures\n", *nbeta);
 
-  sscanf(buf+1, "%d", nbeta);
+  /* go back to the beginning of the file */
+  rewind(fp);
 
   xnew(fns,   *nbeta);
   xnew(*beta, *nbeta);
-
   for ( i = 0; i < *nbeta; i++ ) {
-    while ( 1 ) {
+    while ( 1 ) { /* loop till we get a non-comment line */
       if ( fgets(buf, sizeof buf, fp) == NULL ) {
         fprintf(stderr, "cannot read line %d from %s\n", i, fn);
         fclose(fp);
@@ -56,7 +113,7 @@ static char **getls(const char *fn,
 
     /* copy the line */
     xnew(fns[i], strlen(buf) + 1);
-    sscanf(buf, "%lf %s", &tp, fns[i]);
+    tp = parsefn(buf, fns[i]);
     (*beta)[i] = 1 / (BOLTZ * tp);
   }
 
@@ -74,7 +131,7 @@ static hist_t *mkhist(const char *fnls,
   hist_t *hs;
   int i, j, nbeta;
   char **fns;
-  xvg_t **xvg;
+  xvg_t **xvg = NULL;
   double emin = 1e30, emax = -1e30, emin1 = 1e30, emax1 = -1e30;
 
   if ( (fns = getls(fnls, &nbeta, beta)) == NULL ) {
@@ -121,7 +178,7 @@ static hist_t *mkhist(const char *fnls,
 int main(int argc, char **argv)
 {
   model_t m[1];
-  hist_t *hs;
+  hist_t *hs = NULL;
   int i;
   double *beta, *lnz;
 
@@ -132,10 +189,29 @@ int main(int argc, char **argv)
     model_help(m);
   }
 
-  hs = mkhist(m->fninp, &beta, m->de, m->fnhis);
-  if ( hs == NULL ) {
-    return -1;
+  /* try to load from the existing histogram */
+  if ( m->loadprev ) {
+    hs = hist_initf(m->fnhis);
   }
+
+  if ( hs != NULL ) { /* loading successful */
+    int nbeta;
+    getls(m->fninp, &nbeta, &beta);
+    if ( nbeta != hs->rows ) {
+      fprintf(stderr, "%s: different rows %d vs %d\n",
+          m->fnhis, nbeta, hs->rows);
+      hist_close(hs);
+      hs = NULL;
+    }
+  }
+
+  if ( hs == NULL ) { /* loading failed */
+    hs = mkhist(m->fninp, &beta, m->de, m->fnhis);
+    if ( hs == NULL ) {
+      return -1;
+    }
+  }
+
   xnew(lnz, hs->rows);
   for ( i = 0; i < hs->rows; i++ ) {
     lnz[i] = 0;

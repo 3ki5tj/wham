@@ -16,7 +16,7 @@ import zcom
 temp = 300
 pres = None
 nequil = 10000
-nsteps = 10000000
+nsteps = 100000000
 nthreads = 0
 
 verbose = 0
@@ -90,7 +90,7 @@ def doargs():
 
 
 
-def changensteps(fn, nsteps = 10000000):
+def changensteps(fn, nsteps):
   ''' set the number of steps in the .mdp file '''
   s = open(fn).readlines()
   for i in range(len(s)):
@@ -122,7 +122,7 @@ def mkmdp(fn, T = None, P = None):
 
 
 
-def mklonestarpbs(prjroot, simulname, fngro, fntop):
+def mklonestarpbs(simulname):
   ''' make foo.pbs for room temperature simulation
       this script is provided for convenience '''
 
@@ -130,12 +130,9 @@ def mklonestarpbs(prjroot, simulname, fngro, fntop):
   mdrun = buildroot + "/bin/gmx mdrun"
 
   d = {
-      "prjroot" : prjroot,
       "simulname" : simulname,
       "mdrun" : mdrundir,
       "gmxtopdir" : gmxtopdir,
-      "fngro" : fngro,
-      "fntop" : fntop,
       }
   return zcom.templrepl('''#!/bin/bash
 #$ -V                           # Inherit the submission environment
@@ -150,48 +147,15 @@ def mklonestarpbs(prjroot, simulname, fngro, fntop):
 # make sure to find the correct gromacs
 export GMXLIB={{gmxtopdir}}
 
-homedir=`pwd`
-username=`whoami`
-
-# construct the backup dir
-dataid=1
-echo "I now create directory $backdir"
-while [ -d data$dataid ] ; do dataid=$(($dataid+1))  ; done
-backdir=$homedir/data$dataid
-# $dataid is the backup directory
-mkdir $backdir
-
-if [ $dataid -gt 1 ] ; then
-  echo "a continued run."
-  OPTCPT="-cpi state.cpt"
-  isnew=0
+if [ f $prj.cpt ] ; then
+  OPTCPT="-cpi $prj.cpt"
 else
-  echo "fresh new run."
   OPTCPT=" "
-  isnew=1
 fi
 
-# back up the initial conditions
-if [ $isnew -eq 1 ] ; then
-  cp $homedir/*.tpr $backdir/
-  mv $homedir/*.mdp $backdir/
-else
-  if [ -f $homedir/state.cpt ] ; then
-    cp $homedir/state.cpt $backdir/state0.cpt
-  fi
-fi
+{{mdrun}} -maxh 23.9 -deffnm $prj $OPTCPT &
 
-# run the program in the rundir directory
-echo "running $prog ..."
-$mdrun -maxh 23.9 -deffnm $prj $OPTCPT &> $prj.out
-echo "done"
-
-cp *.edr $backdir/
-cp *.log $backdir/
-cp *.xtc $backdir/
-cp *.trr $backdir/
-if [ -f $prj.out   ] ; then cp $prj.out  $backdir/  ; fi
-if [ -f state.cpt  ] ; then cp state.cpt $backdir/  ; fi
+wait
 ''', d)
 
 

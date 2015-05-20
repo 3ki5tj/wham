@@ -1,5 +1,5 @@
-#ifndef MODEL_H__
-#define MODEL_H__
+#ifndef XVGMODEL_H__
+#define XVGMODEL_H__
 
 
 
@@ -22,6 +22,7 @@ const char *wham_methods[] = {"direct", "mdiis"};
 typedef struct {
   char *prog;
   char *fnhis;
+  int loadprev; /* load previous histogram */
   double de;
   int wham_method;
   int itmax;
@@ -45,6 +46,7 @@ __inline static void model_default(model_t *m)
   memset(m, 0, sizeof(*m));
   m->prog = NULL;
   m->fnhis = "hist.dat";
+  m->loadprev = 0;
   m->de = 1.0;
   m->wham_method = WHAM_DIRECT;
   m->itmax = 100000;
@@ -98,6 +100,7 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "Options:\n");
   fprintf(stderr, "  -i:            set the input file, default: %s\n", m->fninp);
   fprintf(stderr, "  --fnhis=:      set the histogram file, default: %s\n", m->fnhis);
+  fprintf(stderr, "  -H:            load the previous histogram\n");
   fprintf(stderr, "  --de=:         set the energy bin size, default %g\n", m->de);
   fprintf(stderr, "  --wham=:       set the WHAM method, 'direct' or 'mdiis', default: %s\n", wham_methods[m->wham_method]);
   fprintf(stderr, "  --itmax=:      set the maximal number of iterations, default %d\n", m->itmax);
@@ -207,6 +210,8 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
           m->fninp = q;
         }
         break; /* skip the rest of the characters in the option */
+      } else if ( ch == 'H' ) {
+        m->loadprev = 1;
       } else if ( ch == 'v' ) {
         m->verbose++;
       } else if ( ch == 'h' ) {
@@ -221,4 +226,4 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
 
 
 
-#endif /* MODEL_H__ */
+#endif /* XVGMODEL_H__ */

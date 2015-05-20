@@ -439,5 +439,32 @@ __inline static int hist_getinfo(const char *fn, int *row,
 
 
 
+/* initialize a histogram from file */
+__inline static hist_t *hist_initf(const char *fn)
+{
+  int rows, version;
+  unsigned fflags;
+  double xmin, xmax, dx;
+  hist_t *hs;
+
+  if ( hist_getinfo(fn, &rows, &xmin, &xmax, &dx, &version, &fflags) != 0 ) {
+    return NULL;
+  }
+
+  hs = hist_open(rows, xmin, xmax, dx);
+  if ( hs == NULL ) {
+    return NULL;
+  }
+
+  if ( hist_load(hs, fn, HIST_VERBOSE) != 0 ) {
+    hist_close(hs);
+    return NULL;
+  }
+
+  return hs;
+}
+
+
+
 #endif /* HIST_H__ */
 
