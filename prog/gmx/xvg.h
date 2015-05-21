@@ -7,19 +7,27 @@
 
 
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+
+
 const int xvg_blksz = 1024;
 
 typedef struct {
   int ncap; /* capacity */
   int n;
+  int m; /* number of y values */
   double *x;
-  double *y;
+  double **y;
   double dx;
 } xvg_t;
 
 
 
-__inline static xvg_t *xvg_open(void)
+__inline static xvg_t *xvg_open(int m)
 {
   xvg_t *xvg;
 
@@ -30,8 +38,13 @@ __inline static xvg_t *xvg_open(void)
 
   xvg->ncap = 0;
   xvg->n = 0;
+  xvg->m = m;
   xvg->x = NULL;
-  xvg->y = NULL;
+  if ( (xvg->y = calloc(m, sizeof(*xvg->y))) == NULL ) {
+    fprintf(stderr, "no memory for xvg->y\n");
+    free(xvg);
+    return NULL;
+  }
   xvg->dx = 1;
   return xvg;
 }
@@ -40,17 +53,65 @@ __inline static xvg_t *xvg_open(void)
 
 __inline static void xvg_close(xvg_t *xvg)
 {
+  int k;
+
   free(xvg->x);
-  free(xvg->y);
+  if ( xvg->y ) {
+    for ( k = 0; k < xvg->m; k++ ) {
+      free(xvg->y[k]);
+    }
+    free(xvg->y);
+  }
   free(xvg);
 }
 
 
 
+/* detect the number of y rows */
+__inline static int xvg_detectyrows(FILE *fp)
+{
+  int m = 0;
+  char buf[1024], *p, *q;
+
+  rewind(fp);
+  while ( fgets(buf, sizeof(buf), fp) ) {
+    if ( buf[0] != '#' && buf[0] != '@' ) {
+      break;
+    }
+  }
+  if ( feof(fp) ) {
+    return 0;
+  }
+
+  /* compute the number of rows in buf */
+  /* skip the leading spaces */
+  for ( p = buf; *p && isspace(*p); p++ )
+    ;
+
+  while ( 1 ) {
+    if ( *p == '\0' ) {
+      break;
+    }
+    /* skip a token */
+    for ( q = p; *q && !isspace(*q); q++ )
+      ;
+    m += 1;
+    /* skip the space after the token */
+    for ( p = q; *p && isspace(*p); p++ )
+      ;
+  }
+  m -= 1;
+  return m;
+}
+
+
+
+/* build an xvg object from file */
 __inline static xvg_t *xvg_load(const char *fn)
 {
   xvg_t *xvg = NULL;
-  char buf[1024];
+  int k, m, next;
+  char buf[1024], *p;
   FILE *fp;
 
   if ( fn == NULL || (fp = fopen(fn, "r")) == NULL ) {
@@ -58,10 +119,16 @@ __inline static xvg_t *xvg_load(const char *fn)
     return xvg;
   }
 
-  if ( (xvg = xvg_open()) == NULL ) {
+  /* detect the number of y rows */
+  if ( (m = xvg_detectyrows(fp)) <= 0 ) {
     return xvg;
   }
 
+  if ( (xvg = xvg_open(m)) == NULL ) {
+    return xvg;
+  }
+
+  rewind(fp);
   while ( fgets(buf, sizeof(buf), fp) ) {
     /* skip a comment line */
     if ( buf[0] == '#' || buf[0] == '@' ) {
@@ -78,14 +145,33 @@ __inline static xvg_t *xvg_load(const char *fn)
         return NULL;
       }
 
-      xvg->y = realloc(xvg->y, xvg->ncap * sizeof(*xvg->y));
-      if ( xvg->y == NULL ) {
-        fprintf(stderr, "no memory for y, %d\n", xvg->ncap);
-        return NULL;
+      for ( k = 0; k < xvg->m; k++ ) {
+        xvg->y[k] = realloc(xvg->y[k], xvg->ncap * sizeof(xvg->y[k][0]));
+        if ( xvg->y[k] == NULL ) {
+          fprintf(stderr, "no memory for y, %d\n", xvg->ncap);
+          return NULL;
+        }
       }
     }
 
-    sscanf(buf, "%lf %lf", &xvg->x[xvg->n], &xvg->y[xvg->n]);
+    if ( 1 != sscanf(buf, "%lf%n", &xvg->x[xvg->n], &next) ) {
+      fprintf(stderr, "%s corrupted on line %d\n", fn, xvg->n);
+      fclose(fp);
+      xvg_close(xvg);
+      return NULL;
+    }
+    p = buf + next;
+    for ( k = 0; k < xvg->m; k++ ) {
+      if ( 1 != sscanf(p, "%lf%n", &xvg->y[k][xvg->n], &next) ) {
+        fprintf(stderr, "%s corrupted on line %d\n", fn, xvg->n);
+        fclose(fp);
+        xvg_close(xvg);
+        return NULL;
+      }
+      //printf("%d %d %g\n", xvg->n, k, xvg->y[k][xvg->n]);
+      p += next;
+    }
+    //printf("line %d\n", xvg->n); getchar();
     xvg->n++;
   }
 
@@ -101,87 +187,116 @@ __inline static xvg_t *xvg_load(const char *fn)
 
 
 /* compute the minimal and maximal values */
-__inline static double xvg_minmax(const xvg_t *xvg, double *ymax)
+__inline static void xvg_minmax(const xvg_t *xvg, double *ymin, double *ymax)
 {
-  int i, n = xvg->n;
-  double ymin = 1e30;
+  int i, k, n = xvg->n, m = xvg->m;
 
-  *ymax = -1e-30;
-  for ( i = 0; i < n; i++ ) {
-    if ( xvg->y[i] < ymin ) {
-      ymin = xvg->y[i];
+  for ( k = 0; k < m; k++ ) {
+    ymin[k] = 1e30;
+    ymax[k] = -1e30;
+    for ( i = 0; i < n; i++ ) {
+      //printf("k %d | i %d, y %g %g %g\n", k, i, xvg->y[k][i], ymin[k], ymax[k]);
+      if ( xvg->y[k][i] < ymin[k] ) {
+        ymin[k] = xvg->y[k][i];
+      }
+      if ( xvg->y[k][i] > ymax[k] ) {
+        ymax[k] = xvg->y[k][i];
+      }
     }
-    if ( xvg->y[i] > *ymax ) {
-      *ymax = xvg->y[i];
-    }
+    //getchar();
   }
-  return ymin;
 }
 
 
 
 /* compute the mean and variance */
-__inline static double xvg_mean(const xvg_t *xvg)
+__inline static void xvg_mean(const xvg_t *xvg, double *av)
 {
-  int i, n = xvg->n;
+  int i, k, n = xvg->n;
   double sy;
 
-  sy = 0;
-  for ( i = 0; i < n; i++ ) {
-    sy += xvg->y[i];
+  for ( k = 0; k < xvg->m; k++ ) {
+    sy = 0;
+    for ( i = 0; i < n; i++ ) {
+      sy += xvg->y[k][i];
+    }
+    av[k] = sy / n;
   }
-  return sy / n;
 }
 
 
 
 /* compute the autocorrelation time
  * optionally save the autocorrelation function to `fn` */
-__inline static double xvg_act(xvg_t *xvg,
+__inline static int xvg_act(xvg_t *xvg, double *act,
     double tcutoff, double min, const char *fn)
 {
-  int i, k, n = xvg->n;
-  double av, dy1, dy2, syy, var = 0, at, act;
+  int i, j, k, n = xvg->n, m = xvg->m;
+  double *av, *at;
+  double dy1, dy2, syy, var = 0;
   FILE *fp = NULL;
 
-  av = xvg_mean(xvg);
-  act = 0.5 * xvg->dx;
+  if ( (av = calloc(xvg->m, sizeof(*av))) == NULL ) {
+    fprintf(stderr, "no memory for av\n");
+    return -1;
+  }
+
+  if ( (at = calloc(xvg->m, sizeof(*act))) == NULL ) {
+    fprintf(stderr, "no memory for act\n");
+    return -1;
+  }
+
+  xvg_mean(xvg, av);
+  for ( k = 0; k < m; k++ ) {
+    act[k] = 0.5 * xvg->dx;
+  }
   if ( fn != NULL ) {
     fp = fopen(fn, "w");
   }
 
-  for ( k = 0; k < n - 1; k++ ) {
-    if ( tcutoff > 0 && k * xvg->dx > tcutoff ) {
+  for ( j = 0; j < n - 1; j++ ) {
+    if ( tcutoff > 0 && j * xvg->dx > tcutoff ) {
       break;
     }
 
-    /* autocorrelation function at separation k */
-    syy = 0;
-    for ( i = 0; i < n - k; i++ ) {
-      dy1 = xvg->y[i] - av;
-      dy2 = xvg->y[i+k] - av;
-      syy += dy1 * dy2;
-    }
-    syy /= n - k;
+    /* autocorrelation function at separation j */
+    for ( k = 0; k < m; k++ ) {
+      syy = 0;
+      for ( i = 0; i < n - j; i++ ) {
+        dy1 = xvg->y[k][i] - av[k];
+        dy2 = xvg->y[k][i+j] - av[k];
+        syy += dy1 * dy2;
+      }
+      syy /= n - j;
 
-    if ( k == 0 ) {
-      var = syy;
-    } else {
-      at = syy / var;
-      if ( at < min ) {
-        break;
+      if ( j == 0 ) {
+        var = syy;
+        at[k] = 1.0;
+      } else {
+        at[k] = syy / var;
+        if ( at[k] < min ) {
+          break;
+        }
+        act[k] += at[k] * xvg->dx;
       }
-      if ( fp != NULL ) {
-        fprintf(fp, "%g %g\n", k * xvg->dx, at);
+    }
+
+    if ( fp != NULL ) {
+      fprintf(fp, "%g", j * xvg->dx);
+      for ( k = 0; k < m; k++ ) {
+        fprintf(fp, " %g", at[k]);
       }
-      act += at * xvg->dx;
+      fprintf(fp, "\n");
     }
   }
 
   if ( fp != NULL ) {
     fclose(fp);
   }
-  return act;
+
+  free(av);
+  free(at);
+  return 0;
 }
 
 

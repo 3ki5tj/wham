@@ -22,8 +22,10 @@ const char *wham_methods[] = {"direct", "mdiis"};
 typedef struct {
   char *prog;
   char *fnhis;
+  char *fnhis2;
   int loadprev; /* load previous histogram */
   double de;
+  double dv;
   int wham_method;
   int itmax;
   double tol;
@@ -46,8 +48,10 @@ __inline static void model_default(model_t *m)
   memset(m, 0, sizeof(*m));
   m->prog = NULL;
   m->fnhis = "hist.dat";
+  m->fnhis2 = "hist2.dat";
   m->loadprev = 0;
   m->de = 1.0;
+  m->dv = 0.02;
   m->wham_method = WHAM_DIRECT;
   m->itmax = 100000;
   m->tol = 1e-10;
@@ -100,8 +104,10 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "Options:\n");
   fprintf(stderr, "  -i:            set the input file, default: %s\n", m->fninp);
   fprintf(stderr, "  --fnhis=:      set the histogram file, default: %s\n", m->fnhis);
+  fprintf(stderr, "  --fnhis2=:     set the 2D histogram file, default: %s\n", m->fnhis2);
   fprintf(stderr, "  -H:            load the previous histogram\n");
   fprintf(stderr, "  --de=:         set the energy bin size, default %g\n", m->de);
+  fprintf(stderr, "  --dv=:         set the volume bin size, default %g\n", m->dv);
   fprintf(stderr, "  --wham=:       set the WHAM method, 'direct' or 'mdiis', default: %s\n", wham_methods[m->wham_method]);
   fprintf(stderr, "  --itmax=:      set the maximal number of iterations, default %d\n", m->itmax);
   fprintf(stderr, "  --tol=:        set the tolerance of error, default %g\n", m->tol);
@@ -152,8 +158,12 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
 
       if ( strcmp(p, "fnhis") == 0 ) {
         m->fnhis = q;
+      } else if ( strcmp(p, "fnhis2") == 0 ) {
+        m->fnhis2 = q;
       } else if ( strcmp(p, "de") == 0 ) {
         m->de = atof(q);
+      } else if ( strcmp(p, "dv") == 0 ) {
+        m->dv = atof(q);
       } else if ( strcmp(p, "wham") == 0 ) {
         m->wham_method = model_select(q, WHAM_NMETHODS, wham_methods);
       } else if ( strcmp(p, "itmax") == 0 ) {

@@ -8,16 +8,19 @@
 static int calcact(const char *fn, model_t *m)
 {
   xvg_t *xvg;
-  double act;
+  int k;
+  double act[10];
 
   if ( (xvg = xvg_load(fn)) == NULL ) {
     fprintf(stderr, "cannot load %s\n", fn);
     return -1;
   }
 
-  act = xvg_act(xvg, m->actmax, m->acmin, m->fnac);
+  xvg_act(xvg, act, m->actmax, m->acmin, m->fnac);
 
-  printf("autocorrelation time %g\n", act);
+  for ( k = 0; k < xvg->m; k++ ) {
+    printf("%d: autocorrelation time %g\n", k, act[k]);
+  }
   return 0;
 }
 

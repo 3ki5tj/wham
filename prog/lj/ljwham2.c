@@ -21,6 +21,7 @@ double vmin =  100, vmax = 400, dv = 1.0;
 int itmax = 100000;
 double tol = 1e-10;
 int nbases = 5;
+int verbose = 0;
 
 const char *fnlndos = "lndos2.dat";
 const char *fneav = "eav2.dat";
@@ -91,9 +92,11 @@ int main(int argc, char **argv)
 
   /* do WHAM */
   if ( method == METHOD_DIRECT ) {
-    wham2(hs, beta, bp, lnz, itmax, tol, fnlndos, fneav);
+    wham2(hs, beta, bp, lnz,
+        itmax, tol, verbose, fnlndos, fneav);
   } else {
-    wham2_mdiis(hs, beta, bp, lnz, nbases, 1.0, itmax, tol, 0, fnlndos, fneav);
+    wham2_mdiis(hs, beta, bp, lnz, nbases, 1.0,
+        itmax, tol, verbose, fnlndos, fneav);
   }
 
   /* clean up */

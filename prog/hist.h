@@ -408,7 +408,7 @@ __inline static int hist_add(hist_t *hs, const double *x, double w, unsigned fla
 
 
 
-/* fetch histogram size */
+/* fetch histogram information */
 __inline static int hist_getinfo(const char *fn, int *row,
     double *xmin, double *xmax, double *xdel,
     int *version, unsigned *fflags)

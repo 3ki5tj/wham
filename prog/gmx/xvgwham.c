@@ -33,7 +33,7 @@ static double parsefn(char *buf, char *fn)
     }
   }
 
-  /* if there is a space */
+  /* there is a space */
   if ( *p != '\0' && *p != '\n' ) {
     sscanf(buf, "%lf %s", &temp, fn);
     return temp;
@@ -141,7 +141,7 @@ static hist_t *mkhist(const char *fnls,
   xnew(xvg, nbeta);
   for ( i = 0; i < nbeta; i++ ) {
     xvg[i] = xvg_load(fns[i]);
-    emin1 = xvg_minmax(xvg[i], &emax1);
+    xvg_minmax(xvg[i], &emin1, &emax1);
     if ( emin1 < emin ) {
       emin = emin1;
     }
@@ -157,7 +157,7 @@ static hist_t *mkhist(const char *fnls,
 
   for ( i = 0; i < nbeta; i++ ) {
     for ( j = 0; j < xvg[i]->n; j++ ) {
-      hist_add1(hs, i, xvg[i]->y[j], 1.0, HIST_VERBOSE);
+      hist_add1(hs, i, xvg[i]->y[0][j], 1.0, HIST_VERBOSE);
     }
   }
 
@@ -179,7 +179,7 @@ int main(int argc, char **argv)
 {
   model_t m[1];
   hist_t *hs = NULL;
-  int i;
+  int i, nbeta;
   double *beta, *lnz;
 
   model_default(m);
@@ -192,20 +192,18 @@ int main(int argc, char **argv)
   /* try to load from the existing histogram */
   if ( m->loadprev ) {
     hs = hist_initf(m->fnhis);
-  }
+    if ( hs == NULL ) {
+      return -1;
+    }
 
-  if ( hs != NULL ) { /* loading successful */
-    int nbeta;
     getls(m->fninp, &nbeta, &beta);
     if ( nbeta != hs->rows ) {
       fprintf(stderr, "%s: different rows %d vs %d\n",
           m->fnhis, nbeta, hs->rows);
       hist_close(hs);
-      hs = NULL;
+      return -1;
     }
-  }
-
-  if ( hs == NULL ) { /* loading failed */
+  } else {
     hs = mkhist(m->fninp, &beta, m->de, m->fnhis);
     if ( hs == NULL ) {
       return -1;

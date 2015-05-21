@@ -228,7 +228,8 @@ static double wham_getlndos(wham_t *w, double *lnz,
   for ( it = 1; it <= itmax; it++ ) {
     err = wham_step(w, lnz, w->res, 1);
     if ( verbose ) {
-      fprintf(stderr, "it %d, err %g -> %g\n", it, errp, err);
+      fprintf(stderr, "it %d, err %g -> %g\n",
+          it, errp, err);
     }
     if ( err < tol ) {
       break;

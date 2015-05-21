@@ -215,9 +215,12 @@ __inline static int hist2_save(const hist2_t *hs, const char *fn, unsigned flags
   fclose(fp);
   if (flags & HIST2_VERBOSE) {
     fprintf(stderr, "successfully wrote %s\n", fn);
-    for (r = 0; r < rows; r++)
+    for (r = 0; r < rows; r++) {
+      double stdx = sqrt(sums[r][3]);
+      double stdy = sqrt(sums[r][5]);
       fprintf(stderr, "%2d cnt: %20.4f xav: %10.4f(%10.4f) yav: %10.4f(%10.4f)\n",
-          r, sums[r][0], sums[r][1], sums[r][2], sums[r][3], sums[r][4]);
+          r, sums[r][0], sums[r][1], stdx, sums[r][2], stdy);
+    }
   }
   free(sums);
   return 0;
@@ -366,7 +369,7 @@ __inline static int hist2_add1(hist2_t *hs, int r,
           r, x, xmin);
     return -1;
   }
-  if ( y < xmin ) {
+  if ( y < ymin ) {
     if ( verbose )
       fprintf(stderr, "hist2add underflows, row %d: y %g < %g\n",
           r, y, ymin);
@@ -400,6 +403,67 @@ __inline static int hist2_add(hist2_t *hs, const double *x, const double *y,
   for ( r = 0; r < hs->rows; r++ )
     good = (hist2_add1(hs, r, x[r * stride], y[r * stride], w, flags) == 0);
   return good;
+}
+
+
+
+/* fetch histogram information */
+__inline static int hist2_getinfo(const char *fn, int *row,
+    double *xmin, double *xmax, double *xdel,
+    double *ymin, double *ymax, double *ydel,
+    int *version, unsigned *fflags)
+{
+  FILE *fp;
+  char s[1024];
+  int n, m;
+
+  if ((fp = fopen(fn, "r")) == NULL) {
+    fprintf(stderr, "cannot read %s\n", fn);
+    return -1;
+  }
+  if (fgets(s, sizeof s, fp) == NULL) {
+    fprintf(stderr, "%s: missing the first line\n", fn);
+    fclose(fp);
+    return -1;
+  }
+  if (9 != sscanf(s, "# %d 0x %X | %d %d %lf %lf %d %lf %lf ",
+        version, fflags, row, &n, xmin, xdel, &m, ymin, ydel)) {
+    fprintf(stderr, "%s: bad first line\n%s", fn, s);
+    fclose(fp);
+    return -1;
+  }
+  *xmax = *xmin + *xdel * n;
+  *ymax = *ymin + *ydel * m;
+  fclose(fp);
+  return 0;
+}
+
+
+
+/* initialize a histogram from file */
+__inline static hist2_t *hist2_initf(const char *fn)
+{
+  int rows, version;
+  unsigned fflags;
+  double xmin, xmax, dx, ymin, ymax, dy;
+  hist2_t *hs;
+
+  if ( hist2_getinfo(fn, &rows, &xmin, &xmax, &dx,
+        &ymin, &ymax, &dy, &version, &fflags) != 0 ) {
+    return NULL;
+  }
+
+  hs = hist2_open(rows, xmin, xmax, dx, ymin, ymax, dy);
+  if ( hs == NULL ) {
+    return NULL;
+  }
+
+  if ( hist2_load(hs, fn, HIST2_VERBOSE) != 0 ) {
+    hist2_close(hs);
+    return NULL;
+  }
+
+  return hs;
 }
 
 

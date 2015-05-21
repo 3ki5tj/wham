@@ -328,21 +328,24 @@ static double wham2_step(wham2_t *w, double *lnz, double *res, int update)
 
 /* iteratively compute the logarithm of the density of states
  * using the weighted histogram method */
-static double wham2_getlndos(wham2_t *w, double *lnz, int itmax, double tol)
+static double wham2_getlndos(wham2_t *w, double *lnz,
+    int itmax, double tol, int verbose)
 {
-  hist2_t *hist = w->hist;
-  int k, it, nbeta = hist->rows;
-  double err;
+  int it;
+  double err, errp = 1e30;
 
-  for ( k = 0; k < nbeta; k++ )
-    if ( fabs(lnz[k]) > 0 )
+  for ( it = 1; it <= itmax; it++ ) {
+    err = wham2_step(w, lnz, w->res, 1);
+    if ( verbose ) {
+      fprintf(stderr, "it %d, err %g -> %g\n",
+          it, errp, err);
+    }
+    if ( err < tol ) {
       break;
-  if ( k == nbeta ) /* if lnz is not set, estimate it */
-    wham2_estimatelnz(w, lnz);
+    }
+    errp = err;
+  }
 
-  for ( it = 1; it <= itmax; it++ )
-    if ( (err = wham2_step(w, lnz, w->res, 1)) < tol )
-      break;
   fprintf(stderr, "WHAM converged at step %d, error %g\n", it, err);
   return err;
 }
@@ -352,11 +355,14 @@ static double wham2_getlndos(wham2_t *w, double *lnz, int itmax, double tol)
 /* Two-dimensional weighted histogram analysis method */
 static double wham2(hist2_t *hist,
     const double *bx, const double *by, double *lnz,
-    int itmax, double tol,
+    int itmax, double tol, int verbose,
     const char *fnlndos, const char *fneav)
 {
   wham2_t *w = wham2_open(bx, by, hist);
-  double err = wham2_getlndos(w, lnz, itmax, tol);
+  double err;
+
+  wham2_estimatelnz(w, lnz); 
+  err = wham2_getlndos(w, lnz, itmax, tol, verbose);
   if ( fnlndos ) wham2_savelndos(w, fnlndos);
   wham2_getav(w, fneav);
   wham2_close(w);
@@ -384,7 +390,10 @@ static double wham2_mdiis(hist2_t *hist,
     const char *fnlndos, const char *fneav)
 {
   wham2_t *w = wham2_open(bx, by, hist);
-  double err = iter_mdiis(lnz, hist->rows, wham2_getres, w,
+  double err;
+
+  wham2_estimatelnz(w, lnz);
+  err = iter_mdiis(lnz, hist->rows, wham2_getres, w,
       nbases, damp, itmax, tol, verbose);
   if ( fnlndos ) wham2_savelndos(w, fnlndos);
   wham2_getav(w, fneav);
