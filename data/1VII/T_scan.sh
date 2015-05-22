@@ -1,5 +1,12 @@
 #!/bin/bash
 
+
+
+# for each directory Txxx
+# generate the text energy file e.xvg from the nvt.edr
+
+
+
 export gmxdir=$HOME/work/gmx
 export GMXLIB=$gmxdir/gromacs5.0/src/top
 

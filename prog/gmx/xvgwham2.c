@@ -3,6 +3,8 @@
 #include "xvg.h"
 #define WHAM2_MDIIS
 #include "../wham2.h"
+#include <time.h>
+#include "mtrand.h"
 
 
 
@@ -16,7 +18,7 @@
 
 
 /* determine the temperature, pressure and file name
- * from the input line */
+ * from a line of the input list file */
 static double parsefn(char *buf, double *pres, char *fn)
 {
   char *p, *q;
@@ -139,8 +141,8 @@ static char **getls(const char *fn,
 
 /* construct the histogram */
 static hist2_t *mkhist2(const char *fnls,
-    double **beta, double **bpres,
-    double de, double dv, const char *fnhis)
+    double **beta, double **bpres, double de, double dv,
+    const char *fnhis, double radd)
 {
   hist2_t *hs;
   int i, j, nbp, k;
@@ -148,6 +150,9 @@ static hist2_t *mkhist2(const char *fnls,
   xvg_t **xvg = NULL;
   double evmin[3] = {1e30, 1e30, 1e30}, evmax[3] = {-1e30, -1e30, -1e30};
   double evmin1[3], evmax1[3];
+
+  /* scramble the random number seed */
+  mtscramble( time(NULL) );
 
   if ( (fns = getls(fnls, &nbp, beta, bpres)) == NULL ) {
     return NULL;
@@ -179,8 +184,10 @@ static hist2_t *mkhist2(const char *fnls,
 
   for ( i = 0; i < nbp; i++ ) {
     for ( j = 0; j < xvg[i]->n; j++ ) {
-      hist2_add1(hs, i,
-          xvg[i]->y[0][j], xvg[i]->y[2][j], 1.0, HIST2_VERBOSE);
+      if ( radd >= 1.0 || rand01() < radd ) {
+        hist2_add1(hs, i,
+            xvg[i]->y[0][j], xvg[i]->y[2][j], 1.0, HIST2_VERBOSE);
+      }
     }
   }
 
@@ -228,7 +235,8 @@ int main(int argc, char **argv)
       return -1;
     }
   } else {
-    hs = mkhist2(m->fninp, &beta, &bpres, m->de, m->dv, m->fnhis2);
+    hs = mkhist2(m->fninp, &beta, &bpres, m->de, m->dv,
+        m->fnhis2, m->radd);
     if ( hs == NULL ) {
       return -1;
     }

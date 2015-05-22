@@ -24,6 +24,7 @@ typedef struct {
   char *fnhis;
   char *fnhis2;
   int loadprev; /* load previous histogram */
+  double radd; /* rate of adding trajectory frames into the histogram */
   double de;
   double dv;
   int wham_method;
@@ -50,6 +51,7 @@ __inline static void model_default(model_t *m)
   m->fnhis = "hist.dat";
   m->fnhis2 = "hist2.dat";
   m->loadprev = 0;
+  m->radd = 1.0;
   m->de = 1.0;
   m->dv = 0.02;
   m->wham_method = WHAM_DIRECT;
@@ -106,6 +108,7 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --fnhis=:      set the histogram file, default: %s\n", m->fnhis);
   fprintf(stderr, "  --fnhis2=:     set the 2D histogram file, default: %s\n", m->fnhis2);
   fprintf(stderr, "  -H:            load the previous histogram\n");
+  fprintf(stderr, "  -r:            set the rate of adding trajectory frames into the histogram\n");
   fprintf(stderr, "  --de=:         set the energy bin size, default %g\n", m->de);
   fprintf(stderr, "  --dv=:         set the volume bin size, default %g\n", m->dv);
   fprintf(stderr, "  --wham=:       set the WHAM method, 'direct' or 'mdiis', default: %s\n", wham_methods[m->wham_method]);
@@ -198,7 +201,7 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
      * loop over characters in the options
      * in this way, `-vo' is understood as `-v -o' */
     for ( j = 1; (ch = argv[i][j]) != '\0'; j++ ) {
-      if ( strchr("i", ch) != NULL ) {
+      if ( strchr("ir", ch) != NULL ) {
         /* handle options that require an argument */
         q = p = argv[i] + j + 1;
         if ( *p != '\0' ) {
@@ -218,7 +221,10 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
 
         if ( ch == 'i' ) {
           m->fninp = q;
+        } else if ( ch == 'r' ) {
+          m->radd = atof(q);
         }
+
         break; /* skip the rest of the characters in the option */
       } else if ( ch == 'H' ) {
         m->loadprev = 1;

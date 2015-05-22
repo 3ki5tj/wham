@@ -3,6 +3,8 @@
 #include "xvg.h"
 #define WHAM_MDIIS
 #include "../wham.h"
+#include <time.h>
+#include "mtrand.h"
 
 
 
@@ -15,7 +17,8 @@
 
 
 
-/* determine the temperature and file name from the input line */
+/* determine the temperature and file name
+ * from a line of the input list file */
 static double parsefn(char *buf, char *fn)
 {
   char *p, *q;
@@ -126,13 +129,17 @@ static char **getls(const char *fn,
 
 /* construct the histogram */
 static hist_t *mkhist(const char *fnls,
-    double **beta, double de, const char *fnhis)
+    double **beta, double de,
+    const char *fnhis, double radd)
 {
   hist_t *hs;
   int i, j, nbeta;
   char **fns;
   xvg_t **xvg = NULL;
   double emin = 1e30, emax = -1e30, emin1 = 1e30, emax1 = -1e30;
+
+  /* scramble the random number seed */
+  mtscramble( time(NULL) );
 
   if ( (fns = getls(fnls, &nbeta, beta)) == NULL ) {
     return NULL;
@@ -157,7 +164,9 @@ static hist_t *mkhist(const char *fnls,
 
   for ( i = 0; i < nbeta; i++ ) {
     for ( j = 0; j < xvg[i]->n; j++ ) {
-      hist_add1(hs, i, xvg[i]->y[0][j], 1.0, HIST_VERBOSE);
+      if ( radd >= 1.0 || rand01() < radd ) {
+        hist_add1(hs, i, xvg[i]->y[0][j], 1.0, HIST_VERBOSE);
+      }
     }
   }
 
@@ -204,7 +213,7 @@ int main(int argc, char **argv)
       return -1;
     }
   } else {
-    hs = mkhist(m->fninp, &beta, m->de, m->fnhis);
+    hs = mkhist(m->fninp, &beta, m->de, m->fnhis, m->radd);
     if ( hs == NULL ) {
       return -1;
     }
