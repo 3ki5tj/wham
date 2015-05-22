@@ -361,7 +361,7 @@ static double wham2(hist2_t *hist,
   wham2_t *w = wham2_open(bx, by, hist);
   double err;
 
-  wham2_estimatelnz(w, lnz); 
+  wham2_estimatelnz(w, lnz);
   err = wham2_getlndos(w, lnz, itmax, tol, verbose);
   if ( fnlndos ) wham2_savelndos(w, fnlndos);
   wham2_getav(w, fneav);

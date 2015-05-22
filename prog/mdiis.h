@@ -89,7 +89,7 @@ static mdiis_t *mdiis_open(int npt, int mnb,
   mnb1 = mnb + 1;
   newarr2d(m->f,    mnb1, npt);
   newarr2d(m->res,  mnb1, npt);
-  newarr(m->mat,    mnb1 * mnb1);
+  newarr(m->mat,    mnb * mnb);
   newarr(m->mat2,   mnb1 * mnb1);
   newarr(m->coef,   mnb1);
   newarr(m->fbest,  npt);
@@ -118,17 +118,26 @@ static void mdiis_close(mdiis_t *m)
 /* solve the coefficients of combination */
 static int mdiis_solve(mdiis_t *m)
 {
-  int nb = m->nb, nb1 = m->nb + 1, mnb1 = m->mnb + 1, i, j;
+  int nb = m->nb, nb1 = m->nb + 1, mnb = m->mnb, i, j;
 
-  for ( i = 0; i < nb; i++ ) m->coef[i] = 0;
+  /* right-hand side of the equation */
+  for ( i = 0; i < nb; i++ ) {
+    m->coef[i] = 0;
+  }
   m->coef[nb] = -1;
+
   /* copy the matrix, for the content is to be destroyed */
-  for ( i = 0; i < nb1; i++ )
-    for ( j = 0; j < nb1; j++ )
-      m->mat2[i*nb1 + j] = m->mat[i*mnb1 + j];
-  for ( i = 0; i < nb1; i++ )
-    m->mat2[i*nb1 + nb] = m->mat2[nb*nb1 + i] = -1;
+  for ( i = 0; i < nb1; i++ ) {
+    for ( j = 0; j < nb1; j++ ) {
+      m->mat2[i*nb1 + j] = m->mat[i*mnb + j];
+    }
+  }
+  for ( i = 0; i < nb1; i++ ) {
+    m->mat2[i*nb1 + nb] = -1;
+    m->mat2[nb*nb1 + i] = -1;
+  }
   m->mat2[nb*nb1 + nb] = 0;
+
   if ( lusolve(m->mat2, m->coef, nb1, 1e-20) != 0 ) {
     fprintf(stderr, "MDIIS lusolve failed\n");
     exit(1);
@@ -147,8 +156,9 @@ static void mdiis_gen(mdiis_t *m, double *f, double damp)
     m->f[nb][il] = 0;
   for ( ib = 0; ib < nb; ib++ ) {
     double coef = m->coef[ib];
-    for ( il = 0; il < npt; il++ )
+    for ( il = 0; il < npt; il++ ) {
       m->f[nb][il] += coef * (m->f[ib][il] + damp * m->res[ib][il]);
+    }
   }
 
   /* f = m->f[nb] */
@@ -163,7 +173,9 @@ static double mdiis_getdot(double *a, double *b, int n)
   int i;
   double x = 0;
 
-  for ( i = 0; i < n; i++ ) x += a[i] * b[i];
+  for ( i = 0; i < n; i++ ) {
+    x += a[i] * b[i];
+  }
   return x / n;
 }
 
@@ -172,11 +184,9 @@ static double mdiis_getdot(double *a, double *b, int n)
 /* build the residue correlation matrix */
 static int mdiis_build(mdiis_t *m, double *f, double *res)
 {
-  int i, ib, mnb, mnb1, npt = m->npt;
+  int i, npt = m->npt;
 
   m->nb = 1;
-  mnb = m->mnb;
-  mnb1 = m->mnb + 1;
 
   for ( i = 0; i < npt; i++ ) {
     m->f[0][i] = f[i];
@@ -184,23 +194,20 @@ static int mdiis_build(mdiis_t *m, double *f, double *res)
   }
 
   m->mat[0] = mdiis_getdot(m->res[0], m->res[0], npt);
-  for ( ib = 0; ib < mnb; ib++ )
-    m->mat[ib*mnb1 + mnb] = m->mat[mnb*mnb1 + ib] = -1;
-  m->mat[mnb*mnb1 + mnb] = 0;
   return 0;
 }
 
 
 
-/* replace base ib by f */
+/* try to replace base ib by f */
 static int mdiis_update(mdiis_t *m, double *f, double *res,
     double err)
 {
-  int i, ib, nb, mnb1, npt = m->npt;
+  int i, ib, jb, nb, mnb, npt = m->npt;
   double dot, max;
 
   nb = m->nb;
-  mnb1 = m->mnb + 1;
+  mnb = m->mnb;
 
   /* save this function if it achieves the minimal error so far */
   if ( err < m->errmin ) {
@@ -208,36 +215,47 @@ static int mdiis_update(mdiis_t *m, double *f, double *res,
     m->errmin = err;
   }
 
+  /* choose the base with the largest residue */
+  ib = 0;
+  for ( i = 1; i < nb; i++ ) {
+    /* the diagonal represents the error */
+    if ( m->mat[i*mnb + i] > m->mat[ib*mnb + ib] ) {
+      ib = i;
+    }
+  }
+  max = m->mat[ib*mnb + ib];
+
+  dot = mdiis_getdot(res, res, npt);
+  if ( dot > max ) {
+    if ( nb >= 2 ) {
+      /* remove the base with largest residue and try again */
+      jb = nb - 1;
+      if ( ib != jb ) {
+        /* move the last base to position ib */
+        for ( i = 0; i < npt; i++ ) {
+          m->f[ib][i] = m->f[jb][i];
+          m->res[ib][i] = m->res[jb][i];
+        }
+
+        for ( i = 0; i < nb - 1; i++ ) {
+          if ( i == ib ) continue;
+          m->mat[i*mnb + ib] = m->mat[i*mnb + jb];
+          m->mat[ib*mnb + i] = m->mat[jb*mnb + i];
+        }
+        m->mat[ib*mnb + ib] = m->mat[jb*mnb + jb];
+      }
+      m->nb--;
+      return -1;
+    } else {
+      /* rebuild the basis from f */
+      mdiis_build(m, f, res);
+      return 0;
+    }
+  }
+
   if ( nb < m->mnb ) {
     ib = nb;
     m->nb = ++nb;
-  } else {
-    /* choose the base with the largest residue */
-    ib = 0;
-    for ( i = 1; i < nb; i++ )
-      /* the diagonal represents the error */
-      if ( m->mat[i*mnb1+i] > m->mat[ib*mnb1 + ib] )
-        ib = i;
-    max = m->mat[ib*mnb1 + ib];
-
-    dot = mdiis_getdot(res, res, npt);
-    if ( dot > max ) {
-#ifndef MDIIS_THRESHOLD
-#define MDIIS_THRESHOLD 1.0
-#endif
-      int reset = ( sqrt(dot) < MDIIS_THRESHOLD );
-      if ( m->verbose ) {
-        fprintf(stderr, "MDIIS: bad basis, %g is greater than %g, %s, error:",
-          dot, max, reset ? "reset" : "accept");
-        for ( i = 0; i < nb; i++ )
-          fprintf(stderr, " %g", m->mat[i*mnb1+i]);
-        fprintf(stderr, "\n");
-      }
-      if ( reset ) {
-        mdiis_build(m, f, res);
-        return 1;
-      }
-    }
   }
 
   /* replace base ib by f */
@@ -249,7 +267,7 @@ static int mdiis_update(mdiis_t *m, double *f, double *res,
   /* update the residue correlation matrix
    * note: we do not need to update the last row & column */
   for ( i = 0; i < nb; i++ )
-    m->mat[i*mnb1 + ib] = m->mat[ib*mnb1 + i]
+    m->mat[i*mnb + ib] = m->mat[ib*mnb + i]
       = mdiis_getdot(m->res[i], res, npt);
   return ib;
 }
@@ -276,18 +294,28 @@ static double iter_mdiis(double *f, int npt,
   for ( it = 0; it < itmax && errp > tol; it++ ) {
     /* obtain a set of optimal coefficients of combination */
     mdiis_solve(mdiis);
+    if ( verbose >= 2 ) {
+      int j;
+      fprintf(stderr, "it %d, %d bases:", it, mdiis->nb);
+      for ( j = 0; j < mdiis->nb; j++ ) {
+        fprintf(stderr, " %g(%g)", mdiis->coef[j], sqrt(mdiis->mat[j*mdiis->mnb+j]));
+      }
+      fprintf(stderr, "\n");
+    }
     /* generate a new f from the set of coefficients */
     mdiis_gen(mdiis, f, damp);
-    /* add the new f into the basis */
     err = mdiis->getres(obj, f, res);
+    /* add the new f into the basis */
     ib = mdiis_update(mdiis, f, res, err);
 
     if ( verbose ) {
-      fprintf(stderr, "it %d, err %g -> %g, ib %d -> %d\n",
-          it, errp, err, ibp, ib);
+      fprintf(stderr, "it %d, err %g -> %g, ib %d -> %d (%d)\n",
+          it, errp, err, ibp, ib, mdiis->nb);
     }
-    ibp = ib;
-    errp = err;
+    if ( ib >= 0 ) {
+      ibp = ib;
+      errp = err;
+    }
   }
   fprintf(stderr, "mdiis finished in %d steps, err %g\n", it, errp);
   cparr(f, mdiis->fbest, npt);

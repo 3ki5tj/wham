@@ -250,7 +250,7 @@ static double wham(hist_t *hist, const double *beta, double *lnz,
 {
   wham_t *w = wham_open(beta, hist);
   double err;
- 
+
   wham_estimatelnz(w, lnz);
   err = wham_getlndos(w, lnz, itmax, tol, verbose);
   if ( fnlndos ) {
@@ -282,7 +282,7 @@ static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
 {
   wham_t *w = wham_open(beta, hist);
   double err;
- 
+
   wham_estimatelnz(w, lnz);
   err = iter_mdiis(lnz, hist->rows, wham_getres, w,
       nbases, damp, itmax, tol, verbose);

@@ -169,10 +169,12 @@ def main():
     prjname = "nvt"
     prjdir = "T%g" % temp
     egrps = "11 17 0"
+    fnxvg = "e.xvg"
   else:
     prjname = "npt"
     prjdir = "T%gP%g" % (temp, pres)
     egrps = "11 16 21 0"
+    fnxvg = "ev.xvg"
   if not os.path.isdir(prjdir):
     os.mkdir(prjdir)
 
@@ -226,8 +228,8 @@ def main():
     shutil.move("npt.gro", "init.gro")
 
   # compute energy
-  cmd = "echo %s | %s/bin/gmx energy -f %s.edr -o e.xvg" % (
-      egrps, buildroot, prjname)
+  cmd = "echo %s | %s/bin/gmx energy -f %s.edr -o %s" % (
+      egrps, buildroot, prjname, fnxvg)
   zcom.shrun(cmd, envars = envars)
 
   # remove unneeded files

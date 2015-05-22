@@ -215,7 +215,7 @@ int main(int argc, char **argv)
 
   /* try to load from the existing histogram */
   if ( m->loadprev ) {
-    hs = hist2_initf(m->fnhis);
+    hs = hist2_initf(m->fnhis2);
     if ( hs == NULL ) {
       return -1;
     }
@@ -223,7 +223,7 @@ int main(int argc, char **argv)
     getls(m->fninp, &nbp, &beta, &bpres);
     if ( nbp != hs->rows ) {
       fprintf(stderr, "%s: different rows %d vs %d\n",
-          m->fnhis, nbp, hs->rows);
+          m->fnhis2, nbp, hs->rows);
       hist2_close(hs);
       return -1;
     }

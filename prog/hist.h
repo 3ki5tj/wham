@@ -206,7 +206,7 @@ __inline static int hist_save(const hist_t *hs, const char *fn, unsigned flags)
     fprintf(stderr, "successfully wrote %s\n", fn);
     for (r = 0; r < rows; r++)
       fprintf(stderr, "%2d cnt: %20.4f av: %10.4f(%10.4f)\n",
-          r, sums[r][0], sums[r][1], sums[r][2]);
+          r, sums[r][0], sums[r][1], sqrt(sums[r][2]));
   }
   free(sums);
   free(htot);

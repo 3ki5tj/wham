@@ -129,8 +129,9 @@ __inline static int hist2_save(const hist2_t *hs, const char *fn, unsigned flags
 
   nm = n * m;
   xnew(sums, rows);
-  for ( r = 0; r < rows; r++ )
-    hist2_getsums(hs->arr + nm, n, xmin, dx, m, ymin, dy, sums[r]);
+  for ( r = 0; r < rows; r++ ) {
+    hist2_getsums(hs->arr + r * nm, n, xmin, dx, m, ymin, dy, sums[r]);
+  }
   /* print basic information */
   fprintf(fp, "# 1 0x%X | %d %d %g %g %d %g %g | ",
       flags, rows, n, xmin, dx, m, ymin, dy);
