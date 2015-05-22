@@ -1,89 +1,127 @@
-/* test program for WHAM */
+/* WHAM for two-dimensional Ising model */
+#define IS2_MODEL
+#include "../whammodel.h"
 #define WHAM_MDIIS
 #include "../wham.h"
 #define IS2_LB 6
 #include "is2.h"
+#include <time.h>
 
 
-int nequil = 100000;
-int nsteps = 10000000;
-int verbose = 0;
 
-int ntp = 80;
-double xmin = -2*IS2_N - 4, xmax = 4, dx = 4;
-int itmax = 100000;
-double tol = 1e-7;
-int nbases = 5;
-
-const char *fnlndos = "lndos.dat";
-const char *fneav = "eav.dat";
-const char *fnhist = "hist.dat";
-
-enum { METHOD_DIRECT = 0, METHOD_MDIIS = 1 };
-int method = METHOD_DIRECT;
-
+double xmin = -2*IS2_N - 2, xmax = 2;
 
 
 
 int main(int argc, char **argv)
 {
+  model_t m[1];
   hist_t *hs;
-  double *beta, *lnz, *epot;
-  is2_t **is;
-  int itp, istep;
+  double *beta, *lnz;
+  int itp;
 
-  if ( argc > 1 ) {
-    method = atoi(argv[1]);
+  model_default(m);
+  m->de = 4;
+  model_doargs(m, argc, argv);
+
+  xnew(beta, m->ntp);
+  xnew(lnz, m->ntp);
+  for ( itp = 0; itp < m->ntp; itp++ ) {
+    beta[itp] = 1./(m->tpmin + m->tpdel * itp);
+    lnz[itp] = 0;
   }
 
-  xnew(is, ntp);
-  xnew(beta, ntp);
-  xnew(lnz, ntp);
-  xnew(epot, ntp);
-  for ( itp = 0; itp < ntp; itp++ ) {
-    is[itp] = is2_open(IS2_L);
-    beta[itp] = 1./(1.5 + 0.02 * itp);
-    IS2_SETPROBA(is[itp], beta[itp]);
-    lnz[itp] = epot[itp] = 0;
-  }
-  hs = hist_open(ntp, xmin, xmax, dx);
+  if ( m->loadprev ) {
+    /* load from existing histogram */
+    if ( (hs = hist_initf(m->fnhis)) == NULL ) {
+      return -1;
+    }
+  } else {
+    int id, h, istep;
+    double *epot;
+    is2_t **is;
 
-  /* try to load the histogram, if it fails, do simulations */
-  if ( 0 != hist_load(hs, fnhist, HIST_VERBOSE) ) {
-    int id, h;
+    hs = hist_open(m->ntp, xmin, xmax, m->de);
+
+    xnew(is, m->ntp);
+    xnew(epot, m->ntp);
+    for ( itp = 0; itp < m->ntp; itp++ ) {
+      is[itp] = is2_open(IS2_L);
+      IS2_SETPROBA(is[itp], beta[itp]);
+      epot[itp] = 0;
+    }
+
+    /* randomize the initial state */
+    mtscramble( time(NULL) );
 
     /* do the simulations */
-    for ( istep = 1; istep <= nequil + nsteps; istep++ ) {
-      for ( itp = 0; itp < ntp; itp++ ) {
+    for ( istep = 1; istep <= m->nequil + m->nsteps; istep++ ) {
+      /* MC for each temperature */
+      for ( itp = 0; itp < m->ntp; itp++ ) {
         IS2_PICK(is[itp], id, h);
         if ( h < 0 || mtrand() <= is[itp]->uproba[h] ) {
           IS2_FLIP(is[itp], id, h);
         }
         epot[itp] = is[itp]->E;
       }
-      if ( istep <= nequil ) continue;
-      //for ( itp = 0; itp < ntp; itp++ ) printf("itp %d, ep %d\n", itp, is[itp]->E);
+
+      if ( m->re ) {
+        /* replica exchange: randomly swap configurations of
+         * two neighboring temperatures */
+        int jtp, acc;
+        double dbdE, r;
+        is2_t *istmp;
+        unsigned utmp;
+
+        itp = (int) (rand01() * (m->ntp - 1));
+        jtp = itp + 1;
+        dbdE = (beta[itp] - beta[jtp]) * (epot[itp] - epot[jtp]);
+        acc = 0;
+        if ( dbdE >= 0 ) {
+          acc = 1;
+        } else {
+          r = rand01();
+          if ( r < exp(dbdE) ) {
+            acc = 1;
+          }
+        }
+        if ( acc ) {
+          /* swap the models */
+          istmp = is[itp], is[itp] = is[jtp], is[jtp] = istmp;
+          /* swap the transition probabilities */
+          utmp = is[itp]->uproba[2], is[itp]->uproba[2] = is[jtp]->uproba[2], is[jtp]->uproba[2] = utmp;
+          utmp = is[itp]->uproba[4], is[itp]->uproba[4] = is[jtp]->uproba[4], is[jtp]->uproba[4] = utmp;
+          /* swap the potential energies */
+          r = epot[itp], epot[itp] = epot[jtp], epot[jtp] = r;
+        }
+      }
+
+      if ( istep <= m->nequil ) continue;
+      //for ( itp = 0; itp < m->ntp; itp++ ) printf("itp %d, ep %d\n", itp, is[itp]->E);
       //printf("hs->xmin %g\n", hs->xmin); getchar();
       hist_add(hs, epot, 1, 0);
     }
 
-    hist_save(hs, fnhist, 0);
-    fprintf(stderr, "simulation ended, doing WHAM\n");
+    hist_save(hs, m->fnhis, HIST_ADDAHALF);
+    fprintf(stderr, "simulation ended %d steps, doing WHAM\n", m->nsteps);
+
+    for ( itp = 0; itp < m->ntp; itp++ ) {
+      is2_close( is[itp] );
+    }
+    free(epot);
   }
 
-  if ( method == METHOD_DIRECT ) {
+  if ( m->wham_method == WHAM_DIRECT ) {
     wham(hs, beta, lnz,
-        itmax, tol, verbose, fnlndos, fneav);
+        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
   } else {
-    wham_mdiis(hs, beta, lnz, nbases, 1.0,
-        itmax, tol, verbose, fnlndos, fneav);
+    wham_mdiis(hs, beta, lnz, m->mdiis_nbases, m->mdiis_damp,
+        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
   }
+
   hist_close(hs);
-  for ( itp = 0; itp < ntp; itp++ )
-    is2_close( is[itp] );
   free(beta);
   free(lnz);
-  free(epot);
   return 0;
 }
 

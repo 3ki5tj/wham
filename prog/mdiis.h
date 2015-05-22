@@ -317,7 +317,7 @@ static double iter_mdiis(double *f, int npt,
       errp = err;
     }
   }
-  fprintf(stderr, "mdiis finished in %d steps, err %g\n", it, errp);
+  fprintf(stderr, "MDIIS finished in %d steps, err %g\n", it, errp);
   cparr(f, mdiis->fbest, npt);
   err = mdiis->getres(obj, f, res);
   mdiis_close(mdiis);

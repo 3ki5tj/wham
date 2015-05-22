@@ -1,4 +1,5 @@
 /* test program for WHAM */
+#include "../whammodel.h"
 #define WHAM_MDIIS
 #include "../wham.h"
 #include "lj.h"

@@ -1,10 +1,10 @@
 /* WHAM for a set of xvg files */
-#include "xvgmodel.h"
+#include "../whammodel.h"
 #include "xvg.h"
 #define WHAM2_MDIIS
 #include "../wham2.h"
 #include <time.h>
-#include "mtrand.h"
+#include "../mtrand.h"
 
 
 

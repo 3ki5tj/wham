@@ -1,10 +1,10 @@
 /* WHAM for a set of xvg files */
-#include "xvgmodel.h"
+#include "../whammodel.h"
 #include "xvg.h"
 #define WHAM_MDIIS
 #include "../wham.h"
 #include <time.h>
-#include "mtrand.h"
+#include "../mtrand.h"
 
 
 
@@ -198,10 +198,9 @@ int main(int argc, char **argv)
     model_help(m);
   }
 
-  /* try to load from the existing histogram */
   if ( m->loadprev ) {
-    hs = hist_initf(m->fnhis);
-    if ( hs == NULL ) {
+    /* load from the existing histogram */
+    if ( (hs = hist_initf(m->fnhis)) == NULL ) {
       return -1;
     }
 

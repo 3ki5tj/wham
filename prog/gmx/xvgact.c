@@ -1,5 +1,5 @@
 /* compute the autocorrelation time */
-#include "xvgmodel.h"
+#include "../whammodel.h"
 #include "xvg.h"
 
 

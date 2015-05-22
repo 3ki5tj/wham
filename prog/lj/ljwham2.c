@@ -1,4 +1,5 @@
 /* test program for the two-dimensional WHAM */
+#include "../whammodel.h"
 #define WHAM2_MDIIS
 #include "../wham2.h"
 #include "lj.h"
