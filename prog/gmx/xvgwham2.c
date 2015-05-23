@@ -249,11 +249,11 @@ int main(int argc, char **argv)
 
   if ( m->wham_method == WHAM_DIRECT ) {
     wham2(hs, beta, bpres, lnz,
-        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
+        m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
   } else {
     wham2_mdiis(hs, beta, bpres, lnz,
         m->mdiis_nbases, m->mdiis_damp,
-        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
+        m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
   }
 
   hist2_close(hs);

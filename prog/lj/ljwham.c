@@ -1,86 +1,100 @@
 /* test program for WHAM */
+#define LJ_MODEL
 #include "../whammodel.h"
 #define WHAM_MDIIS
 #include "../wham.h"
 #include "lj.h"
+#include <time.h>
 
 
-int n = 108;
-double rho = 0.3;
-double rcdef = 2.5;
-double dt = 0.002; /* MD time step */
-double thdt = 0.02; /* thermostat time step */
-int nequil = 4000;
-int nsteps = 40000;
 
-int ntp = 5;
-double xmin = -600, xmax = 100, dx = 0.1;
-int itmax = 100000;
-double tol = 1e-10;
-int nbases = 5;
-int verbose = 0;
 
-const char *fnlndos = "lndos.dat";
-const char *fneav = "eav.dat";
-const char *fnhist = "hist.dat";
-
-enum { METHOD_DIRECT = 0, METHOD_MDIIS = 1 };
-int method = METHOD_DIRECT;
+static void model_default_lj(model_t *m)
+{
+  model_default(m);
+  m->np = 108;
+  m->rho = 0.3;
+  m->rcdef = 2.5;
+  m->mddt = 0.002;
+  m->thdt = 0.02;
+  m->pdt = 1e-5;
+  m->de = 0.1;
+  m->emin = -6.0;
+  m->emax = 1.0;
+  m->nT = 10;
+  m->Tmin = 0.7;
+  m->Tdel = 0.1;
+  m->nequil = 5000;
+  m->nsteps = 100000;
+}
 
 
 
 int main(int argc, char **argv)
 {
+  model_t m[1];
   hist_t *hs;
-  double *beta, *lnz, *epot;
-  lj_t **lj;
-  int itp, istep;
+  double *beta, *lnz;
+  int iT;
 
-  if ( argc > 1 ) {
-    method = atoi(argv[1]);
+  model_default_lj(m);
+  model_doargs(m, argc, argv);
+
+  xnew(beta, m->nT);
+  xnew(lnz, m->nT);
+  for ( iT = 0; iT < m->nT; iT++ ) {
+    beta[iT] = 1./(m->Tmin + m->Tdel * iT);
+    lnz[iT] = 0;
   }
 
-  xnew(lj, ntp);
-  xnew(beta, ntp);
-  xnew(lnz, ntp);
-  xnew(epot, ntp);
-  for ( itp = 0; itp < ntp; itp++ ) {
-    lj[itp] = lj_open(n, rho, rcdef);
-    beta[itp] = 1./(0.8 + .3 * itp);
-    lnz[itp] = epot[itp] = 0;
-  }
-  hs = hist_open(ntp, xmin, xmax, dx);
+  if ( m->loadprev ) {
+    /* load from existing histogram */
+    if ( (hs = hist_initf(m->fnhis)) == NULL ) {
+      return -1;
+    }
+  } else {
+    int istep;
+    lj_t **lj;
 
-  /* try to load the histogram, if it fails, do simulations */
-  if ( 0 != hist_load(hs, fnhist, HIST_VERBOSE) ) {
-    /* do the simulations */
-    for ( istep = 1; istep <= nequil + nsteps; istep++ ) {
-      for ( itp = 0; itp < ntp; itp++ ) {
-        lj_vv(lj[itp], dt);
-        lj[itp]->ekin = lj_vrescale(lj[itp], 1/beta[itp], thdt);
-        epot[itp] = lj[itp]->epot;
-      }
-      if ( istep <= nequil ) continue;
-      hist_add(hs, epot, 1, 0);
+    hs = hist_open(m->nT, m->np * m->emin, m->np * m->emax, m->de);
+
+    /* randomize the initial state */
+    mtscramble( time(NULL) );
+
+    xnew(lj, m->nT);
+    for ( iT = 0; iT < m->nT; iT++ ) {
+      lj[iT] = lj_open(m->np, m->rho, m->rcdef);
     }
 
-    hist_save(hs, fnhist, HIST_ADDAHALF);
+    /* do simulations */
+    for ( istep = 1; istep <= m->nequil + m->nsteps; istep++ ) {
+      for ( iT = 0; iT < m->nT; iT++ ) {
+        lj_vv(lj[iT], m->mddt);
+        lj[iT]->ekin = lj_vrescale(lj[iT], 1/beta[iT], m->thdt);
+        hist_add1(hs, iT, lj[iT]->epot, 1.0, HIST_VERBOSE);
+      }
+      if ( istep <= m->nequil ) continue;
+    }
+
+    hist_save(hs, m->fnhis, HIST_ADDAHALF);
     fprintf(stderr, "simulation ended, doing WHAM\n");
+
+    for ( iT = 0; iT < m->nT; iT++ ) {
+      lj_close( lj[iT] );
+    }
   }
 
-  if ( method == METHOD_DIRECT ) {
+  if ( m->wham_method == WHAM_DIRECT ) {
     wham(hs, beta, lnz,
-        itmax, tol, verbose, fnlndos, fneav);
+        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
   } else {
-    wham_mdiis(hs, beta, lnz, nbases, 1.0,
-        itmax, tol, verbose, fnlndos, fneav);
+    wham_mdiis(hs, beta, lnz, m->mdiis_nbases, m->mdiis_damp,
+        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
   }
+
   hist_close(hs);
-  for ( itp = 0; itp < ntp; itp++ )
-    lj_close( lj[itp] );
   free(beta);
   free(lnz);
-  free(epot);
   return 0;
 }
 

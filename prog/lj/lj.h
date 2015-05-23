@@ -184,9 +184,11 @@ static lj_t *lj_open(int n, double rho, double rcdef)
   lj_initfcc(lj);
 
   /* initialize random velocities */
-  for ( i = 0; i < n; i++ )
-    for ( d = 0; d < D; d++ )
+  for ( i = 0; i < n; i++ ) {
+    for ( d = 0; d < D; d++ ) {
       lj->v[i][d] = randgaus();
+    }
+  }
 
   rmcom(lj->v, NULL, n);
   shiftang(lj->x, lj->v, NULL, n);

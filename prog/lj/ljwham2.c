@@ -1,115 +1,131 @@
 /* test program for the two-dimensional WHAM */
+#define LJ_MODEL
 #include "../whammodel.h"
 #define WHAM2_MDIIS
 #include "../wham2.h"
 #include "lj.h"
+#include <time.h>
 
 
-int n = 108;
-double rho = 0.7;
-double rcdef = 2.5;
-double dt = 0.002; /* MD time step */
-double thdt = 0.02; /* thermostat time step */
-double pdt = 1e-5; /* barostat time step */
-int nequil = 1000;
-int nsteps = 10000;
 
-int nt = 10;
-int np = 10;
-int ntp = 100;
-double emin = -800, emax = 200, de = 1.0;
-double vmin =  100, vmax = 400, dv = 1.0;
-int itmax = 100000;
-double tol = 1e-10;
-int nbases = 5;
-int verbose = 0;
 
-const char *fnlndos = "lndos2.dat";
-const char *fneav = "eav2.dat";
-const char *fnhist = "hist2.dat";
-
-enum { METHOD_DIRECT = 0, METHOD_MDIIS = 1 };
-int method = METHOD_DIRECT;
+static void model_default_lj2(model_t *m)
+{
+  model_default(m);
+  m->np = 108;
+  m->rho = 0.7;
+  m->rcdef = 2.5;
+  m->mddt = 0.002;
+  m->thdt = 0.02;
+  m->pdt = 1e-5;
+  m->de = 0.5;
+  m->emin = -8.0;
+  m->emax = 2.0;
+  m->dv = 0.2;
+  m->vmin = 0.0;
+  m->vmax = 4.0;
+  m->nT = 5;
+  m->Tmin = 1.0;
+  m->Tdel = 0.1;
+  m->nP = 5;
+  m->Pmin = 1.0;
+  m->Pdel = 0.2;
+  m->nequil = 5000;
+  m->nsteps = 100000;
+}
 
 
 
 int main(int argc, char **argv)
 {
+  model_t m[1];
   hist2_t *hs;
-  double *beta, *pres, *bp, *lnz, *epot, *vols, T, p;
-  lj_t **lj;
-  int it, ip, itp, istep;
+  double *beta, *pres, *bp, *lnz;
+  int it, ip, itp, ntp;
 
-  if ( argc > 1 ) { /* choose the method of WHAM */
-    method = atoi(argv[1]);
-  }
+  model_default_lj2(m);
+  model_doargs(m, argc, argv);
 
-  ntp = nt * np;
-  xnew(lj, ntp);
+  ntp = m->nT * m->nP;
   xnew(beta, ntp);
   xnew(pres, ntp);
   xnew(bp, ntp);
   xnew(lnz, ntp);
-  xnew(epot, ntp);
-  xnew(vols, ntp);
 
   /* initialize the systems */
   itp = 0;
-  for ( it = 0; it < nt; it++ ) {
-    T = 1.0 + 0.1 * it;
-    for ( ip = 0; ip < np; ip++ ) {
-      p = 1.0 + 0.1 * ip;
-      lj[itp] = lj_open(n, rho, rcdef);
+  for ( it = 0; it < m->nT; it++ ) {
+    double T = m->Tmin + m->Tdel * it;
+    for ( ip = 0; ip < m->nP; ip++ ) {
+      double P = m->Pmin + m->Pdel * ip;
       beta[itp] = 1./T;
-      pres[itp] = p;
+      pres[itp] = P;
       bp[itp] = beta[itp] * pres[itp];
-      lnz[itp] = epot[itp] = 0;
+      lnz[itp] = 0;
       itp++;
     }
   }
-  hs = hist2_open(ntp, emin, emax, de, vmin, vmax, dv);
 
-  /* try to load the histogram, if it fails, do simulations */
-  if ( 0 != hist2_load(hs, fnhist, HIST2_VERBOSE) ) {
-    /* do simulations */
-    for ( istep = 1; istep <= nequil + nsteps; istep++ ) {
-      for ( itp = 0; itp < ntp; itp++ ) { /* loop over replicas */
-        lj_vv(lj[itp], dt);
-        lj[itp]->ekin = lj_vrescale(lj[itp], 1/beta[itp], thdt);
-        if ( istep % 5 == 0 ) {
-          lj_langp0(lj[itp], pdt, 1/beta[itp], pres[itp], 0);
-        }
-        epot[itp] = lj[itp]->epot;
-        vols[itp] = lj[itp]->vol;
-      }
-      if ( istep % 1000 == 0 ) printf("t %d\n", istep);
-      if ( istep <= nequil ) continue;
-      hist2_add(hs, epot, vols, 1, 1.0, HIST2_VERBOSE);
+  if ( m->loadprev ) {
+    /* load from existing histogram */
+    if ( (hs = hist2_initf(m->fnhis2)) == NULL ) {
+      return -1;
+    }
+  } else {
+    int istep;
+    lj_t **lj;
+
+    hs = hist2_open(ntp, m->np * m->emin, m->np * m->emax, m->de,
+        m->np * m->vmin, m->np * m->vmax, m->dv);
+
+    /* randomize the initial state */
+    mtscramble( time(NULL) );
+
+    xnew(lj, ntp);
+    for ( itp = 0; itp < ntp; itp++ ) {
+      lj[itp] = lj_open(m->np, m->rho, m->rcdef);
     }
 
-    hist2_save(hs, fnhist, HIST2_ADDAHALF);
+    /* do simulations */
+    for ( istep = 1; istep <= m->nequil + m->nsteps; istep++ ) {
+      for ( itp = 0; itp < ntp; itp++ ) { /* loop over replicas */
+        lj_vv(lj[itp], m->mddt);
+        lj[itp]->ekin = lj_vrescale(lj[itp], 1/beta[itp], m->thdt);
+        if ( istep % 5 == 0 ) {
+          lj_langp0(lj[itp], m->pdt, 1/beta[itp], pres[itp], 0);
+        }
+      }
+      if ( istep <= m->nequil ) continue;
+
+      for ( itp = 0; itp < ntp; itp++ ) {
+        hist2_add1(hs, itp, lj[itp]->epot, lj[itp]->vol,
+            1.0, HIST2_VERBOSE);
+      }
+    }
+
+    hist2_save(hs, m->fnhis2, HIST2_ADDAHALF);
     fprintf(stderr, "simulation ended, doing WHAM\n");
+
+    for ( itp = 0; itp < ntp; itp++ ) {
+      lj_close( lj[itp] );
+    }
   }
 
   /* do WHAM */
-  if ( method == METHOD_DIRECT ) {
+  if ( m->wham_method == WHAM_DIRECT ) {
     wham2(hs, beta, bp, lnz,
-        itmax, tol, verbose, fnlndos, fneav);
+        m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
   } else {
-    wham2_mdiis(hs, beta, bp, lnz, nbases, 1.0,
-        itmax, tol, verbose, fnlndos, fneav);
+    wham2_mdiis(hs, beta, bp, lnz, m->mdiis_nbases, m->mdiis_damp,
+        m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
   }
 
   /* clean up */
   hist2_close(hs);
-  for ( itp = 0; itp < ntp; itp++ )
-    lj_close( lj[itp] );
   free(beta);
   free(pres);
   free(bp);
   free(lnz);
-  free(epot);
-  free(vols);
   return 0;
 }
 

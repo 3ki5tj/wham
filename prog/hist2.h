@@ -61,10 +61,10 @@ static hist2_t *hist2_open(int rows, double xmin, double xmax, double dx,
 
   xnew(hs2, 1);
   hs2->rows = rows;
-  hs2->xmin = xmin;
+  hs2->xmin = ((int) (xmin/dx) - 1) * dx;
   hs2->dx   = dx;
   hs2->n    = (int) ((xmax - xmin)/dx + 0.99999999);
-  hs2->ymin = ymin;
+  hs2->ymin = ((int) (ymin/dy) - 1) * dy;
   hs2->dy   = dy;
   hs2->m    = (int) ((ymax - ymin)/dy + 0.99999999);
   xnew(hs2->arr, hs2->n * hs2->m * hs2->rows);

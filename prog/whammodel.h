@@ -5,6 +5,14 @@
 
 
 
+/* This module mainly handles input parameters.
+ * It is shared by multiple programs, and program-specific
+ * parameters are embedded (which is not ideal). */
+
+
+
+
+
 #include "util.h"
 
 
@@ -31,6 +39,8 @@ typedef struct {
   double mdiis_damp; /* mixing factor in MDIIS */
   char *fnlndos;
   char *fneav;
+  char *fnlndos2;
+  char *fneav2;
   double actmax; /* cutoff time of the autocorrelation function */
   double acmin; /* minimum of the autocorrelation function */
   char *fnac;
@@ -38,12 +48,32 @@ typedef struct {
   int verbose;
   int re;
 #ifdef IS2_MODEL
-  int ntp;
-  double tpmin;
-  double tpdel;
+  int nT;
+  double Tmin;
+  double Tdel;
   int nequil;
   int nsteps;
-#endif
+#endif /* IS2_MODEL */
+#ifdef LJ_MODEL
+  int np;
+  double rho;
+  double rcdef;
+  double mddt;
+  double thdt;
+  double pdt;
+  double emin;
+  double emax;
+  double vmin;
+  double vmax;
+  int nT;
+  double Tmin;
+  double Tdel;
+  int nP;
+  double Pmin;
+  double Pdel;
+  int nequil;
+  int nsteps;
+#endif /* LJ_MODEL */
 } model_t;
 
 
@@ -66,6 +96,8 @@ __inline static void model_default(model_t *m)
   m->mdiis_damp = 1.0;
   m->fnlndos = NULL;
   m->fneav = NULL;
+  m->fnlndos2 = NULL;
+  m->fneav2 = NULL;
   m->actmax = 0;
   m->acmin = 0;
   m->fninp = NULL;
@@ -73,12 +105,12 @@ __inline static void model_default(model_t *m)
   m->verbose = 0;
   m->re = 0;
 #ifdef IS2_MODEL
-  m->ntp = 80;
-  m->tpmin = 1.5;
-  m->tpdel = 0.02;
+  m->nT = 80;
+  m->Tmin = 1.5;
+  m->Tdel = 0.02;
   m->nequil = 100000;
   m->nsteps = 10000000;
-#endif
+#endif /* IS2_MODEL */
 }
 
 
@@ -134,17 +166,36 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --mdamp=:      set the mixing factor in the MDIIS method, default: %g\n", m->mdiis_damp);
   fprintf(stderr, "  --fndos=:      set the file for the density of states, default %s\n", m->fnlndos);
   fprintf(stderr, "  --fneav=:      set the file for the average energy, default %s\n", m->fneav);
+  fprintf(stderr, "  --fndos2=:     set the file for the 2D density of states, default %s\n", m->fnlndos2);
+  fprintf(stderr, "  --fneav2=:     set the file for the 2D average energy, default %s\n", m->fneav2);
   fprintf(stderr, "  --actmax=:     set the time cutoff of the autocorrelation function, default: %g\n", m->actmax);
   fprintf(stderr, "  --acmin=:      set thet minimal value of the autocorrelation function, default: %g\n", m->acmin);
   fprintf(stderr, "  --fnac=:       set the autocorrelation functions, default: %s\n", m->fnac);
   fprintf(stderr, "  --re:          do replica exchange when possible, default: %d\n", m->re);
 #ifdef IS2_MODEL
-  fprintf(stderr, "  --nT:          set the number of temperatures, default: %d\n", m->ntp);
-  fprintf(stderr, "  --T0:          set the minimal temperature, default: %g\n", m->tpmin);
-  fprintf(stderr, "  --dT:          set the temperature increment, default: %g\n", m->tpdel);
-  fprintf(stderr, "  --nsteps:      set the number of simulation steps, default: %d\n", m->nsteps);
-  fprintf(stderr, "  --nequil:      set the number of equilibration steps, default: %d\n", m->nequil);
-#endif
+  fprintf(stderr, "  --nT=:         set the number of temperatures, default: %d\n", m->nT);
+  fprintf(stderr, "  --T0=:         set the minimal temperature, default: %g\n", m->Tmin);
+  fprintf(stderr, "  --dT=:         set the temperature increment, default: %g\n", m->Tdel);
+  fprintf(stderr, "  --nsteps=:     set the number of simulation steps, default: %d\n", m->nsteps);
+  fprintf(stderr, "  --nequil=:     set the number of equilibration steps, default: %d\n", m->nequil);
+#endif /* IS2_MODEL */
+#ifdef LJ_MODEL
+  fprintf(stderr, "  --np=:         set the number of particles, default: %d\n", m->np);
+  fprintf(stderr, "  --rho=:        set the density, default: %g\n", m->rho);
+  fprintf(stderr, "  --rcdef=:      set the preferred cutoff of the pair potential, default: %g\n", m->rcdef);
+  fprintf(stderr, "  --mddt=:       set the MD time step, default: %g\n", m->mddt);
+  fprintf(stderr, "  --thdt=:       set the thermostat time step, default: %g\n", m->thdt);
+  fprintf(stderr, "  --pdt=:        set the barostat time step, default: %g\n", m->pdt);
+  fprintf(stderr, "  --emin=:       set the minimal potential energy per particle, default: %g\n", m->emin);
+  fprintf(stderr, "  --emax=:       set the maximal potential energy per particle, default: %g\n", m->emax);
+  fprintf(stderr, "  --vmin=:       set the minimal volume per particle, default: %g\n", m->vmin);
+  fprintf(stderr, "  --vmax=:       set the maximal volume per particle, default: %g\n", m->vmax);
+  fprintf(stderr, "  --nT=:         set the number of temperatures, default: %d\n", m->nT);
+  fprintf(stderr, "  --T0=:         set the minimal temperature, default: %g\n", m->Tmin);
+  fprintf(stderr, "  --dT=:         set the temperature increment, default: %g\n", m->Tdel);
+  fprintf(stderr, "  --nsteps=:     set the number of simulation steps, default: %d\n", m->nsteps);
+  fprintf(stderr, "  --nequil=:     set the number of equilibration steps, default: %d\n", m->nequil);
+#endif /* LJ_MODEL */
   fprintf(stderr, "  -v:            be verbose, -vv to be more verbose, etc., default %d\n", m->verbose);
   fprintf(stderr, "  -h, --help:    display this message\n");
   exit(1);
@@ -202,6 +253,10 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->fnlndos = q;
       } else if ( strcmpfuzzy(p, "fneav") == 0 ) {
         m->fneav = q;
+      } else if ( strcmpfuzzy(p, "fndos2") == 0 ) {
+        m->fnlndos2 = q;
+      } else if ( strcmpfuzzy(p, "fneav2") == 0 ) {
+        m->fneav2 = q;
       } else if ( strcmpfuzzy(p, "actmax") == 0 ) {
         m->actmax = atof(q);
       } else if ( strcmpfuzzy(p, "acmin") == 0 ) {
@@ -212,16 +267,50 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->re = 1;
 #ifdef IS2_MODEL
       } else if ( strcmpfuzzy(p, "nT") == 0 ) {
-        m->ntp = atoi(q);
+        m->nT = atoi(q);
       } else if ( strcmpfuzzy(p, "T0") == 0 ) {
-        m->tpmin = atof(q);
+        m->Tmin = atof(q);
       } else if ( strcmpfuzzy(p, "dT") == 0 ) {
-        m->tpdel = atof(q);
+        m->Tdel = atof(q);
       } else if ( strcmpfuzzy(p, "nsteps") == 0 ) {
         m->nsteps = atoi(q);
       } else if ( strcmpfuzzy(p, "nequil") == 0 ) {
         m->nequil = atoi(q);
-#endif
+#endif /* IS2_MODEL */
+#ifdef LJ_MODEL
+      } else if ( strcmpfuzzy(p, "np") == 0 ) {
+        m->nT = atoi(q);
+      } else if ( strcmpfuzzy(p, "rho") == 0 ) {
+        m->rho = atof(q);
+      } else if ( strcmpfuzzy(p, "rcdef") == 0 ) {
+        m->rcdef = atof(q);
+      } else if ( strcmpfuzzy(p, "mddt") == 0 ) {
+        m->mddt = atof(q);
+      } else if ( strcmpfuzzy(p, "thdt") == 0 ) {
+        m->thdt = atof(q);
+      } else if ( strcmpfuzzy(p, "pdt") == 0 ) {
+        m->pdt = atof(q);
+      } else if ( strcmpfuzzy(p, "emin") == 0 ) {
+        m->emin = atof(q);
+      } else if ( strcmpfuzzy(p, "emax") == 0 ) {
+        m->emax = atof(q);
+      } else if ( strcmpfuzzy(p, "vmin") == 0 ) {
+        m->vmin = atof(q);
+      } else if ( strcmpfuzzy(p, "vmax") == 0 ) {
+        m->vmax = atof(q);
+      } else if ( strcmpfuzzy(p, "T0") == 0 ) {
+        m->Tmin = atof(q);
+      } else if ( strcmpfuzzy(p, "dT") == 0 ) {
+        m->Tdel = atof(q);
+      } else if ( strcmpfuzzy(p, "P0") == 0 ) {
+        m->Pmin = atof(q);
+      } else if ( strcmpfuzzy(p, "dP") == 0 ) {
+        m->Pdel = atof(q);
+      } else if ( strcmpfuzzy(p, "nsteps") == 0 ) {
+        m->nsteps = atoi(q);
+      } else if ( strcmpfuzzy(p, "nequil") == 0 ) {
+        m->nequil = atoi(q);
+#endif /* LJ_MODEL */
       } else if ( strcmpfuzzy(p, "help") == 0 ) {
         model_help(m);
       } else {
