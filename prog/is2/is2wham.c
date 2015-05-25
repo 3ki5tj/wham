@@ -13,6 +13,19 @@ double xmin = -2*IS2_N - 2, xmax = 2;
 
 
 
+static void model_default_is2(model_t *m)
+{
+  model_default(m);
+  m->de = 4;
+  m->nT = 80;
+  m->Tmin = 1.5;
+  m->Tdel = 0.02;
+  m->nequil = 100000;
+  m->nsteps = 10000000;
+}
+
+
+
 int main(int argc, char **argv)
 {
   model_t m[1];
@@ -20,8 +33,7 @@ int main(int argc, char **argv)
   double *beta, *lnz;
   int iT;
 
-  model_default(m);
-  m->de = 4;
+  model_default_is2(m);
   model_doargs(m, argc, argv);
 
   xnew(beta, m->nT);

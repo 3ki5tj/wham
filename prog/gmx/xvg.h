@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 
 
@@ -111,6 +112,7 @@ __inline static xvg_t *xvg_load(const char *fn)
 {
   xvg_t *xvg = NULL;
   int k, m, next;
+  double xn;
   char buf[1024], *p;
   FILE *fp;
 
@@ -154,12 +156,22 @@ __inline static xvg_t *xvg_load(const char *fn)
       }
     }
 
-    if ( 1 != sscanf(buf, "%lf%n", &xvg->x[xvg->n], &next) ) {
+    if ( 1 != sscanf(buf, "%lf%n", &xn, &next) ) {
       fprintf(stderr, "%s corrupted on line %d\n", fn, xvg->n);
       fclose(fp);
       xvg_close(xvg);
       return NULL;
     }
+
+    /* if the time is not a multiple of the time step, drop it */
+    if ( xvg->n >= 2
+      && fmod(xn/xvg->dx + 1e-8, 1) > 1e-4 ) {
+      //fprintf(stderr, "%s skip an intermediate step at %g, %g\n", fn, xn, fmod(xn/xvg->dx + 1e-8, 1));
+      continue;
+    }
+
+    xvg->x[xvg->n] = xn;
+
     p = buf + next;
     for ( k = 0; k < xvg->m; k++ ) {
       if ( 1 != sscanf(p, "%lf%n", &xvg->y[k][xvg->n], &next) ) {
@@ -173,13 +185,12 @@ __inline static xvg_t *xvg_load(const char *fn)
     }
     //printf("line %d\n", xvg->n); getchar();
     xvg->n++;
+    if ( xvg->n == 2 ) {
+      xvg->dx = xvg->x[1] - xvg->x[0];
+    }
   }
 
   fclose(fp);
-
-  if ( xvg->n >= 2 ) {
-    xvg->dx = xvg->x[1] - xvg->x[0];
-  }
 
   return xvg;
 }

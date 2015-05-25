@@ -346,7 +346,7 @@ static double wham2_getlndos(wham2_t *w, double *lnz,
     errp = err;
   }
 
-  fprintf(stderr, "WHAM converged at step %d, error %g\n", it, err);
+  fprintf(stderr, "WHAM converged in %d steps, error %g\n", it, err);
   return err;
 }
 

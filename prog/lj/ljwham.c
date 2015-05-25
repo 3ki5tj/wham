@@ -25,7 +25,7 @@ static void model_default_lj(model_t *m)
   m->Tmin = 0.7;
   m->Tdel = 0.1;
   m->nequil = 5000;
-  m->nsteps = 100000;
+  m->nsteps = 500000;
 }
 
 
@@ -53,10 +53,14 @@ int main(int argc, char **argv)
       return -1;
     }
   } else {
+    double emin, emax;
     int istep;
     lj_t **lj;
 
-    hs = hist_open(m->nT, m->np * m->emin, m->np * m->emax, m->de);
+    /* round emin and emax to multiples of m->de */
+    emin = (int) (m->np * m->emin / m->de) * m->de;
+    emax = (int) (m->np * m->emax / m->de) * m->de;
+    hs = hist_open(m->nT, emin, emax, m->de);
 
     /* randomize the initial state */
     mtscramble( time(NULL) );
@@ -71,9 +75,47 @@ int main(int argc, char **argv)
       for ( iT = 0; iT < m->nT; iT++ ) {
         lj_vv(lj[iT], m->mddt);
         lj[iT]->ekin = lj_vrescale(lj[iT], 1/beta[iT], m->thdt);
+      }
+
+      if ( m->re ) {
+        /* replica exchange: randomly swap configurations of
+         * two neighboring temperatures */
+        int jT, acc;
+        double dbdE, r;
+        lj_t *ljtmp;
+
+        iT = (int) (rand01() * (m->nT - 1));
+        jT = iT + 1;
+        dbdE = (beta[iT] - beta[jT]) * (lj[iT]->epot - lj[jT]->epot);
+        acc = 0;
+        if ( dbdE >= 0 ) {
+          acc = 1;
+        } else {
+          r = rand01();
+          if ( r < exp(dbdE) ) {
+            acc = 1;
+          }
+        }
+
+        if ( acc ) {
+          double scl = sqrt( beta[iT]/beta[jT] ); /* sqrt(Tj/Ti) */
+          int i;
+
+          /* scale the velocities */
+          for ( i = 0; i < m->np; i++ ) {
+            vsmul(lj[iT]->v[i], scl);
+            vsmul(lj[jT]->v[i], 1/scl);
+          }
+          /* swap the models */
+          ljtmp = lj[iT], lj[iT] = lj[jT], lj[jT] = ljtmp;
+        }
+      }
+
+      if ( istep <= m->nequil ) continue;
+
+      for ( iT = 0; iT < m->nT; iT++ ) {
         hist_add1(hs, iT, lj[iT]->epot, 1.0, HIST_VERBOSE);
       }
-      if ( istep <= m->nequil ) continue;
     }
 
     hist_save(hs, m->fnhis, HIST_ADDAHALF);

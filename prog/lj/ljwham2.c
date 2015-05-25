@@ -19,18 +19,18 @@ static void model_default_lj2(model_t *m)
   m->thdt = 0.02;
   m->pdt = 1e-5;
   m->de = 0.5;
-  m->emin = -8.0;
-  m->emax = 2.0;
+  m->emin = -7.0;
+  m->emax = -2.0;
   m->dv = 0.2;
-  m->vmin = 0.0;
-  m->vmax = 4.0;
+  m->vmin = 0.8;
+  m->vmax = 3.2;
   m->nT = 5;
   m->Tmin = 1.0;
   m->Tdel = 0.1;
-  m->nP = 5;
-  m->Pmin = 1.0;
+  m->nP = 10;
+  m->Pmin = 0.2;
   m->Pdel = 0.2;
-  m->nequil = 5000;
+  m->nequil = 10000;
   m->nsteps = 100000;
 }
 
@@ -72,11 +72,19 @@ int main(int argc, char **argv)
       return -1;
     }
   } else {
+    double emin, emax, vmin, vmax;
     int istep;
     lj_t **lj;
 
-    hs = hist2_open(ntp, m->np * m->emin, m->np * m->emax, m->de,
-        m->np * m->vmin, m->np * m->vmax, m->dv);
+    /* round emin and emax to multiples of m->de */
+    emin = (int) (m->np * m->emin / m->de) * m->de;
+    emax = (int) (m->np * m->emax / m->de) * m->de;
+    
+    /* round vmin and vmax to multiples of m->dv */
+    vmin = (int) (m->np * m->vmin / m->dv) * m->dv;
+    vmax = (int) (m->np * m->vmax / m->dv) * m->dv;
+    
+    hs = hist2_open(ntp, emin, emax, m->de, vmin, vmax, m->dv);
 
     /* randomize the initial state */
     mtscramble( time(NULL) );
@@ -95,6 +103,40 @@ int main(int argc, char **argv)
           lj_langp0(lj[itp], m->pdt, 1/beta[itp], pres[itp], 0);
         }
       }
+
+      if ( m->re ) {
+        /* replica exchange: randomly swap configurations */
+        int jtp, acc;
+        double dbdE, r;
+        lj_t *ljtmp;
+
+        itp = (int) (rand01() * ntp);
+        jtp = (itp + 1 + (int) (rand01() * (ntp - 1))) % ntp;
+        dbdE = (beta[itp] - beta[jtp]) * (lj[itp]->epot - lj[jtp]->epot)
+             + (bp[itp] - bp[jtp])* (lj[itp]->vol - lj[jtp]->vol);
+        acc = 0;
+        if ( dbdE >= 0 ) {
+          acc = 1;
+        } else {
+          r = rand01();
+          if ( r < exp(dbdE) ) {
+            acc = 1;
+          }
+        }
+        if ( acc ) {
+          double scl = sqrt( beta[itp]/beta[jtp] );
+          int i;
+
+          /* scale the velocities */
+          for ( i = 0; i < m->np; i++ ) {
+            vsmul(lj[itp]->v[i], scl);
+            vsmul(lj[jtp]->v[i], 1/scl);
+          }
+          /* swap the models */
+          ljtmp = lj[itp], lj[itp] = lj[jtp], lj[jtp] = ljtmp;
+        }
+      }
+
       if ( istep <= m->nequil ) continue;
 
       for ( itp = 0; itp < ntp; itp++ ) {

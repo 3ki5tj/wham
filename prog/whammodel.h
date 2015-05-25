@@ -104,13 +104,6 @@ __inline static void model_default(model_t *m)
   m->fnac = NULL;
   m->verbose = 0;
   m->re = 0;
-#ifdef IS2_MODEL
-  m->nT = 80;
-  m->Tmin = 1.5;
-  m->Tdel = 0.02;
-  m->nequil = 100000;
-  m->nsteps = 10000000;
-#endif /* IS2_MODEL */
 }
 
 

@@ -61,10 +61,10 @@ static hist2_t *hist2_open(int rows, double xmin, double xmax, double dx,
 
   xnew(hs2, 1);
   hs2->rows = rows;
-  hs2->xmin = ((int) (xmin/dx) - 1) * dx;
+  hs2->xmin = xmin;
   hs2->dx   = dx;
   hs2->n    = (int) ((xmax - xmin)/dx + 0.99999999);
-  hs2->ymin = ((int) (ymin/dy) - 1) * dy;
+  hs2->ymin = ymin;
   hs2->dy   = dy;
   hs2->m    = (int) ((ymax - ymin)/dy + 0.99999999);
   xnew(hs2->arr, hs2->n * hs2->m * hs2->rows);
@@ -270,8 +270,8 @@ __inline static int hist2_load(hist2_t *hs, const char *fn, unsigned flags)
         &i, &xmin1, &dx1, &j, &ymin1, &dy1, &next)
       || i < n || j < m || r != rows
       || fabs(dx1 - dx) > 1e-5 || fabs(dy1 - dy) > 1e-5 ) {
-    fprintf(stderr, "Error: bins %d, %d; %d, %d; ng %d, %d; dx %g, %g; dy %g, %g\n",
-        i, n, j, m, r, rows, dx1, dx, dy1, dy);
+    fprintf(stderr, "%s error: bins %d, %d; %d, %d; ng %d, %d; dx %g, %g; dy %g, %g\n",
+        fn, i, n, j, m, r, rows, dx1, dx, dy1, dy);
     fclose(fp);
     return -1;
   }

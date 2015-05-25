@@ -6,8 +6,6 @@ import os, sys, getopt, shutil, re, glob
 
 
 
-fninp = "is2.log"
-fnout = "is2wham.dat"
 verbose = 0
 
 
@@ -22,7 +20,6 @@ def usage():
   Compute statistics
 
   OPTIONS:
-    -o              set the output file
     -v              be verbose
     --verbose=      set verbocity
     -h, --help      help
@@ -35,31 +32,29 @@ def doargs():
   ''' handle input arguments '''
   try:
     opts, args = getopt.gnu_getopt(sys.argv[1:],
-        "hvo:",
+        "hv",
         [ "help", "verbose=",
         ] )
   except getopt.GetoptError, err:
     print str(err)
     usage()
 
-  global fninp, fnout, verbose
+  global verbose
 
   for o, a in opts:
-    if o in ("-o",):
-      fnout = a
-    elif o in ("-v",):
+    if o in ("-v",):
       verbose += 1  # such that -vv gives verbose = 2
     elif o in ("-h", "--help"):
       usage()
 
   if len(args):
-    fninp = args[0]
+    return args
   else:
-    fninp = glob.glob("*.log")[0]
+    return glob.glob("*.log")
 
 
 
-def main():
+def dostat(fninp):
   s = open(fninp).readlines()
 
   n = len(s)
@@ -83,11 +78,14 @@ def main():
   s = "# %d %d\n" % (n, m)
   for j in range(m):
     s += "%d %g %g\n" % (j, ave[j], (var[j]*n/(n-1))**0.5)
+
+  fnout = fninp.split(".")[0] + "wham.dat"
   open(fnout, "w").write(s)
   print "save results to %s" % fnout
 
 
 
 if __name__ == "__main__":
-  doargs()
-  main()
+  fninps = doargs()
+  for fninp in fninps:
+    dostat(fninp)

@@ -62,7 +62,7 @@ static hist_t *hist_open(int rows, double xmin, double xmax, double dx)
 
   xnew(hs, 1);
   hs->rows = rows;
-  hs->xmin = ((int)(xmin/dx) - 1) * dx;
+  hs->xmin = xmin;
   hs->dx   = dx;
   hs->n    = (int)((xmax - xmin)/dx + 0.99999999);
   xnew(hs->arr, hs->n * hs->rows);
