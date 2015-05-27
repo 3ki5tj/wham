@@ -277,7 +277,8 @@ static double wham_getres(void *w, double *lnz, double *res)
 
 
 static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
-    int nbases, double damp, int itmax, double tol, int verbose,
+    int nbases, double damp, int queue, double threshold,
+    int itmax, double tol, int verbose,
     const char *fnlndos, const char *fneav)
 {
   wham_t *w = wham_open(beta, hist);
@@ -285,7 +286,7 @@ static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
 
   wham_estimatelnz(w, lnz);
   err = iter_mdiis(lnz, hist->rows, wham_getres, w,
-      nbases, damp, itmax, tol, verbose);
+      nbases, damp, queue, threshold, itmax, tol, verbose);
   if ( fnlndos ) wham_savelndos(w, fnlndos);
   wham_getav(w, fneav);
   wham_close(w);

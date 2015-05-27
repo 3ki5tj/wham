@@ -58,6 +58,7 @@ typedef struct {
   int npt;
   int mnb; /* maximal number of bases */
   int nb; /* number of functions in the basis */
+  int ibQ; /* index of the earliest base */
   double (*getres)(void *, double *, double *); /* callback function */
   void *obj; /* object to pass to the callback function */
   double **f;  /* basis */
@@ -84,6 +85,7 @@ static mdiis_t *mdiis_open(int npt, int mnb,
   m->npt = npt;
   m->mnb = mnb;
   m->nb = 0;
+  m->ibQ = 0;
   m->getres = getres;
   m->obj = obj;
   mnb1 = mnb + 1;
@@ -194,12 +196,74 @@ static int mdiis_build(mdiis_t *m, double *f, double *res)
   }
 
   m->mat[0] = mdiis_getdot(m->res[0], m->res[0], npt);
+
+  m->ibQ = 0;
   return 0;
 }
 
 
 
-/* try to replace base ib by f */
+/* try to add the new vector `f` and its residue `res`
+ * into the base using the KTH scheme */
+static int mdiis_update_kth(mdiis_t *m, double *f, double *res,
+    double err, double threshold)
+{
+  int i, ibmin, ib, nb, mnb, npt = m->npt;
+  double dot, min;
+
+  nb = m->nb;
+  mnb = m->mnb;
+
+  /* save this function if it achieves the minimal error so far */
+  if ( err < m->errmin ) {
+    cparr(m->fbest, m->f[nb], npt);
+    m->errmin = err;
+  }
+
+  /* choose the base with the smallest residue */
+  ibmin = 0;
+  for ( i = 1; i < nb; i++ ) {
+    /* the diagonal represents the error */
+    if ( m->mat[i*mnb + i] < m->mat[ibmin*mnb + ibmin] ) {
+      ibmin = i;
+    }
+  }
+  min = m->mat[ibmin*mnb + ibmin];
+  dot = mdiis_getdot(res, res, npt);
+
+  /* KTH updating scheme */
+  if ( dot > threshold * threshold * min ) {
+    mdiis_build(m, m->f[ibmin], m->res[ibmin]);
+    return 0;
+  }
+
+  if ( nb < m->mnb ) {
+    ib = nb;
+    m->nb = ++nb;
+  } else {
+    ib = m->ibQ; /* the earliest vector */
+    m->ibQ = (ib + 1) % m->mnb;
+  }
+
+  /* replace base ib by f */
+  for ( i = 0; i < npt; i++ ) {
+    m->f[ib][i] = f[i];
+    m->res[ib][i] = res[i];
+  }
+
+  /* update the residue correlation matrix
+   * note: we do not need to update the last row & column */
+  for ( i = 0; i < nb; i++ ) {
+    m->mat[i*mnb + ib] = m->mat[ib*mnb + i]
+      = mdiis_getdot(m->res[i], res, npt);
+  }
+  return ib;
+}
+
+
+
+/* try to add the new vector `f` and its residue `res`
+ * into the base */
 static int mdiis_update(mdiis_t *m, double *f, double *res,
     double err)
 {
@@ -226,6 +290,8 @@ static int mdiis_update(mdiis_t *m, double *f, double *res,
   max = m->mat[ib*mnb + ib];
 
   dot = mdiis_getdot(res, res, npt);
+
+  /* modified updating scheme */
   if ( dot > max ) {
     if ( nb >= 2 ) {
       /* remove the base with largest residue and try again */
@@ -266,9 +332,10 @@ static int mdiis_update(mdiis_t *m, double *f, double *res,
 
   /* update the residue correlation matrix
    * note: we do not need to update the last row & column */
-  for ( i = 0; i < nb; i++ )
+  for ( i = 0; i < nb; i++ ) {
     m->mat[i*mnb + ib] = m->mat[ib*mnb + i]
       = mdiis_getdot(m->res[i], res, npt);
+  }
   return ib;
 }
 
@@ -276,7 +343,8 @@ static int mdiis_update(mdiis_t *m, double *f, double *res,
 
 static double iter_mdiis(double *f, int npt,
     double (*getres)(void *, double *, double *), void *obj,
-    int nbases, double damp, int itmax, double tol, int verbose)
+    int nbases, double damp, int kth, double threshold,
+    int itmax, double tol, int verbose)
 {
   mdiis_t *mdiis;
   int it, ibp = 0, ib;
@@ -306,7 +374,11 @@ static double iter_mdiis(double *f, int npt,
     mdiis_gen(mdiis, f, damp);
     err = mdiis->getres(obj, f, res);
     /* add the new f into the basis */
-    ib = mdiis_update(mdiis, f, res, err);
+    if ( kth ) {
+      ib = mdiis_update_kth(mdiis, f, res, err, threshold);
+    } else {
+      ib = mdiis_update(mdiis, f, res, err);
+    }
 
     if ( verbose ) {
       fprintf(stderr, "it %d, err %g -> %g, ib %d -> %d (%d)\n",

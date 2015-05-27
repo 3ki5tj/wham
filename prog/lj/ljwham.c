@@ -60,6 +60,7 @@ int main(int argc, char **argv)
     /* round emin and emax to multiples of m->de */
     emin = (int) (m->np * m->emin / m->de) * m->de;
     emax = (int) (m->np * m->emax / m->de) * m->de;
+
     hs = hist_open(m->nT, emin, emax, m->de);
 
     /* randomize the initial state */
@@ -130,7 +131,8 @@ int main(int argc, char **argv)
     wham(hs, beta, lnz,
         m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
   } else {
-    wham_mdiis(hs, beta, lnz, m->mdiis_nbases, m->mdiis_damp,
+    wham_mdiis(hs, beta, lnz,
+        m->mdiis_nbases, m->mdiis_damp, m->mdiis_kth, m->mdiis_threshold,
         m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
   }
 

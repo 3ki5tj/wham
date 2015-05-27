@@ -16,6 +16,9 @@ nbases = 20
 nequil = 5000
 nsteps = 500000
 fnlog = None
+kth = False
+mthreshold = 10.0
+cmdopt = ""
 doev = False
 verbose = 0
 
@@ -36,6 +39,9 @@ def usage():
     -m, --nequil=   set the number of equilibration steps
     -n, --nsteps=   set the number of simulation steps
     -o, --log=      set the output log file
+    --kth           use the KTH scheme in MDIIS
+    --mthreshold=   set the clean up threshold for MDIIS
+    --opt=          set options to be passed to the command line
     --ev, --lj2     do the two-dimensional case
     -v              be verbose
     --verbose=      set verbocity
@@ -51,14 +57,16 @@ def doargs():
     opts, args = getopt.gnu_getopt(sys.argv[1:],
         "hvN:M:m:n:o:",
         [ "help", "verbose=",
-          "nbases=", "nequil=", "nsteps=", "log=",
-          "ev", "lj2",
+          "nbases=", "KTH", "kth", "mthreshold=",
+          "nequil=", "nsteps=", "log=",
+          "opt=", "ev", "lj2",
         ] )
   except getopt.GetoptError, err:
     print str(err)
     usage()
 
-  global nsamp, nbases, nequil, nsteps, fnlog, doev, verbose
+  global nsamp, nbases, kth, mthreshold
+  global nequil, nsteps, fnlog, doev, cmdopt, verbose
 
   for o, a in opts:
     if o in ("-v",):
@@ -69,6 +77,12 @@ def doargs():
       nsamp = int(a)
     elif o in ("-M", "--nbases"):
       nbases = int(a)
+    elif o in ("-KTH", "--kth"):
+      kth = True
+    elif o in ("--mthreshold",):
+      mthreshold = float(a)
+    elif o in ("--opt",):
+      cmdopt = a
     elif o in ("-m", "--nequil"):
       nequil = int(a)
     elif o in ("-n", "--nsteps"):
@@ -95,7 +109,7 @@ def getnsteps(err):
 
 
 def main():
-  global fnlog
+  global cmdopt, fnlog
 
   zcom.runcmd("make -C ../../prog/lj")
 
@@ -108,8 +122,8 @@ def main():
 
   shutil.copy("../../prog/lj/" + prog, "./" + prog)
 
-  cmd0 = "./%s --re --nequil=%d --nsteps=%d" % (
-      prog, nequil, nsteps)
+  cmd0 = "./%s --re --nequil=%d --nsteps=%d %s" % (
+      prog, nequil, nsteps, cmdopt)
 
   ns = [0]*(nbases + 1)
   for i in range(nsamp):
@@ -121,6 +135,8 @@ def main():
 
     for nb in range(1, nbases + 1):
       cmd = "%s --wham=MDIIS --nbases=%d -H" % (cmd0, nb)
+      if kth:
+        cmd += " --kth --mthreshold=%g" % mthreshold
       ret, out, err = zcom.runcmd(cmd, capture = True)
       ns[nb] = getnsteps(err)
 

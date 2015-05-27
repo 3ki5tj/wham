@@ -252,7 +252,7 @@ int main(int argc, char **argv)
         m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
   } else {
     wham2_mdiis(hs, beta, bpres, lnz,
-        m->mdiis_nbases, m->mdiis_damp,
+        m->mdiis_nbases, m->mdiis_damp, m->mdiis_kth, m->mdiis_threshold,
         m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
   }
 

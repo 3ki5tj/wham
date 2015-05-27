@@ -227,7 +227,8 @@ int main(int argc, char **argv)
     wham(hs, beta, lnz,
         m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
   } else {
-    wham_mdiis(hs, beta, lnz, m->mdiis_nbases, m->mdiis_damp,
+    wham_mdiis(hs, beta, lnz,
+        m->mdiis_nbases, m->mdiis_damp, m->mdiis_kth, m->mdiis_threshold,
         m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
   }
 
