@@ -231,8 +231,8 @@ static int mdiis_update_kth(mdiis_t *m, double *f, double *res,
   min = m->mat[ibmin*mnb + ibmin];
   dot = mdiis_getdot(res, res, npt);
 
-  /* KTH updating scheme */
   if ( dot > threshold * threshold * min ) {
+    /* rebuild the basis */
     mdiis_build(m, m->f[ibmin], m->res[ibmin]);
     return 0;
   }
@@ -291,10 +291,10 @@ static int mdiis_update(mdiis_t *m, double *f, double *res,
 
   dot = mdiis_getdot(res, res, npt);
 
-  /* modified updating scheme */
   if ( dot > max ) {
     if ( nb >= 2 ) {
-      /* remove the base with largest residue and try again */
+      /* shrink the basis by removing the base with
+       * the largest residue and try again */
       jb = nb - 1;
       if ( ib != jb ) {
         /* move the last base to position ib */

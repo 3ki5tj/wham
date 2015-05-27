@@ -1,19 +1,174 @@
-\documentclass{revtex4-1}
+\documentclass[preprint]{revtex4-1}
 \usepackage{amsmath}
 \begin{document}
 
 
-If the new vector produces an error
-larger than (in terms of the square of residue vector)
-than all vectors in the basis,
-then we remove the most erroneous vector
-from the basis and try again
-(except if the basis contains only one vector,
-then we replace the vector by the new vector).
 
-MBAR\cite{shirts2008}
 
-MDIIS\cite{kovalenko1999}
+\newcommand{\vct}[1]{\mathbf{#1}}
+
+
+
+\section{Introduction}
+
+
+
+The multiple histogram method\cite{
+  ferrenberg1988, *ferrenberg1989}
+or its generalization,
+the weighted histogram analysis method (WHAM)\cite{
+  kumar1992, souaille2001, kastner2005,
+  chodera2007, bereau2009,
+  kim2011},
+is a popular method of estimating
+the free energy difference
+between thermodynamic states
+of different conditions (e.g. temperature and pressure).
+%
+The method iteratively solves a pair of coupled equations of
+the free energy and the density of states
+involving the energy histograms, hence the name.
+%
+Although the original formulation is
+based on histograms,
+this restriction can be lifted,
+resulting in the
+multistate Bennett acceptance ratio (MBAR) method\cite{
+shirts2008},
+which direct extends the original
+Bennett acceptance ratio (BAR) method\cite{
+bennett1976}.
+
+
+
+Although powerful,
+the standard implementation of WHAM or MBAR can suffer from
+a slow convergence in later stages.
+%
+Several remedies are proposed\cite{
+shirts2008, bereau2009, kim2011}.
+%
+For example, one may use the Newton-Raphson method
+to directly compute the Hessian matrix\cite{
+shirts2008}, although it can be occasionally unstable.
+%
+An ingenious non-iterative alternative
+is to directly estimate the derivative of density of states,
+leading to the statistical-temperature WHAM\cite{
+kim2011}.
+%
+This variant, however, gives
+a slightly different free energy from the original WHAM,
+and the extension to multiple-dimensional,
+e.g., isothermal-isobaric, ensembles
+is not obvious.
+
+
+
+Here, we consider improving WHAM using
+the method of direct inversion in the iterative subspace (DIIS)\cite{
+pulay1980, *pulay1982, *hamilton1986}.
+%
+Particularly, we consider a modification
+popular in the liquid state theory\cite
+{kovalenko1999, howard2011}.
+
+
+
+
+\section{Method}
+
+
+
+\subsection{WHAM}
+
+
+
+The mutilple histogram method or WHAM,
+
+
+
+\subsection{MDIIS}
+
+
+The mixing factor is $1.0$ in this study.
+
+
+The basis is then updated by the new vector.
+%
+In a popular updating scheme\cite{kovalenko1999},
+we add the new vector to the basis,
+if there is fewer than $M$ vectors in the basis,
+%
+or replace the earliest vector by the new vector.
+%
+If, however, the new vector
+produces an error greater than
+(in terms of the norm of residual vector)
+$K_r$ (here, $K_r = 10.0$ as recommended)
+times the minimal error of the basis,
+%
+we rebuild the basis
+from the least erroneous vector in basis.
+
+
+
+An alternative is the following.
+%
+First, we find the most erroneous vector,
+$\vct u_m$, from the basis.
+%and compute its error, $\varepsilon(\vct u_m)$.
+%
+If the new vector, $\vct v$,
+produces an error less than $\vct u_m$,
+we add $\vct v$ into the basis
+(and remove $\vct u_m$ if the basis is full).
+%
+Otherwise,
+we remove $\vct u_m$ from the basis
+and if this leaves the basis empty,
+we rebuild the basis from $\vct v$.
+%
+% We find the modification is slightly better.
+
+
+
+\section{Results}
+
+
+
+The method is tested on three systems.
+
+
+The first is the two-dimensional $64\times64$ Ising model.
+
+
+Lennard-Jones, canonoical ($NVT$), isothermal-isobaric ($NPT$) ensemble.
+
+
+
+Molecular system of villin headpiece,
+The protein is immersed in
+a dodecahedron box with 1898 water molecules and two chloride ions.
+%
+Both $NVT$ and $NPT$ ensembles are used.
+
+
+
+
+
+\section{Acknowledgements}
+
+
+
+It is a pleasure to thank Dr. Y. Zhao
+for many helpful discussions.
+%
+Computer time on the Lonestar supercomputer
+at the Texas Advanced Computing Center
+at the University of Texas at Austin
+is gratefully acknowledged.
+
 
 
 \bibliography{simul}

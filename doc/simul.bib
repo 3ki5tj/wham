@@ -145,6 +145,34 @@
   url = {http://link.aps.org/doi/10.1103/PhysRevE.78.067701}
 }
 
+@article{torrie1974,
+  author = "Glenn M. Torrie and John P. Valleau",
+  title = "Monte Carlo free energy estimates using non-Boltzmann sampling: Application to the sub-critical Lennard-Jones fluid ",
+  journal = "Chemical Physics Letters",
+  volume = "28",
+  number = "4",
+  pages = "578 - 581",
+  year = "1974",
+  issn = "0009-2614",
+  doi = "http://dx.doi.org/10.1016/0009-2614(74)80109-0",
+  url = "http://www.sciencedirect.com/science/article/pii/0009261474801090",
+  abstract = "The paper reports a Monte Carlo technique for estimation of the free energies of fluids by sampling on distributions designed for this purpose, rather than on the usual Boltzmann distribution. As an illustration of its use, the free energy of a Lennard-Jones fluid in the liquid-vapour coexistence region has been estimated by relating it to that of the inverse-twelve (soft sphere) fluid, which itself shows no condensation. "
+}
+
+@article{bennett1976,
+  author = "Charles H. Bennett",
+  title = "Efficient estimation of free energy differences from Monte Carlo data ",
+  journal = "Journal of Computational Physics ",
+  volume = "22",
+  number = "2",
+  pages = "245 - 268",
+  year = "1976",
+  issn = "0021-9991",
+  doi = "http://dx.doi.org/10.1016/0021-9991(76)90078-4",
+  url = "http://www.sciencedirect.com/science/article/pii/0021999176900784",
+  abstract = "Near-optimal strategies are developed for estimating the free energy difference between two canonical ensembles, given a Metropolis-type Monte Carlo program for sampling each one. The estimation strategy depends on the extent of overlap between the two ensembles, on the smoothness of the density-of-states as a function of the difference potential, and on the relative Monte Carlo sampling costs, per statistically independent data point. The best estimate of the free energy difference is usually obtained by dividing the available computer time approximately equally between the two ensembles; its efficiency (variance x computer time)-1 is never less, and may be several orders of magnitude greater, than that obtained by sampling only one ensemble, as is done in perturbation theory. "
+}
+
 @article{ferrenberg1988,
   title = {New Monte Carlo technique for studying phase transitions},
   author = {Ferrenberg, Alan M. and Swendsen, Robert H.},
@@ -190,6 +218,7 @@
 }
 
 @article{souaille2001,
+  author = "Marc Souaille and Beno{\^i}t Roux",
   title = "Extension to the weighted histogram analysis method: combining umbrella sampling with free energy calculations ",
   journal = "Computer Physics Communications ",
   volume = "135",
@@ -200,7 +229,6 @@
   issn = "0010-4655",
   doi = "http://dx.doi.org/10.1016/S0010-4655(00)00215-0",
   url = "http://www.sciencedirect.com/science/article/pii/S0010465500002150",
-  author = "Marc Souaille and Benoı̂t Roux",
   keywords = "Simulations",
   keywords = "Sampling",
   keywords = "Biomolecules",
@@ -209,7 +237,7 @@
 }
 
 @article{kastner2005,
-  author = "Kästner, Johannes and Thiel, Walter",
+  author = "K{\"a}stner, Johannes and Thiel, Walter",
   title = "Bridging the gap between thermodynamic integration and umbrella sampling provides a novel analysis method: “Umbrella integration”",
   journal = "The Journal of Chemical Physics",
   year = "2005",
@@ -230,8 +258,7 @@
   pages = {26-41},
   year = {2007},
   doi = {10.1021/ct0502864},
-  URL = { http://dx.doi.org/10.1021/ct0502864 },
-  eprint = { http://dx.doi.org/10.1021/ct0502864 }
+  URL = { http://dx.doi.org/10.1021/ct0502864 }
 }
 
 @article{shirts2008,
@@ -248,39 +275,39 @@
 }
 
 @article{bereau2009,
+  author = "Tristan Bereau and Robert H. Swendsen",
   title = "Optimized convergence for multiple histogram analysis ",
   journal = "Journal of Computational Physics ",
   volume = "228",
   number = "17",
   pages = "6119 - 6129",
   year = "2009",
-  note = "",
   issn = "0021-9991",
   doi = "http://dx.doi.org/10.1016/j.jcp.2009.05.011",
   url = "http://www.sciencedirect.com/science/article/pii/S0021999109002630",
-  author = "Tristan Bereau and Robert H. Swendsen",
-  keywords = "\{WHAM\}",
+  keywords = "WHAM",
   keywords = "Free-energy calculation",
   keywords = "Multiple histogram analysis ",
   abstract = "We propose a new algorithm for solving the weighted histogram analysis method (WHAM) equations to estimate free energies out of a set of Monte Carlo (MC) or molecular dynamics (MD) simulations. The algorithm, based on free-energy differences, provides a more natural way of approaching the problem and improves convergence compared to the widely used direct iteration method. We also study how parameters (temperature, pressure, etc.) of the independent simulations should be chosen to optimize the accuracy of the set of free energies. "
 }
 
-@article{kim2001,
+@article{kim2011,
   author = "Kim, Jaegil and Keyes, Thomas and Straub, John E.",
   title = "Communication: Iteration-free, weighted histogram analysis method in terms of intensive variables",
   journal = "The Journal of Chemical Physics",
   year = "2011",
   volume = "135",
   number = "6",
-  eid = 061103,
   pages = "-",
+  eid = 061103,
   url = "http://scitation.aip.org/content/aip/journal/jcp/135/6/10.1063/1.3626150",
   doi = "http://dx.doi.org/10.1063/1.3626150"
 }
 
 @article{pulay1980,
-  title = "Convergence acceleration of iterative sequences. the case of scf iteration ",
-  journal = "Chemical Physics Letters ",
+  author = "P\'eter Pulay",
+  title = "Convergence acceleration of iterative sequences. The case of SCF iteration ",
+  journal = "Chemical Physics Letters",
   volume = "73",
   number = "2",
   pages = "393 - 398",
@@ -289,8 +316,33 @@
   issn = "0009-2614",
   doi = "http://dx.doi.org/10.1016/0009-2614(80)80396-4",
   url = "http://www.sciencedirect.com/science/article/pii/0009261480803964",
-  author = "Péter Pulay",
-  abstract = "Based on a recent method of Pople et al for the solution of large systems of linear equations, a procedure is given for accelerating the convergence of slowly converging quasi-Newton— Raphson type algorithms. This procedure is particularly advantageous if the number of parameters is so large that the calculation and storage of the hessian is no longer practical. Application to the \{SCF\} problem is treated in detail. "
+  abstract = "Based on a recent method of Pople et al for the solution of large systems of linear equations, a procedure is given for accelerating the convergence of slowly converging quasi-Newton— Raphson type algorithms. This procedure is particularly advantageous if the number of parameters is so large that the calculation and storage of the hessian is no longer practical. Application to the SCF problem is treated in detail. "
+}
+
+@article{pulay1982,
+  author = {Pulay, P.},
+  title = {Improved SCF convergence acceleration},
+  journal = {Journal of Computational Chemistry},
+  volume = {3},
+  number = {4},
+  pages = {556--560},
+  year = {1982},
+  publisher = {John Wiley \& Sons, Inc.},
+  issn = {1096-987X},
+  url = {http://dx.doi.org/10.1002/jcc.540030413},
+  doi = {10.1002/jcc.540030413}
+}
+
+@article{hamilton1986,
+  author = "Hamilton, Tracy P. and Pulay, Peter",
+  title = "Direct inversion in the iterative subspace (DIIS) optimization of open‐shell, excited‐state, and small multiconfiguration SCF wave functions",
+  journal = "The Journal of Chemical Physics",
+  year = "1986",
+  volume = "84",
+  number = "10", 
+  pages = "5728-5734",
+  url = "http://scitation.aip.org/content/aip/journal/jcp/84/10/10.1063/1.449880",
+  doi = "http://dx.doi.org/10.1063/1.449880" 
 }
 
 @article{ng1974,
@@ -305,20 +357,34 @@
   doi = "http://dx.doi.org/10.1063/1.1682399"
 }
 
-@article {kovalenko1999,
+@article{kovalenko1999,
   author = {Kovalenko, Andriy and Ten-no, Seiichiro and Hirata, Fumio},
   title = {Solution of three-dimensional reference interaction site model and hypernetted chain equations for simple point charge water by modified method of direct inversion in iterative subspace},
   journal = {Journal of Computational Chemistry},
   volume = {20},
   number = {9},
-  publisher = {John Wiley & Sons, Inc.},
+  pages = {928--936},
+  year = {1999},
+  publisher = {John Wiley \& Sons, Inc.},
   issn = {1096-987X},
   url = {http://dx.doi.org/10.1002/(SICI)1096-987X(19990715)20:9<928::AID-JCC4>3.0.CO;2-X},
   doi = {10.1002/(SICI)1096-987X(19990715)20:9<928::AID-JCC4>3.0.CO;2-X},
-pages = {928--936},
-  keywords = {water, reference interaction site model, hypernetted chain closure, 3-dimensional site profiles, direct inversion in iterative subspace},
-  year = {1999}
+  keywords = {water, reference interaction site model, hypernetted chain closure, 3-dimensional site profiles, direct inversion in iterative subspace}
 }
 
-
+@article{howard2011,
+  author={Howard, JesseJ. and Pettitt, B.Montgomery},
+  title={Integral Equations in the Study of Polar and Ionic Interaction Site Fluids},
+  year={2011},
+  journal={Journal of Statistical Physics},
+  volume={145},
+  number={2},
+  pages={441-466},
+  publisher={Springer US},
+  issn={0022-4715},
+  doi={10.1007/s10955-011-0260-5},
+  url={http://dx.doi.org/10.1007/s10955-011-0260-5},
+  keywords={Integral equations},
+  language={English}
+}
 
