@@ -79,11 +79,11 @@ int main(int argc, char **argv)
     /* round emin and emax to multiples of m->de */
     emin = (int) (m->np * m->emin / m->de) * m->de;
     emax = (int) (m->np * m->emax / m->de) * m->de;
-    
+
     /* round vmin and vmax to multiples of m->dv */
     vmin = (int) (m->np * m->vmin / m->dv) * m->dv;
     vmax = (int) (m->np * m->vmax / m->dv) * m->dv;
-    
+
     hs = hist2_open(ntp, emin, emax, m->de, vmin, vmax, m->dv);
 
     /* randomize the initial state */
