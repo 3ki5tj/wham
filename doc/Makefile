@@ -1,4 +1,4 @@
-prj=wham
+prj=whamdiis
 
 figs=
 pdffigs=$(patsubst %,fig/%.pdf, $(figs))

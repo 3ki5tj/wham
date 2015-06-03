@@ -1,0 +1,607 @@
+\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
+\usepackage{amsmath}
+\usepackage{tikz}
+\begin{document}
+
+
+
+
+\newcommand{\vct}[1]{\mathbf{#1}}
+\newcommand{\vx}{\vct{x}}
+\newcommand{\Z}{\mathcal{Z}}
+\newcommand{\E}{\mathcal{E}}
+
+
+
+
+
+\section{Introduction}
+
+
+
+
+
+The multiple histogram method\cite{
+ferrenberg1988, *ferrenberg1989}
+or its generalization,
+the weighted histogram analysis method (WHAM)\cite{
+kumar1992, souaille2001, kastner2005,
+chodera2007, bereau2009,
+kim2011},
+is a popular method
+for free energy calculation.
+%
+The method iteratively solves a pair of coupled equations of
+the free energy and the density of states
+involving the energy histograms, hence the name.
+%
+Although the original formulation is
+based on histograms,
+this restriction can be lifted,
+resulting in the
+multistate Bennett acceptance ratio (MBAR) method\cite{
+shirts2008},
+which direct extends the original
+Bennett acceptance ratio (BAR) method\cite{
+bennett1976}.
+
+
+
+Although powerful,
+the standard implementation of WHAM or MBAR can suffer from
+a slow convergence in later stages.
+%
+Several remedies are proposed\cite{
+ shirts2008, bereau2009, kim2011}.
+%
+For example, one may use the Newton-Raphson method
+to directly compute the Hessian matrix\cite{
+shirts2008},
+although it can be occasionally unstable.
+%
+An ingenious non-iterative alternative
+is to directly estimate the derivative of density of states,
+leading to the statistical-temperature WHAM\cite{
+kim2011}.
+%
+This variant, however, gives
+a slightly different estimate of free energy
+from the original WHAM,
+and the extension to multiple-dimensional,
+e.g., isothermal-isobaric, ensembles
+is not obvious.
+
+
+
+Here, we consider improving WHAM using
+the method of direct inversion in the iterative subspace (DIIS)\cite{
+pulay1980, *pulay1982, *hamilton1986}.
+%
+Particularly, we consider a modification
+popular in the liquid state theory\cite{
+kovalenko1999, howard2011}.
+
+
+
+
+
+\section{Method}
+
+
+
+
+
+\subsection{WHAM}
+
+
+
+WHAM is a method of
+estimating the free energy differences
+among a few thermodynamic states
+with different parameters,
+such as temperatures, pressures, etc.
+%
+For definiteness,
+consider the special case of $K$ temperatures,
+labeled by the inverse temperature,
+$\beta = 1/(k_B T)$,
+as
+$\beta_1, \ldots, \beta_K$.
+%
+Suppose we have performed the respective
+canonical-ensemble simulations
+at the $K$ temperatures,
+we wish to estimate the free energies
+at the temperatures.
+
+
+
+In WHAM,
+we first estimate the density of states $g(E)$ from
+%
+\begin{equation}
+\hat g(E)
+=
+\frac{
+  \sum_{j = 1}^K n_j(E)
+}
+{
+  \sum_{k = 1}^K N_k e^{-\beta_k E} / \hat Z_k
+},
+\label{eq:gE_WHAM}
+\end{equation}
+%
+where,
+$n_j(E)$
+is the unnormalized energy distribution
+observed from simulation $j$.
+%
+This quantity is usually estimated
+from the energy histogram as
+the number independent trajectory frames
+whose energies fall in the interval
+$(E - \Delta E/2, E + \Delta E/2)$
+divided by $\Delta E$
+(we shall omit ``independent'' below for simplicity).
+%
+$N_k$
+is the total number of frames
+from simulation $k$.
+%
+$\hat Z_k$
+is the partition function,
+defined as
+%
+\begin{equation}
+\hat Z_k
+=
+\int \hat g(E) \, e^{-\beta_k E} \, dE.
+\label{eq:Z}
+\end{equation}
+
+
+
+
+After eliminating $\hat g(E)$,
+we determine,
+from Eqs. \eqref{eq:gE_WHAM} and \eqref{eq:Z},
+the unitless free energy
+$\hat f_i \equiv -\log \hat Z_i$
+as
+\begin{align}
+\hat f_i
+&=
+-\log
+  \int
+    \frac{
+      \sum_{j = 1}^K n_j(E) \, e^{-\beta_j E}
+    }
+    {
+      \sum_{k = 1}^K N_k \, e^{-\beta_k E + \hat f_k}
+    }
+    dE
+\label{eq:f_WHAM}
+\\
+&\equiv
+-\log \Z_i(\{ \hat f_k \}),
+\notag
+\end{align}
+%
+where,
+$\Z_i$
+denotes the integral on the right hand side.
+
+
+
+In the above,
+$n_j(E)$ is estimated from the energy histogram.
+%
+This dependency can be avoided
+by noticing from definition
+%
+\begin{equation}
+n_j(E)
+=
+\sum_{\vx}^{(j)} \delta(\E(\vx) - E),
+\label{eq:n_delta}
+\end{equation}
+%
+where,
+$\E$
+is the energy function,
+and
+$\sum_{\vx}^{(j)}$
+denotes the sum over trajectory frames
+of simulation $j$.
+
+
+
+Using Eq. \eqref{eq:n_delta} in Eq. \eqref{eq:f_WHAM} yields,
+we get the result from MBAR\cite{shirts2008}:
+%
+\begin{equation}
+\hat f_i
+=
+-\log
+\sum_{j = 1}^K
+\sum_{\vx}^{(j)}
+\frac{
+  e^{-\beta_j \E(\vx)}
+}
+{
+  \sum_{k = 1}^K N_k e^{-\beta_k \E(\vx) + \hat f_k}
+},
+\label{eq:f_MBAR}
+\end{equation}
+%
+where,
+we have moved the denominator into the sum
+as it now depends on the configuration, $\vx$.
+
+
+
+Several extensions are straightforward.
+%
+First,
+for simulations on multiple isothermal-isobaric ensembles
+at different temperature and pressure,
+a two-dimensional extension is needed.
+%
+That is,
+we replace $E$ by $(E, V)$
+and the Boltzmann weight
+$e^{-\beta_k E}$
+by
+$e^{-\beta_k E - \beta_k p_k V}$,
+with
+$V$ and $p_k$
+being the volume and pressure,
+respectively.
+
+
+
+
+
+\subsection{DIIS}
+
+
+
+
+
+\tikzstyle{emptydot}=[inner sep=0pt,minimum size=0.0mm]
+\tikzstyle{fRarrow}=[->, thick, draw=blue!30!gray]
+\tikzstyle{fRarr}=[->, thin, draw=blue!35!white]
+\tikzstyle{farr}=[->, thin, draw=black!25!white]
+\tikzstyle{fRlabel}=[inner sep=0pt, text=black!80!white]
+
+\begin{figure}
+  \begin{tikzpicture}
+    %
+    %
+    % The potential function to minimize is
+    %
+    % F = 3/8 (x - 3/5)^2 + 5/8 (y - 4/5)^2 + 1/4 (x - 3/5) (y - 4/5)
+    %   = 7/2 R^2
+    %
+    % x = 3/5
+    %   + (sqrt(2) - 1) sqrt(3 + sqrt(2)) cos t
+    %   + (sqrt(2) + 1) sqrt(3 - sqrt(2)) sin t.
+    %
+    % y = 4/5
+    %   + sqrt(3 + sqrt(2)) cos t
+    %   - sqrt(3 - sqrt(2)) sin t.
+    %
+    % The long axis is achieved at t = Pi/2
+    % its length is sqrt(8 + 2 sqrt(2)) R,
+    % and it is along the direction of
+    %   (sqrt(2) + 1, -1),
+    % which has an angle of -22.5 degrees
+    % with the x axis.
+    %
+    % The short axis is achieved at t = 0,
+    % its length is sqrt(8 - 2 sqrt(2)) R,
+    % and it is along the direction of
+    %   (sqrt(2) - 1, 1),
+    % which has an angle of 67.5 degrees
+    % with the x axis.
+    %
+    %
+    \newcommand{\sz}{5cm}
+    \begin{scope}
+      %\clip ({-0.08*\sz}, {-0.08*\sz}) rectangle ({1.3*\sz}, {1.15*\sz});
+      %
+      % Draw ellipses
+      %
+      \foreach \i in {0,...,3}
+      {
+        \pgfmathsetmacro{\Fval}{0.13 - \i * 0.04};
+        \pgfmathsetmacro{\Rval}{sqrt(\Fval*2/7)};
+        \pgfmathsetmacro{\aval}{sqrt(8 + sqrt(8))*\Rval};
+        \pgfmathsetmacro{\bval}{sqrt(8 - sqrt(8))*\Rval};
+        \pgfmathsetmacro{\colora}{4 + 2.5 * \i};
+        \draw[fill, {black!\colora!white},
+              rotate around={67.5:(0.6*\sz, 0.8*\sz)}]
+          (0.6*\sz, 0.8*\sz)
+          ellipse ({\bval*\sz} and {\aval*\sz});
+      }
+      %
+      %
+      %
+      \foreach \i in {1,...,19}
+      {
+        \pgfmathsetmacro\lambda{\i * 0.05};
+        \pgfmathsetmacro\x{1 - \lambda};
+        \pgfmathsetmacro\y{\lambda};
+        \pgfmathsetmacro\dx{-0.1 + 0.5 * \lambda};
+        \pgfmathsetmacro\dy{0.9 - 1.0 * \lambda};
+        \pgfmathsetmacro\xx{\x + \dx};
+        \pgfmathsetmacro\yy{\y + \dy};
+        \draw [farr] (0, 0) -- (\x*\sz, \y*\sz);
+        \draw [fRarr] (\x*\sz, \y*\sz) -- (\xx*\sz, \yy*\sz);
+      }
+      %
+      %
+      %
+      % the minimum
+      %
+      %
+      \draw
+          (0.6*\sz, 0.8*\sz)
+          node
+            [ fill, circle, inner sep=0pt, minimum size=1.5mm,
+              label={
+                [inner sep=0.01*\sz]
+                -45:{$\vct f^*$}
+              }
+            ] {};
+      %
+      % vector 1
+      %
+      \node (f1R1) at (0.9*\sz, 0.9*\sz)
+        [ emptydot,
+          label={[fRlabel,
+                  label distance={0.05*\sz},
+                  rotate=-83.7]
+               20:{$\vct R_1$}}
+        ] {};
+      \node (f1) at (1.0*\sz, 0)
+        [emptydot, label=below:{$\vct f_1$}]{}
+        edge[fRarrow] (f1R1);
+      %
+      % vector 2
+      %
+      \node (f2R2) at (0.4*\sz, 0.9*\sz)
+        [ emptydot,
+          label={[fRlabel,
+                  label distance={0.03*\sz},
+                  rotate=-14.0]
+               93:{$\vct R_2$}}
+        ] {};
+      \node (f2) at (0, 1.0*\sz)
+        [emptydot, label=left:{$\vct f_2$}]{}
+        edge[dashed, thin] (f1)
+        edge[fRarrow] (f2R2);
+      %
+      %
+      % optimal vector
+      %
+      %
+      \node (fhatRhat) at (0.52*\sz, 0.9*\sz)
+        [ emptydot,
+          label={[fRlabel,
+                  label distance={0.02*\sz},
+                  rotate=26.6]
+                -150:{$\vct {\hat R}$}}
+        ] {};
+      \node (fhat) at (0.24*\sz, 0.76*\sz)
+        [ emptydot, inner sep=0,
+          label={
+            [label distance={0.03*\sz}]
+            180:{$\vct {\hat f}$}
+          }
+        ] {}
+        edge[fRarrow] (fhatRhat);
+      %
+      %
+      %
+      \node (origin) at (0, 0) [emptydot]{}
+        edge[->, very thick] (f1)
+        edge[->, very thick] (f2)
+        edge[->, very thick] (fhat);
+    \end{scope}
+    %
+    %
+    %
+    %
+    % origin of the residual vectors
+    %
+    %
+    %
+    \newcommand{\Rox}{1.5*\sz}
+    \newcommand{\Roy}{0.13*\sz}
+    %
+    %
+    %
+    \foreach \i in {1,...,19}
+    {
+      \pgfmathsetmacro\lambda{\i * 0.05}
+      \pgfmathsetmacro\dx{-0.1 + 0.5 * \lambda}
+      \pgfmathsetmacro\dy{0.9 - 1.0 * \lambda}
+      \draw [fRarr]
+        (\Rox, \Roy) -- (\Rox + \dx*\sz, \Roy + \dy*\sz);
+    }
+    %
+    %
+    %
+    \node (R1) at ({\Rox-0.1*\sz}, {\Roy+0.9*\sz})
+      [ emptydot,
+        label={[fRlabel]90:{$\vct R_1$}}
+      ] {};
+    %
+    %
+    %
+    \node (R2) at ({\Rox+0.4*\sz}, {\Roy-0.1*\sz})
+      [ emptydot,
+        label={[fRlabel, label distance=1.5mm]
+               -90:{$\vct R_2$}}
+      ] {}
+      edge[dashed, thin] (R1);
+    %
+    %
+    %
+    \node (Rhat) at ({\Rox+0.28*\sz}, {\Roy+0.14*\sz})
+      [ emptydot,
+        label={[fRlabel, label distance=0.1mm]
+               10:{$\vct {\hat R}$}}
+      ] {};
+    %
+    %
+    %
+    \node (Rorigin) at (\Rox, \Roy) [emptydot] {}
+      edge[fRarrow] (R1)
+      edge[fRarrow] (R2)
+      edge[fRarrow] (Rhat);
+    %
+    %
+    %
+  \end{tikzpicture}
+  %
+  %
+  %
+  \caption{\label{fig:scheme}
+    Schematic illustration of the method of
+    direct inversion of the iterative subspace (DIIS).
+    %
+    The aim is to solve a set of equation.
+    %
+    Each trial vector $\vct f_i$
+    represents an approximate solution,
+    and the residual vector $\vct R_i$
+    represents the error.
+    %
+    Given a basis of a few (two here) trial vectors,
+    DIIS seeks the combination
+    $\vct {\hat R} = \sum_i c_i \, \vct R_i$
+    that achieves the minimal magnitude
+    under the constraint
+    $\sum_i c_i = 1$.
+    %
+    The coefficients, $c_i$, are used
+    to combine the trial vectors as
+    $\vct {\hat f} = \sum_i c_i \, \vct f_i$.
+    %
+    The new trial vector is given by
+    $\vct f^{(n)} = \vct {\hat f} + \vct {\hat R}$.
+    %
+    For the next round of iteration,
+    $\vct f^{(n)}$ is normally either added
+    to the basis, or used to replace an existing vector
+    in the basis.
+  }
+\end{figure}
+
+
+
+
+The mixing factor is $1.0$ in this study.
+
+
+
+\subsection{Basis updating}
+
+
+
+The basis is then updated by the new vector.
+%
+In a popular updating scheme\cite{kovalenko1999},
+we add the new vector to the basis,
+if there is fewer than $M$ vectors in the basis,
+%
+or replace the earliest vector by the new vector.
+%
+If, however, the new vector
+produces an error greater than
+(in terms of the norm of residual vector)
+$K_r$ (here, $K_r = 10.0$ as recommended)
+times the minimal error of the basis,
+%
+we rebuild the basis
+from the least erroneous vector in basis.
+
+
+
+An alternative is the following.
+%
+First, we find the most erroneous vector,
+$\vct u_m$, from the basis.
+%and compute its error, $\varepsilon(\vct u_m)$.
+%
+If the new vector, $\vct v$,
+produces an error less than $\vct u_m$,
+we add $\vct v$ into the basis
+(and remove $\vct u_m$ if the basis is full).
+%
+Otherwise,
+we remove $\vct u_m$ from the basis
+and if this leaves the basis empty,
+we rebuild the basis from $\vct v$.
+%
+% We find the modification is slightly better.
+
+
+
+\section{Results}
+
+
+
+The method is tested on three systems.
+
+
+The first is the two-dimensional $64\times64$ Ising model.
+
+
+Lennard-Jones, canonical ($NVT$), isothermal-isobaric ($NPT$) ensemble.
+
+
+
+Molecular system of villin headpiece,
+The protein is immersed in
+a dodecahedron box with 1898 water molecules and two chloride ions.
+%
+Both $NVT$ and $NPT$ ensembles are used.
+%
+The protein was simulated
+using GROMACS\cite{
+  berendsen1995, *lindahl2001, *vanderspoel2005, *hess2008}.
+%
+The electronic interaction was
+handled by the particle mesh Ewald method\cite{
+  essmann1995}.
+%
+The constraints were handled by the LINCS method\cite{
+  hess1997}
+for hydrogen-dependent chemical bonds on the protein
+and by the SETTLE method\cite{
+  miyamoto1992}
+for water molecules.
+
+
+
+
+
+\section{Acknowledgments}
+
+
+
+It is a pleasure to thank Dr. Y. Zhao
+for many helpful discussions.
+%
+Computer time on the Lonestar supercomputer
+at the Texas Advanced Computing Center
+at the University of Texas at Austin
+is gratefully acknowledged.
+
+
+
+\bibliography{simul}
+\end{document}
