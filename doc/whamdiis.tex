@@ -14,6 +14,12 @@
 
 
 
+\title{Accelerating the weighted histogram analysis method
+by direct inversion of the iterative subspace}
+
+\maketitle
+
+
 
 \section{Introduction}
 
@@ -35,14 +41,11 @@ The method iteratively solves a pair of coupled equations of
 the free energy and the density of states
 involving the energy histograms, hence the name.
 %
-Although the original formulation is
-based on histograms,
-this restriction can be lifted,
-resulting in the
+Although the method is based on histograms,
+it can be reformulated as the
 multistate Bennett acceptance ratio (MBAR) method\cite{
 shirts2008},
-which direct extends the original
-Bennett acceptance ratio (BAR) method\cite{
+extending the Bennett acceptance ratio (BAR) method\cite{
 bennett1976}.
 
 
@@ -120,13 +123,13 @@ In WHAM,
 we first estimate the density of states $g(E)$ from
 %
 \begin{equation}
-\hat g(E)
+g(E)
 =
 \frac{
   \sum_{j = 1}^K n_j(E)
 }
 {
-  \sum_{k = 1}^K N_k e^{-\beta_k E} / \hat Z_k
+  \sum_{k = 1}^K N_k \, \exp(-\beta_k E) / Z_k
 },
 \label{eq:gE_WHAM}
 \end{equation}
@@ -148,42 +151,42 @@ $N_k$
 is the total number of frames
 from simulation $k$.
 %
-$\hat Z_k$
+$Z_k$
 is the partition function,
 defined as
 %
 \begin{equation}
-\hat Z_k
+Z_k
 =
-\int \hat g(E) \, e^{-\beta_k E} \, dE.
+\int g(E) \, \exp(-\beta_k E) \, dE.
 \label{eq:Z}
 \end{equation}
 
 
 
 
-After eliminating $\hat g(E)$,
+After eliminating $g(E)$,
 we determine,
 from Eqs. \eqref{eq:gE_WHAM} and \eqref{eq:Z},
 the unitless free energy
-$\hat f_i \equiv -\log \hat Z_i$
+$f_i \equiv -\log Z_i$
 as
 \begin{align}
-\hat f_i
+f_i
 &=
 -\log
   \int
     \frac{
-      \sum_{j = 1}^K n_j(E) \, e^{-\beta_j E}
+      \sum_{j = 1}^K n_j(E) \, \exp(-\beta_j E)
     }
     {
-      \sum_{k = 1}^K N_k \, e^{-\beta_k E + \hat f_k}
+      \sum_{k = 1}^K N_k \, \exp(-\beta_k E + f_k)
     }
     dE
 \label{eq:f_WHAM}
 \\
 &\equiv
--\log \Z_i(\{ \hat f_k \}),
+-\log \Z_i(\{ f_k \}),
 \notag
 \end{align}
 %
@@ -213,52 +216,79 @@ and
 $\sum_{\vx}^{(j)}$
 denotes the sum over trajectory frames
 of simulation $j$.
-
-
-
-Using Eq. \eqref{eq:n_delta} in Eq. \eqref{eq:f_WHAM} yields,
-we get the result from MBAR\cite{shirts2008}:
+%
+%
+%
+Using Eq. \eqref{eq:n_delta} in Eq. \eqref{eq:f_WHAM} yields
+the MBAR\cite{shirts2008} result:
 %
 \begin{equation}
-\hat f_i
+f_i
 =
 -\log
 \sum_{j = 1}^K
 \sum_{\vx}^{(j)}
 \frac{
-  e^{-\beta_j \E(\vx)}
+  \exp[-\beta_j \, \E(\vx)]
 }
 {
-  \sum_{k = 1}^K N_k e^{-\beta_k \E(\vx) + \hat f_k}
+  \sum_{k = 1}^K N_k \exp[-\beta_k \, \E(\vx) + f_k]
 },
 \label{eq:f_MBAR}
 \end{equation}
 %
 where,
-we have moved the denominator into the sum
+the denominator has been moved into the sum
 as it now depends on the configuration, $\vx$.
 
 
 
-Several extensions are straightforward.
+Several comments are in order.
 %
 First,
 for simulations on multiple isothermal-isobaric ensembles
 at different temperature and pressure,
-a two-dimensional extension is needed.
 %
-That is,
 we replace $E$ by $(E, V)$
 and the Boltzmann weight
-$e^{-\beta_k E}$
+$\exp(-\beta_k \, E)$
 by
-$e^{-\beta_k E - \beta_k p_k V}$,
+$\exp(-\beta_k \, E - \beta_k \, p_k \, V)$,
 with
 $V$ and $p_k$
 being the volume and pressure,
 respectively.
+%
+Similarly,
+non-Boltzmann weight\cite{
+mezei1987, *berg1992, *lee1993, *tsallis1988}
+can be used to replace the Boltzmann weight.
+%
+Finally,
+once $g(E)$ is determined,
+the free energy at an unsimulated temperature, $\beta$,
+can be found from Eq. \eqref{eq:Z}
+by substituting $\beta$ for $\beta_k$.
 
 
+To determine $f_i$ numerically,
+Eq. \eqref{eq:f_WHAM}
+is usually treated as an iterative equation
+%
+\begin{equation}
+f_i^\mathrm{(new)}
+=
+-\log \Z_i\left(
+  \{ f_k^\mathrm{(old)} \}
+\right).
+\end{equation}
+%
+This equation, however,
+can suffer from a slow convergence,
+and thousands of iterations\cite{
+bereau2009, kim2011}.
+%
+Below we focus a method on accelerate the process.
 
 
 
@@ -266,12 +296,112 @@ respectively.
 
 
 
+DIIS is a method of solving a set of
+(nearly) linear equations\cite{
+pulay1980, *pulay1982, *hamilton1986,
+kovalenko1999, howard2011}.
+%
+Here, it is used
+to solve Eq. \eqref{eq:f_WHAM}.
+%
+A schematic illustration
+is shown in Fig. \ref{fig:scheme}.
+%
+We first represent an approximate solution
+by a trial vector,
+$\vct f = (f_1, \dots, f_K)$,
+which is, in our case, the vector of
+the unitless free energies.
+%
+The equations can be written as
+%
+\begin{equation}
+  R_i(\vct f) = 0  \quad i = 1, \ldots, K,
+  \label{eq:R_f}
+\end{equation}
+%
+whose left hand side forms a residual vector
+$\vct R = (R_1, \dots, R_K)$.
+%
+Normally, the signs of $R_i$ are arranged such that
+$\vct R(\vct f)$
+gives a direction of reducing the error of $\vct f$.
+%
+That is,
+for $\vct f' = \vct f + \alpha \, \vct R(\vct f)$
+with a sufficiently small $\alpha$,
+we expect
+%
+$\| \vct R(\vct f') \| < \| \vct R(\vct f) \|$.
+
+
+
+Suppose now we have a basis consisting of $M$ trial vectors
+$\vct f_1$, \dots $\vct f_M$
+(where $M$ can be much less than $K$),
+%
+and the residual vectors are
+$\vct R_1$, \dots $\vct R_M$
+[where $\vct R_j \equiv \vct R(\vct f_j)$
+for $j = 1, \dots, M$],
+%
+we wish to construct a more accurate solution
+from the vectors.
+
+
+
+To do so, we first find the combination of the residue vectors
+$\vct{\hat R} = \sum_i c_i \, \vct R_i$,
+that minimizes the magnitude
+$\| \vct R \|$.
+%
+If Eq. \eqref{eq:R_f} is nearly linear,
+%
+$\vct{\hat R}$
+is roughly the residue vector of
+$\vct{\hat f} = \sum_i c_i \, \vct f_i$,
+and
+$\vct{\hat f}$
+roughly achieves the minimal residue
+among all linear combinations of
+$\{ \vct f_i \}$.
+%
+Thus,
+we expect an iteration based on
+$\vct{\hat f}$
+to be more efficient than that
+based on any of
+$\vct f_i$.
+
+
+We now construct a new trial vector $\vct f^{(n)}$ as
+%
+\begin{equation}
+\vct f^{(n)}
+=
+\vct{\hat f}
++
+\alpha \vct{\hat R}( \vct{\hat f} ),
+\end{equation}
+%
+where the factor $\alpha$ is $1.0$ in this study
+(although a smaller value is recommended
+for other applications\cite{kovalenko1999, howard2011}).
+%
+The new vector $\vct f^{(n)}$
+is used to update the basis as follows.
+
+
+
 
 
 \tikzstyle{emptydot}=[inner sep=0pt,minimum size=0.0mm]
 \tikzstyle{fRarrow}=[->, thick, draw=blue!30!gray]
+\tikzstyle{fRarrowx}=[->, very thick, draw=blue!70!gray]
 \tikzstyle{fRarr}=[->, thin, draw=blue!35!white]
 \tikzstyle{farr}=[->, thin, draw=black!25!white]
+\tikzstyle{farrow}=[->, thick, draw=black!80!white]
+\tikzstyle{farrowx}=[->, very thick, draw=black]
 \tikzstyle{fRlabel}=[inner sep=0pt, text=black!80!white]
 
 \begin{figure}
@@ -379,8 +509,13 @@ respectively.
         ] {};
       \node (f2) at (0, 1.0*\sz)
         [emptydot, label=left:{$\vct f_2$}]{}
-        edge[dashed, thin] (f1)
         edge[fRarrow] (f2R2);
+      %
+      %
+      %
+      \draw [black, dotted, thin]
+        (-0.1*\sz, 1.1*\sz) -- (1.1*\sz, -0.1*\sz);
+      %
       %
       %
       % optimal vector
@@ -400,14 +535,14 @@ respectively.
             180:{$\vct {\hat f}$}
           }
         ] {}
-        edge[fRarrow] (fhatRhat);
+        edge[fRarrowx] (fhatRhat);
       %
       %
       %
       \node (origin) at (0, 0) [emptydot]{}
-        edge[->, very thick] (f1)
-        edge[->, very thick] (f2)
-        edge[->, very thick] (fhat);
+        edge[farrow] (f1)
+        edge[farrow] (f2)
+        edge[farrowx] (fhat);
     \end{scope}
     %
     %
@@ -433,19 +568,36 @@ respectively.
     %
     %
     %
-    \node (R1) at ({\Rox-0.1*\sz}, {\Roy+0.9*\sz})
+    \node (R1) at ({\Rox - 0.1 * \sz}, {\Roy + 0.9 * \sz})
       [ emptydot,
-        label={[fRlabel]90:{$\vct R_1$}}
+        label={[fRlabel, label distance=1.5mm]
+               0:{$\vct R_1$}}
       ] {};
     %
     %
     %
-    \node (R2) at ({\Rox+0.4*\sz}, {\Roy-0.1*\sz})
+    \node (R2) at ({\Rox + 0.4 * \sz}, {\Roy - 0.1 * \sz})
       [ emptydot,
         label={[fRlabel, label distance=1.5mm]
-               -90:{$\vct R_2$}}
-      ] {}
-      edge[dashed, thin] (R1);
+               0:{$\vct R_2$}}
+      ] {};
+    %
+    %
+    %
+    \draw [blue!50!black, dotted, thin]
+         ({\Rox - 0.15 * \sz}, {\Roy + 1.0 * \sz})
+      -- ({\Rox + 0.45 * \sz}, {\Roy - 0.2 * \sz});
+    %
+    %
+    %
+    % Draw the perpendicular sign
+    %
+    %
+    %
+    \draw [thick, blue!50!gray]
+          ({\Rox + 0.24*\sz}, {\Roy + 0.12*\sz})
+       -- ({\Rox + 0.22*\sz}, {\Roy + 0.16*\sz})
+       -- ({\Rox + 0.26*\sz}, {\Roy + 0.18*\sz});
     %
     %
     %
@@ -460,7 +612,7 @@ respectively.
     \node (Rorigin) at (\Rox, \Roy) [emptydot] {}
       edge[fRarrow] (R1)
       edge[fRarrow] (R2)
-      edge[fRarrow] (Rhat);
+      edge[fRarrowx] (Rhat);
     %
     %
     %
@@ -503,48 +655,43 @@ respectively.
 
 
 
-The mixing factor is $1.0$ in this study.
-
-
-
 \subsection{Basis updating}
 
 
 
-The basis is then updated by the new vector.
-%
 In a popular updating scheme\cite{kovalenko1999},
-we add the new vector to the basis,
-if there is fewer than $M$ vectors in the basis,
+we add $\vct f^{(n)}$ to the basis,
+if the basis contains fewer than $M$ vectors,
 %
-or replace the earliest vector by the new vector.
+or substitute $\vct f^{(n)}$ for the earliest vector in the basis.
 %
-If, however, the new vector
+If, however, $\vct f^{(n)}$
 produces an error greater than
-(in terms of the norm of residual vector)
-$K_r$ (here, $K_r = 10.0$ as recommended)
-times the minimal error of the basis,
+(in terms of the magnitude of the residual vector $\| \vct R(\vct f^{(n)}) \|$)
+$K_r$ (here, $K_r = 10.0$\cite{kovalenko1999})
+times the minimal error of the vectors in the basis,
 %
 we rebuild the basis
-from the least erroneous vector in basis.
+from the least erroneous vector
+in the basis.
 
 
 
 An alternative is the following.
 %
 First, we find the most erroneous vector,
-$\vct u_m$, from the basis.
-%and compute its error, $\varepsilon(\vct u_m)$.
+$\vct f_m$, from the basis.
 %
-If the new vector, $\vct v$,
-produces an error less than $\vct u_m$,
-we add $\vct v$ into the basis
-(and remove $\vct u_m$ if the basis is full).
+If the new vector, $\vct f^{(n)}$,
+produces an error less than $\vct f_m$,
+we add $\vct f^{(n)}$ into the basis
+or, if the basis is full,
+substitute $\vct f^{(n)}$ for $\vct f_m$.
 %
 Otherwise,
-we remove $\vct u_m$ from the basis
-and if this leaves the basis empty,
-we rebuild the basis from $\vct v$.
+we remove $\vct f_m$ from the basis,
+and if this empties the basis,
+we rebuild the basis from $\vct f^{(n)}$.
 %
 % We find the modification is slightly better.
 
