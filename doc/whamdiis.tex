@@ -1,6 +1,7 @@
 \documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
 \usepackage{amsmath}
 \usepackage{tikz}
+\usepackage{color}
 \begin{document}
 
 
@@ -15,7 +16,12 @@
 
 
 \title{Accelerating the weighted histogram analysis method
-by direct inversion of the iterative subspace}
+by direct inversion in the iterative subspace}
+
+\begin{abstract}
+The convergence of the weighted histogram analysis method for free energy calculation
+was improved by using the method of direct inversion in the iterative subspace.
+\end{abstract}
 
 \maketitle
 
@@ -41,8 +47,9 @@ The method iteratively solves a pair of coupled equations of
 the free energy and the density of states
 involving the energy histograms, hence the name.
 %
-Although the method is based on histograms,
-it can be reformulated as the
+It can be also reformulated
+to avoid the histogram dependence,
+resulting the
 multistate Bennett acceptance ratio (MBAR) method\cite{
 shirts2008},
 extending the Bennett acceptance ratio (BAR) method\cite{
@@ -50,11 +57,11 @@ bennett1976}.
 
 
 
-Although powerful,
-the standard implementation of WHAM or MBAR can suffer from
+The straightforward implementation of WHAM or MBAR,
+however, can suffer from
 a slow convergence in later stages.
 %
-Several remedies are proposed\cite{
+Several remedies were proposed\cite{
  shirts2008, bereau2009, kim2011}.
 %
 For example, one may use the Newton-Raphson method
@@ -70,7 +77,7 @@ kim2011}.
 This variant, however, gives
 a slightly different estimate of free energy
 from the original WHAM,
-and the extension to multiple-dimensional,
+and the extension to multidimensional,
 e.g., isothermal-isobaric, ensembles
 is not obvious.
 
@@ -141,7 +148,7 @@ observed from simulation $j$.
 %
 This quantity is usually estimated
 from the energy histogram as
-the number independent trajectory frames
+the number of independent trajectory frames
 whose energies fall in the interval
 $(E - \Delta E/2, E + \Delta E/2)$
 divided by $\Delta E$
@@ -165,10 +172,9 @@ Z_k
 
 
 
-After eliminating $g(E)$,
-we determine,
+Eliminating $g(E)$
 from Eqs. \eqref{eq:gE_WHAM} and \eqref{eq:Z},
-the unitless free energy
+we find the unitless free energy
 $f_i \equiv -\log Z_i$
 as
 \begin{align}
@@ -233,13 +239,13 @@ f_i
 }
 {
   \sum_{k = 1}^K N_k \exp[-\beta_k \, \E(\vx) + f_k]
-},
+}.
 \label{eq:f_MBAR}
 \end{equation}
 %
-where,
-the denominator has been moved into the sum
-as it now depends on the configuration, $\vx$.
+%where,
+%the denominator has been moved into the sum
+%as it now depends on the configuration, $\vx$.
 
 
 
@@ -262,7 +268,8 @@ respectively.
 Similarly,
 non-Boltzmann weight\cite{
 mezei1987, *berg1992, *lee1993, *tsallis1988}
-can be used to replace the Boltzmann weight.
+can be used to replace the Boltzmann one
+for simulations in non-canonical ensembles.
 %
 Finally,
 once $g(E)$ is determined,
@@ -283,12 +290,14 @@ f_i^\mathrm{(new)}
 \right).
 \end{equation}
 %
-This equation, however,
-can suffer from a slow convergence,
-and thousands of iterations\cite{
+This is referred to as
+the direct implementation below.
+%
+It can suffer from a slow convergence,
+resulting in thousands of iterations\cite{
 bereau2009, kim2011}.
 %
-Below we focus a method on accelerate the process.
+Below we give a method to accelerate the process.
 
 
 
@@ -383,7 +392,7 @@ We now construct a new trial vector $\vct f^{(n)}$ as
 =
 \vct{\hat f}
 +
-\alpha \vct{\hat R}( \vct{\hat f} ),
+\alpha \, \vct{\hat R}( \vct{\hat f} ),
 \end{equation}
 %
 where the factor $\alpha$ is $1.0$ in this study
@@ -398,12 +407,10 @@ is used to update the basis as follows.
 
 
 \tikzstyle{emptydot}=[inner sep=0pt,minimum size=0.0mm]
-\tikzstyle{fRarrow}=[->, thick, draw=blue!30!gray]
-\tikzstyle{fRarrowx}=[->, very thick, draw=blue!70!gray]
-\tikzstyle{fRarr}=[->, thin, draw=blue!35!white]
-\tikzstyle{farr}=[->, thin, draw=black!25!white]
-\tikzstyle{farrow}=[->, thick, draw=black!80!white]
-\tikzstyle{farrowx}=[->, very thick, draw=black]
+\tikzstyle{fRarrow1}=[->, very thick, draw={rgb:red,4;white,1;gray,1}]
+\tikzstyle{fRarrow2}=[->, very thick, draw={rgb:blue,4;white,1;gray,1}]
+\tikzstyle{fRarrowx}=[->, very thick]
+\tikzstyle{fRarr}=[->, thin]
 \tikzstyle{fRlabel}=[inner sep=0pt, text=black!80!white]
 
 \begin{figure}
@@ -451,7 +458,8 @@ is used to update the basis as follows.
         \pgfmathsetmacro{\aval}{sqrt(8 + sqrt(8))*\Rval};
         \pgfmathsetmacro{\bval}{sqrt(8 - sqrt(8))*\Rval};
         \pgfmathsetmacro{\colora}{4 + 2.5 * \i};
-        \draw[fill, {black!\colora!white},
+        \draw[fill,
+              gray!\colora!white,
               rotate around={67.5:(0.6*\sz, 0.8*\sz)}]
           (0.6*\sz, 0.8*\sz)
           ellipse ({\bval*\sz} and {\aval*\sz});
@@ -468,8 +476,8 @@ is used to update the basis as follows.
         \pgfmathsetmacro\dy{0.9 - 1.0 * \lambda};
         \pgfmathsetmacro\xx{\x + \dx};
         \pgfmathsetmacro\yy{\y + \dy};
-        \draw [farr] (0, 0) -- (\x*\sz, \y*\sz);
-        \draw [fRarr] (\x*\sz, \y*\sz) -- (\xx*\sz, \yy*\sz);
+        \draw [fRarr, draw={rgb:red,\x;blue,\y;white,1.5;gray,0.5}]
+          (0, 0) -- (\x*\sz, \y*\sz) -- (\xx*\sz, \yy*\sz);
       }
       %
       %
@@ -498,7 +506,7 @@ is used to update the basis as follows.
         ] {};
       \node (f1) at (1.0*\sz, 0)
         [emptydot, label=below:{$\vct f_1$}]{}
-        edge[fRarrow] (f1R1);
+        edge[fRarrow1] (f1R1);
       %
       % vector 2
       %
@@ -511,7 +519,7 @@ is used to update the basis as follows.
         ] {};
       \node (f2) at (0, 1.0*\sz)
         [emptydot, label=left:{$\vct f_2$}]{}
-        edge[fRarrow] (f2R2);
+        edge[fRarrow2] (f2R2);
       %
       %
       %
@@ -542,9 +550,9 @@ is used to update the basis as follows.
       %
       %
       \node (origin) at (0, 0) [emptydot]{}
-        edge[farrow] (f1)
-        edge[farrow] (f2)
-        edge[farrowx] (fhat);
+        edge[fRarrow1] (f1)
+        edge[fRarrow2] (f2)
+        edge[fRarrowx] (fhat);
     \end{scope}
     %
     %
@@ -562,9 +570,11 @@ is used to update the basis as follows.
     \foreach \i in {1,...,19}
     {
       \pgfmathsetmacro\lambda{\i * 0.05}
+      \pgfmathsetmacro\x{1 - \lambda};
+      \pgfmathsetmacro\y{\lambda};
       \pgfmathsetmacro\dx{-0.1 + 0.5 * \lambda}
       \pgfmathsetmacro\dy{0.9 - 1.0 * \lambda}
-      \draw [fRarr]
+      \draw [fRarr, draw={rgb:red,\x;blue,\y;white,1.5;gray,0.5}]
         (\Rox, \Roy) -- (\Rox + \dx*\sz, \Roy + \dy*\sz);
     }
     %
@@ -612,8 +622,8 @@ is used to update the basis as follows.
     %
     %
     \node (Rorigin) at (\Rox, \Roy) [emptydot] {}
-      edge[fRarrow] (R1)
-      edge[fRarrow] (R2)
+      edge[fRarrow1] (R1)
+      edge[fRarrow2] (R2)
       edge[fRarrowx] (Rhat);
     %
     %
@@ -624,9 +634,8 @@ is used to update the basis as follows.
   %
   \caption{\label{fig:scheme}
     Schematic illustration of the method of
-    direct inversion of the iterative subspace (DIIS).
-    %
-    The aim is to solve a set of equation.
+    direct inversion of the iterative subspace (DIIS)
+    for solving a set of equation.
     %
     Each trial vector $\vct f_i$
     represents an approximate solution,
@@ -636,9 +645,10 @@ is used to update the basis as follows.
     Given a basis of a few (two here) trial vectors,
     DIIS seeks the combination
     $\vct {\hat R} = \sum_i c_i \, \vct R_i$
-    that achieves the minimal magnitude
+    that minimizes the magnitude
+    $\| \vct{\hat R} \|$
     under the constraint
-    $\sum_i c_i = 1$.
+    $\sum_i c_i = 1$ (left).
     %
     The coefficients, $c_i$, are used
     to combine the trial vectors as
@@ -661,7 +671,23 @@ is used to update the basis as follows.
 
 
 
+In each iteration of DIIS,
+the basis is updated
+by the new trial vector $\vct f^{(n)}$
+from the above iteration step.
+%
+Initially,
+the basis contains a single vector.
+%
+As we add more vectors into the basis,
+some old vectors are removed
+to maintain a maximal size of $M$.
+
+
+
 In a popular updating scheme\cite{kovalenko1999},
+the basis is treated as a queue:
+%
 we add $\vct f^{(n)}$ to the basis,
 if the basis contains fewer than $M$ vectors,
 %
@@ -669,33 +695,49 @@ or substitute $\vct f^{(n)}$ for the earliest vector in the basis.
 %
 If, however, $\vct f^{(n)}$
 produces an error greater than
-(in terms of the magnitude of the residual vector $\| \vct R(\vct f^{(n)}) \|$)
-$K_r$ (here, $K_r = 10.0$\cite{kovalenko1999})
-times the minimal error of the vectors in the basis,
+$K_r$ times the error of
+$\vct f_\mathrm{min}$,
+the least erroneous vector in the basis,
 %
 we rebuild the basis
-from the least erroneous vector
-in the basis.
+from $\vct f_\mathrm{min}$.
+%
+Here, the error of a vector $\vct f$ is defined as
+the magnitude of the residual vector as
+$\| \vct R(\vct f) \|$,
+and
+$K_r = 10.0$\cite{
+kovalenko1999}.
 
 
 
 An alternative is the following.
 %
 First, we find the most erroneous vector,
-$\vct f_m$, from the basis.
+$\vct f_\mathrm{max}$, from the basis.
 %
 If the new vector, $\vct f^{(n)}$,
-produces an error less than $\vct f_m$,
+produces an error less than $\vct f_\mathrm{max}$,
 we add $\vct f^{(n)}$ into the basis
 or, if the basis is full,
-substitute $\vct f^{(n)}$ for $\vct f_m$.
+substitute $\vct f^{(n)}$ for $\vct f_\mathrm{max}$.
 %
 Otherwise,
-we remove $\vct f_m$ from the basis,
+we remove $\vct f_\mathrm{max}$ from the basis,
 and if this empties the basis,
 we rebuild the basis from $\vct f^{(n)}$.
 %
 % We find the modification is slightly better.
+
+
+
+In both cases,
+DIIS recovers the direct implementation
+if $M = 1$.
+%
+Thus,
+the method is effective
+only if multiple bases are used.
 
 
 
@@ -707,27 +749,56 @@ we rebuild the basis from $\vct f^{(n)}$.
 
 
 
-The method is tested on three systems.
-
-
-The first is the two-dimensional $64\times64$ Ising model.
+The method was tested on three systems.
 %
-Eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$.
+The tolerance of the error of the free energies is $10^{-10}$.
 
 
 
-Lennard-Jones, canonical ($NVT$), isothermal-isobaric ($NPT$) ensemble.
+The first test system is
+the two-dimensional $64\times64$ Ising model.
 %
+We used parallel tempering\cite{
+  swendsen1986, *geyer1991, *hukushima1996, *hansmann1997,
+  *earl2005}
+Monte Carlo (MC)
+to simulate it for
+eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$.
 
 
 
-Molecular system of villin headpiece,
-The protein is immersed in
+The second system is the 108-particle Lennard-Jones system.
+%
+Parallel tempering molecular dynamics (MD)
+was used with a time step of $0.002$.
+The velocity rescaling thermostat\cite{bussi2007}
+was used with a time step of $0.02$.
+%
+The potential was cutoff at $r = 2.5$.
+%
+We simulated the system under
+the canonical ($NVT$), and isothermal-isobaric ($NPT$) ensembles,
+both using parallel tempering.
+%
+For the $NVT$ ensemble,
+we used ten temperatures: $T = 0.7, 0.8, \dots, 1.6$,
+and fixed the density at $\rho = 0.3$.
+%
+For the $NpT$ ensemble,
+we simulated the system
+under $N_T \times N_p = 5\times 10$ conditions:
+the temperatures were $T = 1.0, 1.1, \dots, 1.4$,
+the pressures were $p = 0.2, 0.4, \dots, 1.8$.
+
+
+
+The first system is a mini-protein: villin headpiece\cite{duan1998}
+(PDB ID: 1VII).
+%
+The protein was immersed in
 a dodecahedron box with 1898 water molecules and two chloride ions.
 %
-Both $NVT$ and $NPT$ ensembles are used.
-%
-The protein was simulated
+MD simulations were performed
 using GROMACS\cite{
   berendsen1995, *lindahl2001, *vanderspoel2005, *hess2008}.
 %
@@ -737,10 +808,72 @@ handled by the particle mesh Ewald method\cite{
 %
 The constraints were handled by the LINCS method\cite{
   hess1997}
-for hydrogen-dependent chemical bonds on the protein
+for hydrogen-related chemical bonds on the protein
 and by the SETTLE method\cite{
   miyamoto1992}
 for water molecules.
+%
+Both $NVT$ and $NPT$ ensembles were used.
+%
+In both cases, we simulated the system
+for about {\color{red} 100} ns
+under 12 conditions
+(the time step was 2 fs).
+%
+Energy frames were registered every 0.1 ps.
+%
+In the $NVT$ case,
+$T$ = 300 K, 310 K, \dots, 410 K.
+%
+In the $NpT$ case,
+the temperatures were the same,
+and the pressures were
+1.0 bar, 1.1 bar, \dots, 2.1 bar,
+respectively.
+
+
+
+The results are shown in Fig. \ref{fig:niter}.
+%
+The tested cases
+all required hundreds or thousands iterations
+for the direct method of WHAM.
+%
+The performance of the DIIS version of WHAM
+generally improved with increasing number of bases,
+although in some cases an optimal $M$ existed.
+%
+Optimally, DIIS can deliver a speedup of one or two orders of magnitude.
+%
+However, the result is highly system dependent.
+%
+Generally, we expect a larger gain from DIIS
+for a more complex system.
+
+
+
+
+\begin{figure}[h]
+  \makebox[\linewidth][c]{
+    \includegraphics[angle=0, width=0.9\linewidth]{fig/niter.pdf}
+  }
+  \caption{
+    \label{fig:niter}
+    Number of iterations versus the number of bases, $M$
+    in the DIIS version of WHAM.
+    %
+    The $M = 1$ result corresponds to the direct iteration.
+    %
+    For the Ising model and Lennard-Jones fluid,
+    the results have been averaged over many independent samples.
+    %
+    For the villin headpiece,
+    roughly 10\% of the trajectory frames
+    were randomly selected to build a sample each time.
+    %
+    The lines are to guide the eyes.
+  }
+\end{figure}
 
 
 

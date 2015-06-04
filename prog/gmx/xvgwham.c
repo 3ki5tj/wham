@@ -1,10 +1,11 @@
 /* WHAM for a set of xvg files */
 #include "../whammodel.h"
-#include "xvg.h"
 #define WHAM_MDIIS
 #include "../wham.h"
 #include <time.h>
 #include "../mtrand.h"
+#define MTRAND
+#include "xvg.h"
 
 
 
@@ -75,7 +76,7 @@ static char **getls(const char *fn,
   FILE *fp;
   int i;
   double tp;
-  char buf[4096];
+  char buf[4096] = "";
   char **fns;
 
   if ( (fp = fopen(fn, "r")) == NULL ) {
@@ -136,7 +137,7 @@ static hist_t *mkhist(const char *fnls,
   int i, j, nbeta;
   char **fns;
   xvg_t **xvg = NULL;
-  double emin = 1e30, emax = -1e30, emin1 = 1e30, emax1 = -1e30;
+  double xmin[2], xmax[2], emin = 1e30, emax = -1e30;
 
   /* scramble the random number seed */
   mtscramble( time(NULL) );
@@ -147,13 +148,13 @@ static hist_t *mkhist(const char *fnls,
 
   xnew(xvg, nbeta);
   for ( i = 0; i < nbeta; i++ ) {
-    xvg[i] = xvg_load(fns[i]);
-    xvg_minmax(xvg[i], &emin1, &emax1);
-    if ( emin1 < emin ) {
-      emin = emin1;
+    xvg[i] = xvg_load(fns[i], radd);
+    xvg_minmax(xvg[i], xmin, xmax);
+    if ( xmin[0] < emin ) {
+      emin = xmin[0];
     }
-    if ( emax1 > emax ) {
-      emax = emax1;
+    if ( xmax[0] > emax ) {
+      emax = xmax[0];
     }
   }
 
@@ -164,9 +165,7 @@ static hist_t *mkhist(const char *fnls,
 
   for ( i = 0; i < nbeta; i++ ) {
     for ( j = 0; j < xvg[i]->n; j++ ) {
-      if ( radd >= 1.0 || rand01() < radd ) {
-        hist_add1(hs, i, xvg[i]->y[0][j], 1.0, HIST_VERBOSE);
-      }
+      hist_add1(hs, i, xvg[i]->y[0][j], 1.0, HIST_VERBOSE);
     }
   }
 

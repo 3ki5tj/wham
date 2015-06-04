@@ -13,9 +13,13 @@
 #include <ctype.h>
 #include <math.h>
 
+#ifdef MTRAND
+#include "../mtrand.h"
+#endif
 
 
-const int xvg_blksz = 1024;
+
+const int xvg_blksz = 8192;
 
 typedef struct {
   int ncap; /* capacity */
@@ -69,12 +73,14 @@ __inline static void xvg_close(xvg_t *xvg)
 
 
 /* detect the number of y rows */
-__inline static int xvg_detectyrows(FILE *fp)
+__inline static int xvg_detectyrows(FILE *fp, double *dx)
 {
   int m = 0;
   char buf[1024], *p, *q;
+  double x1, x2;
 
   rewind(fp);
+  /* get the first data line */
   while ( fgets(buf, sizeof(buf), fp) ) {
     if ( buf[0] != '#' && buf[0] != '@' ) {
       break;
@@ -89,6 +95,8 @@ __inline static int xvg_detectyrows(FILE *fp)
   for ( p = buf; *p && isspace(*p); p++ )
     ;
 
+  sscanf(p, "%lf", &x1);
+
   while ( 1 ) {
     if ( *p == '\0' ) {
       break;
@@ -102,17 +110,35 @@ __inline static int xvg_detectyrows(FILE *fp)
       ;
   }
   m -= 1;
+
+  /* get the second data line */
+  while ( fgets(buf, sizeof(buf), fp) ) {
+    if ( buf[0] != '#' && buf[0] != '@' ) {
+      break;
+    }
+  }
+  if ( !feof(fp) ) {
+    sscanf(buf, "%lf", &x2);
+    *dx = x2 - x1;
+  } else {
+    *dx = 0;
+  }
+
   return m;
 }
 
 
 
 /* build an xvg object from file */
+#ifdef MTRAND
+__inline static xvg_t *xvg_load(const char *fn, double r)
+#else
 __inline static xvg_t *xvg_load(const char *fn)
+#endif
 {
   xvg_t *xvg = NULL;
   int k, m, next;
-  double xn;
+  double xn, dx;
   char buf[1024], *p;
   FILE *fp;
 
@@ -122,13 +148,15 @@ __inline static xvg_t *xvg_load(const char *fn)
   }
 
   /* detect the number of y rows */
-  if ( (m = xvg_detectyrows(fp)) <= 0 ) {
+  if ( (m = xvg_detectyrows(fp, &dx)) <= 0 ) {
     return xvg;
   }
 
   if ( (xvg = xvg_open(m)) == NULL ) {
     return xvg;
   }
+
+  xvg->dx = dx;
 
   rewind(fp);
   while ( fgets(buf, sizeof(buf), fp) ) {
@@ -137,20 +165,26 @@ __inline static xvg_t *xvg_load(const char *fn)
       continue;
     }
 
+#ifdef MTRAND
+    if ( r < 1 && rand01() > r ) {
+      continue;
+    }
+#endif
+
     /* reallocate memory */
     if ( xvg->n >= xvg->ncap ) {
       xvg->ncap += xvg_blksz;
 
-      xvg->x = realloc(xvg->x, xvg->ncap * sizeof(*xvg->x));
+      xvg->x = realloc(xvg->x, xvg->ncap * sizeof(xvg->x[0]));
       if ( xvg->x == NULL ) {
-        fprintf(stderr, "no memory for x, %d\n", xvg->ncap);
+        fprintf(stderr, "no memory for xvg->x, %d\n", xvg->ncap);
         return NULL;
       }
 
       for ( k = 0; k < xvg->m; k++ ) {
         xvg->y[k] = realloc(xvg->y[k], xvg->ncap * sizeof(xvg->y[k][0]));
         if ( xvg->y[k] == NULL ) {
-          fprintf(stderr, "no memory for y, %d\n", xvg->ncap);
+          fprintf(stderr, "no memory for xvg->y, %d\n", xvg->ncap);
           return NULL;
         }
       }
@@ -180,14 +214,9 @@ __inline static xvg_t *xvg_load(const char *fn)
         xvg_close(xvg);
         return NULL;
       }
-      //printf("%d %d %g\n", xvg->n, k, xvg->y[k][xvg->n]);
       p += next;
     }
-    //printf("line %d\n", xvg->n); getchar();
     xvg->n++;
-    if ( xvg->n == 2 ) {
-      xvg->dx = xvg->x[1] - xvg->x[0];
-    }
   }
 
   fclose(fp);
@@ -202,11 +231,10 @@ __inline static void xvg_minmax(const xvg_t *xvg, double *ymin, double *ymax)
 {
   int i, k, n = xvg->n, m = xvg->m;
 
-  for ( k = 0; k < m; k++ ) {
+  for ( k = 0; k < m; k++ ) { /* for m quantities */
     ymin[k] = 1e30;
     ymax[k] = -1e30;
     for ( i = 0; i < n; i++ ) {
-      //printf("k %d | i %d, y %g %g %g\n", k, i, xvg->y[k][i], ymin[k], ymax[k]);
       if ( xvg->y[k][i] < ymin[k] ) {
         ymin[k] = xvg->y[k][i];
       }
@@ -214,7 +242,6 @@ __inline static void xvg_minmax(const xvg_t *xvg, double *ymin, double *ymax)
         ymax[k] = xvg->y[k][i];
       }
     }
-    //getchar();
   }
 }
 

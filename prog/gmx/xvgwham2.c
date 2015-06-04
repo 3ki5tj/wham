@@ -1,10 +1,11 @@
 /* WHAM for a set of xvg files */
 #include "../whammodel.h"
-#include "xvg.h"
 #define WHAM2_MDIIS
 #include "../wham2.h"
 #include <time.h>
 #include "../mtrand.h"
+#define MTRAND
+#include "xvg.h"
 
 
 
@@ -160,7 +161,7 @@ static hist2_t *mkhist2(const char *fnls,
 
   xnew(xvg, nbp);
   for ( i = 0; i < nbp; i++ ) {
-    if ( (xvg[i] = xvg_load(fns[i])) == NULL ) {
+    if ( (xvg[i] = xvg_load(fns[i], radd)) == NULL ) {
       return NULL;
     }
     xvg_minmax(xvg[i], evmin1, evmax1);
@@ -184,10 +185,8 @@ static hist2_t *mkhist2(const char *fnls,
 
   for ( i = 0; i < nbp; i++ ) {
     for ( j = 0; j < xvg[i]->n; j++ ) {
-      if ( radd >= 1.0 || rand01() < radd ) {
-        hist2_add1(hs, i,
-            xvg[i]->y[0][j], xvg[i]->y[2][j], 1.0, HIST2_VERBOSE);
-      }
+      hist2_add1(hs, i,
+          xvg[i]->y[0][j], xvg[i]->y[2][j], 1.0, HIST2_VERBOSE);
     }
   }
 

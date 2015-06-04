@@ -77,7 +77,11 @@ def dostat(fninp):
   # write the output file
   s = "# %d %d\n" % (n, m)
   for j in range(m):
-    s += "%d %g %g\n" % (j, ave[j], (var[j]*n/(n-1))**0.5)
+    if n >= 2:
+      std = (var[j]*n/(n-1)) ** 0.5
+    else:
+      std = 0
+    s += "%d %g %g\n" % (j, ave[j], std)
 
   fnout = fninp.split(".")[0] + "wham.dat"
   open(fnout, "w").write(s)
