@@ -150,7 +150,8 @@ static int mdiis_solve(mdiis_t *m)
 
 
 /* construct the new f */
-static void mdiis_gen(mdiis_t *m, double *f, double damp)
+static void mdiis_gen(mdiis_t *m, double *f,
+    void (*normalize)(double *, int), double damp)
 {
   int ib, il, npt = m->npt, nb = m->nb;
 
@@ -161,6 +162,10 @@ static void mdiis_gen(mdiis_t *m, double *f, double damp)
     for ( il = 0; il < npt; il++ ) {
       m->f[nb][il] += coef * (m->f[ib][il] + damp * m->res[ib][il]);
     }
+  }
+
+  if ( normalize != NULL ) {
+    normalize(m->f[nb], m->npt);
   }
 
   /* f = m->f[nb] */
@@ -342,7 +347,8 @@ static int mdiis_update(mdiis_t *m, double *f, double *res,
 
 
 static double iter_mdiis(double *f, int npt,
-    double (*getres)(void *, double *, double *), void *obj,
+    double (*getres)(void *, double *, double *),
+    void (*normalize)(double *, int), void *obj,
     int nbases, double damp, int kth, double threshold,
     int itmax, double tol, int verbose)
 {
@@ -371,7 +377,7 @@ static double iter_mdiis(double *f, int npt,
       fprintf(stderr, "\n");
     }
     /* generate a new f from the set of coefficients */
-    mdiis_gen(mdiis, f, damp);
+    mdiis_gen(mdiis, f, normalize, damp);
     err = mdiis->getres(obj, f, res);
     /* add the new f into the basis */
     if ( kth ) {

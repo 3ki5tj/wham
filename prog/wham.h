@@ -163,6 +163,18 @@ static void wham_estimatelnz(wham_t *w, double *lnz)
 
 
 
+static void wham_normalize(double *lnz, int nbeta)
+{
+  int i;
+
+  for ( i = 1; i < nbeta; i++ ) {
+    lnz[i] -= lnz[0];
+  }
+  lnz[0] = 0;
+}
+
+
+
 static double wham_step(wham_t *w, double *lnz, double *res, int update)
 {
   hist_t *hist = w->hist;
@@ -212,6 +224,10 @@ static double wham_step(wham_t *w, double *lnz, double *res, int update)
     res[j] -= lnz[j];
     if ( fabs(res[j]) > err ) err = fabs(res[j]);
     if ( update ) lnz[j] += res[j];
+  }
+    
+  if ( update ) {
+    wham_normalize(lnz, nbeta);
   }
 
   return err;
@@ -287,7 +303,8 @@ static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
   double err;
 
   wham_estimatelnz(w, lnz);
-  err = iter_mdiis(lnz, hist->rows, wham_getres, w,
+  err = iter_mdiis(lnz, hist->rows,
+      wham_getres, wham_normalize, w,
       nbases, damp, queue, threshold, itmax, tol, verbose);
   if ( fnlndos ) wham_savelndos(w, fnlndos);
   wham_getav(w, fneav);

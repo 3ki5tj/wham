@@ -190,7 +190,7 @@ static hist2_t *mkhist2(const char *fnls,
     }
   }
 
-  hist2_save(hs, fnhis, HIST2_ADDAHALF|HIST2_VERBOSE);
+  hist2_save(hs, fnhis, HIST2_ADDAHALF|HIST2_VERBOSE|HIST2_NOZEROES);
 
   for ( i = 0; i < nbp; i++ ) {
     xvg_close(xvg[i]);
