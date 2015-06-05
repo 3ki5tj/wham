@@ -31,7 +31,7 @@ set ylabel "Number of iterations" offset 0.5, 0
 set key spacing 1.5
 #set key Left reverse spacing 1.5
 
-plot [0:20][:] \
+plot [0:20][8:] \
   "../../data/is2/is2wham.dat"    u 1:(($1 > 0) ? $2 : 1/0) w lp ls 1 t "Ising model", \
   "../../data/lj/ljwham.dat"      u 1:(($1 > 0) ? $2 : 1/0) w lp ls 2 t "Lennard-Jones fluid, {/Times-Italic NVT}", \
   "../../data/lj/lj2wham.dat"     u 1:(($1 > 0) ? $2 : 1/0) w lp ls 3 t "Lennard-Jones fluid, {/Times-Italic NpT}", \

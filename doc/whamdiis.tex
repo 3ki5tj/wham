@@ -457,7 +457,7 @@ is used to update the basis as follows.
         \pgfmathsetmacro{\Rval}{sqrt(\Fval*2/7)};
         \pgfmathsetmacro{\aval}{sqrt(8 + sqrt(8))*\Rval};
         \pgfmathsetmacro{\bval}{sqrt(8 - sqrt(8))*\Rval};
-        \pgfmathsetmacro{\colora}{4 + 2.5 * \i};
+        \pgfmathsetmacro{\colora}{12 + 3 * \i};
         \draw[fill,
               gray!\colora!white,
               rotate around={67.5:(0.6*\sz, 0.8*\sz)}]
@@ -711,7 +711,9 @@ kovalenko1999}.
 
 
 
-An alternative is the following.
+We used the following alternative
+in this study.
+%An alternative is the following.
 %
 First, we find the most erroneous vector,
 $\vct f_\mathrm{max}$, from the basis.
@@ -749,27 +751,44 @@ only if multiple bases are used.
 
 
 
-The method was tested on three systems.
+The direct and DIIS versions of WHAM
+were tested on three systems.
 %
-The tolerance of the error of the free energies is $10^{-10}$.
+In both cases,
+the initial free energy was obtained from
+the single histogram method:
+%
+\begin{equation*}
+f_i - f_{i-1}
+=
+\log
+\left\langle
+  \exp\left[
+    (\beta_j - \beta_{j-1}) \, E
+  \right]
+\right\rangle_j
+\end{equation*}
+%
+Iterations were not stopped
+until each $|R_i| < 10^{-10}$.
 
 
 
-The first test system is
+The first system is
 the two-dimensional $64\times64$ Ising model.
 %
 We used parallel tempering\cite{
   swendsen1986, *geyer1991, *hukushima1996, *hansmann1997,
   *earl2005}
 Monte Carlo (MC)
-to simulate it for
+with
 eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$.
 
 
 
 The second system is the 108-particle Lennard-Jones system.
 %
-Parallel tempering molecular dynamics (MD)
+Molecular dynamics (MD)
 was used with a time step of $0.002$.
 The velocity rescaling thermostat\cite{bussi2007}
 was used with a time step of $0.02$.
@@ -789,10 +808,14 @@ we simulated the system
 under $N_T \times N_p = 5\times 10$ conditions:
 the temperatures were $T = 1.0, 1.1, \dots, 1.4$,
 the pressures were $p = 0.2, 0.4, \dots, 1.8$.
+%
+The position Langevin barostat based on $\log V$
+was used with a step size of $10^{-5}$.
 
 
 
-The first system is a mini-protein: villin headpiece\cite{duan1998}
+The third system is a mini-protein:
+villin headpiece\cite{duan1998}
 (PDB ID: 1VII).
 %
 The protein was immersed in

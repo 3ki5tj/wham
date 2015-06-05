@@ -291,7 +291,7 @@ static int mdiis_update(mdiis_t *m, double *f, double *res,
 
   dot = mdiis_getdot(res, res, npt);
 
-  if ( dot > max ) {
+  if ( dot >= max ) {
     if ( nb >= 2 ) {
       /* shrink the basis by removing the base with
        * the largest residue and try again */

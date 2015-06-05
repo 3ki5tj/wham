@@ -7,7 +7,7 @@ figgps=$(patsubst %,fig/%.gp,  $(figs))
 
 texpdf = $(prj).pdf
 
-$(texpdf) : %.pdf : %.tex simul.bib Makefile
+$(texpdf) : %.pdf : %.tex simul.bib $(pdffigs) Makefile
 	pdflatex $<
 	bibtex $*
 	pdflatex $<

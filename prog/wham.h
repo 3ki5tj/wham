@@ -140,6 +140,8 @@ static void wham_estimatelnz(wham_t *w, double *lnz)
 
   lnz[0] = 0;
   for ( j = 1; j < nbeta; j++ ) {
+    /* estimate the free energy different between
+     * the pair j - 1 and j */
     db = w->beta[j] - w->beta[j - 1];
     s = 0;
     dlnz = LOG0;
