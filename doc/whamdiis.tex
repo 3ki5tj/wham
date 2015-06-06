@@ -1,4 +1,6 @@
-\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
+%
+\documentclass[reprint,superscriptaddress]{revtex4-1}
+%\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{color}
@@ -366,7 +368,8 @@ $\vct{\hat R} = \sum_i c_i \, \vct R_i$,
 that minimizes the magnitude
 $\| \vct R \|$.
 %
-If Eq. \eqref{eq:R_f} is nearly linear,
+If Eq. \eqref{eq:R_f} is nearly linear
+around the solutions,
 %
 $\vct{\hat R}$
 is roughly the residue vector of
@@ -380,7 +383,7 @@ $\{ \vct f_i \}$.
 Thus,
 we expect an iteration based on
 $\vct{\hat f}$
-to be more efficient than that
+to be more stable than that
 based on any of
 $\vct f_i$.
 
@@ -445,7 +448,7 @@ is used to update the basis as follows.
     % with the x axis.
     %
     %
-    \newcommand{\sz}{5cm}
+    \newcommand{\sz}{4cm}
     \begin{scope}
       %\clip ({-0.08*\sz}, {-0.08*\sz}) rectangle ({1.3*\sz}, {1.15*\sz});
       %
@@ -457,7 +460,7 @@ is used to update the basis as follows.
         \pgfmathsetmacro{\Rval}{sqrt(\Fval*2/7)};
         \pgfmathsetmacro{\aval}{sqrt(8 + sqrt(8))*\Rval};
         \pgfmathsetmacro{\bval}{sqrt(8 - sqrt(8))*\Rval};
-        \pgfmathsetmacro{\colora}{12 + 3 * \i};
+        \pgfmathsetmacro{\colora}{12 + 8 * \i};
         \draw[fill,
               gray!\colora!white,
               rotate around={67.5:(0.6*\sz, 0.8*\sz)}]
@@ -606,7 +609,7 @@ is used to update the basis as follows.
     %
     %
     %
-    \draw [thick, blue!50!gray]
+    \draw [thick]
           ({\Rox + 0.24*\sz}, {\Roy + 0.12*\sz})
        -- ({\Rox + 0.22*\sz}, {\Roy + 0.16*\sz})
        -- ({\Rox + 0.26*\sz}, {\Roy + 0.18*\sz});

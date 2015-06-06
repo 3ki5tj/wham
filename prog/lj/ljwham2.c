@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 
   if ( m->loadprev ) {
     /* load from existing histogram */
-    if ( (hs = hist2_initf(m->fnhis2)) == NULL ) {
+    if ( (hs = hist2_initf(m->fnhis2, HIST2_INT | HIST2_VERBOSE)) == NULL ) {
       return -1;
     }
   } else {

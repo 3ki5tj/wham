@@ -190,7 +190,7 @@ static hist2_t *mkhist2(const char *fnls,
     }
   }
 
-  hist2_save(hs, fnhis, HIST2_ADDAHALF|HIST2_VERBOSE|HIST2_NOZEROES);
+  hist2_save(hs, fnhis, HIST2_ADDAHALF | HIST2_NOZEROES | HIST2_VERBOSE);
 
   for ( i = 0; i < nbp; i++ ) {
     xvg_close(xvg[i]);
@@ -221,7 +221,7 @@ int main(int argc, char **argv)
 
   /* try to load from the existing histogram */
   if ( m->loadprev ) {
-    hs = hist2_initf(m->fnhis2);
+    hs = hist2_initf(m->fnhis2, HIST2_INT | HIST2_VERBOSE);
     if ( hs == NULL ) {
       return -1;
     }
@@ -253,6 +253,15 @@ int main(int argc, char **argv)
     wham2_mdiis(hs, beta, bpres, lnz,
         m->mdiis_nbases, m->mdiis_damp, m->mdiis_kth, m->mdiis_threshold,
         m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
+  }
+
+  for ( i = 0; i < hs->rows; i++ ) {
+    double tot, eav, vav, see, sev, svv;
+    eav = hist2_getave(hs, i, &tot, &vav, &see, &sev, &svv);
+    fprintf(stderr, "%3d %8.5f %8.5f %10.3f %8.0f "
+        "%11.4f(%10.4f) %11.4f(%10.4f) %10.4f\n",
+        i, beta[i], bpres[i]/beta[i], lnz[i], tot,
+        eav, sqrt(see), vav, sqrt(svv), sev);
   }
 
   hist2_close(hs);

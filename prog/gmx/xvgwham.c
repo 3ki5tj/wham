@@ -169,7 +169,7 @@ static hist_t *mkhist(const char *fnls,
     }
   }
 
-  hist_save(hs, fnhis, HIST_ADDAHALF|HIST_VERBOSE);
+  hist_save(hs, fnhis, HIST_ADDAHALF | HIST_NOZEROES | HIST_VERBOSE);
 
   for ( i = 0; i < nbeta; i++ ) {
     xvg_close(xvg[i]);
@@ -199,7 +199,7 @@ int main(int argc, char **argv)
 
   if ( m->loadprev ) {
     /* load from the existing histogram */
-    if ( (hs = hist_initf(m->fnhis)) == NULL ) {
+    if ( (hs = hist_initf(m->fnhis, HIST_INT | HIST_VERBOSE)) == NULL ) {
       return -1;
     }
 
@@ -229,6 +229,13 @@ int main(int argc, char **argv)
     wham_mdiis(hs, beta, lnz,
         m->mdiis_nbases, m->mdiis_damp, m->mdiis_kth, m->mdiis_threshold,
         m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
+  }
+
+  for ( i = 0; i < hs->rows; i++ ) {
+    double tot, eav, var;
+    eav = hist_getave(hs, i, &tot, &var);
+    fprintf(stderr, "%3d %8.5f %10.3f %8.0f %11.4f(%10.4f)\n",
+        i, beta[i], lnz[i], tot, eav, sqrt(var));
   }
 
   hist_close(hs);

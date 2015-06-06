@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 
   if ( m->loadprev ) {
     /* load from existing histogram */
-    if ( (hs = hist_initf(m->fnhis)) == NULL ) {
+    if ( (hs = hist_initf(m->fnhis, HIST_INT | HIST_VERBOSE)) == NULL ) {
       return -1;
     }
   } else {

@@ -32,6 +32,7 @@
 #define HIST2_KEEPEDGE   (HIST2_KEEPLEFT | HIST2_KEEPRIGHT | HIST2_KEEPLEFT2 | HIST2_KEEPRIGHT2)
 #define HIST2_KEEPHIST   0x0100
 #define HIST2_OVERALL    0x0200
+#define HIST2_INT        0x0400
 #define HIST2_ADDITION   0x1000
 
 
@@ -113,6 +114,24 @@ __inline static void hist2_getsums(const double *h, int n,
 
 
 
+__inline static double hist2_getave(const hist2_t *hs, int r,
+    double *s, double *avy, double *sxx, double *sxy, double *syy)
+{
+  int n = hs->n, m = hs->m;
+  double sums[6];
+
+  hist2_getsums(hs->arr + r * n * m,
+      n, hs->xmin, hs->dx, m, hs->ymin, hs->dy, sums);
+  if ( s      != NULL ) *s      = sums[0];
+  if ( avy    != NULL ) *avy    = sums[2];
+  if ( sxx    != NULL ) *sxx    = sums[3];
+  if ( sxy    != NULL ) *sxy    = sums[4];
+  if ( syy    != NULL ) *syy    = sums[5];
+  return sums[1];
+}
+
+
+
 __inline static int hist2_save(const hist2_t *hs, const char *fn, unsigned flags)
 {
   FILE *fp;
@@ -136,7 +155,7 @@ __inline static int hist2_save(const hist2_t *hs, const char *fn, unsigned flags
   fprintf(fp, "# 1 0x%X | %d %d %g %g %d %g %g | ",
       flags, rows, n, xmin, dx, m, ymin, dy);
   for (r = 0; r < rows; r++) /* number of visits */
-    fprintf(fp, "%g ", sums[r][0]);
+    fprintf(fp, "%20.14E ", sums[r][0]);
   fprintf(fp, " | ");
   for (r = 0; r < rows; r++) /* averages and standard deviations */
     fprintf(fp, "%g %g %g %g %g ", sums[r][1], sums[r][2],
@@ -339,6 +358,9 @@ __inline static int hist2_load(hist2_t *hs, const char *fn, unsigned flags)
       }
       if ( !hashist ) g = g2 * fac;
       if ( add ) g += hs->arr[r*nm + i*m + j];
+      if ( flags & HIST2_INT ) {
+        g = (long) (g + 0.5);
+      }
       hs->arr[r*nm + i*m + j] = g;
     }
   }
@@ -442,7 +464,7 @@ __inline static int hist2_getinfo(const char *fn, int *row,
 
 
 /* initialize a histogram from file */
-__inline static hist2_t *hist2_initf(const char *fn)
+__inline static hist2_t *hist2_initf(const char *fn, unsigned flags)
 {
   int rows, version;
   unsigned fflags;
@@ -459,7 +481,7 @@ __inline static hist2_t *hist2_initf(const char *fn)
     return NULL;
   }
 
-  if ( hist2_load(hs, fn, HIST2_VERBOSE) != 0 ) {
+  if ( hist2_load(hs, fn, flags) != 0 ) {
     hist2_close(hs);
     return NULL;
   }

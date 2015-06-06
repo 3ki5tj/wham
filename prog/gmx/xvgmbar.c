@@ -204,6 +204,15 @@ int main(int argc, char **argv)
         m->itmax, m->tol, m->verbose);
   }
 
+  for ( i = 0; i < nbeta; i++ ) {
+    fprintf(stderr, "%3d %8.5f %10.3f %8d\n",
+        i, beta[i], lnz[i], xvg[i]->n);
+  }
+
+  for ( i = 0; i < nbeta; i++ ) {
+    free(xvg[i]);
+  }
+  free(xvg);
   free(beta);
   free(lnz);
   return 0;
