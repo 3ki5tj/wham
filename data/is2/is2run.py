@@ -17,7 +17,8 @@ nequil = 100000
 nsteps = 10000000
 fnlog = "is2.log"
 update_method = " "
-mthreshold = 10.0
+mthreshold = " "
+tol = " "
 cmdopt = ""
 verbose = 0
 
@@ -34,13 +35,14 @@ def usage():
 
   OPTIONS:
     -N              set the number of samples
-    -M, --nbases=   set the maximal number of bases
+    -M, --nbases=   set the maximal number of bases in MDIIS
     -m, --nequil=   set the number of equilibration steps
     -n, --nsteps=   set the number of simulation steps
     -o, --log=      set the output log file
     --kth           use the KTH scheme in MDIIS
     --hp            use the HP scheme in MDIIS
     --mthreshold=   set the clean up threshold for MDIIS
+    --tol=          set the tolerance of error
     --opt=          set options to be passed to the command line
     -v              be verbose
     --verbose=      set verbocity
@@ -56,14 +58,15 @@ def doargs():
     opts, args = getopt.gnu_getopt(sys.argv[1:],
         "hvN:M:m:n:o:",
         [ "help", "verbose=",
-          "nbases=", "KTH", "kth", "HP", "hp", "mthreshold=",
+          "nbases=", "KTH", "kth", "HP", "hp",
+          "mthreshold=", "tol=",
           "nequil=", "nsteps=", "log=", "opt=",
         ] )
   except getopt.GetoptError, err:
     print str(err)
     usage()
 
-  global nsamp, nbases, update_method, mthreshold
+  global nsamp, nbases, update_method, mthreshold, tol
   global nequil, nsteps, fnlog, cmdopt, verbose
 
   for o, a in opts:
@@ -79,8 +82,10 @@ def doargs():
       update_method = "--kth"
     elif o in ("--HP", "--hp"):
       update_method = "--hp"
+    elif o in ("--tol",):
+      tol = "--tol=%g" % float(a)
     elif o in ("--mthreshold",):
-      mthreshold = float(a)
+      mthreshold = "--mthreshold=%g" % float(a)
     elif o in ("--opt",):
       cmdopt = a
     elif o in ("-m", "--nequil"):
@@ -112,8 +117,8 @@ def main():
 
   shutil.copy("../../prog/is2/%s" % prog, "./%s" % prog)
 
-  cmd0 = "./%s --re --nequil=%d --nsteps=%d %s" % (
-      prog, nequil, nsteps, cmdopt)
+  cmd0 = "./%s --re --nequil=%d --nsteps=%d %s %s" % (
+      prog, nequil, nsteps, tol, cmdopt)
 
   ns = [0]*(nbases + 1)
   for i in range(nsamp):
@@ -124,9 +129,9 @@ def main():
     ns[0] = getnsteps(err)
 
     for nb in range(1, nbases + 1):
-      cmd = "%s --wham=MDIIS --nbases=%d -H %s --mthreshold=%g" % (
-          cmd0, nb, update_method, mthreshold)
-      ret, out, err = zcom.runcmd(cmd, capture = True)
+      cmd = "%s --wham=MDIIS --nbases=%d -H %s %s" % (
+          cmd0.strip(), nb, update_method, mthreshold)
+      ret, out, err = zcom.runcmd(cmd.strip(), capture = True)
       ns[nb] = getnsteps(err)
 
     # save to the log file

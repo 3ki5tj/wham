@@ -187,8 +187,9 @@ static double mbar(int nbeta,
 {
   mbar_t *mbar = mbar_open(nbeta, beta, xvg);
   int it;
-  double err, errp = 1e30;
-
+  double err, errp;
+  
+  err = errp = 1e30;
   mbar_estimatelnz(mbar, lnz);
   for ( it = 0; it < itmax; it++ ) {
     err = mbar_step(mbar, lnz, mbar->res, 1);
@@ -207,7 +208,7 @@ static double mbar(int nbeta,
 
 
 
-#ifdef MBAR_ENABLE_MDIIS
+#ifdef ENABLE_MDIIS
 /* MDIIS method */
 #include "../mdiis.h"
 
@@ -236,7 +237,7 @@ static double mbar_mdiis(int nbeta,
   return err;
 }
 
-#endif /* MBAR_MDIIS */
+#endif /* ENABLE_MDIIS */
 
 
 

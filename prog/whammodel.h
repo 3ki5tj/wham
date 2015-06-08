@@ -93,10 +93,10 @@ __inline static void model_default(model_t *m)
   m->dv = 0.02;
   m->wham_method = WHAM_DIRECT;
   m->itmax = 100000;
-  m->tol = 1e-10;
+  m->tol = 1e-8;
   m->mdiis_nbases = 10;
   m->mdiis_damp = 1.0;
-#ifdef WHAM_ENABLE_MDIIS
+#ifdef ENABLE_MDIIS
   m->mdiis_update_method = MDIIS_UPDATE_DEFAULT;
 #endif
   m->mdiis_threshold = 10.0;
@@ -251,7 +251,7 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->mdiis_nbases = atoi(q);
       } else if ( strcmpfuzzy(p, "mdamp") == 0 ) {
         m->mdiis_damp = atof(q);
-#ifdef WHAM_ENABLE_MDIIS
+#ifdef ENABLE_MDIIS
       } else if ( strcmpfuzzy(p, "KTH") == 0 ) {
         m->mdiis_update_method = MDIIS_UPDATE_KTH;
       } else if ( strcmpfuzzy(p, "HP") == 0 ) {

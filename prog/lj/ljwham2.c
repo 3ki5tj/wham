@@ -1,5 +1,5 @@
 /* test program for the two-dimensional WHAM */
-#define WHAM2_ENABLE_MDIIS
+#define ENABLE_MDIIS
 #include "../wham2.h"
 #include "lj.h"
 #include <time.h>

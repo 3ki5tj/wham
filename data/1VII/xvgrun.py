@@ -17,7 +17,8 @@ nbases = 20
 fnls = None
 fnlog = None
 update_method = " "
-mthreshold = 10.0
+mthreshold = " "
+tol = " "
 cmdopt = ""
 doev = False
 verbose = 0
@@ -42,6 +43,7 @@ def usage():
     --kth           use the KTH scheme in MDIIS
     --hp            use the HP scheme in MDIIS
     --mthreshold=   set the clean up threshold for MDIIS
+    --tol=          set the tolerance of error
     --opt=          set options to be passed to the command line
     --ev, --xvg2    do the two-dimensional case
     -v              be verbose
@@ -58,7 +60,8 @@ def doargs():
     opts, args = getopt.gnu_getopt(sys.argv[1:],
         "hvN:r:M:l:o:",
         [ "help", "verbose=",
-          "nbases=", "KTH", "kth", "HP", "hp", "mthreshold=",
+          "nbases=", "KTH", "kth", "HP", "hp",
+          "mthreshold=", "tol=",
           "ls=", "log=",
           "opt=", "ev", "xvg2", "gmx2",
         ] )
@@ -66,7 +69,7 @@ def doargs():
     print str(err)
     usage()
 
-  global nsamp, radd, nbases, update_method, mthreshold
+  global nsamp, radd, nbases, update_method, mthreshold, tol
   global fnls, fnlog, doev, cmdopt, verbose
 
   for o, a in opts:
@@ -85,7 +88,9 @@ def doargs():
     elif o in ("--HP", "--hp"):
       update_method = "--hp"
     elif o in ("--mthreshold",):
-      mthreshold = float(a)
+      mthreshold = "--mthreshold=%g" % float(a)
+    elif o in ("--tol",):
+      tol = "--tol=%g" % float(a)
     elif o in ("--opt",):
       cmdopt = a
     elif o in ("-l", "--ls="):
@@ -127,8 +132,8 @@ def main():
 
   shutil.copy("../../prog/gmx/" + prog, "./" + prog)
 
-  cmd0 = "./%s -r %g %s %s" % (
-      prog, radd, cmdopt, fnls)
+  cmd0 = "./%s -r %g %s %s %s" % (
+      prog, radd, fnls, tol, cmdopt)
 
   ns = [0]*(nbases + 1)
   for i in range(nsamp):
@@ -139,9 +144,9 @@ def main():
     ns[0] = getnsteps(err)
 
     for nb in range(1, nbases + 1):
-      cmd = "%s --wham=MDIIS --nbases=%d -H %s --mthreshold=%g" % (
-          cmd0, nb, update_method, mthreshold)
-      ret, out, err = zcom.runcmd(cmd, capture = True)
+      cmd = "%s --wham=MDIIS --nbases=%d -H %s %s" % (
+          cmd0.strip(), nb, update_method, mthreshold)
+      ret, out, err = zcom.runcmd(cmd.strip(), capture = True)
       ns[nb] = getnsteps(err)
 
     # save to the log file

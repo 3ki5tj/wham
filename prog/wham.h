@@ -282,7 +282,7 @@ static double wham(hist_t *hist, const double *beta, double *lnz,
 
 
 
-#ifdef WHAM_ENABLE_MDIIS
+#ifdef ENABLE_MDIIS
 /* MDIIS method */
 #include "mdiis.h"
 
@@ -313,7 +313,7 @@ static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
   return err;
 }
 
-#endif /* WHAM_MDIIS */
+#endif /* ENABLE_MDIIS */
 
 
 

@@ -323,19 +323,23 @@ static double wham2_step(wham2_t *w, double *lnz, double *res, int update)
         res[k] = wham2_lnadd(res[k], w->lndos[ij] - bx * x - by * y);
       }
     }
-  }
-  for ( x = res[0], k = 0; k < nbeta; k++ )
-    res[k] -= x; /* shift the baseline */
-
-  for ( err = 0, k = 0; k < nbeta; k++ ) {
     res[k] -= lnz[k];
-    if ( fabs(res[k]) > err ) err = fabs(res[k]);
-    if ( update ) lnz[k] += res[k];
+  }
+
+  wham2_normalize(res, nbeta);
+  for ( err = 0, i = 0; i < nbeta; i++ ) {
+    if ( fabs(res[i]) > err ) {
+      err = fabs(res[i]);
+    }
   }
 
   if ( update ) {
+    for ( i = 0; i < nbeta; i++ ) {
+      lnz[i] += res[i];
+    }
     wham2_normalize(lnz, nbeta);
   }
+
   return err;
 }
 
@@ -387,7 +391,7 @@ static double wham2(hist2_t *hist,
 
 
 
-#ifdef WHAM2_ENABLE_MDIIS
+#ifdef ENABLE_MDIIS
 /* MDIIS method */
 #include "mdiis.h"
 
@@ -419,7 +423,7 @@ static double wham2_mdiis(hist2_t *hist,
   return err;
 }
 
-#endif /* WHAM2_MDIIS */
+#endif /* ENABLE_MDIIS */
 
 
 

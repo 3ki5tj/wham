@@ -1,5 +1,5 @@
 /* WHAM for two-dimensional Ising model */
-#define WHAM_ENABLE_MDIIS
+#define ENABLE_MDIIS
 #include "../wham.h"
 #define IS2_LB 6
 #include "is2.h"
@@ -127,6 +127,13 @@ int main(int argc, char **argv)
         m->mdiis_update_method, m->mdiis_threshold,
         m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
   }
+
+  if ( m->verbose ) {
+    for ( iT = 0; iT < m->nT; iT++ ) {
+      fprintf(stderr, "%3d %8.5f %10.3f\n",
+         iT, beta[iT], lnz[iT]);
+    }
+  } 
 
   hist_close(hs);
   free(beta);

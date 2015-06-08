@@ -1,5 +1,5 @@
 /* test program for WHAM */
-#define WHAM_ENABLE_MDIIS
+#define ENABLE_MDIIS
 #include "../wham.h"
 #include "lj.h"
 #include <time.h>
