@@ -1,11 +1,11 @@
 /* MBAR for a set of xvg files */
-#include "../whammodel.h"
 #include <time.h>
 #include "../mtrand.h"
 #define MTRAND
 #include "xvg.h"
-#define MBAR_MDIIS
+#define MBAR_ENABLE_MDIIS
 #include "mbar.h"
+#include "../whammodel.h"
 
 
 
@@ -200,7 +200,7 @@ int main(int argc, char **argv)
   } else {
     mbar_mdiis(nbeta, xvg, beta, lnz,
         m->mdiis_nbases, m->mdiis_damp,
-        m->mdiis_kth, m->mdiis_threshold,
+        m->mdiis_update_method, m->mdiis_threshold,
         m->itmax, m->tol, m->verbose);
   }
 

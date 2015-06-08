@@ -16,7 +16,7 @@ nbases = 20
 nequil = 5000
 nsteps = 500000
 fnlog = None
-kth = False
+update_method = " "
 mthreshold = 10.0
 cmdopt = ""
 doev = False
@@ -40,6 +40,7 @@ def usage():
     -n, --nsteps=   set the number of simulation steps
     -o, --log=      set the output log file
     --kth           use the KTH scheme in MDIIS
+    --hp            use the HP scheme in MDIIS
     --mthreshold=   set the clean up threshold for MDIIS
     --opt=          set options to be passed to the command line
     --ev, --lj2     do the two-dimensional case
@@ -57,7 +58,7 @@ def doargs():
     opts, args = getopt.gnu_getopt(sys.argv[1:],
         "hvN:M:m:n:o:",
         [ "help", "verbose=",
-          "nbases=", "KTH", "kth", "mthreshold=",
+          "nbases=", "KTH", "kth", "HP", "hp", "mthreshold=",
           "nequil=", "nsteps=", "log=",
           "opt=", "ev", "lj2",
         ] )
@@ -65,7 +66,7 @@ def doargs():
     print str(err)
     usage()
 
-  global nsamp, nbases, kth, mthreshold
+  global nsamp, nbases, update_method, mthreshold
   global nequil, nsteps, fnlog, doev, cmdopt, verbose
 
   for o, a in opts:
@@ -77,8 +78,10 @@ def doargs():
       nsamp = int(a)
     elif o in ("-M", "--nbases"):
       nbases = int(a)
-    elif o in ("-KTH", "--kth"):
-      kth = True
+    elif o in ("--KTH", "--kth"):
+      update_method = "--kth"
+    elif o in ("--HP", "--hp"):
+      update_method = "--hp"
     elif o in ("--mthreshold",):
       mthreshold = float(a)
     elif o in ("--opt",):
@@ -134,9 +137,8 @@ def main():
     ns[0] = getnsteps(err)
 
     for nb in range(1, nbases + 1):
-      cmd = "%s --wham=MDIIS --nbases=%d -H" % (cmd0, nb)
-      if kth:
-        cmd += " --kth --mthreshold=%g" % mthreshold
+      cmd = "%s --wham=MDIIS --nbases=%d -H %s --mthreshold=%g" % (
+          cmd0, nb, update_method, mthreshold)
       ret, out, err = zcom.runcmd(cmd, capture = True)
       ns[nb] = getnsteps(err)
 

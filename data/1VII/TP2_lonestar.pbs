@@ -1,0 +1,33 @@
+#!/bin/bash
+#$ -V                           # Inherit the submission environment
+#$ -cwd                         # Start job in submission directory
+#$ -N TP2simul                  # Job Name
+#$ -j y                         # Combine stderr and stdout
+#$ -o $JOB_NAME.o$JOB_ID        # Name of the output file (eg. myMPI.oJobID)
+#$ -pe 12way 12                 # Requests 12 tasks/node, 12 cores total
+#$ -q normal                    # Queue name normal
+#$ -l h_rt=24:00:00             # Run time (hh:mm:ss) - 24.0 hours
+#$ -A Proteins-and-DNA-sol      # Account
+
+# make sure to find the correct gromacs
+export GMXLIB=$HOME/work/gmx/gromacs5.0/share/top
+
+export mdrun="$HOME/work/gmx/gromacs5.0/buildicc/bin/gmx mdrun"
+
+export prj="npt"
+
+for dir in T310P0.95 T320P0.9 T330P0.85 T340P0.8 T350P0.75 T360P0.7 T370P0.65 T380P0.6 T390P0.55 T400P0.5 T410P0.45 T420P0.4 ; do
+  cd $dir
+  pwd
+  if [ -f $prj.cpt ]; then
+    OPTCPT="-cpi $prj.cpt"
+  else
+    OPTCPT=" "
+  fi
+  # single thread running
+  $mdrun -nt 1 -maxh 23.9 -deffnm $prj $OPTCPT &
+  cd ..
+done
+
+wait
+

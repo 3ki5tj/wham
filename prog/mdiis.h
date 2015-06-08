@@ -209,7 +209,7 @@ static int mdiis_build(mdiis_t *m, double *f, double *res)
 
 
 /* try to add the new vector `f` and its residue `res`
- * into the base using the KTH scheme */
+ * into the base using the Kovalenko-Ten-no-Hirata scheme */
 static int mdiis_update_kth(mdiis_t *m, double *f, double *res,
     double err, double threshold)
 {
@@ -248,6 +248,77 @@ static int mdiis_update_kth(mdiis_t *m, double *f, double *res,
   } else {
     ib = m->ibQ; /* the earliest vector */
     m->ibQ = (ib + 1) % m->mnb;
+  }
+
+  /* replace base ib by f */
+  for ( i = 0; i < npt; i++ ) {
+    m->f[ib][i] = f[i];
+    m->res[ib][i] = res[i];
+  }
+
+  /* update the residue correlation matrix
+   * note: we do not need to update the last row & column */
+  for ( i = 0; i < nb; i++ ) {
+    m->mat[i*mnb + ib] = m->mat[ib*mnb + i]
+      = mdiis_getdot(m->res[i], res, npt);
+  }
+  return ib;
+}
+
+
+
+/* try to add the new vector `f` and its residue `res`
+ * into the base using the Howard-Pettitt scheme */
+static int mdiis_update_hp(mdiis_t *m, double *f, double *res,
+    double err, double threshold)
+{
+  int i, ibmin, ibmax, ib, nb, mnb, npt = m->npt;
+  double dot, min, max;
+
+  nb = m->nb;
+  mnb = m->mnb;
+
+  /* save this function if it achieves the minimal error so far */
+  if ( err < m->errmin ) {
+    cparr(m->fbest, m->f[nb], npt);
+    m->errmin = err;
+  }
+
+  /* choose the base with the smallest residue */
+  ibmin = 0;
+  ibmax = 0;
+  for ( i = 1; i < nb; i++ ) {
+    /* the diagonal represents the error */
+    if ( m->mat[i*mnb + i] < m->mat[ibmin*mnb + ibmin] ) {
+      ibmin = i;
+    }
+    if ( m->mat[i*mnb + i] > m->mat[ibmax*mnb + ibmax] ) {
+      ibmax = i;
+    }
+  }
+  min = m->mat[ibmin*mnb + ibmin];
+  max = m->mat[ibmax*mnb + ibmax];
+  dot = mdiis_getdot(res, res, npt);
+
+  /* we do not allow the error of the new vector
+   * to be greater than the current maximal error,
+   * because this can easily lead to a limited cycle
+   * in which the most erroneous vector switches
+   * between two versions */
+  if ( dot > threshold * threshold * min
+    || dot >= max ) {
+    /* rebuild the basis from f
+     * if we rebuild the basis from f[ibmin]
+     * it is more likely to fall into a limited cycle */
+    mdiis_build(m, f, res);
+    return 0;
+  }
+
+  if ( nb < m->mnb ) {
+    ib = nb;
+    m->nb = ++nb;
+  } else {
+    ib = ibmax;
   }
 
   /* replace base ib by f */
@@ -346,10 +417,18 @@ static int mdiis_update(mdiis_t *m, double *f, double *res,
 
 
 
+enum {
+  MDIIS_UPDATE_DEFAULT,
+  MDIIS_UPDATE_KTH,
+  MDIIS_UPDATE_HP,
+  MDIIS_UPDATE_METHODS
+};
+
 static double iter_mdiis(double *f, int npt,
     double (*getres)(void *, double *, double *),
     void (*normalize)(double *, int), void *obj,
-    int nbases, double damp, int kth, double threshold,
+    int nbases, double damp,
+    int update_method, double threshold,
     int itmax, double tol, int verbose)
 {
   mdiis_t *mdiis;
@@ -380,7 +459,9 @@ static double iter_mdiis(double *f, int npt,
     mdiis_gen(mdiis, f, normalize, damp);
     err = mdiis->getres(obj, f, res);
     /* add the new f into the basis */
-    if ( kth ) {
+    if ( update_method == MDIIS_UPDATE_HP ) {
+      ib = mdiis_update_hp(mdiis, f, res, err, threshold);
+    } else if ( update_method == MDIIS_UPDATE_KTH ) {
       ib = mdiis_update_kth(mdiis, f, res, err, threshold);
     } else {
       ib = mdiis_update(mdiis, f, res, err);

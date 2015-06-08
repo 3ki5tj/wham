@@ -1,0 +1,12 @@
+../../data/1VII/T300/e.xvg
+../../data/1VII/T310/e.xvg
+../../data/1VII/T320/e.xvg
+../../data/1VII/T330/e.xvg
+../../data/1VII/T340/e.xvg
+../../data/1VII/T350/e.xvg
+../../data/1VII/T360/e.xvg
+../../data/1VII/T370/e.xvg
+../../data/1VII/T380/e.xvg
+../../data/1VII/T390/e.xvg
+../../data/1VII/T400/e.xvg
+../../data/1VII/T410/e.xvg

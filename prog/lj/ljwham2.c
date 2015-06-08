@@ -1,10 +1,10 @@
 /* test program for the two-dimensional WHAM */
-#define LJ_MODEL
-#include "../whammodel.h"
-#define WHAM2_MDIIS
+#define WHAM2_ENABLE_MDIIS
 #include "../wham2.h"
 #include "lj.h"
 #include <time.h>
+#define LJ_MODEL
+#include "../whammodel.h"
 
 
 
@@ -159,7 +159,8 @@ int main(int argc, char **argv)
         m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
   } else {
     wham2_mdiis(hs, beta, bp, lnz,
-        m->mdiis_nbases, m->mdiis_damp, m->mdiis_kth, m->mdiis_threshold,
+        m->mdiis_nbases, m->mdiis_damp,
+        m->mdiis_update_method, m->mdiis_threshold,
         m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
   }
 

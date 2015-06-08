@@ -225,7 +225,7 @@ static double wham_step(wham_t *w, double *lnz, double *res, int update)
     if ( fabs(res[j]) > err ) err = fabs(res[j]);
     if ( update ) lnz[j] += res[j];
   }
-    
+
   if ( update ) {
     wham_normalize(lnz, nbeta);
   }
@@ -241,8 +241,9 @@ static double wham_getlndos(wham_t *w, double *lnz,
     int itmax, double tol, int verbose)
 {
   int it;
-  double err, errp = 1e30;
+  double err, errp;
 
+  err = errp = 1e30;
   for ( it = 0; it < itmax; it++ ) {
     err = wham_step(w, lnz, w->res, 1);
     if ( verbose ) {
@@ -281,7 +282,7 @@ static double wham(hist_t *hist, const double *beta, double *lnz,
 
 
 
-#ifdef WHAM_MDIIS
+#ifdef WHAM_ENABLE_MDIIS
 /* MDIIS method */
 #include "mdiis.h"
 

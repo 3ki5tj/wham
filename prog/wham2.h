@@ -347,8 +347,9 @@ static double wham2_getlndos(wham2_t *w, double *lnz,
     int itmax, double tol, int verbose)
 {
   int it;
-  double err, errp = 1e30;
+  double err, errp;
 
+  err = errp = 1e30;
   for ( it = 1; it <= itmax; it++ ) {
     err = wham2_step(w, lnz, w->res, 1);
     if ( verbose ) {
@@ -386,7 +387,7 @@ static double wham2(hist2_t *hist,
 
 
 
-#ifdef WHAM2_MDIIS
+#ifdef WHAM2_ENABLE_MDIIS
 /* MDIIS method */
 #include "mdiis.h"
 

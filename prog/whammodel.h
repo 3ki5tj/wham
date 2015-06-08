@@ -37,7 +37,7 @@ typedef struct {
   double tol;
   int mdiis_nbases; /* number of bases in MDIIS */
   double mdiis_damp; /* mixing factor in MDIIS */
-  int mdiis_kth; /* use the KTH scheme in MDIIS */
+  int mdiis_update_method;
   double mdiis_threshold; /* controls when to clean up the basis in MDIIS */
   char *fnlndos;
   char *fneav;
@@ -96,7 +96,9 @@ __inline static void model_default(model_t *m)
   m->tol = 1e-10;
   m->mdiis_nbases = 10;
   m->mdiis_damp = 1.0;
-  m->mdiis_kth = 0;
+#ifdef WHAM_ENABLE_MDIIS
+  m->mdiis_update_method = MDIIS_UPDATE_DEFAULT;
+#endif
   m->mdiis_threshold = 10.0;
   m->fnlndos = NULL;
   m->fneav = NULL;
@@ -161,7 +163,8 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --tol=:        set the tolerance of error, default %g\n", m->tol);
   fprintf(stderr, "  --nbases=:     set the number of bases in the MDIIS method, default: %d\n", m->mdiis_nbases);
   fprintf(stderr, "  --mdamp=:      set the mixing factor in the MDIIS method, default: %g\n", m->mdiis_damp);
-  fprintf(stderr, "  --KTH:         use the Kovalenko-Ten-no-Hirata updating scheme to update the basis in the MDIIS method\n");
+  fprintf(stderr, "  --KTH:         use the Kovalenko-Ten-no-Hirata (queue-like) updating scheme to update the basis in the MDIIS method\n");
+  fprintf(stderr, "  --HP:          use the Howard-Pettitt (dump the largest) updating scheme to update the basis in the MDIIS method\n");
   fprintf(stderr, "  --mthreshold=: set the threshold to clean up the basis in the MDIIS method, default %g\n", m->mdiis_threshold);
   fprintf(stderr, "  --fndos=:      set the file for the density of states, default %s\n", m->fnlndos);
   fprintf(stderr, "  --fneav=:      set the file for the average energy, default %s\n", m->fneav);
@@ -248,8 +251,12 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->mdiis_nbases = atoi(q);
       } else if ( strcmpfuzzy(p, "mdamp") == 0 ) {
         m->mdiis_damp = atof(q);
+#ifdef WHAM_ENABLE_MDIIS
       } else if ( strcmpfuzzy(p, "KTH") == 0 ) {
-        m->mdiis_kth = 1;
+        m->mdiis_update_method = MDIIS_UPDATE_KTH;
+      } else if ( strcmpfuzzy(p, "HP") == 0 ) {
+        m->mdiis_update_method = MDIIS_UPDATE_HP;
+#endif
       } else if ( strncmpfuzzy(p, "mthreshold", 4) == 0 ) {
         m->mdiis_threshold = atof(q);
       } else if ( strcmpfuzzy(p, "fndos") == 0 ) {

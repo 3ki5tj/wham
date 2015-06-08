@@ -1,11 +1,11 @@
 /* WHAM for a set of xvg files */
-#include "../whammodel.h"
-#define WHAM2_MDIIS
+#define WHAM2_ENABLE_MDIIS
 #include "../wham2.h"
 #include <time.h>
 #include "../mtrand.h"
 #define MTRAND
 #include "xvg.h"
+#include "../whammodel.h"
 
 
 
@@ -251,7 +251,8 @@ int main(int argc, char **argv)
         m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
   } else {
     wham2_mdiis(hs, beta, bpres, lnz,
-        m->mdiis_nbases, m->mdiis_damp, m->mdiis_kth, m->mdiis_threshold,
+        m->mdiis_nbases, m->mdiis_damp,
+        m->mdiis_update_method, m->mdiis_threshold,
         m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
   }
 

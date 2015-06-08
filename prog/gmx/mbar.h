@@ -207,7 +207,7 @@ static double mbar(int nbeta,
 
 
 
-#ifdef MBAR_MDIIS
+#ifdef MBAR_ENABLE_MDIIS
 /* MDIIS method */
 #include "../mdiis.h"
 
