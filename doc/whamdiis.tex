@@ -29,6 +29,8 @@ was improved by using the method of direct inversion in the iterative subspace.
 
 
 
+
+
 \section{Introduction}
 
 
@@ -81,17 +83,15 @@ a slightly different estimate of free energy
 from the original WHAM,
 and the extension to multidimensional,
 e.g., isothermal-isobaric, ensembles
-is not obvious.
+can be numerically challenging\cite{kim2011}.
 
 
 
 Here, we consider improving WHAM using
 the method of direct inversion in the iterative subspace (DIIS)\cite{
-pulay1980, *pulay1982, *hamilton1986}.
-%
-Particularly, we consider a modification
-popular in the liquid state theory\cite{
+pulay1980, *pulay1982, *hamilton1986,
 kovalenko1999, howard2011}.
+%
 
 
 
@@ -176,7 +176,7 @@ Z_k
 
 Eliminating $g(E)$
 from Eqs. \eqref{eq:gE_WHAM} and \eqref{eq:Z},
-we find the unitless free energy
+we find the dimensionless free energy
 $f_i \equiv -\log Z_i$
 as
 \begin{align}
@@ -273,9 +273,15 @@ mezei1987, *berg1992, *lee1993, *tsallis1988}
 can be used to replace the Boltzmann one
 for simulations in non-canonical ensembles.
 %
+If the ensembles depend on
+some complex parameter(s)
+which can not be transform to a linear dependence,
+the MBAR method is preferred\cite{
+shirts2008}.
+%
 Finally,
 once $g(E)$ is determined,
-the free energy at an unsimulated temperature, $\beta$,
+the free energy at a not simulated temperature, $\beta$,
 can be found from Eq. \eqref{eq:Z}
 by substituting $\beta$ for $\beta_k$.
 
@@ -324,7 +330,7 @@ We first represent an approximate solution
 by a trial vector,
 $\vct f = (f_1, \dots, f_K)$,
 which is, in our case, the vector of
-the unitless free energies.
+the dimensionless free energies.
 %
 The equations can be written as
 %
@@ -333,12 +339,18 @@ The equations can be written as
   \label{eq:R_f}
 \end{equation}
 %
-whose left hand side forms a residual vector
+whose left hand side forms
+a residual or correction vector
 $\vct R = (R_1, \dots, R_K)$.
 %
-Normally, the signs of $R_i$ are arranged such that
+The magnitude
+$\| \vct R \|$
+represents the error.
+%
+The signs of $R_i$ are arranged such that
 $\vct R(\vct f)$
-gives a direction of reducing the error of $\vct f$.
+normally gives a direction
+of reducing the error of $\vct f$.
 %
 That is,
 for $\vct f' = \vct f + \alpha \, \vct R(\vct f)$
@@ -365,27 +377,29 @@ from the vectors.
 
 To do so, we first find the combination of the residue vectors
 $\vct{\hat R} = \sum_i c_i \, \vct R_i$,
-that minimizes the magnitude
-$\| \vct R \|$.
+that minimizes the error
+$\| \vct{\hat R} \|$.
 %
 If Eq. \eqref{eq:R_f} is nearly linear
 around the solutions,
 %
 $\vct{\hat R}$
 is roughly the residue vector of
-$\vct{\hat f} = \sum_i c_i \, \vct f_i$,
-and
-$\vct{\hat f}$
-roughly achieves the minimal residue
+$\vct{\hat f} = \sum_i c_i \, \vct f_i$.
+%
+This means,
 among all linear combinations of
-$\{ \vct f_i \}$.
+$\{ \vct f_i \}$,
+$\vct{\hat f}$
+is roughly the least erroneous
+and closest to the true solution,
+$\vct f^*$.
 %
 Thus,
-we expect an iteration based on
+an iteration based on
 $\vct{\hat f}$
-to be more stable than that
-based on any of
-$\vct f_i$.
+would be most efficient.
+
 
 
 We now construct a new trial vector $\vct f^{(n)}$ as
@@ -449,6 +463,8 @@ is used to update the basis as follows.
     %
     %
     \newcommand{\sz}{4cm}
+    \node (label-A) at (-0.10*\sz, 1.28*\sz) [label=below:{(a)}] {};
+    \node (label-B) at ( 1.25*\sz, 1.28*\sz) [label=below:{(b)}] {};
     \begin{scope}
       %\clip ({-0.08*\sz}, {-0.08*\sz}) rectangle ({1.3*\sz}, {1.15*\sz});
       %
@@ -526,7 +542,7 @@ is used to update the basis as follows.
       %
       %
       %
-      \draw [black, dotted, thin]
+      \draw [gray, dashed, thin]
         (-0.1*\sz, 1.1*\sz) -- (1.1*\sz, -0.1*\sz);
       %
       %
@@ -599,7 +615,7 @@ is used to update the basis as follows.
     %
     %
     %
-    \draw [blue!50!black, dotted, thin]
+    \draw [gray, dashed, thin]
          ({\Rox - 0.15 * \sz}, {\Roy + 1.0 * \sz})
       -- ({\Rox + 0.45 * \sz}, {\Roy - 0.2 * \sz});
     %
@@ -638,12 +654,12 @@ is used to update the basis as follows.
   \caption{\label{fig:scheme}
     Schematic illustration of the method of
     direct inversion of the iterative subspace (DIIS)
-    for solving a set of equation.
+    for solving a set of equations.
     %
     Each trial vector $\vct f_i$
     represents an approximate solution,
     and the residual vector $\vct R_i$
-    represents the error.
+    represents the correction.
     %
     Given a basis of a few (two here) trial vectors,
     DIIS seeks the combination
@@ -651,19 +667,18 @@ is used to update the basis as follows.
     that minimizes the magnitude
     $\| \vct{\hat R} \|$
     under the constraint
-    $\sum_i c_i = 1$ (left).
+    $\sum_i c_i = 1$ [panel (b)].
     %
-    The coefficients, $c_i$, are used
-    to combine the trial vectors as
-    $\vct {\hat f} = \sum_i c_i \, \vct f_i$.
-    %
-    The new trial vector is given by
+    The corresponding combination
+    of the trial vectors,
+    $\vct {\hat f} = \sum_i c_i \, \vct f_i$,
+    is used to construct
+    the new trial vector as
     $\vct f^{(n)} = \vct {\hat f} + \vct {\hat R}$.
     %
-    For the next round of iteration,
-    $\vct f^{(n)}$ is normally either added
-    to the basis, or used to replace an existing vector
-    in the basis.
+    Then, $\vct f^{(n)}$ is used to
+    update the basis
+    for the next round of iteration.
   }
 \end{figure}
 

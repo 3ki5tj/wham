@@ -357,10 +357,10 @@ __inline static int hist2_load(hist2_t *hs, const char *fn, unsigned flags)
         return -1;
       }
       if ( !hashist ) g = g2 * fac;
-      if ( add ) g += hs->arr[r*nm + i*m + j];
       if ( flags & HIST2_INT ) {
         g = (long) (g + 0.5);
       }
+      if ( add ) g += hs->arr[r*nm + i*m + j];
       hs->arr[r*nm + i*m + j] = g;
     }
   }

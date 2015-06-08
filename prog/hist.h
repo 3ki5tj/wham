@@ -322,10 +322,10 @@ __inline static int hist_load(hist_t *hs, const char *fn, unsigned flags)
         goto EXIT;
       }
       if ( !hashist ) y = y2*fac;
-      if ( add ) y += hs->arr[r*n + i1];
       if ( flags & HIST_INT ) {
         y = (long) (y + 0.5);
       }
+      if ( add ) y += hs->arr[r*n + i1];
       hs->arr[r*n + i1] = y;
     }
   }
