@@ -21,8 +21,8 @@
 by direct inversion in the iterative subspace}
 
 \begin{abstract}
-The convergence of the weighted histogram analysis method for free energy calculation
-was improved by using the method of direct inversion in the iterative subspace.
+It is shown that the convergence of the weighted histogram analysis method for free energy calculation
+can be improved by using the method of direct inversion in the iterative subspace.
 \end{abstract}
 
 \maketitle
@@ -44,34 +44,56 @@ the weighted histogram analysis method (WHAM)\cite{
 kumar1992, souaille2001, kastner2005,
 chodera2007, bereau2009,
 kim2011},
-is a popular method
-for free energy calculation.
+is a useful tool
+of calculating free energy
+in computer simulations\cite{
+newman, *frenkel}.
 %
-The method iteratively solves a pair of coupled equations of
+Given several trajectories obtained
+from simulations performed
+for different thermodynamic states,
+the method yields optimal estimates
+of the free energy differences
+among the states.
+%
+It does so by solving a pair of coupled equations of
 the free energy and the density of states
-involving the energy histograms, hence the name.
+involving the (energy) histograms, hence the name.
 %
-It can be also reformulated
-to avoid the histogram dependence,
-resulting the
-multistate Bennett acceptance ratio (MBAR) method\cite{
-shirts2008},
-extending the Bennett acceptance ratio (BAR) method\cite{
-bennett1976}.
+Besides the above form,
+WHAM can be also reformulated
+as the multistate Bennett acceptance ratio (MBAR) method\cite{
+shirts2008}
+(an extension of the Bennett acceptance ratio (BAR) method\cite{
+bennett1976})
+to avoid the histogram dependence.
+%
+The statistical efficiency of using data
+makes WHAM or MBAR a popular tool
+for enhanced-sampling simulations,
+such as umbrella sampling\cite{
+torrie1974, *laio2002},
+and tempering\cite{
+marinari1992, *lyubartsev1992,
+swendsen1986, *geyer1991, *hukushima1996, *hansmann1997},
+and even single-molecule experiments\cite{
+shirts2008}.
 
 
 
 The straightforward implementation of WHAM or MBAR,
-however, can suffer from
+in which the equations regarding the free energy
+are solved by direct iteration,
+can suffer from
 a slow convergence in later stages.
 %
 Several remedies were proposed\cite{
- shirts2008, bereau2009, kim2011}.
+shirts2008, bereau2009, kim2011}.
 %
 For example, one may use the Newton-Raphson method
-to directly compute the Hessian matrix\cite{
+to directly compute the Hessian matrix,
+although it can be occasionally unstable\cite{
 shirts2008},
-although it can be occasionally unstable.
 %
 An ingenious non-iterative alternative
 is to directly estimate the derivative of density of states,
@@ -81,8 +103,8 @@ kim2011}.
 This variant, however, gives
 a slightly different estimate of free energy
 from the original WHAM,
-and the extension to multidimensional,
-e.g., isothermal-isobaric, ensembles
+and the extension to multiple-parameter ensembles,
+e.g., the isothermal-isobaric ensemble,
 can be numerically challenging\cite{kim2011}.
 
 
@@ -92,6 +114,9 @@ the method of direct inversion in the iterative subspace (DIIS)\cite{
 pulay1980, *pulay1982, *hamilton1986,
 kovalenko1999, howard2011}.
 %
+Although the method is still iterative,
+the rate of convergence is often
+significantly improved.
 
 
 
@@ -174,11 +199,10 @@ Z_k
 
 
 
-Eliminating $g(E)$
-from Eqs. \eqref{eq:gE_WHAM} and \eqref{eq:Z},
+From Eqs. \eqref{eq:gE_WHAM} and \eqref{eq:Z},
 we find the dimensionless free energy
 $f_i \equiv -\log Z_i$
-as
+satisfies
 \begin{align}
 f_i
 &=
@@ -201,14 +225,19 @@ f_i
 where,
 $\Z_i$
 denotes the integral on the right hand side.
+%
+Once, $f_i$ and $g(E)$ are determined,
+the free energy at a not simulated temperature, $\beta$,
+can be found from Eq. \eqref{eq:Z}
+by substituting $\beta$ for $\beta_k$.
 
 
 
 In the above,
 $n_j(E)$ is estimated from the energy histogram.
 %
-This dependency can be avoided
-by noticing from definition
+To avoid this dependency,
+we notice from definition that
 %
 \begin{equation}
 n_j(E)
@@ -251,10 +280,11 @@ f_i
 
 
 
-Several comments are in order.
+We briefly mentions a few extensions.
 %
 First,
-for simulations on multiple isothermal-isobaric ensembles
+for simulations
+on multiple isothermal-isobaric ensembles
 at different temperature and pressure,
 %
 we replace $E$ by $(E, V)$
@@ -267,23 +297,27 @@ $V$ and $p_k$
 being the volume and pressure,
 respectively.
 %
-Similarly,
-non-Boltzmann weight\cite{
-mezei1987, *berg1992, *lee1993, *tsallis1988}
-can be used to replace the Boltzmann one
-for simulations in non-canonical ensembles.
-%
-If the ensembles depend on
-some complex parameter(s)
-which can not be transform to a linear dependence,
+If the Hamiltonian difference among the ensembles
+cannot be traced down to a few quantities,
+e.g., $E$ or $(E, V)$ in the above,
 the MBAR method is preferred\cite{
-shirts2008}.
+shirts2008},
+for the construction of
+a high dimensional histogram
+can be inconvenient.
 %
-Finally,
-once $g(E)$ is determined,
-the free energy at a not simulated temperature, $\beta$,
-can be found from Eq. \eqref{eq:Z}
-by substituting $\beta$ for $\beta_k$.
+Similarly,
+non-Boltzmann
+(e.g., the multicanonical\cite{
+mezei1987, *berg1992, *lee1993},
+Tsallis\cite{tsallis1988},
+microcanonical\cite{
+yan2003, *martin-mayor2007, *zhang2013})
+weight
+can be used in place of the Boltzmann one
+for simulations in the corresponding ensembles.
+%
+
 
 
 To determine $f_i$ numerically,
@@ -332,7 +366,7 @@ $\vct f = (f_1, \dots, f_K)$,
 which is, in our case, the vector of
 the dimensionless free energies.
 %
-The equations can be written as
+The target equations can be written as
 %
 \begin{equation}
   R_i(\vct f) = 0  \quad i = 1, \ldots, K,
@@ -837,7 +871,7 @@ villin headpiece\cite{duan1998}
 (PDB ID: 1VII).
 %
 The protein was immersed in
-a dodecahedron box with 1898 water molecules and two chloride ions.
+a dodecahedron box with 1898 TIP3P water molecules and two chloride ions.
 %
 MD simulations were performed
 using GROMACS\cite{

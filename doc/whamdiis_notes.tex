@@ -1,0 +1,277 @@
+%\documentclass[reprint,superscriptaddress]{revtex4-1}
+\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{color}
+\begin{document}
+
+
+
+
+\newcommand{\vct}[1]{\mathbf{#1}}
+\newcommand{\vx}{\vct{x}}
+\newcommand{\Z}{\mathcal{Z}}
+\newcommand{\E}{\mathcal{E}}
+
+
+
+
+\title{Notes}
+
+\maketitle
+
+
+
+\section{Mnemonic derivation of WHAM}
+
+
+
+We give a mnemonic derivation of the expression
+for the density of states
+%
+\begin{equation}
+g(E)
+=
+\frac{
+  \sum_{k = 1}^K n_k(E)
+}
+{
+  \sum_{k = 1}^K N_k \, \exp(-\beta_k E) / Z_k
+}.
+\label{eq:gE_WHAM}
+\end{equation}
+%
+
+In ensemble $k$,
+the normalized energy distribution,
+$n_k(E) / N_k$,
+is related to the density of states as
+%
+\begin{equation}
+\frac{ n_k(E) } { N_k }
+=
+g(E) \,
+\frac{ \exp(-\beta_k E) } { Z_k }.
+\end{equation}
+%
+Thus,
+we have
+%
+\begin{equation}
+g(E)
+= \frac{ n_k(E) }
+{ N_k \, \exp(-\beta_k E) / Z_k }.
+\end{equation}
+%
+Taking the harmonic average over $k$
+yields Eq. \eqref{eq:gE_WHAM}.
+
+
+
+
+\section{Parameters for Figure 1}
+
+
+
+The illustration was produced according to the following potential
+%
+\begin{equation}
+F
+=
+\frac{1}{2} A \, ( x - x_0 )^2
++
+\frac{1}{2} B \, ( y - y_0 )^2
++
+C \, ( x - x_0 ) ( y - y_0 ),
+\label{eq:fig1_F}
+\end{equation}
+%
+where
+$x_0 = 3/5$,
+$y_0 = 4/5$,
+$A = 3/4$,
+$B = 5/4$,
+and
+$C = 1/4$.
+
+
+
+The two vectors are
+$\vct f_1 = (1, 0)$
+and
+$\vct f_2 = (0, 1)$.
+%
+The residual vectors are
+$\vct R_1 = (-1/10, 9/10)$
+and
+$\vct R_2 = (4/10, -1/10)$,
+respectively.
+
+
+
+We now determine
+$\vct{\hat R} = \vct R_1 + \lambda \, (\vct R_2 - \vct R_1)$
+with the minimal magnitude
+$\| \vct{\hat R} \|$.
+%
+It is readily shown that
+$\lambda$ satisfies
+%
+\[
+\lambda
+=
+-\frac{
+  \Delta \vct R \cdot \vct R_1
+}
+{
+  \Delta \vct R \cdot \Delta \vct R
+}
+=
+-\frac{-19/20}{5/4}
+=
+\frac{19}{25},
+\]
+%
+where
+$\Delta \vct R = \vct R_2 - \vct R_1 = (1/2, -1)$.
+%
+Thus,
+\[
+\vct{\hat R}
+=
+(1 - \lambda) \, \vct R_1
++ \lambda \, \vct R_2
+=
+\left(
+  \frac{7}{25},
+  \frac{7}{50}
+\right),
+\]
+\[
+\vct{\hat f}
+=
+(1 - \lambda) \, \vct f_1
++ \lambda \, \vct f_2
+=
+\left(
+  \frac{6}{25},
+  \frac{19}{25}
+\right),
+\]
+and
+\[
+\vct{\hat f}
++
+\vct{\hat R}
+=
+\left(
+  \frac{13}{25},
+  \frac{9}{10}
+\right).
+\]
+
+
+
+We can complete squares of $F$ as
+%
+\begin{align*}
+F
+&=
+\frac{1}{16}
+\left\{
+  \left( 5 + 3 \sqrt 2 \right)
+  \left[
+    \left( \sqrt 2 - 1 \right) \, \bar x
+  +
+    \bar y
+  \right]^2
+  +
+  \left( 3 + \sqrt 2 \right)
+  \left[
+    \bar x
+  -
+    \left( \sqrt 2 - 1 \right) \, \bar y
+  \right]^2
+\right\}
+\notag \\
+%
+&=
+\frac{1}{16}
+\left\{
+  \left( 3 - \sqrt 2 \right)
+  \left[
+    \bar x
+  +
+    \left( \sqrt 2 + 1 \right) \, \bar y
+  \right]^2
+  +
+  \left( 3 + \sqrt 2 \right)
+  \left[
+    \bar x
+  -
+    \left( \sqrt 2 - 1 \right) \, \bar y
+  \right]^2
+\right\}
+\notag \\
+%
+&=
+\frac{7}{2} R^2,
+\end{align*}
+%
+where
+%
+\begin{align*}
+\bar x
+&= x - x_0
+\\
+&=
+\left(
+  \sqrt{ 5 - 3 \sqrt{2} } \, \cos \theta
+  +
+  \sqrt{ 5 + 3 \sqrt{2} } \, \sin \theta
+\right) R
+\\
+&=
+\left[
+  \left( \sqrt 2 - 1 \right) \sqrt{ 3 + \sqrt{2} } \, \cos \theta
+  +
+  \left( \sqrt 2 + 1 \right) \sqrt{ 3 - \sqrt{2} } \, \sin \theta
+\right] R,
+\end{align*}
+%
+and
+%
+\begin{align*}
+\bar y
+&= y - y_0
+\\
+&=
+\left(
+  \sqrt{ 3 + \sqrt{2} } \, \cos \theta
+  -
+  \sqrt{ 3 - \sqrt{2} } \, \sin \theta
+\right) R,
+\end{align*}
+
+
+
+The short axis is achieved at $\theta = 0$,
+with
+$\sqrt{ {\bar x}^2 + {\bar y}^2 } = \sqrt{ 8 - \sqrt 8 } R$,
+and
+$\phi = \arctan(\bar y/\bar x) = \arctan \left(\sqrt 2 - 1\right) = \pi/8$.
+
+
+
+The long axis is achieved at $\theta = \pi/2$,
+with
+$\sqrt{ {\bar x}^2 + {\bar y}^2 } = \sqrt{ 8 + \sqrt 8 } R$,
+and
+$\phi = \arctan(\bar y/\bar x) = \arctan \left(-\sqrt 2 - 1\right) = -3 \, \pi/8$.
+
+
+
+
+
+%\bibliography{simul}
+\end{document}
