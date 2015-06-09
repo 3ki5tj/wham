@@ -159,6 +159,9 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --de=:         set the energy bin size, default %g\n", m->de);
   fprintf(stderr, "  --dv=:         set the volume bin size, default %g\n", m->dv);
   fprintf(stderr, "  --wham=:       set the WHAM method, 'Direct' or 'MDIIS', default: %s\n", wham_methods[m->wham_method]);
+#ifdef MBAR
+  fprintf(stderr, "  --mbar=:       set the MBAR method, 'Direct' or 'MDIIS', default: %s\n", wham_methods[m->wham_method]);
+#endif
   fprintf(stderr, "  --itmax=:      set the maximal number of iterations, default %d\n", m->itmax);
   fprintf(stderr, "  --tol=:        set the tolerance of error, default %g\n", m->tol);
   fprintf(stderr, "  --nbases=:     set the number of bases in the MDIIS method, default: %d\n", m->mdiis_nbases);
@@ -243,6 +246,10 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->dv = atof(q);
       } else if ( strcmpfuzzy(p, "wham") == 0 ) {
         m->wham_method = model_select(q, WHAM_NMETHODS, wham_methods);
+#ifdef MBAR
+      } else if ( strcmpfuzzy(p, "mbar") == 0 ) {
+        m->wham_method = model_select(q, WHAM_NMETHODS, wham_methods);
+#endif
       } else if ( strcmpfuzzy(p, "itmax") == 0 ) {
         m->itmax = atoi(q);
       } else if ( strcmpfuzzy(p, "tol") == 0 ) {

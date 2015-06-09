@@ -32,7 +32,9 @@ static hist_t *mkhist(const char *fnls,
 
   xnew(xvg, nbeta);
   for ( i = 0; i < nbeta; i++ ) {
-    xvg[i] = xvg_load(fns[i], radd);
+    if ( (xvg[i] = xvg_load(fns[i], radd)) == NULL ) {
+      exit(1);
+    }
     xvg_minmax(xvg[i], xmin, xmax);
     if ( xmin[0] < emin ) {
       emin = xmin[0];

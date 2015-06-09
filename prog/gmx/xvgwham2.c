@@ -34,7 +34,7 @@ static hist2_t *mkhist2(const char *fnls,
   xnew(xvg, nbp);
   for ( i = 0; i < nbp; i++ ) {
     if ( (xvg[i] = xvg_load(fns[i], radd)) == NULL ) {
-      return NULL;
+      exit(1);
     }
     xvg_minmax(xvg[i], evmin1, evmax1);
     for ( k = 0; k < 3; k++ ) {
