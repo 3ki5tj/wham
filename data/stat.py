@@ -62,6 +62,7 @@ def dostat(fninp):
   sy = [0.0] * m
   syy = [0.0] * m
   for i in range(n):
+    # parse the line to an array of floating-point numbers
     arr = [float(x) for x in s[i].strip().split()]
     for j in range(m):
       x = arr[j]

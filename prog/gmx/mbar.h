@@ -8,6 +8,7 @@
 
 
 
+#include <time.h>
 #include "xvg.h"
 
 
@@ -188,9 +189,12 @@ static double mbar(int nbeta,
   mbar_t *mbar = mbar_open(nbeta, beta, xvg);
   int it;
   double err, errp;
-  
-  err = errp = 1e30;
+  clock_t t0, t1;
+
   mbar_estimatelnz(mbar, lnz);
+
+  t0 = clock();
+  err = errp = 1e30;
   for ( it = 0; it < itmax; it++ ) {
     err = mbar_step(mbar, lnz, mbar->res, 1);
     if ( verbose ) {
@@ -202,6 +206,9 @@ static double mbar(int nbeta,
     }
     errp = err;
   }
+  t1 = clock();
+  fprintf(stderr, "MBAR converged in %d steps, error %g, time %.4fs\n",
+      it, err, 1.0*(t1 - t0)/CLOCKS_PER_SEC);
   mbar_close(mbar);
   return err;
 }

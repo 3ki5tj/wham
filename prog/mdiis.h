@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
+#include <time.h>
 #include "lu.h"
 
 
@@ -432,8 +433,11 @@ static double iter_mdiis(double *f, int npt,
     int itmax, double tol, int verbose)
 {
   mdiis_t *mdiis;
-  int it, ibp = 0, ib;
+  int it, ibp = 0, ib, success;
   double err, errp, *res;
+  clock_t t0, t1;
+
+  t0 = clock();
 
   /* open an mdiis object */
   mdiis = mdiis_open(npt, nbases, getres, obj, verbose);
@@ -444,7 +448,7 @@ static double iter_mdiis(double *f, int npt,
   mdiis->errmin = errp = mdiis->getres(obj, f, res);
   mdiis_build(mdiis, f, res);
 
-  for ( it = 0; it < itmax && errp > tol; it++ ) {
+  for ( it = 0; it < itmax && errp >= tol; it++ ) {
     /* obtain a set of optimal coefficients of combination */
     mdiis_solve(mdiis);
     if ( verbose >= 2 ) {
@@ -476,10 +480,21 @@ static double iter_mdiis(double *f, int npt,
       errp = err;
     }
   }
-  fprintf(stderr, "MDIIS finished in %d steps, err %g\n", it, errp);
-  cparr(f, mdiis->fbest, npt);
-  err = mdiis->getres(obj, f, res);
+
+  if ( errp < tol ) {
+    success = 1;
+  } else { /* use the backup version */
+    success = 0;
+    cparr(f, mdiis->fbest, npt);
+    err = mdiis->getres(obj, f, res);
+  }
+
   mdiis_close(mdiis);
+  
+  t1 = clock();
+  fprintf(stderr, "MDIIS finished in %d steps, error %g (%s), time %.4fs\n",
+      it, errp, (success ? "succeeded" : "failed"),
+      1.0*(t1 - t0)/CLOCKS_PER_SEC);
   return err;
 }
 

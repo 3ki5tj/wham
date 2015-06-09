@@ -8,6 +8,7 @@
 
 
 
+#include <time.h>
 #include "hist.h"
 
 
@@ -242,7 +243,9 @@ static double wham_getlndos(wham_t *w, double *lnz,
 {
   int it;
   double err, errp;
+  clock_t t0, t1;
 
+  t0 = clock();
   err = errp = 1e30;
   for ( it = 0; it < itmax; it++ ) {
     err = wham_step(w, lnz, w->res, 1);
@@ -256,7 +259,9 @@ static double wham_getlndos(wham_t *w, double *lnz,
     errp = err;
   }
 
-  fprintf(stderr, "WHAM converged in %d steps, error %g\n", it, err);
+  t1 = clock();
+  fprintf(stderr, "WHAM converged in %d steps, error %g, time %.4fs\n",
+      it, err, 1.0*(t1 - t0)/CLOCKS_PER_SEC);
   return err;
 }
 

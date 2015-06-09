@@ -5,7 +5,7 @@
 
 
 
-/* utilities to handle two dimensional list files */ 
+/* utilities to handle two dimensional list files */
 
 
 

@@ -104,15 +104,24 @@ def doargs():
 
 
 
-def getnsteps(err):
-  ''' get the nsteps from the error output '''
+def getnstepstime(err):
+  ''' get the nsteps and time from the error output '''
 
   ln = err.strip().split("\n")[-1]
+
   m = re.search(" ([0-9]+) steps", ln)
   if not m:
-    print "Bad last line: ", err
+    print "line %s: no number of iterations" % ln
     raise Exception
-  return m.group(1) # keep it as a string, not an integer
+  ns = m.group(1) # keep it as a string, not an integer
+
+  m = re.search("time ([0-9.]+)s", ln)
+  if not m:
+    print "line %s: no timing information" % ln
+    raise Exception
+  tm = m.group(1)
+
+  return ns, tm
 
 
 
@@ -136,21 +145,23 @@ def main():
       prog, radd, fnls, tol, cmdopt)
 
   ns = [0]*(nbases + 1)
+  tm = [0]*(nbases + 1)
   for i in range(nsamp):
     print "running sample %d/%d..." % (i, nsamp)
 
     # use the direct WHAM
     ret, out, err = zcom.runcmd(cmd0, capture = True)
-    ns[0] = getnsteps(err)
+    ns[0], tm]0] = getnstepstime(err)
 
     for nb in range(1, nbases + 1):
       cmd = "%s --wham=MDIIS --nbases=%d -H %s %s" % (
           cmd0.strip(), nb, update_method, mthreshold)
       ret, out, err = zcom.runcmd(cmd.strip(), capture = True)
-      ns[nb] = getnsteps(err)
+      ns[nb], tm[nb] = getnstepstime(err)
 
-    # save to the log file
+    # save to the log files
     open(fnlog, "a").write(" ".join(ns) + "\n")
+    open(fntmlog, "a").write(" ".join(tm) + "\n")
 
 
 
