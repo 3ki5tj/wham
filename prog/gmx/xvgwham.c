@@ -110,19 +110,21 @@ int main(int argc, char **argv)
 
   if ( m->wham_method == WHAM_DIRECT ) {
     wham(hs, beta, lnz,
-        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
+        m->itmax, m->tol, m->itmin, m->verbose,
+        m->fnlndos, m->fneav);
   } else {
     wham_mdiis(hs, beta, lnz,
         m->mdiis_nbases, m->mdiis_damp,
         m->mdiis_update_method, m->mdiis_threshold,
-        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
+        m->itmax, m->tol, m->itmin, m->verbose,
+        m->fnlndos, m->fneav);
   }
 
   if ( m->verbose ) {
     for ( i = 0; i < hs->rows; i++ ) {
       double tot, eav, var;
       eav = hist_getave(hs, i, &tot, &var);
-      fprintf(stderr, "%3d %8.5f %10.3f %8.0f %11.4f(%10.4f)\n",
+      printf("%3d %10.7f %14.7f %8.0f %15.7f %14.7f\n",
           i, beta[i], lnz[i], tot, eav, sqrt(var));
     }
   }

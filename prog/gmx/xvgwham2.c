@@ -120,20 +120,22 @@ int main(int argc, char **argv)
 
   if ( m->wham_method == WHAM_DIRECT ) {
     wham2(hs, beta, bpres, lnz,
-        m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
+        m->itmax, m->tol, m->itmin, m->verbose,
+        m->fnlndos2, m->fneav2);
   } else {
     wham2_mdiis(hs, beta, bpres, lnz,
         m->mdiis_nbases, m->mdiis_damp,
         m->mdiis_update_method, m->mdiis_threshold,
-        m->itmax, m->tol, m->verbose, m->fnlndos2, m->fneav2);
+        m->itmax, m->tol, m->itmin, m->verbose,
+        m->fnlndos2, m->fneav2);
   }
 
   if ( m->verbose ) {
     for ( i = 0; i < hs->rows; i++ ) {
       double tot, eav, vav, see, sev, svv;
       eav = hist2_getave(hs, i, &tot, &vav, &see, &sev, &svv);
-      fprintf(stderr, "%3d %8.5f %8.5f %10.3f %8.0f "
-          "%11.4f(%10.4f) %11.4f(%10.4f) %10.4f\n",
+      printf("%3d %10.7f %10.7f %14.7f %8.0f "
+          "%15.7f %14.7f %15.7f %14.7f %15.7f\n",
           i, beta[i], bpres[i]/beta[i], lnz[i], tot,
           eav, sqrt(see), vav, sqrt(svv), sev);
     }

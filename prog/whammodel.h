@@ -35,6 +35,7 @@ typedef struct {
   int wham_method;
   int itmax;
   double tol;
+  int itmin;
   int mdiis_nbases; /* number of bases in MDIIS */
   double mdiis_damp; /* mixing factor in MDIIS */
   int mdiis_update_method;
@@ -94,6 +95,7 @@ __inline static void model_default(model_t *m)
   m->wham_method = WHAM_DIRECT;
   m->itmax = 100000;
   m->tol = 1e-8;
+  m->itmin = 0;
   m->mdiis_nbases = 10;
   m->mdiis_damp = 1.0;
 #ifdef ENABLE_MDIIS
@@ -164,6 +166,7 @@ __inline static void model_help(const model_t *m)
 #endif
   fprintf(stderr, "  --itmax=:      set the maximal number of iterations, default %d\n", m->itmax);
   fprintf(stderr, "  --tol=:        set the tolerance of error, default %g\n", m->tol);
+  fprintf(stderr, "  --itmin=:      set the minimal number of iterations, default %d\n", m->itmin);
   fprintf(stderr, "  --nbases=:     set the number of bases in the MDIIS method, default: %d\n", m->mdiis_nbases);
   fprintf(stderr, "  --mdamp=:      set the mixing factor in the MDIIS method, default: %g\n", m->mdiis_damp);
   fprintf(stderr, "  --KTH:         use the Kovalenko-Ten-no-Hirata (queue-like) updating scheme to update the basis in the MDIIS method\n");
@@ -254,6 +257,8 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->itmax = atoi(q);
       } else if ( strcmpfuzzy(p, "tol") == 0 ) {
         m->tol = atof(q);
+      } else if ( strcmpfuzzy(p, "itmin") == 0 ) {
+        m->itmin = atoi(q);
       } else if ( strcmpfuzzy(p, "nbases") == 0 ) {
         m->mdiis_nbases = atoi(q);
       } else if ( strcmpfuzzy(p, "mdamp") == 0 ) {

@@ -105,7 +105,7 @@ static char **getls(const char *fn,
     fprintf(stderr, "insufficient number of lines, %d\n", *nbp);
     return NULL;
   }
-  printf("%d temperatures\n", *nbp);
+  fprintf(stderr, "%d temperatures\n", *nbp);
 
   /* go back to the beginning of the file */
   rewind(fp);

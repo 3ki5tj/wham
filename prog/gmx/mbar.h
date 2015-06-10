@@ -184,7 +184,7 @@ static double mbar_step(mbar_t *mbar, double *lnz, double *res, int update)
 /* weighted histogram analysis method */
 static double mbar(int nbeta,
     xvg_t **xvg, const double *beta, double *lnz,
-    int itmax, double tol, int verbose)
+    int itmax, double tol, int itmin, int verbose)
 {
   mbar_t *mbar = mbar_open(nbeta, beta, xvg);
   int it;
@@ -201,7 +201,7 @@ static double mbar(int nbeta,
       fprintf(stderr, "it %d, err %g -> %g\n",
           it, errp, err);
     }
-    if ( err < tol ) {
+    if ( err < tol && it > itmin ) {
       break;
     }
     errp = err;
@@ -231,7 +231,7 @@ static double mbar_getres(void *mbar, double *lnz, double *res)
 static double mbar_mdiis(int nbeta,
     xvg_t **xvg, const double *beta, double *lnz,
     int nbases, double damp, int queue, double threshold,
-    int itmax, double tol, int verbose)
+    int itmax, double tol, int itmin, int verbose)
 {
   mbar_t *mbar = mbar_open(nbeta, beta, xvg);
   double err;
@@ -239,7 +239,8 @@ static double mbar_mdiis(int nbeta,
   mbar_estimatelnz(mbar, lnz);
   err = iter_mdiis(lnz, nbeta,
       mbar_getres, mbar_normalize, mbar,
-      nbases, damp, queue, threshold, itmax, tol, verbose);
+      nbases, damp, queue, threshold,
+      itmax, tol, itmin, verbose);
   mbar_close(mbar);
   return err;
 }

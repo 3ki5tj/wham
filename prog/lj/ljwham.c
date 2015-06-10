@@ -129,12 +129,14 @@ int main(int argc, char **argv)
 
   if ( m->wham_method == WHAM_DIRECT ) {
     wham(hs, beta, lnz,
-        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
+        m->itmax, m->tol, m->itmin, m->verbose,
+        m->fnlndos, m->fneav);
   } else {
     wham_mdiis(hs, beta, lnz,
         m->mdiis_nbases, m->mdiis_damp,
         m->mdiis_update_method, m->mdiis_threshold,
-        m->itmax, m->tol, m->verbose, m->fnlndos, m->fneav);
+        m->itmax, m->tol, m->itmin, m->verbose,
+        m->fnlndos, m->fneav);
   }
 
   hist_close(hs);

@@ -59,7 +59,8 @@ typedef struct {
   int npt;
   int mnb; /* maximal number of bases */
   int nb; /* number of functions in the basis */
-  int ibQ; /* index of the earliest base */
+  int ibQ; /* index of the earliest base for the KTH scheme
+              or that of the previous base for the HP scheme */
   double (*getres)(void *, double *, double *); /* callback function */
   void *obj; /* object to pass to the callback function */
   double **f;  /* basis */
@@ -86,7 +87,7 @@ static mdiis_t *mdiis_open(int npt, int mnb,
   m->npt = npt;
   m->mnb = mnb;
   m->nb = 0;
-  m->ibQ = 0;
+  m->ibQ = -1;
   m->getres = getres;
   m->obj = obj;
   mnb1 = mnb + 1;
@@ -203,7 +204,7 @@ static int mdiis_build(mdiis_t *m, double *f, double *res)
 
   m->mat[0] = mdiis_getdot(m->res[0], m->res[0], npt);
 
-  m->ibQ = 0;
+  m->ibQ = -1;
   return 0;
 }
 
@@ -247,8 +248,8 @@ static int mdiis_update_kth(mdiis_t *m, double *f, double *res,
     ib = nb;
     m->nb = ++nb;
   } else {
-    ib = m->ibQ; /* the earliest vector */
-    m->ibQ = (ib + 1) % m->mnb;
+    ib = (m->ibQ + 1) % m->mnb;
+    m->ibQ = ib;
   }
 
   /* replace base ib by f */
@@ -271,10 +272,9 @@ static int mdiis_update_kth(mdiis_t *m, double *f, double *res,
 /* try to add the new vector `f` and its residue `res`
  * into the base using the Howard-Pettitt scheme */
 static int mdiis_update_hp(mdiis_t *m, double *f, double *res,
-    double err, double threshold)
+    double err)
 {
-  int i, ibmin, ibmax, ib, nb, mnb, npt = m->npt;
-  double dot, min, max;
+  int i, ibmax, ib, nb, mnb, npt = m->npt;
 
   nb = m->nb;
   mnb = m->mnb;
@@ -285,32 +285,22 @@ static int mdiis_update_hp(mdiis_t *m, double *f, double *res,
     m->errmin = err;
   }
 
-  /* choose the base with the smallest residue */
-  ibmin = 0;
+  /* find the base with the largest residue */
   ibmax = 0;
   for ( i = 1; i < nb; i++ ) {
     /* the diagonal represents the error */
-    if ( m->mat[i*mnb + i] < m->mat[ibmin*mnb + ibmin] ) {
-      ibmin = i;
-    }
     if ( m->mat[i*mnb + i] > m->mat[ibmax*mnb + ibmax] ) {
       ibmax = i;
     }
   }
-  min = m->mat[ibmin*mnb + ibmin];
-  max = m->mat[ibmax*mnb + ibmax];
-  dot = mdiis_getdot(res, res, npt);
 
-  /* we do not allow the error of the new vector
-   * to be greater than the current maximal error,
-   * because this can easily lead to a limited cycle
-   * in which the most erroneous vector switches
-   * between two versions */
-  if ( dot > threshold * threshold * min
-    || dot >= max ) {
+  /* if we are updating the same vector from the previous step
+   * then we are stuck, so rebuild the basis
+   * This condition cannot be true until we have a full basis */
+  if ( ibmax == m->ibQ ) {
     /* rebuild the basis from f
      * if we rebuild the basis from f[ibmin]
-     * it is more likely to fall into a limited cycle */
+     * it is more likely to enter a limit cycle */
     mdiis_build(m, f, res);
     return 0;
   }
@@ -320,6 +310,8 @@ static int mdiis_update_hp(mdiis_t *m, double *f, double *res,
     m->nb = ++nb;
   } else {
     ib = ibmax;
+    /* Note: we only set ibQ if the basis is full */
+    m->ibQ = ib;
   }
 
   /* replace base ib by f */
@@ -430,7 +422,7 @@ static double iter_mdiis(double *f, int npt,
     void (*normalize)(double *, int), void *obj,
     int nbases, double damp,
     int update_method, double threshold,
-    int itmax, double tol, int verbose)
+    int itmax, double tol, int itmin, int verbose)
 {
   mdiis_t *mdiis;
   int it, ibp = 0, ib, success;
@@ -445,10 +437,10 @@ static double iter_mdiis(double *f, int npt,
   res = mdiis->res[mdiis->mnb];
 
   /* construct the initial base set */
-  mdiis->errmin = errp = mdiis->getres(obj, f, res);
+  mdiis->errmin = err = errp = mdiis->getres(obj, f, res);
   mdiis_build(mdiis, f, res);
 
-  for ( it = 0; it < itmax && errp >= tol; it++ ) {
+  for ( it = 0; it < itmax; it++ ) {
     /* obtain a set of optimal coefficients of combination */
     mdiis_solve(mdiis);
     if ( verbose >= 2 ) {
@@ -464,7 +456,7 @@ static double iter_mdiis(double *f, int npt,
     err = mdiis->getres(obj, f, res);
     /* add the new f into the basis */
     if ( update_method == MDIIS_UPDATE_HP ) {
-      ib = mdiis_update_hp(mdiis, f, res, err, threshold);
+      ib = mdiis_update_hp(mdiis, f, res, err);
     } else if ( update_method == MDIIS_UPDATE_KTH ) {
       ib = mdiis_update_kth(mdiis, f, res, err, threshold);
     } else {
@@ -473,15 +465,19 @@ static double iter_mdiis(double *f, int npt,
 
     if ( verbose ) {
       fprintf(stderr, "it %d, err %g -> %g, ib %d -> %d (%d)\n",
-          it, errp, err, ibp, ib, mdiis->nb);
+          it + 1, errp, err, ibp, ib, mdiis->nb);
     }
     if ( ib >= 0 ) {
       ibp = ib;
       errp = err;
     }
+
+    if ( err < tol && it >= itmin ) {
+      break;
+    }
   }
 
-  if ( errp < tol ) {
+  if ( err < tol ) {
     success = 1;
   } else { /* use the backup version */
     success = 0;
@@ -490,10 +486,10 @@ static double iter_mdiis(double *f, int npt,
   }
 
   mdiis_close(mdiis);
-  
+
   t1 = clock();
   fprintf(stderr, "MDIIS finished in %d steps, error %g (%s), time %.4fs\n",
-      it, errp, (success ? "succeeded" : "failed"),
+      it, err, (success ? "succeeded" : "failed"),
       1.0*(t1 - t0)/CLOCKS_PER_SEC);
   return err;
 }

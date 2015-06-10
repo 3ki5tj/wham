@@ -73,17 +73,17 @@ int main(int argc, char **argv)
 
   if ( m->wham_method == WHAM_DIRECT ) {
     mbar(nbeta, xvg, beta, lnz,
-        m->itmax, m->tol, m->verbose);
+        m->itmax, m->tol, m->itmin, m->verbose);
   } else {
     mbar_mdiis(nbeta, xvg, beta, lnz,
         m->mdiis_nbases, m->mdiis_damp,
         m->mdiis_update_method, m->mdiis_threshold,
-        m->itmax, m->tol, m->verbose);
+        m->itmax, m->tol, m->itmin, m->verbose);
   }
 
   if ( m->verbose ) {
     for ( i = 0; i < nbeta; i++ ) {
-      fprintf(stderr, "%3d %8.5f %10.3f %8d\n",
+      printf("%3d %10.7f %14.7f %8d\n",
           i, beta[i], lnz[i], xvg[i]->n);
     }
   }

@@ -239,7 +239,7 @@ static double wham_step(wham_t *w, double *lnz, double *res, int update)
 /* iteratively compute the logarithm of the density of states
  * using the weighted histogram method */
 static double wham_getlndos(wham_t *w, double *lnz,
-    int itmax, double tol, int verbose)
+    int itmax, double tol, int itmin, int verbose)
 {
   int it;
   double err, errp;
@@ -253,7 +253,7 @@ static double wham_getlndos(wham_t *w, double *lnz,
       fprintf(stderr, "it %d, err %g -> %g\n",
           it, errp, err);
     }
-    if ( err < tol ) {
+    if ( err < tol && it > itmin ) {
       break;
     }
     errp = err;
@@ -269,14 +269,14 @@ static double wham_getlndos(wham_t *w, double *lnz,
 
 /* weighted histogram analysis method */
 static double wham(hist_t *hist, const double *beta, double *lnz,
-    int itmax, double tol, int verbose,
+    int itmax, double tol, int itmin, int verbose,
     const char *fnlndos, const char *fneav)
 {
   wham_t *w = wham_open(beta, hist);
   double err;
 
   wham_estimatelnz(w, lnz);
-  err = wham_getlndos(w, lnz, itmax, tol, verbose);
+  err = wham_getlndos(w, lnz, itmax, tol, itmin, verbose);
   if ( fnlndos ) {
     wham_savelndos(w, fnlndos);
   }
@@ -302,7 +302,7 @@ static double wham_getres(void *w, double *lnz, double *res)
 
 static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
     int nbases, double damp, int queue, double threshold,
-    int itmax, double tol, int verbose,
+    int itmax, double tol, int itmin, int verbose,
     const char *fnlndos, const char *fneav)
 {
   wham_t *w = wham_open(beta, hist);
@@ -311,7 +311,8 @@ static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
   wham_estimatelnz(w, lnz);
   err = iter_mdiis(lnz, hist->rows,
       wham_getres, wham_normalize, w,
-      nbases, damp, queue, threshold, itmax, tol, verbose);
+      nbases, damp, queue, threshold,
+      itmax, tol, itmin, verbose);
   if ( fnlndos ) wham_savelndos(w, fnlndos);
   wham_getav(w, fneav);
   wham_close(w);
