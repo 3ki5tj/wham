@@ -22,7 +22,13 @@ else
   export gmx=$gmxdir/gromacs5.0/buildgcc32/bin/gmx
 fi
 
-for dir in `ls --color=none -d T[0-9][0-9][0-9]P*`; do
+if [ "$1" -eq "2" ] ; then
+  export mydirs="T310P0.95 T320P0.9 T330P0.85 T340P0.8 T350P0.75 T360P0.7 T370P0.65 T380P0.6 T390P0.55 T400P0.5 T410P0.45 T420P0.4"
+else
+  export mydirs=`ls --color=none -d T[0-9][0-9][0-9]P*`
+fi
+
+for dir in $mydirs; do
   cd $dir
   echo "11 16 21 0" | $gmx energy -f npt.edr -o ev.xvg
   rm -f \#*
