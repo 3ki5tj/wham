@@ -48,12 +48,11 @@ cd T300
 
 ### Export energy ###
 
-On lonestar
 ```
 ./T_scan.sh
 ```
 
-Locally
+Manually
 ```
 ~/lwork/gmx/gromacs5.0/buildgcc/bin/gmx energy -f nvt.edr -o e.xvg
 ```
@@ -68,6 +67,32 @@ cd ../../prog/gmx
 ls --color=none -d ../../data/1VII/T[0-9][0-9][0-9]/e.xvg > e.ls
 ./xvgwham e.ls --wham=mdiis
 ```
+
+
+
+### Run MBAR ###
+
+```
+./xvgmbar e.ls --wham=mdiis
+```
+
+
+
+### Benchmark ###
+
+For the number of iteractions needed to reach an error tolerance
+```
+python xvgrun.py
+python stat.py
+```
+
+For the error versus the number of iteractions
+```
+python xvgtrace.py
+python stat.py
+```
+
+
 
 
 
@@ -94,6 +119,12 @@ Locally, the above steps can be combined as
 ./mkTP.sh
 ```
 
+For the second set, use `mkTP2.sh`.
+For the two-dimensional set, use `mkTP2d.sh`.
+
+
+
+
 
 ### Run simulations ###
 
@@ -112,12 +143,15 @@ cd T300P1
 
 ### Export energy ###
 
-On lonestar
 ```
 ./TP_scan.sh
 ```
+For the second set
+```
+./TP_scan.sh 2
+```
 
-Locally
+Manually,
 ```
 ~/lwork/gmx/gromacs5.0/buildgcc/bin/gmx energy -f npt.edr -o ev.xvg
 ```
@@ -132,6 +166,36 @@ cd ../../prog/gmx
 ls --color=none -d ../../data/1VII/T[0-9][0-9][0-9]/ev.xvg > ev.ls
 ./xvgwham2 ev.ls --wham=mdiis
 ```
+
+```
+python xvgrun.py --ev
+```
+
+
+
+### Run MBAR2 ###
+
+```
+./xvgmbar2 ev.ls --wham=mdiis
+```
+
+
+
+### Benchmark ###
+
+For the number of iteractions needed to reach an error tolerance
+```
+python xvgrun.py --ev
+python stat.py
+```
+
+For the error versus the number of iteractions
+```
+python xvgtrace.py --ev
+python stat.py
+```
+
+
 
 
 

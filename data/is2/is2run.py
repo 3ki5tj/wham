@@ -2,7 +2,8 @@
 
 
 
-''' test WHAM for two-dimensional Ising model '''
+''' test WHAM for two-dimensional Ising model
+    find the number of iterations needed to reach an error tolerance '''
 
 
 
@@ -82,10 +83,10 @@ def doargs():
       update_method = "--kth"
     elif o in ("--HP", "--hp"):
       update_method = "--hp"
-    elif o in ("--tol",):
-      tol = "--tol=%g" % float(a)
     elif o in ("--mthreshold",):
       mthreshold = "--mthreshold=%g" % float(a)
+    elif o in ("--tol",):
+      tol = "--tol=%g" % float(a)
     elif o in ("--opt",):
       cmdopt = a
     elif o in ("-m", "--nequil"):
@@ -134,6 +135,7 @@ def main():
 
   cmd0 = "./%s --re --nequil=%d --nsteps=%d %s %s" % (
       prog, nequil, nsteps, tol, cmdopt)
+  cmd0 = cmd0.strip()
 
   ns = [0]*(nbases + 1)
   tm = [0]*(nbases + 1)
@@ -146,7 +148,7 @@ def main():
 
     for nb in range(1, nbases + 1):
       cmd = "%s --wham=MDIIS --nbases=%d -H %s %s" % (
-          cmd0.strip(), nb, update_method, mthreshold)
+          cmd0, nb, update_method, mthreshold)
       ret, out, err = zcom.runcmd(cmd.strip(), capture = True)
       ns[nb], tm[nb] = getnstepstime(err)
 

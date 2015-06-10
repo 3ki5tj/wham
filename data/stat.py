@@ -50,7 +50,7 @@ def doargs():
   if len(args):
     return args
   else:
-    return glob.glob("*.log")
+    return glob.glob("*.log") + glob.glob("*.tr")
 
 
 
@@ -58,14 +58,22 @@ def dostat(fninp):
   s = open(fninp).readlines()
 
   n = len(s)
-  m = len(s[0].strip().split())
+
+  # find the longest length
+  m = 0
+  for i in range(n):
+    m = max(m, len(s[i].strip().split()))
+
   sy = [0.0] * m
   syy = [0.0] * m
   for i in range(n):
     # parse the line to an array of floating-point numbers
     arr = [float(x) for x in s[i].strip().split()]
     for j in range(m):
-      x = arr[j]
+      if j >= len(arr):
+        x = 0
+      else:
+        x = arr[j]
       sy[j] += x
       syy[j] += x * x
 

@@ -2,8 +2,8 @@
 
 
 
-''' test WHAM for Lennard-Jones fluid
-    find the number of iterations needed to reach an error tolerance '''
+''' test WHAM for two-dimensional Ising model
+    trace the error versus the number of iterations '''
 
 
 
@@ -14,14 +14,15 @@ import zcom
 
 nsamp = 10000
 nbases = 20
-nequil = 5000
-nsteps = 500000
-fnlog = None
+dnbases = 5
+nequil = 100000
+nsteps = 10000000
+fntr = "is2.tr"
 update_method = " "
 mthreshold = " "
-tol = " "
+itmin = "--itmin=100"
+tol = "--tol=1e-10"
 cmdopt = ""
-doev = False
 verbose = 0
 
 
@@ -33,20 +34,21 @@ def usage():
     %s [OPTIONS]""" % sys.argv[0]
 
   print """
-  WHAM on the Lennard-Jones fluid
+  WHAM on the two-dimensional Ising model
 
   OPTIONS:
     -N              set the number of samples
     -M, --nbases=   set the maximal number of bases in MDIIS
+    -D, --dnbases=  set the step size of the number of bases in MDIIS
     -m, --nequil=   set the number of equilibration steps
     -n, --nsteps=   set the number of simulation steps
-    -o, --log=      set the output log file
+    -o, --trace=    set the output trace file
     --kth           use the KTH scheme in MDIIS
     --hp            use the HP scheme in MDIIS
     --mthreshold=   set the clean up threshold for MDIIS
+    --itmin=        set the minimal number of iterations
     --tol=          set the tolerance of error
     --opt=          set options to be passed to the command line
-    --ev, --lj2     do the two-dimensional case
     -v              be verbose
     --verbose=      set verbocity
     -h, --help      help
@@ -59,19 +61,19 @@ def doargs():
   ''' handle input arguments '''
   try:
     opts, args = getopt.gnu_getopt(sys.argv[1:],
-        "hvN:M:m:n:o:",
+        "hvN:M:D:m:n:o:",
         [ "help", "verbose=",
-          "nbases=", "KTH", "kth", "HP", "hp",
-          "mthreshold=", "tol=",
-          "nequil=", "nsteps=", "log=",
-          "opt=", "ev", "lj2",
+          "nbases=", "dnbases=", "KTH", "kth", "HP", "hp",
+          "mthreshold=", "itmin=", "tol=",
+          "nequil=", "nsteps=", "trace=", "opt=",
         ] )
   except getopt.GetoptError, err:
     print str(err)
     usage()
 
-  global nsamp, nbases, update_method, mthreshold, tol
-  global nequil, nsteps, fnlog, doev, cmdopt, verbose
+  global nsamp, nbases, dnbases, update_method
+  global mthreshold, itmin, tol
+  global nequil, nsteps, fntr, cmdopt, verbose
 
   for o, a in opts:
     if o in ("-v",):
@@ -82,12 +84,16 @@ def doargs():
       nsamp = int(a)
     elif o in ("-M", "--nbases"):
       nbases = int(a)
+    elif o in ("-D", "--dnbases"):
+      dnbases = int(a)
     elif o in ("--KTH", "--kth"):
       update_method = "--kth"
     elif o in ("--HP", "--hp"):
       update_method = "--hp"
     elif o in ("--mthreshold",):
       mthreshold = "--mthreshold=%g" % float(a)
+    elif o in ("--itmin",):
+      itmin = "--itmin=%d" % int(a)
     elif o in ("--tol",):
       tol = "--tol=%g" % float(a)
     elif o in ("--opt",):
@@ -96,75 +102,81 @@ def doargs():
       nequil = int(a)
     elif o in ("-n", "--nsteps"):
       nsteps = int(a)
-    elif o in ("-o", "--log="):
-      fnlog = a
-    elif o in ("--ev", "--lj2"):
-      doev = True
+    elif o in ("-o", "--trace="):
+      fntr = a
     elif o in ("-h", "--help"):
       usage()
 
 
 
-def getnstepstime(err):
-  ''' get the nsteps and time from the error output '''
+def gettrace(nb, err):
+  ''' get the errors vs. step from the output '''
 
-  ln = err.strip().split("\n")[-1].strip()
+  s = err.strip().split("\n")
 
-  m = re.search(" ([0-9]+) steps", ln)
-  if not m:
-    print "line %s: no number of iterations" % ln
-    raise Exception
-  ns = m.group(1) # keep it as a string, not an integer
+  tr = {}
+  for ln in s:
+    if not ln.startswith("it "):
+      continue
 
-  m = re.search("time ([0-9.]+)s", ln)
-  if not m:
-    print "line %s: no timing information" % ln
-    raise Exception
-  tm = m.group(1)
+    m = re.search("it ([0-9]+),", ln)
+    if not m:
+      print "line %s: no number of iterations" % ln
+      raise Exception
+    it = int( m.group(1) )
 
-  return ns, tm
+    m = re.search("err[a-z]* ([0-9.e+-]+) -> ([0-9.e+-]+)", ln)
+    if not m:
+      print "line %s: no error information" % ln
+      raise Exception
+    err0 = float( m.group(1) )
+    err = float( m.group(2) )
+
+    if it == 1:
+      tr[0] = err0
+    tr[it] = err
+
+  itmax = max(k for k in tr)
+  s = ""
+  for k in range(itmax + 1):
+    s += "%g " % tr[k]
+  s = s.strip()
+
+  arr = os.path.splitext(fntr)
+  fntrnb = "%s_nb%s%s" % (arr[0], nb, arr[1])
+  open(fntrnb, "a").write(s + "\n")
+  return tr
 
 
 
 def main():
-  global cmdopt, fnlog
+  global cmdopt, fntr
 
-  arr = os.path.splitext(fnlog)
-  fntmlog = arr[0] + "tm" + arr[1]
+  zcom.runcmd("make -C ../../prog/is2")
 
-  zcom.runcmd("make -C ../../prog/lj")
+  prog = "is2wham"
 
-  if doev:
-    prog = "ljwham2"
-    if not fnlog: fnlog = "lj2.log"
-  else:
-    prog = "ljwham"
-    if not fnlog: fnlog = "lj.log"
+  try:
+    shutil.copy("../../prog/is2/%s" % prog, "./%s" % prog)
+  except:
+    pass
 
-  shutil.copy("../../prog/lj/%s" % prog, "./%s" % prog)
-
-  cmd0 = "./%s --re --nequil=%d --nsteps=%d %s %s" % (
-      prog, nequil, nsteps, tol, cmdopt)
+  cmd0 = "./%s -v --re --nequil=%d --nsteps=%d %s %s %s" % (
+      prog, nequil, nsteps, itmin, tol, cmdopt)
   cmd0 = cmd0.strip()
 
-  ns = [0]*(nbases + 1)
-  tm = [0]*(nbases + 1)
   for i in range(nsamp):
     print "running sample %d/%d..." % (i, nsamp)
 
     # use the direct WHAM
     ret, out, err = zcom.runcmd(cmd0, capture = True)
-    ns[0], tm[0] = getnstepstime(err)
+    gettrace(0, err)
 
-    for nb in range(1, nbases + 1):
+    for nb in range(dnbases, nbases + 1, dnbases):
       cmd = "%s --wham=MDIIS --nbases=%d -H %s %s" % (
           cmd0, nb, update_method, mthreshold)
       ret, out, err = zcom.runcmd(cmd.strip(), capture = True)
-      ns[nb], tm[nb] = getnstepstime(err)
-
-    # save to the log files
-    open(fnlog, "a").write(" ".join(ns) + "\n")
-    open(fntmlog, "a").write(" ".join(tm) + "\n")
+      gettrace(nb, err)
 
 
 
