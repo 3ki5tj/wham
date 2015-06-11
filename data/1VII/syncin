@@ -1,4 +1,4 @@
 #!/bin/bash
 rsync -avz --exclude="bak*" --exclude="*.py" --exclude="*.sh" \
-  --exclude=".*.swp" --exclude="#*" \
+  --exclude=".*.swp" --exclude="#*" --exclude="*simul.o*" \
   oo1@lonestar.tacc.utexas.edu:/scratch/02464/oo1/wham/data/1VII/* .

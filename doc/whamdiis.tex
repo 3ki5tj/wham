@@ -30,7 +30,6 @@ can be improved by using the method of direct inversion in the iterative subspac
 
 
 
-
 \section{Introduction}
 
 
@@ -49,27 +48,28 @@ of calculating free energy
 in computer simulations\cite{
 newman, *frenkel}.
 %
-Given several trajectories obtained
-from simulations performed
+Given several trajectories collected
 for different thermodynamic states,
 the method yields optimal estimates
 of the free energy differences
 among the states.
 %
-It does so by solving a pair of coupled equations of
-the free energy and the density of states
-involving the (energy) histograms, hence the name.
+Here, the free energy
+and the density of states
+are determined
+from a set of equations involving
+the (energy) histograms,
+hence the name of the method.
 %
-Besides the above form,
-WHAM can be also reformulated
+One can also avoid the histogram dependence
+and reformulate WHAM
 as the multistate Bennett acceptance ratio (MBAR) method\cite{
 shirts2008}
-(as an extension of the Bennett acceptance ratio (BAR) method\cite{
-bennett1976})
-to avoid the histogram dependence.
+as an extension of the Bennett acceptance ratio (BAR) method\cite{
+bennett1976}.
 %
 The statistical efficiency of using data
-makes WHAM or MBAR a popular tool
+makes WHAM and MBAR popular trajectory analysis tools
 for enhanced-sampling simulations,
 such as umbrella sampling\cite{
 torrie1974, *laio2002},
@@ -90,14 +90,17 @@ a slow convergence in later stages.
 Several remedies were proposed\cite{
 shirts2008, bereau2009, kim2011}.
 %
-For example, one may use the Newton-Raphson method
-to directly compute the Hessian matrix,
-although it can be occasionally unstable\cite{
-shirts2008},
+For example, one may use the Newton-Raphson method,
+which involves computing the Hessian matrix,
+although the approach sometimes can be unstable\cite{
+shirts2008}.
 %
-An ingenious non-iterative alternative
-is to directly estimate the derivative of density of states,
-leading to the statistical-temperature WHAM\cite{
+In an ingenious non-iterative alternative,
+the statistical-temperature WHAM,
+one determines the density of states
+from its logarithmic derivative,
+which can be found non-iteratively
+within some approximation\cite{
 kim2011}.
 %
 This variant, however, gives
@@ -115,7 +118,8 @@ pulay1980, *pulay1982, *hamilton1986,
 kovalenko1999, howard2011}.
 %
 Although the method is still iterative,
-the rate of convergence is often
+we shall see that
+the rate of convergence can often be
 significantly improved.
 
 
@@ -408,7 +412,7 @@ from the vectors.
 
 
 
-To do so, we first find the combination of the residue vectors
+To do so, we first find the combination of the residual vectors
 $\vct{\hat R} = \sum_i c_i \, \vct R_i$,
 that minimizes the error
 $\| \vct{\hat R} \|$.
@@ -417,7 +421,7 @@ If Eq. \eqref{eq:R_f} is nearly linear
 around the solutions,
 %
 $\vct{\hat R}$
-is roughly the residue vector of
+is roughly the residual vector of
 $\vct{\hat f} = \sum_i c_i \, \vct f_i$.
 %
 This means,
@@ -497,7 +501,7 @@ is used to update the basis as follows.
     %
     \newcommand{\sz}{4cm}
     \node (label-A) at (-0.10*\sz, 1.28*\sz) [label=below:{(a)}] {};
-    \node (label-B) at ( 1.25*\sz, 1.28*\sz) [label=below:{(b)}] {};
+    \node (label-B) at ( 1.20*\sz, 1.28*\sz) [label=below:{(b)}] {};
     \begin{scope}
       %\clip ({-0.08*\sz}, {-0.08*\sz}) rectangle ({1.3*\sz}, {1.15*\sz});
       %
@@ -614,7 +618,7 @@ is used to update the basis as follows.
     %
     %
     %
-    \newcommand{\Rox}{1.5*\sz}
+    \newcommand{\Rox}{1.45*\sz}
     \newcommand{\Roy}{0.13*\sz}
     %
     %
@@ -740,7 +744,7 @@ In a popular updating scheme\cite{kovalenko1999},
 the basis is treated as a queue:
 %
 we add $\vct f^{(n)}$ to the basis,
-if the basis contains fewer than $M$ vectors,
+if the latter contains fewer than $M$ vectors,
 %
 or substitute $\vct f^{(n)}$ for the earliest vector in the basis.
 %
@@ -754,7 +758,6 @@ we rebuild the basis
 from $\vct f_\mathrm{min}$.
 %
 Here, the error of a vector $\vct f$ is defined as
-the magnitude of the residual vector as
 $\| \vct R(\vct f) \|$,
 and
 $K_r = 10.0$\cite{
@@ -762,30 +765,46 @@ kovalenko1999}.
 
 
 
-We used the following alternative
+We used the following modification
 in this study.
-%An alternative is the following.
 %
-First, we find the most erroneous vector,
-$\vct f_\mathrm{max}$, from the basis.
+When the basis contains $M$ vectors,
+we find the most erroneous vector,
+$\vct f_\mathrm{max}$, from the basis,
+and replace it by $\vct f^{(n)}$.
 %
-If the new vector, $\vct f^{(n)}$,
-produces an error less than $\vct f_\mathrm{max}$,
-we add $\vct f^{(n)}$ into the basis
-or, if the basis is full,
-substitute $\vct f^{(n)}$ for $\vct f_\mathrm{max}$.
+If, however,
+$\vct f_\mathrm{max}$
+is the updated vector in the previous step,
+the process is stagnant.
 %
-Otherwise,
-we remove $\vct f_\mathrm{max}$ from the basis,
-and if this empties the basis,
+In this case,
 we rebuild the basis from $\vct f^{(n)}$.
+
+
+
+%
+% Below is another variant
+%
+%First, we find the most erroneous vector,
+%$\vct f_\mathrm{max}$, from the basis.
+%%
+%If the new vector, $\vct f^{(n)}$,
+%produces an error less than $\vct f_\mathrm{max}$,
+%we add $\vct f^{(n)}$ into the basis
+%or, if the basis is full,
+%substitute $\vct f^{(n)}$ for $\vct f_\mathrm{max}$.
+%%
+%Otherwise,
+%we remove $\vct f_\mathrm{max}$ from the basis,
+%and if this empties the basis,
+%we rebuild the basis from $\vct f^{(n)}$.
 %
 % We find the modification is slightly better.
 
 
 
-In both cases,
-DIIS recovers the direct implementation
+The DIIS process is reduced the direct one
 if $M = 1$.
 %
 Thus,
