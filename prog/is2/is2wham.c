@@ -140,10 +140,17 @@ int main(int argc, char **argv)
   }
 
   if ( m->verbose ) {
+    double *lnzref;
+
+    xnew(lnzref, m->nT);
     for ( iT = 0; iT < m->nT; iT++ ) {
-      printf("%3d %10.7f %14.7f\n",
-         iT, beta[iT], lnz[iT]);
+      lnzref[iT] = is2_exact(IS2_L, IS2_L, beta[iT], NULL, NULL);
     }
+    for ( iT = 0; iT < m->nT; iT++ ) {
+      printf("%3d %10.7f %14.7f %14.7f\n",
+         iT, beta[iT], lnz[iT], lnzref[iT] - lnzref[0]);
+    }
+    free(lnzref);
   }
 
   hist_close(hs);

@@ -17,9 +17,9 @@ mydirs="$mydirs T400P1 T400P1.1 T400P1.2 T400P1.3 T400P1.4 T400P1.5 T400P1.6 T40
 mydirs="$mydirs T410P1 T410P1.1 T410P1.2 T410P1.3 T410P1.4 T410P1.5 T410P1.6 T410P1.7 T410P1.8 T410P1.9 T410P2"
 
 for dir in $mydirs; do
-  echo $dir
-  ls $dir/*.xvg
-  #rsync -avz $dir $remote
+  #echo $dir
+  #ls $dir/*.xvg
+  rsync -avz $dir $remote
 done
 
 

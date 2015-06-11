@@ -64,7 +64,7 @@ Besides the above form,
 WHAM can be also reformulated
 as the multistate Bennett acceptance ratio (MBAR) method\cite{
 shirts2008}
-(an extension of the Bennett acceptance ratio (BAR) method\cite{
+(as an extension of the Bennett acceptance ratio (BAR) method\cite{
 bennett1976})
 to avoid the histogram dependence.
 %
@@ -301,12 +301,11 @@ If the Hamiltonian difference among the ensembles
 cannot be traced down to a few quantities,
 e.g., $E$ or $(E, V)$ in the above,
 the MBAR method is preferred\cite{
-shirts2008},
-for the construction of
-a high dimensional histogram
-can be inconvenient.
+shirts2008}
+because of the inconvenience
+of constructing a high-dimensional histogram.
 %
-Similarly,
+Besides,
 non-Boltzmann
 (e.g., the multicanonical\cite{
 mezei1987, *berg1992, *lee1993},
@@ -333,7 +332,7 @@ f_i^\mathrm{(new)}
 \end{equation}
 %
 This is referred to as
-the direct implementation below.
+the direct WHAM below.
 %
 It can suffer from a slow convergence,
 resulting in thousands of iterations\cite{
@@ -803,10 +802,7 @@ only if multiple bases are used.
 
 
 
-The direct and DIIS versions of WHAM
-were tested on three systems.
-%
-In both cases,
+In testing the direct and DIIS versions of WHAM,
 the initial free energy was obtained from
 the single histogram method:
 %
@@ -821,8 +817,10 @@ f_i - f_{i-1}
 \right\rangle_j
 \end{equation*}
 %
-Iterations were not stopped
-until each $|R_i| < 10^{-10}$.
+
+
+
+\subsection{Ising model}
 
 
 
@@ -833,113 +831,110 @@ We used parallel tempering\cite{
   swendsen1986, *geyer1991, *hukushima1996, *hansmann1997,
   *earl2005}
 Monte Carlo (MC)
-with
-eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$.
+for
+eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$,
+with $10^7$ MC steps on each temperature.
 
 
 
-The second system is the 108-particle Lennard-Jones system.
-%
-Molecular dynamics (MD)
-was used with a time step of $0.002$.
-The velocity rescaling thermostat\cite{bussi2007}
-was used with a time step of $0.02$.
-%
-The potential was cutoff at $r = 2.5$.
-%
-We simulated the system under
-the canonical ($NVT$), and isothermal-isobaric ($NPT$) ensembles,
-both using parallel tempering.
-%
-For the $NVT$ ensemble,
-we used ten temperatures: $T = 0.7, 0.8, \dots, 1.6$,
-and fixed the density at $\rho = 0.3$.
-%
-For the $NpT$ ensemble,
-we simulated the system
-under $N_T \times N_p = 5\times 10$ conditions:
-the temperatures were $T = 1.0, 1.1, \dots, 1.4$,
-the pressures were $p = 0.2, 0.4, \dots, 1.8$.
-%
-The position Langevin barostat based on $\log V$
-was used with a step size of $10^{-5}$.
+In Fig. \ref{fig:zref},
+we show that
+the dimensionless free energy computed from WHAM
+agreed well with the exact result\cite{
+  ferdinand1969},
+and the DIIS version produced the same results
+as the direct WHAM.
 
 
 
-The third system is a mini-protein:
-villin headpiece\cite{duan1998}
-(PDB ID: 1VII).
-%
-The protein was immersed in
-a dodecahedron box with 1898 TIP3P water molecules and two chloride ions.
-%
-MD simulations were performed
-using GROMACS\cite{
-  berendsen1995, *lindahl2001, *vanderspoel2005, *hess2008}.
-%
-The electronic interaction was
-handled by the particle mesh Ewald method\cite{
-  essmann1995}.
-%
-The constraints were handled by the LINCS method\cite{
-  hess1997}
-for hydrogen-related chemical bonds on the protein
-and by the SETTLE method\cite{
-  miyamoto1992}
-for water molecules.
-%
-Both $NVT$ and $NPT$ ensembles were used.
-%
-In both cases, we simulated the system
-for about {\color{red} 100} ns
-under 12 conditions
-(the time step was 2 fs).
-%
-Energy frames were registered every 0.1 ps.
-%
-In the $NVT$ case,
-$T$ = 300 K, 310 K, \dots, 410 K.
-%
-In the $NpT$ case,
-the temperatures were the same,
-and the pressures were
-1.0 bar, 1.1 bar, \dots, 2.1 bar,
-respectively.
+\begin{figure}[h]
+  \makebox[\linewidth][c]{
+    \includegraphics[angle=0, width=1.0\linewidth]{fig/zref.pdf}
+  }
+  \caption{
+    \label{fig:zref}
+    Dimensionless free energy computed from WHAM
+    for the $64\times64$ two-dimensional Ising model.
+  }
+\end{figure}
 
 
 
-The results are shown in Fig. \ref{fig:niter}.
+
+From Fig. \ref{fig:trace},
+it is clear that the DIIS version more rapidly
+reduced the error.
 %
-The tested cases
-all required hundreds or thousands iterations
-for the direct method of WHAM.
-%
-The performance of the DIIS version of WHAM
-generally improved with increasing number of bases,
-although in some cases an optimal $M$ existed.
-%
-Optimally, DIIS can deliver a speedup of one or two orders of magnitude.
-%
-However, the result is highly system dependent.
-%
-Generally, we expect a larger gain from DIIS
-for a more complex system.
+As shown in Fig. \ref{fig:niter},
+the direct WHAM
+required thousands of iterations for convergence,
+while the DIIS version optimally
+delivered a speedup of two orders of magnitude.
+
+
 
 
 
 
 \begin{figure}[h]
   \makebox[\linewidth][c]{
-    \includegraphics[angle=0, width=0.9\linewidth]{fig/niter.pdf}
+    \includegraphics[angle=0, width=1.0\linewidth]{fig/trace.pdf}
+  }
+  \caption{
+    \label{fig:trace}
+    Error versus the number of iterations
+    for the $64\times64$ two-dimensional Ising model.
+    %
+    Results were averaged over independent samples.
+    %
+    The lines are to guide the eyes.
+  }
+\end{figure}
+
+
+
+
+%The second system is the 108-particle Lennard-Jones system.
+%%
+%Molecular dynamics (MD)
+%was used with a time step of $0.002$.
+%The velocity rescaling thermostat\cite{bussi2007}
+%was used with a time step of $0.02$.
+%%
+%The potential was cutoff at $r = 2.5$.
+%%
+%We simulated the system under
+%the canonical ($NVT$), and isothermal-isobaric ($NPT$) ensembles,
+%both using parallel tempering.
+%%
+%For the $NVT$ ensemble,
+%we used ten temperatures: $T = 0.7, 0.8, \dots, 1.6$,
+%and fixed the density at $\rho = 0.3$.
+%%
+%For the $NpT$ ensemble,
+%we simulated the system
+%under $N_T \times N_p = 5\times 10$ conditions:
+%the temperatures were $T = 1.0, 1.1, \dots, 1.4$,
+%the pressures were $p = 0.2, 0.4, \dots, 1.8$.
+%%
+%The position Langevin barostat based on $\log V$
+%was used with a step size of $10^{-5}$.
+
+
+
+\begin{figure}[h]
+  \makebox[\linewidth][c]{
+    \includegraphics[angle=0, width=1.0\linewidth]{fig/niter.pdf}
   }
   \caption{
     \label{fig:niter}
-    Number of iterations versus the number of bases, $M$
+    Number of iterations to achieve $|R_i| < 10^{-8}$
+    versus the number of bases, $M$
     in the DIIS version of WHAM.
     %
-    The $M = 1$ result corresponds to the direct iteration.
+    The $M = 1$ case is reduced to the direct iteration.
     %
-    For the Ising model and Lennard-Jones fluid,
+    For the Ising model,
     the results have been averaged over many independent samples.
     %
     For the villin headpiece,
@@ -953,8 +948,71 @@ for a more complex system.
 
 
 
+\subsection{Villin headpiece}
+
+
+
+We tested the methods on a mini-protein:
+villin headpiece\cite{duan1998}
+(PDB ID: 1VII).
+%
+The protein was immersed in
+a dodecahedron box with 1898 TIP3P water molecules and two chloride ions.
+%
+MD simulations were performed
+using GROMACS\cite{
+  berendsen1995, *lindahl2001, *vanderspoel2005, *hess2008},
+with a time step of 2 fs.
+%
+Velocity rescaling\cite{bussi2007}
+was used as the thermostat with
+the time constant being 0.1 ps.
+%
+The electronic interaction was
+handled by the particle mesh Ewald method\cite{
+  essmann1995}.
+%
+The constraints were handled by the LINCS method\cite{
+  hess1997}
+for hydrogen-related chemical bonds on the protein
+and by the SETTLE method\cite{
+  miyamoto1992}
+for water molecules.
+%
+Energy frames were registered every 0.1 ps.
+
+
+
+Both $NVT$ and $NPT$ ensembles were used.
+%
+In the $NVT$ case,
+we simulated the system under 12 temperatures
+$T$ = 300 K, 310 K, \dots, 410 K,
+each for {\color{red} 100} ns.
+
+
+
+As shown in Fig. \ref{fig:niter},
+despite the few number of temperature,
+the direct WHAM suffers from a slow convergence,
+while the DIIS version again
+delivered a speedup of two orders of magnitude.
+
+
+
+In the $NpT$ case,
+the temperatures were the same,
+and the pressures were
+1.0 bar, 1.1 bar, \dots, 2.1 bar,
+respectively.
+
+
+
+
 
 \section{Acknowledgments}
+
+
 
 
 

@@ -1,4 +1,10 @@
 
+## Reference ##
+
+`histref.dat` was used to produce
+`is2nb0.out` and `is2nb10.out`.
+
+
 ## Number of iterations versus number of bases ##
 
 1. Generate `is2.log` and `is2tm.log`
