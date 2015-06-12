@@ -3,7 +3,7 @@
 set encoding cp1250 # make the minus sign longer
 set terminal push
 set terminal postscript eps enhanced size 5, 3.5 font "Times, 24"
-set output "trace.eps"
+set output "is2trace.eps"
 
 
 set logscale
@@ -30,7 +30,7 @@ set style line 4  lw 2.0 lt 4 lc rgb color4  pt 6   ps 1.0
 set style line 5  lw 2.0 lt 5 lc rgb color5  pt 12  ps 1.0
 
 set xlabel "Number of iterations" offset 0, 0.0
-set ylabel "Error, max{/Time=36 \\{|}{/Times-Italic R_i}{/Time=36 |\\}}" offset 0.5, 0
+set ylabel "max{/Time=36 \\{|}{/Times-Italic R_i}{/Time=36 |\\}}" offset 0.5, 0
 #set key spacing 1.5
 set key left bottom Left reverse spacing 1.5
 

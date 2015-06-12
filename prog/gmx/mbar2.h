@@ -30,6 +30,11 @@
 
 
 
+enum { MBAR_DIRECT = 0, MBAR_MDIIS = 1, MBAR_NMETHODS };
+const char *mbar_methods[] = {"Direct", "MDIIS"};
+
+
+
 typedef struct {
   int nbeta;
   const double *bx, *by; /* temperature array, reference */
@@ -256,7 +261,7 @@ static double mbar2_getres(void *mbar, double *lnz, double *res)
 
 static double mbar2_mdiis(int nbp, xvg_t **xvg,
     const double *bx, const double *by, double *lnz,
-    int nbases, double damp, int queue, double threshold,
+    int nbases, double damp, int update_method, double threshold,
     int itmax, double tol, int itmin, int verbose)
 {
   mbar2_t *mbar = mbar2_open(nbp, bx, by, xvg);
@@ -265,13 +270,34 @@ static double mbar2_mdiis(int nbp, xvg_t **xvg,
   mbar2_estimatelnz(mbar, lnz);
   err = iter_mdiis(lnz, nbp,
       mbar2_getres, mbar2_normalize, mbar,
-      nbases, damp, queue, threshold,
+      nbases, damp, update_method, threshold,
       itmax, tol, itmin, verbose);
   mbar2_close(mbar);
   return err;
 }
 
 #endif /* ENABLE_MDIIS */
+
+
+
+static double mbar2x(int nbp, xvg_t **xvg,
+    const double *bx, const double *by, double *lnz,
+    int nbases, double damp, int update_method, double threshold,
+    int itmax, double tol, int itmin, int verbose, int method)
+{
+  if ( method == MBAR_DIRECT ) {
+    return mbar2(nbp, xvg, bx, by, lnz,
+        itmax, tol, itmin, verbose);
+#ifdef ENABLE_MDIIS
+  } else if ( method == MBAR_MDIIS ) {
+    return mbar2_mdiis(nbp, xvg, bx, by, lnz,
+        nbases, damp, update_method, threshold,
+        itmax, tol, itmin, verbose);
+#endif
+  }
+
+  return 0;
+}
 
 
 

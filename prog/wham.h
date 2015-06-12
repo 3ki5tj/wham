@@ -19,6 +19,11 @@
 
 
 
+enum { WHAM_DIRECT = 0, WHAM_MDIIS = 1, WHAM_ST = 2, WHAM_NMETHODS };
+const char *wham_methods[] = {"Direct", "MDIIS", "ST"};
+
+
+
 typedef struct {
   const double *beta; /* temperature array, reference */
   double *res; /* difference between new and old lnz */
@@ -176,6 +181,25 @@ static void wham_normalize(double *lnz, int nbeta)
 
 
 
+/* compute the partition function from the density of states */
+static void wham_getlnz(wham_t *w, double *lnz)
+{
+  hist_t *hist = w->hist;
+  int i, j, n = hist->n, nbeta = hist->rows;
+  double e;
+
+  for ( j = 0; j < nbeta; j++ ) {
+    for ( lnz[j] = LOG0, i = 0; i < n; i++ ) {
+      if ( w->lndos[i] <= LOG0) continue;
+      e = hist->xmin + (i + .5) * hist->dx;
+      lnz[j] = wham_lnadd(lnz[j], w->lndos[i] - w->beta[j] * e);
+    }
+  }
+  wham_normalize(lnz, nbeta);
+}
+
+
+
 static double wham_step(wham_t *w, double *lnz, double *res, int update)
 {
   hist_t *hist = w->hist;
@@ -210,25 +234,12 @@ static double wham_step(wham_t *w, double *lnz, double *res, int update)
     if ( w->lndos[i] > LOG0 )
       w->lndos[i] -= x;
 
-  /* refresh the partition function */
-  for ( j = 0; j < nbeta; j++ ) {
-    for ( res[j] = LOG0, i = 0; i < n; i++ ) {
-      if ( w->lndos[i] <= LOG0) continue;
-      e = hist->xmin + (i + .5) * hist->dx;
-      res[j] = wham_lnadd(res[j], w->lndos[i] - w->beta[j] * e);
-    }
-  }
-  for ( x = res[0], j = 0; j < nbeta; j++ )
-    res[j] -= x; /* shift the baseline */
-
+  wham_getlnz(w, res);
   for ( err = 0, j = 0; j < nbeta; j++ ) {
-    res[j] -= lnz[j];
+    x = res[j];
+    res[j] = x - lnz[j];
     if ( fabs(res[j]) > err ) err = fabs(res[j]);
-    if ( update ) lnz[j] += res[j];
-  }
-
-  if ( update ) {
-    wham_normalize(lnz, nbeta);
+    if ( update ) lnz[j] = x;
   }
 
   return err;
@@ -287,6 +298,94 @@ static double wham(hist_t *hist, const double *beta, double *lnz,
 
 
 
+/* non-iteratively compute the logarithm of the density of states
+ * using the statistical-temperature WHAM */
+static void stwham_getlndos(wham_t *w)
+{
+  hist_t *hist = w->hist;
+  int i, j, imin, imax, n = hist->n, nbeta = hist->rows;
+  double x, y, tot, hn, hp, stbeta, de = hist->dx;
+  clock_t t0, t1;
+
+  t0 = clock();
+
+  imin = imax = -1;
+  for ( i = 0; i < n; i++ ) {
+    stbeta = 0;
+    tot = 0;
+    for ( j = 0; j < nbeta; j++ ) {
+      x = hist->arr[j*n + i];
+      if ( x <= 0 ) continue;
+      tot += x;
+      /* compute the statistical temperature from copy j */
+      y = 0;
+      if ( i - 1 >= 0 && i + 1 < n ) {
+        hn = hist->arr[j*n + i + 1];
+        hp = hist->arr[j*n + i - 1];
+        if ( hn + hp > 0 ) {
+          y = 2 * (hn - hp) / (hn + hp) / (2 * de);
+          if ( hn > 0 && hp > 0 ) {
+            y = log(hn/hp) / (2 * de);
+          }
+        }
+      }
+      y += w->beta[j];
+      stbeta += x * y;
+    }
+
+    if ( tot <= 0 ) {
+      w->lndos[i] = 0;
+      continue;
+    }
+  
+    /* lndos currently hold the statistical temperature */
+    w->lndos[i] = stbeta / tot;
+    if ( imin < 0 ) imin = i;
+    if ( i > imax ) imax = i;
+  }
+
+  /* integrate the statistical temperature
+   * to get the density of states */
+  x = y = 0;
+  for ( i = imin; i <= imax; i++ ) {
+    stbeta = w->lndos[i];
+    w->lndos[i] = y + 0.5 * (x + stbeta) * de;
+    x = stbeta; /* previous temperature */
+    y = w->lndos[i]; /* previous lndos */
+  }
+
+  for ( i = 0; i < imin; i++ ) {
+    w->lndos[i] = LOG0;
+  }
+  for ( i = imax + 1; i < n; i++ ) {
+    w->lndos[i] = LOG0;
+  }
+
+  t1 = clock();
+  fprintf(stderr, "ST-WHAM completed, time %.4fs\n",
+      1.0*(t1 - t0)/CLOCKS_PER_SEC);
+}
+
+
+
+/* statistical temperature weighted histogram analysis method */
+static double stwham(hist_t *hist, const double *beta, double *lnz,
+    const char *fnlndos, const char *fneav)
+{
+  wham_t *w = wham_open(beta, hist);
+
+  stwham_getlndos(w);
+  wham_getlnz(w, lnz);
+  if ( fnlndos ) {
+    wham_savelndos(w, fnlndos);
+  }
+  wham_getav(w, fneav);
+  wham_close(w);
+  return 0.0;
+}
+
+
+
 #ifdef ENABLE_MDIIS
 /* MDIIS method */
 #include "mdiis.h"
@@ -319,7 +418,33 @@ static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
   return err;
 }
 
+
+
 #endif /* ENABLE_MDIIS */
+
+
+
+static double whamx(hist_t *hist, const double *beta, double *lnz,
+    int nbases, double damp, int update_method, double threshold,
+    int itmax, double tol, int itmin, int verbose,
+    const char *fnlndos, const char *fneav, int method)
+{
+  if ( method == WHAM_DIRECT ) {
+    return wham(hist, beta, lnz, itmax, tol, itmin, verbose,
+        fnlndos, fneav);
+  } else if ( method == WHAM_ST ) {
+    return stwham(hist, beta, lnz, fnlndos, fneav);
+#ifdef ENABLE_MDIIS
+  } else if ( method == WHAM_MDIIS ) {
+    return wham_mdiis(hist, beta, lnz,
+        nbases, damp, update_method, threshold,
+        itmax, tol, itmin, verbose,
+        fnlndos, fneav);
+#endif
+  }
+
+  return 0;
+}
 
 
 

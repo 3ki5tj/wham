@@ -71,15 +71,10 @@ int main(int argc, char **argv)
     lnz[i] = 0;
   }
 
-  if ( m->wham_method == WHAM_DIRECT ) {
-    mbar2(nbp, xvg, beta, bpres, lnz,
-        m->itmax, m->tol, m->itmin, m->verbose);
-  } else {
-    mbar2_mdiis(nbp, xvg, beta, bpres, lnz,
-        m->mdiis_nbases, m->mdiis_damp,
-        m->mdiis_update_method, m->mdiis_threshold,
-        m->itmax, m->tol, m->itmin, m->verbose);
-  }
+  mbar2x(nbp, xvg, beta, bpres, lnz,
+      m->mdiis_nbases, m->mdiis_damp,
+      m->mdiis_update_method, m->mdiis_threshold,
+      m->itmax, m->tol, m->itmin, m->verbose, m->mbar_method);
 
   if ( m->verbose ) {
     for ( i = 0; i < nbp; i++ ) {

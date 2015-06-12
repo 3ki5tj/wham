@@ -19,6 +19,11 @@
 
 
 
+enum { WHAM_DIRECT = 0, WHAM_MDIIS = 1, WHAM_NMETHODS };
+const char *wham_methods[] = {"Direct", "MDIIS"};
+
+
+
 typedef struct {
   const double *bx, *by; /* temperature array, reference */
   double *res;
@@ -430,6 +435,29 @@ static double wham2_mdiis(hist2_t *hist,
 }
 
 #endif /* ENABLE_MDIIS */
+
+
+
+static double wham2x(hist2_t *hist,
+    const double *bx, const double *by, double *lnz,
+    int nbases, double damp, int update_method, double threshold,
+    int itmax, double tol, int itmin, int verbose,
+    const char *fnlndos, const char *fneav, int method)
+{
+  if ( method == WHAM_DIRECT ) {
+    return wham2(hist, bx, by, lnz, itmax, tol, itmin, verbose,
+        fnlndos, fneav);
+#ifdef ENABLE_MDIIS
+  } else if ( method == WHAM_MDIIS ) {
+    return wham2_mdiis(hist, bx, by, lnz,
+        nbases, damp, update_method, threshold,
+        itmax, tol, itmin, verbose,
+        fnlndos, fneav);
+#endif
+  }
+
+  return 0;
+}
 
 
 

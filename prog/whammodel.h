@@ -19,11 +19,6 @@
 
 
 
-enum { WHAM_DIRECT = 0, WHAM_MDIIS = 1, WHAM_NMETHODS };
-const char *wham_methods[] = {"Direct", "MDIIS"};
-
-
-
 typedef struct {
   char *prog;
   char *fnhis;
@@ -32,7 +27,12 @@ typedef struct {
   double radd; /* rate of adding trajectory frames into the histogram */
   double de;
   double dv;
+#ifdef WHAM
   int wham_method;
+#endif
+#ifdef MBAR
+  int mbar_method;
+#endif
   int itmax;
   double tol;
   int itmin;
@@ -92,7 +92,12 @@ __inline static void model_default(model_t *m)
   m->radd = 1.0;
   m->de = 1.0;
   m->dv = 0.02;
+#ifdef WHAM
   m->wham_method = WHAM_DIRECT;
+#endif
+#ifdef MBAR
+  m->mbar_method = MBAR_DIRECT;
+#endif
   m->itmax = 100000;
   m->tol = 1e-8;
   m->itmin = 0;
@@ -160,9 +165,11 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  -r:            set the rate of adding trajectory frames into the histogram\n");
   fprintf(stderr, "  --de=:         set the energy bin size, default %g\n", m->de);
   fprintf(stderr, "  --dv=:         set the volume bin size, default %g\n", m->dv);
-  fprintf(stderr, "  --wham=:       set the WHAM method, 'Direct' or 'MDIIS', default: %s\n", wham_methods[m->wham_method]);
+#ifdef WHAM
+  fprintf(stderr, "  --wham=:       set the WHAM method, 'Direct', 'MDIIS', or 'ST', default: %s\n", wham_methods[m->wham_method]);
+#endif
 #ifdef MBAR
-  fprintf(stderr, "  --mbar=:       set the MBAR method, 'Direct' or 'MDIIS', default: %s\n", wham_methods[m->wham_method]);
+  fprintf(stderr, "  --mbar=:       set the MBAR method, 'Direct' or 'MDIIS', default: %s\n", mbar_methods[m->mbar_method]);
 #endif
   fprintf(stderr, "  --itmax=:      set the maximal number of iterations, default %d\n", m->itmax);
   fprintf(stderr, "  --tol=:        set the tolerance of error, default %g\n", m->tol);
@@ -247,11 +254,13 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->de = atof(q);
       } else if ( strcmpfuzzy(p, "dv") == 0 ) {
         m->dv = atof(q);
+#ifdef WHAM
       } else if ( strcmpfuzzy(p, "wham") == 0 ) {
         m->wham_method = model_select(q, WHAM_NMETHODS, wham_methods);
+#endif
 #ifdef MBAR
       } else if ( strcmpfuzzy(p, "mbar") == 0 ) {
-        m->wham_method = model_select(q, WHAM_NMETHODS, wham_methods);
+        m->mbar_method = model_select(q, MBAR_NMETHODS, mbar_methods);
 #endif
       } else if ( strcmpfuzzy(p, "itmax") == 0 ) {
         m->itmax = atoi(q);

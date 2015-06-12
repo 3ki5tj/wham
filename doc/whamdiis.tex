@@ -95,13 +95,20 @@ which involves computing the Hessian matrix,
 although the approach sometimes can be unstable\cite{
 shirts2008}.
 %
-In an ingenious non-iterative alternative,
-the statistical-temperature WHAM,
-one determines the density of states
-from its logarithmic derivative,
-which can be found non-iteratively
-within some approximation\cite{
-kim2011}.
+An ingenious non-iterative alternative is
+the statistical-temperature WHAM (ST-WHAM)\cite{
+kim2011},
+which can also be considered as a refinement of
+the umbrella integration method\cite{
+kastner2005}.
+%
+Here,
+one non-iteratively determines the density of states
+from integrating its logarithmic derivative,
+or the statistical temperature,
+which is computed from averaging the values
+over the simulated temperatures
+using the histogram heights as the weights.
 %
 This variant, however, gives
 a slightly different estimate of free energy
@@ -847,8 +854,8 @@ The first system is
 the two-dimensional $64\times64$ Ising model.
 %
 We used parallel tempering\cite{
-  swendsen1986, *geyer1991, *hukushima1996, *hansmann1997,
-  *earl2005}
+swendsen1986, *geyer1991, *hukushima1996, *hansmann1997,
+*earl2005}
 Monte Carlo (MC)
 for
 eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$,
@@ -856,22 +863,30 @@ with $10^7$ MC steps on each temperature.
 
 
 
-In Fig. \ref{fig:zref},
+In Fig. \ref{fig:is2zref},
 we show that
 the dimensionless free energy computed from WHAM
 agreed well with the exact result\cite{
-  ferdinand1969},
+ferdinand1969},
 and the DIIS version produced the same results
 as the direct WHAM.
+%
+On the other hand,
+the result from ST-WHAM
+was slightly different
+(possibly because of
+the accumulative difference
+in the density of states
+from integrating the statistical temperature).
 
 
 
 \begin{figure}[h]
   \makebox[\linewidth][c]{
-    \includegraphics[angle=0, width=1.0\linewidth]{fig/zref.pdf}
+    \includegraphics[angle=0, width=1.0\linewidth]{fig/is2zref.pdf}
   }
   \caption{
-    \label{fig:zref}
+    \label{fig:is2zref}
     Dimensionless free energy computed from WHAM
     for the $64\times64$ two-dimensional Ising model.
   }
@@ -880,7 +895,7 @@ as the direct WHAM.
 
 
 
-From Fig. \ref{fig:trace},
+From Fig. \ref{fig:is2trace},
 it is clear that the DIIS version more rapidly
 reduced the error.
 %
@@ -897,11 +912,12 @@ delivered a speedup of two orders of magnitude.
 
 \begin{figure}[h]
   \makebox[\linewidth][c]{
-    \includegraphics[angle=0, width=1.0\linewidth]{fig/trace.pdf}
+    \includegraphics[angle=0, width=1.0\linewidth]{fig/is2trace.pdf}
   }
   \caption{
-    \label{fig:trace}
-    Error versus the number of iterations
+    \label{fig:is2trace}
+    Convergence error, $max_i \{ |R_i| \}$,
+    versus the number of iterations
     for the $64\times64$ two-dimensional Ising model.
     %
     Results were averaged over independent samples.
@@ -980,7 +996,7 @@ a dodecahedron box with 1898 TIP3P water molecules and two chloride ions.
 %
 MD simulations were performed
 using GROMACS\cite{
-  berendsen1995, *lindahl2001, *vanderspoel2005, *hess2008},
+berendsen1995, *lindahl2001, *vanderspoel2005, *hess2008},
 with a time step of 2 fs.
 %
 Velocity rescaling\cite{bussi2007}
@@ -989,13 +1005,13 @@ the time constant being 0.1 ps.
 %
 The electronic interaction was
 handled by the particle mesh Ewald method\cite{
-  essmann1995}.
+essmann1995}.
 %
 The constraints were handled by the LINCS method\cite{
-  hess1997}
+hess1997}
 for hydrogen-related chemical bonds on the protein
 and by the SETTLE method\cite{
-  miyamoto1992}
+miyamoto1992}
 for water molecules.
 %
 Energy frames were registered every 0.1 ps.

@@ -3,6 +3,7 @@
 #include "../wham2.h"
 #include "lj.h"
 #include <time.h>
+#define WHAM
 #define LJ_MODEL
 #include "../whammodel.h"
 
@@ -154,17 +155,11 @@ int main(int argc, char **argv)
   }
 
   /* do WHAM */
-  if ( m->wham_method == WHAM_DIRECT ) {
-    wham2(hs, beta, bp, lnz,
-        m->itmax, m->tol, m->itmin, m->verbose,
-        m->fnlndos2, m->fneav2);
-  } else {
-    wham2_mdiis(hs, beta, bp, lnz,
-        m->mdiis_nbases, m->mdiis_damp,
-        m->mdiis_update_method, m->mdiis_threshold,
-        m->itmax, m->tol, m->itmin, m->verbose,
-        m->fnlndos2, m->fneav2);
-  }
+  wham2x(hs, beta, bp, lnz,
+      m->mdiis_nbases, m->mdiis_damp,
+      m->mdiis_update_method, m->mdiis_threshold,
+      m->itmax, m->tol, m->itmin, m->verbose,
+      m->fnlndos2, m->fneav2, m->wham_method);
 
   /* clean up */
   hist2_close(hs);

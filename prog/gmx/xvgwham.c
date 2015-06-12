@@ -5,6 +5,7 @@
 #include "../mtrand.h"
 #define MTRAND
 #include "xvg.h"
+#define WHAM
 #include "../whammodel.h"
 #include "lsutil.h"
 
@@ -108,17 +109,11 @@ int main(int argc, char **argv)
     lnz[i] = 0;
   }
 
-  if ( m->wham_method == WHAM_DIRECT ) {
-    wham(hs, beta, lnz,
-        m->itmax, m->tol, m->itmin, m->verbose,
-        m->fnlndos, m->fneav);
-  } else {
-    wham_mdiis(hs, beta, lnz,
-        m->mdiis_nbases, m->mdiis_damp,
-        m->mdiis_update_method, m->mdiis_threshold,
-        m->itmax, m->tol, m->itmin, m->verbose,
-        m->fnlndos, m->fneav);
-  }
+  whamx(hs, beta, lnz,
+      m->mdiis_nbases, m->mdiis_damp,
+      m->mdiis_update_method, m->mdiis_threshold,
+      m->itmax, m->tol, m->itmin, m->verbose,
+      m->fnlndos, m->fneav, m->wham_method);
 
   if ( m->verbose ) {
     for ( i = 0; i < hs->rows; i++ ) {

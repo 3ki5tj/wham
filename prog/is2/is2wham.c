@@ -4,6 +4,7 @@
 #define IS2_LB 6
 #include "is2.h"
 #include <time.h>
+#define WHAM
 #define IS2_MODEL
 #include "../whammodel.h"
 
@@ -127,17 +128,11 @@ int main(int argc, char **argv)
     hs = is2_simul(m, beta);
   }
 
-  if ( m->wham_method == WHAM_DIRECT ) {
-    wham(hs, beta, lnz,
-        m->itmax, m->tol, m->itmin, m->verbose,
-        m->fnlndos, m->fneav);
-  } else {
-    wham_mdiis(hs, beta, lnz,
-        m->mdiis_nbases, m->mdiis_damp,
-        m->mdiis_update_method, m->mdiis_threshold,
-        m->itmax, m->tol, m->itmin, m->verbose,
-        m->fnlndos, m->fneav);
-  }
+  whamx(hs, beta, lnz,
+      m->mdiis_nbases, m->mdiis_damp,
+      m->mdiis_update_method, m->mdiis_threshold,
+      m->itmax, m->tol, m->itmin, m->verbose,
+      m->fnlndos, m->fneav, m->wham_method);
 
   if ( m->verbose ) {
     double *lnzref;

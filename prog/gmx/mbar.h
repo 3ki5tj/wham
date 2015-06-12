@@ -29,6 +29,11 @@
 
 
 
+enum { MBAR_DIRECT = 0, MBAR_MDIIS = 1, MBAR_NMETHODS };
+const char *mbar_methods[] = {"Direct", "MDIIS"};
+
+
+
 typedef struct {
   int nbeta;
   const double *beta; /* temperature array, reference */
@@ -246,6 +251,27 @@ static double mbar_mdiis(int nbeta,
 }
 
 #endif /* ENABLE_MDIIS */
+
+
+
+static double mbarx(int nbeta, xvg_t **xvg,
+    const double *beta, double *lnz,
+    int nbases, double damp, int update_method, double threshold,
+    int itmax, double tol, int itmin, int verbose, int method)
+{
+  if ( method == MBAR_DIRECT ) {
+    return mbar(nbeta, xvg, beta, lnz,
+        itmax, tol, itmin, verbose);
+#ifdef ENABLE_MDIIS
+  } else if ( method == MBAR_MDIIS ) {
+    return mbar_mdiis(nbeta, xvg, beta, lnz,
+        nbases, damp, update_method, threshold,
+        itmax, tol, itmin, verbose);
+#endif
+  }
+
+  return 0;
+}
 
 
 
