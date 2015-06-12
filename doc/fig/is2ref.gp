@@ -65,7 +65,7 @@ plot [1.5:3.1][:] \
 
 # inset for f
 set size 0.55*wl, 0.6
-set origin 0.4*wl, 0.05
+set origin 0.4*wl, 0.04
 
 unset xlabel
 set xtics font "Times, 16"
@@ -98,15 +98,15 @@ set mytics 4
 
 plot [:-0.7][:] \
   "../../data/is2/lndosnb0.dat"   u ($1/n):($2/n) every 20 w p ls 1 t "Direct WHAM", \
-  "../../data/is2/lndosnb10.dat"  u ($1/n):($2/n) every 20 w p ls 2 t "DIIS WHAM", \
-  "../../data/is2/lndosst.dat"    u ($1/n):($2/n) every 20 w p ls 3 t "ST WHAM", \
+  "../../data/is2/lndosnb10.dat"  u ($1/n):($2/n) every 20 w p ls 2 t "DIIS WHAM, {/Times-Italic M} = 10", \
+  "../../data/is2/lndosst.dat"    u ($1/n):($2/n) every 20 w p ls 3 t "ST-WHAM", \
   ""                              u ($1/n):($3/n) w l ls 9 t "Reference", \
 
 
 
 # inset for ln g(E)
 set size 0.55*wr, 0.5
-set origin wl + 0.4*wr, 0.05
+set origin wl + 0.4*wr, 0.04
 
 unset xlabel
 set xtics font "Times, 16"

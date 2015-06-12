@@ -61,10 +61,146 @@ we have
 g(E)
 = \frac{ n_k(E) }
 { N_k \, \exp(-\beta_k E) / Z_k }.
+\label{eq:gE_single}
 \end{equation}
 %
 Taking the harmonic average over $k$
 yields Eq. \eqref{eq:gE_WHAM}.
+
+
+
+\section{Statistical-temperature WHAM}
+
+
+
+Taking the logarithm of Eq. \eqref{eq:gE_WHAM} and differentiating,
+we get
+\begin{equation}
+(\log g)'(E)
+=
+\frac{ \sum_{k = 1}^K n'_k(E) }
+     { \sum_{k = 1}^K n_k(E) }
++
+\frac{ \sum_{k = 1}^K d_k(E) \, \beta_k }
+     { \sum_{k = 1}^K d_k(E) },
+\label{eq:beta0_STWHAM}
+\end{equation}
+%
+where
+$d_k(E) \equiv N_k \exp(-\beta_k E) / Z_k$.
+%
+By Eq. \eqref{eq:gE_single},
+we have
+$n_k(E) = d_k(E) \, g(E)$.
+%
+So we can rewrite Eq. \eqref{eq:beta0_STWHAM} as
+%
+\begin{equation}
+(\log g)'(E)
+=
+\sum_{k = 1}^K c_k(E) \, \left[ (\log n_k)'(E)  + \beta_k \right],
+\label{eq:beta_STWHAM}
+\end{equation}
+%
+where
+$c_k(E) \equiv n_k(E) / \sum_{l = 1}^{K} n_l(E)$.
+%
+This is the main result of ST-WHAM.
+
+
+
+
+\section{Determination of coefficients in DIIS}
+
+
+
+The coefficients $c_i$ are determined as follows.
+%
+We wish to minimize
+%
+\[
+S
+=
+\vct{\hat R}^2 / 2
+=
+\left( \sum_i c_i \, \vct R_i \right)^2 / 2,
+\]
+under the constraint
+%
+\begin{equation}
+\sum_i c_i = 1
+\label{eq:c_normalize}
+\end{equation}
+
+
+
+Thus we shall minimize the function
+\[
+  S - \lambda \sum_i c_i
+\]
+with respect all $c_i$.
+%
+Thus, we get
+\begin{equation}
+  \sum_j c_j \, (\vct R_j \cdot \vct R_i) - \lambda = 0,
+  \label{eq:cj_DIIS}
+\end{equation}
+
+
+Equations \eqref{eq:cj_DIIS} and \eqref{eq:c_normalize}
+can be written in matrix form
+%
+\begin{equation}
+\left(
+  \begin{array}{ccccc}
+    \vct R_1 \cdot \vct R_1 &
+    \vct R_1 \cdot \vct R_2 &
+    \dots &
+    \vct R_1 \cdot \vct R_M &
+    -1 \\
+    \vct R_2 \cdot \vct R_1 &
+    \vct R_2 \cdot \vct R_2 &
+    \dots &
+    \vct R_2 \cdot \vct R_M &
+    -1 \\
+    \vdots &
+    \vdots &
+    &
+    \vdots &
+    -1 \\
+    \vct R_M \cdot \vct R_1 &
+    \vct R_M \cdot \vct R_2 &
+    \dots &
+    \vct R_M \cdot \vct R_M &
+    -1 \\
+    1 &
+    1 &
+    \dots &
+    1 &
+    0
+  \end{array}
+\right)
+\left(
+  \begin{array}{c}
+    c_1 \\
+    c_2 \\
+    \vdots \\
+    c_M \\
+    \lambda
+  \end{array}
+\right)
+=
+\left(
+  \begin{array}{c}
+    0 \\
+    0 \\
+    \vdots \\
+    0 \\
+    1
+  \end{array}
+\right).
+\end{equation}
+
 
 
 

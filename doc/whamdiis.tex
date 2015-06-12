@@ -1,6 +1,6 @@
 %
-\documentclass[reprint,superscriptaddress]{revtex4-1}
-%\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
+%\documentclass[reprint,superscriptaddress]{revtex4-1}
+\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{color}
@@ -840,13 +840,19 @@ f_i - f_{i-1}
   \exp\left[
     (\beta_j - \beta_{j-1}) \, E
   \right]
-\right\rangle_j
+\right\rangle_j.
 \end{equation*}
 %
+Iterations are continued
+until all $|R_i|$ are less than a certain tolerance level.
+
+
 
 
 
 \subsection{Ising model}
+
+
 
 
 
@@ -865,15 +871,15 @@ with $10^7$ MC steps on each temperature.
 
 In Fig. \ref{fig:is2ref},
 we show that
-the dimensionless free energy computed from WHAM
+the dimensionless free energies computed from WHAM
 agreed well with the exact result\cite{
 ferdinand1969},
 and the DIIS version produced the same results
 as the direct WHAM.
 %
 On the other hand,
-the result from ST-WHAM
-was slightly different
+the results from ST-WHAM
+were slightly different
 (possibly because of
 the accumulative difference
 in the density of states
@@ -887,14 +893,15 @@ from integrating the statistical temperature).
   }
   \caption{
     \label{fig:is2ref}
-    (a) The dimensionless free energy and
+    (a) Dimensionless free energy and
     (b) the logarithm of the density of states
-    for the $64\times64$ two-dimensional Ising model.
+    for the $N = 64\times64$ two-dimensional Ising model.
     %
-    Here, $\varepsilon(a) \equiv a - a^\mathrm{(ref)}$.
+    For the insets,
+    $\varepsilon(a) \equiv a - a^\mathrm{(ref)}$.
     %
     For ST-WHAM,
-    the derivative $n'_j(E)$ is estimated from
+    the derivative $(\log n_j)'(E)$ is estimated from
     $[\log n_j(E + \Delta E) - \log n_j(E - \Delta E)]/(2 \Delta E)$,
     with $\Delta E = 4$.
   }
@@ -924,7 +931,7 @@ delivered a speedup of two orders of magnitude.
   }
   \caption{
     \label{fig:is2trace}
-    Convergence error, $max_i \{ |R_i| \}$,
+    Convergence error, $\max_i \{ |R_i| \}$,
     versus the number of iterations
     for the $64\times64$ two-dimensional Ising model.
     %
