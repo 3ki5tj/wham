@@ -39,7 +39,7 @@ plot [1.5:3.1][:2400] \
   "../../data/is2/is2nb0.out"   u (1/$2):(-$3) w p ls 1 t "Direct WHAM", \
   "../../data/is2/is2nb10.out"  u (1/$2):(-$3) w p ls 2 t "DIIS WHAM, {/Times-Italic M} = 10", \
   "../../data/is2/is2st.out"    u (1/$2):(-$3) w p ls 3 t "ST-WHAM", \
-  ""                            u (1/$2):(-$4) w l ls 9 t "Reference", \
+  "../../data/is2/is2ref.dat"   u ($1):(-$2)   w l ls 9 t "Reference", \
 
 
 

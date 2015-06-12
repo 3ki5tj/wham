@@ -863,7 +863,7 @@ with $10^7$ MC steps on each temperature.
 
 
 
-In Fig. \ref{fig:is2zref},
+In Fig. \ref{fig:is2ref},
 we show that
 the dimensionless free energy computed from WHAM
 agreed well with the exact result\cite{
@@ -883,12 +883,20 @@ from integrating the statistical temperature).
 
 \begin{figure}[h]
   \makebox[\linewidth][c]{
-    \includegraphics[angle=0, width=1.0\linewidth]{fig/is2zref.pdf}
+    \includegraphics[angle=0, width=1.0\linewidth]{fig/is2ref.pdf}
   }
   \caption{
-    \label{fig:is2zref}
-    Dimensionless free energy computed from WHAM
+    \label{fig:is2ref}
+    (a) The dimensionless free energy and
+    (b) the logarithm of the density of states
     for the $64\times64$ two-dimensional Ising model.
+    %
+    Here, $\varepsilon(a) \equiv a - a^\mathrm{(ref)}$.
+    %
+    For ST-WHAM,
+    the derivative $n'_j(E)$ is estimated from
+    $[\log n_j(E + \Delta E) - \log n_j(E - \Delta E)]/(2 \Delta E)$,
+    with $\Delta E = 4$.
   }
 \end{figure}
 

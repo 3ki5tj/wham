@@ -20,7 +20,7 @@ static void model_default_is2(model_t *m)
 int main(int argc, char **argv)
 {
   model_t m[1];
-  double T, lnz;
+  double T, lnz, lnz0;
   int iT;
 
   model_default_is2(m);
@@ -29,7 +29,10 @@ int main(int argc, char **argv)
   for ( iT = 0; iT < m->nT; iT++ ) {
     T = m->Tmin + m->Tdel * iT;
     lnz = is2_exact(IS2_L, IS2_L, 1/T, NULL, NULL);
-    printf("%10.7f %14.7f\n", T, lnz);
+    if ( iT == 0 ) {
+      lnz0 = lnz;
+    }
+    printf("%5.3f %12.7f\n", T, lnz - lnz0);
   }
 
   return 0;
