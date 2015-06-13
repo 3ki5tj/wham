@@ -129,22 +129,28 @@ def getnstepstime(err):
 def main():
   global cmdopt, fnlog
 
-  arr = os.path.splitext(fnlog)
-  fntmlog = arr[0] + "tm" + arr[1]
-
   zcom.runcmd("make -C ../../prog/lj")
 
   if doev:
     prog = "ljwham2"
     if not fnlog: fnlog = "lj2.log"
+    fnhis = "hist2.dat"
   else:
     prog = "ljwham"
     if not fnlog: fnlog = "lj.log"
+    fnhis = "hist.dat"
 
-  shutil.copy("../../prog/lj/%s" % prog, "./%s" % prog)
+  arr = os.path.splitext(fnlog)
+  fntmlog = arr[0] + "tm" + arr[1]
+  fnhis = arr[0] + "_" + fnhis
 
-  cmd0 = "./%s --re --nequil=%d --nsteps=%d %s %s" % (
-      prog, nequil, nsteps, tol, cmdopt)
+  try:
+    shutil.copy("../../prog/lj/%s" % prog, "./%s" % prog)
+  except:
+    pass
+
+  cmd0 = "./%s --re --nequil=%d --nsteps=%d --fnhis=%s %s %s" % (
+      prog, nequil, nsteps, fnhis, tol, cmdopt)
   cmd0 = cmd0.strip()
 
   ns = [0]*(nbases + 1)

@@ -156,13 +156,16 @@ def main():
 
   prog = "is2wham"
 
+  arr = os.path.splitext(fntr)
+  fnhis = arr[0] + "_tr_hist.dat"
+
   try:
     shutil.copy("../../prog/is2/%s" % prog, "./%s" % prog)
   except:
     pass
 
-  cmd0 = "./%s -v --re --nequil=%d --nsteps=%d %s %s %s" % (
-      prog, nequil, nsteps, itmin, tol, cmdopt)
+  cmd0 = "./%s -v --re --nequil=%d --nsteps=%d --fnhis=%s %s %s %s" % (
+      prog, nequil, nsteps, fnhis, itmin, tol, cmdopt)
   cmd0 = cmd0.strip()
 
   for i in range(nsamp):

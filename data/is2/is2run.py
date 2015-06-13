@@ -126,6 +126,7 @@ def main():
 
   arr = os.path.splitext(fnlog)
   fntmlog = arr[0] + "tm" + arr[1]
+  fnhis = arr[0] + "_hist.dat"
 
   zcom.runcmd("make -C ../../prog/is2")
 
@@ -133,8 +134,8 @@ def main():
 
   shutil.copy("../../prog/is2/%s" % prog, "./%s" % prog)
 
-  cmd0 = "./%s --re --nequil=%d --nsteps=%d %s %s" % (
-      prog, nequil, nsteps, tol, cmdopt)
+  cmd0 = "./%s --re --nequil=%d --nsteps=%d --fnhis=%s %s %s" % (
+      prog, nequil, nsteps, fnhis, tol, cmdopt)
   cmd0 = cmd0.strip()
 
   ns = [0]*(nbases + 1)

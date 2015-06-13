@@ -422,7 +422,21 @@ from the vectors.
 To do so, we first find the combination of the residual vectors
 $\vct{\hat R} = \sum_i c_i \, \vct R_i$,
 that minimizes the error
-$\| \vct{\hat R} \|$.
+$\| \vct{\hat R} \|$
+under the constraint
+\begin{equation}
+  \sum_i c_i = 1.
+  \label{eq:c_normalize}
+\end{equation}
+%
+That is,
+we find $c_i$ and the Lagrange multiplier $\lambda$
+from Eq. \eqref{eq:c_normalize} and
+\begin{equation*}
+  \sum_j \left( \vct R_i \cdot \vct R_j \right) \, c_j = \lambda,
+  %\label{eq:cj_DIIS}
+\end{equation*}
+for all $i$.
 %
 If Eq. \eqref{eq:R_f} is nearly linear
 around the solutions,
@@ -767,7 +781,7 @@ from $\vct f_\mathrm{min}$.
 Here, the error of a vector $\vct f$ is defined as
 $\| \vct R(\vct f) \|$,
 and
-$K_r = 10.0$\cite{
+$K_r = 10.0$ as recommended\cite{
 kovalenko1999}.
 
 
@@ -775,39 +789,37 @@ kovalenko1999}.
 We used the following modification
 in this study.
 %
-When the basis contains $M$ vectors,
-we find the most erroneous vector,
-$\vct f_\mathrm{max}$, from the basis,
-and replace it by $\vct f^{(n)}$.
+% Howard-Pettitt can be problematic for villin-headpiece NVT
 %
-If, however,
-$\vct f_\mathrm{max}$
-is the updated vector in the previous step,
-the process is stagnant.
-%
-In this case,
-we rebuild the basis from $\vct f^{(n)}$.
-
-
-
+%%
+%When the basis contains $M$ vectors,
+%we find the most erroneous vector,
+%$\vct f_\mathrm{max}$, from the basis,
+%and replace it by $\vct f^{(n)}$.
+%%
+%If, however,
+%$\vct f_\mathrm{max}$
+%is the updated vector in the previous step,
+%the process is stagnant.
+%%
+%In this case,
+%we rebuild the basis from $\vct f^{(n)}$.
 %
 % Below is another variant
 %
-%First, we find the most erroneous vector,
-%$\vct f_\mathrm{max}$, from the basis.
-%%
-%If the new vector, $\vct f^{(n)}$,
-%produces an error less than $\vct f_\mathrm{max}$,
-%we add $\vct f^{(n)}$ into the basis
-%or, if the basis is full,
-%substitute $\vct f^{(n)}$ for $\vct f_\mathrm{max}$.
-%%
-%Otherwise,
-%we remove $\vct f_\mathrm{max}$ from the basis,
-%and if this empties the basis,
-%we rebuild the basis from $\vct f^{(n)}$.
+First, we find the most erroneous vector,
+$\vct f_\mathrm{max}$, from the basis.
 %
-% We find the modification is slightly better.
+If the new vector, $\vct f^{(n)}$,
+produces an error less than $\vct f_\mathrm{max}$,
+we add $\vct f^{(n)}$ into the basis
+or, if the basis is full,
+substitute $\vct f^{(n)}$ for $\vct f_\mathrm{max}$.
+%
+Otherwise,
+we remove $\vct f_\mathrm{max}$ from the basis,
+and if this empties the basis,
+we rebuild the basis from $\vct f^{(n)}$.
 
 
 
@@ -878,12 +890,11 @@ and the DIIS version produced the same results
 as the direct WHAM.
 %
 On the other hand,
-the results from ST-WHAM
-were slightly different
-(possibly because of
-the accumulative difference
+ST-WHAM produced slightly different results
+(note the accumulative difference
 in the density of states
-from integrating the statistical temperature).
+from integrating the WHAM and ST-WHAM
+statistical temperatures).
 
 
 
@@ -911,10 +922,10 @@ from integrating the statistical temperature).
 
 
 From Fig. \ref{fig:is2trace},
-it is clear that the DIIS version more rapidly
-reduced the error.
+it is clear that the DIIS WHAM more rapidly
+reduced the error than the direct WHAM.
 %
-As shown in Fig. \ref{fig:niter},
+As shown in Fig. \ref{fig:nsnt},
 the direct WHAM
 required thousands of iterations for convergence,
 while the DIIS version optimally
@@ -974,15 +985,18 @@ delivered a speedup of two orders of magnitude.
 
 \begin{figure}[h]
   \makebox[\linewidth][c]{
-    \includegraphics[angle=0, width=1.0\linewidth]{fig/niter.pdf}
+    \includegraphics[angle=0, width=1.0\linewidth]{fig/nsnt.pdf}
   }
   \caption{
-    \label{fig:niter}
-    Number of iterations to achieve $|R_i| < 10^{-8}$
-    versus the number of bases, $M$
+    \label{fig:nsnt}
+    (a) Number of iterations
+    and
+    (b) the real run time 
+    to achieve $|R_i| < 10^{-8}$
+    versus the number of bases, $M$,
     in the DIIS version of WHAM.
     %
-    The $M = 1$ case is reduced to the direct iteration.
+    The $M = 0$ case means the direct version.
     %
     For the Ising model,
     the results have been averaged over many independent samples.
@@ -1042,7 +1056,7 @@ each for {\color{red} 100} ns.
 
 
 
-As shown in Fig. \ref{fig:niter},
+As shown in Fig. \ref{fig:nsnt},
 despite the few number of temperature,
 the direct WHAM suffers from a slow convergence,
 while the DIIS version again

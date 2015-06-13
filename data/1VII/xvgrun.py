@@ -135,15 +135,24 @@ def main():
     prog = "xvgwham2"
     if not fnlog: fnlog = "xvg2.log"
     if not fnls: fnls = "ev.ls"
+    fnhis = "hist2.dat"
   else:
     prog = "xvgwham"
     if not fnlog: fnlog = "xvg.log"
     if not fnls: fnls = "e.ls"
+    fnhis = "hist.dat"
+  
+  arr = os.path.splitext(fnlog)
+  fntmlog = arr[0] + "tm" + arr[1]
+  fnhis = arr[0] + "_" + fnhis
 
-  shutil.copy("../../prog/gmx/%s" % prog, "./%s" % prog)
+  try:
+    shutil.copy("../../prog/gmx/%s" % prog, "./%s" % prog)
+  except:
+    pass
 
-  cmd0 = "./%s -r %g %s %s %s" % (
-      prog, radd, fnls, tol, cmdopt)
+  cmd0 = "./%s --fnhis=%s -r %g %s %s %s" % (
+      prog, fnhis, radd, fnls, tol, cmdopt)
   cmd0 = cmd0.strip()
 
   ns = [0]*(nbases + 1)
@@ -153,7 +162,7 @@ def main():
 
     # use the direct WHAM
     ret, out, err = zcom.runcmd(cmd0, capture = True)
-    ns[0], tm]0] = getnstepstime(err)
+    ns[0], tm[0] = getnstepstime(err)
 
     for nb in range(1, nbases + 1):
       cmd = "%s --wham=MDIIS --nbases=%d -H %s %s" % (

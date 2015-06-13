@@ -32,13 +32,13 @@ set style line 5  lw 2.0 lt 5 lc rgb color5  pt 12  ps 1.0
 set xlabel "Number of iterations" offset 0, 0.0
 set ylabel "max{/Time=36 \\{|}{/Times-Italic R_i}{/Time=36 |\\}}" offset 0.5, 0
 #set key spacing 1.5
-set key left bottom Left reverse spacing 1.5
+set key left bottom Left reverse spacing 1.5 at 0.8, 2e-9
 
-plot [:3e3][1e-9:] \
-  "../../data/is2a/is2hp_nb0wham.dat"   u 1:2 w lp ls 1 t "Direct", \
-  "../../data/is2a/is2hp_nb5wham.dat"   u 1:2 w lp ls 2 t "DIIS, {/Times-Italic M} = 5", \
-  "../../data/is2a/is2hp_nb10wham.dat"  u 1:2 w lp ls 3 t "DIIS, {/Times-Italic M} = 10", \
-  "../../data/is2a/is2hp_nb15wham.dat"  u 1:2 w lp ls 4 t "DIIS, {/Times-Italic M} = 15", \
+plot [:4e3][1e-9:] \
+  "../../data/is2/is2_nb0wham.dat"   u 1:2 w p ls 1 t "Direct", \
+  "../../data/is2/is2_nb5wham.dat"   u 1:2 w p ls 2 t "DIIS, {/Times-Italic M} = 5", \
+  "../../data/is2/is2_nb10wham.dat"  u 1:2 w p ls 3 t "DIIS, {/Times-Italic M} = 10", \
+  "../../data/is2/is2_nb15wham.dat"  u 1:2 w p ls 4 t "DIIS, {/Times-Italic M} = 15", \
 
 
 

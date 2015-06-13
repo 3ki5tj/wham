@@ -163,18 +163,23 @@ def main():
     prog = "xvgwham2"
     if not fntr: fntr = "xvg2.tr"
     if not fnls: fnls = "ev.ls"
+    fnhis = "hist2.dat"
   else:
     prog = "xvgwham"
     if not fntr: fntr = "xvg.tr"
     if not fnls: fnls = "e.ls"
+    fnhis = "hist.dat"
+
+  arr = os.path.splitext(fntr)
+  fnhis = arr[0] + "_tr_" + fnhis
 
   try:
     shutil.copy("../../prog/gmx/%s" % prog, "./%s" % prog)
   except:
     pass
 
-  cmd0 = "./%s -v -r %g %s %s %s %s" % (
-      prog, radd, fnls, itmin, tol, cmdopt)
+  cmd0 = "./%s -v --fnhis=%s -r %g %s %s %s %s" % (
+      prog, fnhis, radd, fnls, itmin, tol, cmdopt)
   cmd0 = cmd0.strip()
 
   for i in range(nsamp):

@@ -162,9 +162,14 @@ def main():
   if doev:
     prog = "ljwham2"
     if not fntr: fntr = "lj2.tr"
+    fnhis = "hist2.dat"
   else:
     prog = "ljwham"
     if not fntr: fntr = "lj.tr"
+    fnhis = "hist.dat"
+
+  arr = os.path.splitext(fntr)
+  fnhis = arr[0] + "_tr_" + fnhis
 
   try:
     shutil.copy("../../prog/lj/%s" % prog, "./%s" % prog)
