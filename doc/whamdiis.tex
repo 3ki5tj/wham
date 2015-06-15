@@ -1,6 +1,6 @@
 %
-%\documentclass[reprint,superscriptaddress]{revtex4-1}
-\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
+\documentclass[reprint,superscriptaddress]{revtex4-1}
+%\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{color}
@@ -277,15 +277,16 @@ f_i
 \sum_{j = 1}^K
 \sum_{\vx}^{(j)}
 \frac{
-  \exp[-\beta_i \, \E(\vx)]
+  q_i(\vx)
 }
 {
-  \sum_{k = 1}^K N_k \exp[-\beta_k \, \E(\vx) + f_k]
+  \sum_{k = 1}^K N_k \, q_k(\vx) \exp f_k
 }.
 \label{eq:f_MBAR}
 \end{equation}
 %
-%where,
+where,
+$q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$.
 %the denominator has been moved into the sum
 %as it now depends on the configuration, $\vx$.
 
@@ -330,26 +331,48 @@ for simulations in the corresponding ensembles.
 
 
 
-To determine $f_i$ numerically,
-Eq. \eqref{eq:f_WHAM}
+To numerically determine $f_i$ in WHAM or MBAR,
+Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}
 is usually treated as an iterative equation
 %
-\begin{equation}
+\begin{equation*}
 f_i^\mathrm{(new)}
 =
 -\log \Z_i\left(
   \{ f_k^\mathrm{(old)} \}
 \right).
-\end{equation}
+\end{equation*}
 %
 This is referred to as
-the direct WHAM below.
+direct WHAM below.
 %
 It can suffer from a slow convergence,
 resulting in thousands of iterations\cite{
 bereau2009, kim2011}.
 %
-Below we give a method to accelerate the process.
+An elegant non-iterative alternative, ST-WHAM,
+approximates the logarithmic derivative of $g(E)$
+in Eq. \eqref{eq:gE_WHAM} as
+%
+\begin{equation}
+(\log g)'(E)
+=
+\frac{
+  \sum_j n_j'(E) + n_j(E) \, \beta_j
+}
+{
+  \sum_k n_k(E)
+},
+\label{eq:beta_STWHAM}
+\end{equation}
+%
+whose integral yields $\log g(E)$.
+%
+ST-WHAM, however,
+depends more strongly on the bin size.
+%
+Below we give a method to accelerate
+the original WHAM and MBAR.
 
 
 
@@ -840,7 +863,7 @@ only if multiple bases are used.
 
 
 
-In testing the direct and DIIS versions of WHAM,
+In testing the direct and DIIS WHAM,
 the initial free energy was obtained from
 the single histogram method:
 %
@@ -886,7 +909,7 @@ we show that
 the dimensionless free energies computed from WHAM
 agreed well with the exact result\cite{
 ferdinand1969},
-and the DIIS version produced the same results
+and DIIS WHAM produced the same results
 as the direct WHAM.
 %
 On the other hand,
@@ -912,8 +935,9 @@ statistical temperatures).
     $\varepsilon(a) \equiv a - a^\mathrm{(ref)}$.
     %
     For ST-WHAM,
-    the derivative $(\log n_j)'(E)$ is estimated from
-    $[\log n_j(E + \Delta E) - \log n_j(E - \Delta E)]/(2 \Delta E)$,
+    the $n_j'(E)$ in Eq. \eqref{eq:beta_STWHAM}
+    is estimated from
+    $[n_j(E + \Delta E) - n_j(E - \Delta E)]/(2 \Delta E)$,
     with $\Delta E = 4$.
   }
 \end{figure}
@@ -925,11 +949,17 @@ From Fig. \ref{fig:is2trace},
 it is clear that the DIIS WHAM more rapidly
 reduced the error than the direct WHAM.
 %
-As shown in Fig. \ref{fig:nsnt},
-the direct WHAM
+As shown in Fig. \ref{fig:nsnt}(a),
+direct WHAM
 required thousands of iterations for convergence,
-while the DIIS version optimally
+while DIIS WHAM optimally
 delivered a speedup of two orders of magnitude.
+%
+The real run time was similar,
+showing that the overhead of DIIS was negligible
+compared to the expense of computing
+the right hand side of
+Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
 
 
 
@@ -994,9 +1024,9 @@ delivered a speedup of two orders of magnitude.
     (b) the real run time 
     to achieve $|R_i| < 10^{-8}$
     versus the number of bases, $M$,
-    in the DIIS version of WHAM.
+    in DIIS WHAM.
     %
-    The $M = 0$ case means the direct version.
+    The $M = 0$ case represent direct WHAM.
     %
     For the Ising model,
     the results have been averaged over many independent samples.
@@ -1058,9 +1088,11 @@ each for {\color{red} 100} ns.
 
 As shown in Fig. \ref{fig:nsnt},
 despite the few number of temperature,
-the direct WHAM suffers from a slow convergence,
+direct WHAM suffers from a slow convergence,
 while the DIIS version again
-delivered a speedup of two orders of magnitude.
+delivered a speedup of two orders of magnitude,
+both in terms of the number of iterations
+and the real run time.
 
 
 

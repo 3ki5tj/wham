@@ -1,5 +1,9 @@
 
-## Reference ##
+# is2ref.gp #
+
+Run mkis2ref.sh
+
+## Files ##
 
 `histref.dat` was used to produce
 `is2nb0.out` and `is2nb10.out`.

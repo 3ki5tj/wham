@@ -26,7 +26,9 @@ typedef struct {
   int loadprev; /* load previous histogram */
   double radd; /* rate of adding trajectory frames into the histogram */
   double de;
+#ifndef IS2MODEL
   double dv;
+#endif
 #ifdef WHAM
   int wham_method;
 #endif
@@ -252,8 +254,10 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->fnhis2 = q;
       } else if ( strcmpfuzzy(p, "de") == 0 ) {
         m->de = atof(q);
+#ifndef IS2MODEL
       } else if ( strcmpfuzzy(p, "dv") == 0 ) {
         m->dv = atof(q);
+#endif
 #ifdef WHAM
       } else if ( strcmpfuzzy(p, "wham") == 0 ) {
         m->wham_method = model_select(q, WHAM_NMETHODS, wham_methods);

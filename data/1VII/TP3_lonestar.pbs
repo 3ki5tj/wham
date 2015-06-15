@@ -17,7 +17,7 @@ export mdrun="$HOME/work/gmx/gromacs5.0/buildicc/bin/gmx mdrun"
 export prj="npt"
 
 # be careful about T310P2
-for dir in T320P3 T330P4 T340P5 T350P6 T360P7 T370P8 T380P9 T390P10 T400P11 T410P12 T420P13 ; do
+for dir in T320P3 T330P4 T340P5 T350P6 T360P7 T370P8 T380P9 T390P10 T400P11 T410P12 T420P13 T430P14 ; do
   cd $dir
   pwd
   if [ -f $prj.cpt ]; then

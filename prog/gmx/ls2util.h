@@ -12,7 +12,8 @@
 
 /* according to src/gromacs/legacyheaders/physics.h */
 #define BOLTZ   (1.380658e-23*6.0221367e23/1e3)
-#define PRESFAC (16.6054) /* bar / pressure unity = 1e27/(6.0221367e23*100) */
+#define PRESFAC (16.6054) /* bar / pressure unity = 1e27/(6.0221367e23*100)
+                             1 bar = 100 kPa = 100 kJ/m^3 = 10^2*6.0221367e23/1e27 kJ/mol/nm^3 */
 
 
 

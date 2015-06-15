@@ -317,29 +317,29 @@ static void stwham_getlndos(wham_t *w)
       x = hist->arr[j*n + i];
       if ( x <= 0 ) continue;
       tot += x;
-      /* compute the statistical temperature from copy j */
-      y = 0;
+      /* compute the statistical temperature from copy j
+       *            sum_j [(n_j)'(E) + n_j(E) beta_j]
+       * beta(E) = -----------------------------------
+       *                     sum_k n_k(E)
+       * y is the denominator */
+      y = x * w->beta[j];
       if ( i - 1 >= 0 && i + 1 < n ) {
         hn = hist->arr[j*n + i + 1];
         hp = hist->arr[j*n + i - 1];
-        if ( hn + hp > 0 ) {
-          y = 2 * (hn - hp) / (hn + hp) / (2 * de);
-          if ( hn > 0 && hp > 0 ) {
-            y = log(hn/hp) / (2 * de);
-          }
-        }
+        /* compute (n_j)'(E) + n_j(E) beta */
+        y += (hn - hp) / (2 * de);
       }
-      y += w->beta[j];
-      stbeta += x * y;
+      stbeta += y;
     }
 
-    if ( tot <= 0 ) {
+    /* lndos currently holds the statistical temperature */
+    if ( tot > 0 ) {
+      w->lndos[i] = stbeta / tot;
+    } else {
       w->lndos[i] = 0;
       continue;
     }
   
-    /* lndos currently hold the statistical temperature */
-    w->lndos[i] = stbeta / tot;
     if ( imin < 0 ) imin = i;
     if ( i > imax ) imax = i;
   }
