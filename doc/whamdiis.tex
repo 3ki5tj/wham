@@ -235,7 +235,7 @@ f_i
 %
 where,
 $\Z_i$
-denotes the integral on the right hand side.
+denotes the integral on the right-hand side.
 %
 Once, $f_i$ and $g(E)$ are determined,
 the free energy at a not simulated temperature, $\beta$,
@@ -406,7 +406,7 @@ The target equations can be written as
   \label{eq:R_f}
 \end{equation}
 %
-whose left hand side forms
+whose left-hand side forms
 a residual or correction vector
 $\vct R = (R_1, \dots, R_K)$.
 %
@@ -879,7 +879,7 @@ f_i - f_{i-1}
 \end{equation*}
 %
 Iterations are continued
-until all $|R_i|$ are less than a certain tolerance level.
+until all $|R_i|$ are reduced under a certain tolerance level.
 
 
 
@@ -949,16 +949,16 @@ From Fig. \ref{fig:is2trace},
 it is clear that the DIIS WHAM more rapidly
 reduced the error than the direct WHAM.
 %
-As shown in Fig. \ref{fig:nsnt}(a),
+As shown in Fig. \ref{fig:nsnt},
 direct WHAM
 required thousands of iterations for convergence,
-while DIIS WHAM optimally
+while the DIIS version optimally
 delivered a speedup of two orders of magnitude.
 %
 The real run time was similar,
 showing that the overhead of DIIS was negligible
 compared to the expense of computing
-the right hand side of
+the right-hand side of
 Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
 
 
@@ -1019,14 +1019,14 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
   }
   \caption{
     \label{fig:nsnt}
-    (a) Number of iterations
+    Number of iterations (empty symbols)
     and
-    (b) the real run time 
+    the real run time (filled symbols)
     to achieve $|R_i| < 10^{-8}$
     versus the number of bases, $M$,
     in DIIS WHAM.
     %
-    The $M = 0$ case represent direct WHAM.
+    The $M = 0$ points represent direct WHAM.
     %
     For the Ising model,
     the results have been averaged over many independent samples.
@@ -1077,15 +1077,10 @@ Energy frames were registered every 0.1 ps.
 
 
 
-Both $NVT$ and $NPT$ ensembles were used.
-%
-In the $NVT$ case,
-we simulated the system under 12 temperatures
+We simulated the system under 12 temperatures
 $T$ = 300 K, 310 K, \dots, 410 K,
 each for {\color{red} 100} ns.
-
-
-
+%
 As shown in Fig. \ref{fig:nsnt},
 despite the few number of temperature,
 direct WHAM suffers from a slow convergence,
@@ -1095,12 +1090,16 @@ both in terms of the number of iterations
 and the real run time.
 
 
-
-In the $NpT$ case,
-the temperatures were the same,
-and the pressures were
-1.0 bar, 1.1 bar, \dots, 2.1 bar,
-respectively.
+%
+% In the NPT case,
+% the influence of pressure is minimal
+% so we do not need this example
+%
+%In the $NpT$ case,
+%the temperatures were the same,
+%and the pressures were
+%1.0 bar, 1.1 bar, \dots, 2.1 bar,
+%respectively.
 
 
 
