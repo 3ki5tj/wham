@@ -2,16 +2,15 @@
 
 
 
-''' add reference density of states '''
+''' add reference lnz from MBAR '''
 
 
 
 import sys, os, getopt, shutil, re, glob
 
 
-
 fninp = None
-fnref = "islogdos64x64.txt"
+fnref = "mbar.out"
 verbose = 0
 
 
@@ -60,57 +59,47 @@ def doargs():
   if len(args) > 0:
     fninp = args
   else:
-    fninp = glob.glob("lndos*.dat")
+    fninp = glob.glob("*wham*.out")
 
 
 
 def main(fn, fnref):
   # load the reference array
-  s = open(fnref).read().strip().split('\n')
-  n = len(s) - 1
-  arrref = [0]*(n + 1)
-  for i in range(n + 1):
-    ln = s[i]
-    x = ln.strip()
-    p = x.find("`")
-    if p >= 0: x = x[:p]
+  s = open(fnref).readlines()
+  n = len(s)
+  betref = [0]*n
+  arrref = [0]*n
+  for i in range(n):
+    ln = s[i].strip()
+    x = ln.split()
     try:
-      arrref[i] = float(x)
+      betref[i] = float(x[1])
+      # do not convert to float
+      arrref[i] = x[2]
     except ValueError:
       print ln, x
       raw_input()
 
   # load the input data
   s = open(fn).readlines()
-  arr = [-10000]*(n + 1)
-  imin = 100000000
-  imax = 0
-  for ln in s:
-    xy = ln.strip().split()
-    x = int(xy[0])
-    y = float(xy[1])
-    i = (x + 2*n) / 4
-    imin = min(i, imin)
-    imax = max(i, imax)
-    arr[i] = y
-
-  # align arr[] with arrref[]
-  dy = 0
-  cnt = 0
-  for i in range(imin, imax + 1):
-    if arrref[i] < -100 or arr[i] < -100:
-      continue
-    dy += arrref[i] - arr[i]
-    cnt += 1
-  dy /= cnt
-
-  s = ""
-  for i in range(imin, imax + 1):
-    arr[i] += dy
-    s += "%d %s %s\n" % (-2*n+i*4, arr[i], arrref[i])
+  if len(s) != n:
+    print "number of lines mismatch %s vs %s" % (len(s), n)
+    raise Exception
+  bet = [-0]*n
+  arr = [-0]*n
+  for i in range(n):
+    ln = s[i].rstrip()
+    arr = ln.split()
+    if len(arr) > 6:
+      # assuming every column beyond column 6 is added
+      # by addlnzref, so we can remove them safely
+      p = ln.rfind( arr[6] )
+      if p >= 0:
+        ln = ln[:p].rstrip()
+    s[i] = ln + "\t" + arrref[i] + "\n"
 
   print "updating %s" % fn
-  open(fn, "w").write(s)
+  open(fn, "w").writelines(s)
 
 
 

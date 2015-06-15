@@ -3,9 +3,12 @@
 
 
 import os, sys, getopt, shutil, re, glob
+from math import *
 
 
 
+geomean = -1
+epsilon = 1e-10
 verbose = 0
 
 
@@ -20,6 +23,8 @@ def usage():
   Compute statistics
 
   OPTIONS:
+    --geo           geometric mean
+    --eps=          set the minimal value
     -v              be verbose
     --verbose=      set verbocity
     -h, --help      help
@@ -33,16 +38,21 @@ def doargs():
   try:
     opts, args = getopt.gnu_getopt(sys.argv[1:],
         "hv",
-        [ "help", "verbose=",
+        [ "geo", "eps=",
+          "help", "verbose=",
         ] )
   except getopt.GetoptError, err:
     print str(err)
     usage()
 
-  global verbose
+  global geomean, epsilon, verbose
 
   for o, a in opts:
-    if o in ("-v",):
+    if o in ("--geo",):
+      geomean = 1
+    elif o in ("--eps",):
+      epsilon = float(a)
+    elif o in ("-v",):
       verbose += 1  # such that -vv gives verbose = 2
     elif o in ("-h", "--help"):
       usage()
@@ -55,6 +65,17 @@ def doargs():
 
 
 def dostat(fninp):
+  global geomean, epsilon
+
+  if geomean < 0: # default
+    arr = os.path.splitext(fninp)
+    if arr[1] == ".tr":
+      geom = True
+    else:
+      geom = False
+  else:
+    geom = geomean
+
   s = open(fninp).readlines()
 
   n = len(s)
@@ -71,9 +92,14 @@ def dostat(fninp):
     arr = [float(x) for x in s[i].strip().split()]
     for j in range(m):
       if j >= len(arr):
-        x = 0
+        if geom:
+          x = epsilon
+        else:
+          x = 0
       else:
         x = arr[j]
+      if geom:
+        x = log(x)
       sy[j] += x
       syy[j] += x * x
 
@@ -82,6 +108,8 @@ def dostat(fninp):
   for j in range(m):
     ave[j] = sy[j] / n;
     var[j] = syy[j] / n - ave[j] * ave[j]
+    if geom:
+      ave[j] = exp( ave[j] )
 
   # write the output file
   s = "# %d %d\n" % (n, m)

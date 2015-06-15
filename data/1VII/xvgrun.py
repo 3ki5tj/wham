@@ -141,7 +141,7 @@ def main():
     if not fnlog: fnlog = "xvg.log"
     if not fnls: fnls = "e.ls"
     fnhis = "hist.dat"
-  
+
   arr = os.path.splitext(fnlog)
   fntmlog = arr[0] + "tm" + arr[1]
   fnhis = arr[0] + "_" + fnhis

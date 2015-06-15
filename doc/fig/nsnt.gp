@@ -22,6 +22,8 @@ set logscale y2
 set y2tics nomirror font "Times,20" offset -0.5, 0
 set y2label "Run time, {/Times-Italic t}^{/=14 &{i}(DIIS)} (seconds)" textcolor rgb "#808080" offset -3.5, 0
 set y2range [:30]
+set rmargin 5.0
+
 set key spacing 1.5
 #set key Left reverse spacing 1.5
 

@@ -1,3 +1,9 @@
+Making the comparison figure
+=============================
+
+./mkwhamcmp.sh
+
+
 Protocols
 ==========
 

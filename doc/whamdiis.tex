@@ -331,9 +331,9 @@ for simulations in the corresponding ensembles.
 
 
 
-To numerically determine $f_i$ in WHAM or MBAR,
-Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}
-is usually treated as an iterative equation
+To find $f_i$ in WHAM,
+one often treats Eq. \eqref{eq:f_WHAM}
+as an iterative equation,
 %
 \begin{equation*}
 f_i^\mathrm{(new)}
@@ -343,20 +343,19 @@ f_i^\mathrm{(new)}
 \right).
 \end{equation*}
 %
-This is referred to as
-direct WHAM below.
-%
-It can suffer from a slow convergence,
+This approach, or direct WHAM below,
+can suffer from a slow convergence,
 resulting in thousands of iterations\cite{
 bereau2009, kim2011}.
 %
 An elegant non-iterative alternative, ST-WHAM,
 approximates the logarithmic derivative of $g(E)$
-in Eq. \eqref{eq:gE_WHAM} as
+in Eq. \eqref{eq:gE_WHAM} as\cite{
+kim2011}
 %
 \begin{equation}
 (\log g)'(E)
-=
+\approx
 \frac{
   \sum_j n_j'(E) + n_j(E) \, \beta_j
 }
@@ -369,10 +368,19 @@ in Eq. \eqref{eq:gE_WHAM} as
 whose integral yields $\log g(E)$.
 %
 ST-WHAM, however,
-depends more strongly on the bin size.
+is more sensitive to the bin size
+and its multidimensional generalization
+is numerially challenging\cite{
+kim2011}.
+
+
+
+Below we shall still focus on the original WHAM,
+and give a numerical technique
+that accelerates the solution
+of Eq. \eqref{eq:f_WHAM}.
 %
-Below we give a method to accelerate
-the original WHAM and MBAR.
+The technique is equally applicable to MBAR.
 
 
 
@@ -863,7 +871,7 @@ only if multiple bases are used.
 
 
 
-In testing the direct and DIIS WHAM,
+In testing direct and DIIS WHAM,
 the initial free energy was obtained from
 the single histogram method:
 %
@@ -882,6 +890,16 @@ Iterations are continued
 until all $|R_i|$ are reduced under a certain tolerance level.
 
 
+
+For ST-WHAM,
+the $n_j'(E)$ in Eq. \eqref{eq:beta_STWHAM}
+is estimated from
+\begin{equation}
+n_j'(E) = [n_j(E + \Delta E) - n_j(E - \Delta E)]/(2 \Delta E),
+\label{eq:dn}
+\end{equation}
+with $\Delta E$ being the bin size
+of the energy histograms.
 
 
 
@@ -934,32 +952,28 @@ statistical temperatures).
     For the insets,
     $\varepsilon(a) \equiv a - a^\mathrm{(ref)}$.
     %
-    For ST-WHAM,
-    the $n_j'(E)$ in Eq. \eqref{eq:beta_STWHAM}
-    is estimated from
-    $[n_j(E + \Delta E) - n_j(E - \Delta E)]/(2 \Delta E)$,
-    with $\Delta E = 4$.
+    The bin size $\Delta E = 4$.
   }
 \end{figure}
 
 
 
 
-From Fig. \ref{fig:is2trace},
-it is clear that the DIIS WHAM more rapidly
-reduced the error than the direct WHAM.
+Figure \ref{fig:is2trace}
+shows a more rapid reduction of error
+in DIIS WHAM
+than in direct WHAM.
+%
+Optimally, DIIS WHAM can
+deliver a speedup of two orders of magnitude.
 %
 As shown in Fig. \ref{fig:nsnt},
-direct WHAM
-required thousands of iterations for convergence,
-while the DIIS version optimally
-delivered a speedup of two orders of magnitude.
-%
-The real run time was similar,
-showing that the overhead of DIIS was negligible
-compared to the expense of computing
+the real run time was roughly
+proportional to the number of iterations.
+The overhead of DIIS was negligible,
+in comparison to the expense of computing
 the right-hand side of
-Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
+Eq. \eqref{eq:f_WHAM}.
 
 
 
@@ -976,7 +990,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     versus the number of iterations
     for the $64\times64$ two-dimensional Ising model.
     %
-    Results were averaged over independent samples.
+    Results were geometrically averaged over independent samples.
     %
     The lines are to guide the eyes.
   }
@@ -1033,7 +1047,12 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     %
     For the villin headpiece,
     roughly 10\% of the trajectory frames
-    were randomly selected to build a sample each time.
+    were randomly selected
+    to build a sample each time.
+    %
+    The results are then averaged.
+    %
+    The bin size $\Delta E = 1.0$.
     %
     The lines are to guide the eyes.
   }
@@ -1086,8 +1105,55 @@ despite the few number of temperature,
 direct WHAM suffers from a slow convergence,
 while the DIIS version again
 delivered a speedup of two orders of magnitude,
-both in terms of the number of iterations
-and the real run time.
+in the number of iterations or real run time.
+
+
+
+The bin size dependency of WHAM and ST-WHAM
+is compared in Fig. \ref{fig:whamcmp}.
+%
+WHAM was stable for $\Delta \le 100.0$
+and it lost accuracy
+only with a very large bin size $\Delta E = 1000.0$.
+%
+ST-WHAM, however,
+produced accurate results for $\Delta E \approx 100.0$,
+and its errors increased dramatically
+with smaller bin sizes.
+%
+The bin-size sensitivity was partially due to
+the relatively small sample size.
+%
+Note also that
+we used Eq. \eqref{eq:dn} for differentiation
+and the trapezoidal rule for integration.
+%
+Better numerical differentiation\cite{press}
+and/or integration schemes\cite{
+kim2011} may also help improve the ST-WHAM results.
+
+
+
+\begin{figure}[h]
+  \makebox[\linewidth][c]{
+    \includegraphics[angle=0, width=1.0\linewidth]{fig/whamcmp.pdf}
+  }
+  \caption{
+    \label{fig:whamcmp}
+    Dimensionless free energies
+    from WHAM and ST-WHAM
+    for the villin headpiece
+    with different bin sizes, $\Delta E$.
+    %
+    The results of MBAR, which is
+    the zero bin-size limit of WHAM,
+    are used as the reference.
+    %
+    The lines are to guide the eyes.
+  }
+\end{figure}
+
+
 
 
 %
@@ -1101,6 +1167,43 @@ and the real run time.
 %1.0 bar, 1.1 bar, \dots, 2.1 bar,
 %respectively.
 
+
+
+
+
+\section{Discussions}
+
+
+
+We showed that the DIIS technique
+can often significantly reduce
+the number of iterations
+for converging the free energy methods
+WHAM and MBAR.
+%
+The technique achieves a fast convergence
+by an optimal combination of the approximate
+solutions in the iteration.
+%
+It is easy to implement
+and has a small run time overhead.
+%
+The method,
+being still iterative,
+is slower than
+the non-iterative ST-WHAM.
+%
+However, DIIS WHAM
+is more stable for small bin size
+and/or small data sets,
+making it more suitable
+for analyzing trajectories
+of molecular simulations.
+%
+Besides, the DIIS technique
+is readily extensible to
+multidimensional cases
+and MBAR.
 
 
 
