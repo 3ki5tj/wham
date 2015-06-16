@@ -854,10 +854,9 @@ we rebuild the basis from $\vct f^{(n)}$.
 
 
 
-The DIIS process is reduced the direct one
-if $M = 1$.
-%
-Thus,
+Since the DIIS process is reduced
+to the direct iteration
+if $M = 1$,
 the method is effective
 only if multiple bases are used.
 
@@ -895,11 +894,16 @@ For ST-WHAM,
 the $n_j'(E)$ in Eq. \eqref{eq:beta_STWHAM}
 is estimated from
 \begin{equation}
-n_j'(E) = [n_j(E + \Delta E) - n_j(E - \Delta E)]/(2 \Delta E),
+n_j'(E)
+=
+\frac{ n_j(E + \Delta E) - n_j(E - \Delta E) }
+     { 2 \, \Delta E },
 \label{eq:dn}
 \end{equation}
 with $\Delta E$ being the bin size
-of the energy histograms.
+of the energy histogram.
+
+
 
 
 
@@ -1098,7 +1102,7 @@ Energy frames were registered every 0.1 ps.
 
 We simulated the system under 12 temperatures
 $T$ = 300 K, 310 K, \dots, 410 K,
-each for {\color{red} 100} ns.
+each for about {\color{red} 110} ns.
 %
 As shown in Fig. \ref{fig:nsnt},
 despite the few number of temperature,
@@ -1119,7 +1123,7 @@ only with a very large bin size $\Delta E = 1000.0$.
 ST-WHAM, however,
 produced accurate results for $\Delta E \approx 100.0$,
 and its errors increased dramatically
-with smaller bin sizes.
+with decreasing bin size.
 %
 The bin-size sensitivity was partially due to
 the relatively small sample size.
@@ -1183,10 +1187,10 @@ WHAM and MBAR.
 %
 The technique achieves a fast convergence
 by an optimal combination of the approximate
-solutions in the iteration.
+solutions obtained during the iteration.
 %
 It is easy to implement
-and has a small run time overhead.
+and has only a small run time overhead.
 %
 The method,
 being still iterative,
@@ -1216,6 +1220,12 @@ and MBAR.
 
 It is a pleasure to thank Dr. Y. Zhao
 for many helpful discussions.
+%
+The authors gratefully acknowledge
+the financial support of
+the National Science Foundation (No. CHE-1152876)
+and
+the Robert A. Welch Foundation (No. H-0037).
 %
 Computer time on the Lonestar supercomputer
 at the Texas Advanced Computing Center

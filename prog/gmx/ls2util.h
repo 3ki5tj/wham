@@ -5,12 +5,13 @@
 
 
 
-/* utilities to handle two dimensional list files */
+/* utilities to handle two-dimensional list files */
 
 
 
 
-/* according to src/gromacs/legacyheaders/physics.h */
+/* GROMACS constants
+ * according to src/gromacs/legacyheaders/physics.h */
 #define BOLTZ   (1.380658e-23*6.0221367e23/1e3)
 #define PRESFAC (16.6054) /* bar / pressure unity = 1e27/(6.0221367e23*100)
                              1 bar = 100 kPa = 100 kJ/m^3 = 10^2*6.0221367e23/1e27 kJ/mol/nm^3 */
@@ -79,14 +80,17 @@ static double parsefn(char *buf, double *pres, char *fn)
 
 
 
-/* load the list of energy files */
+/* load the list of the names of the energy-volume files
+ * return the list of file names, and the inverse temperature
+ * beta and beta*p values are saved in
+ * (*beta)[] and (*bpres)[], respectively */
 static char **getls(const char *fn,
     int *nbp, double **beta, double **bpres)
 {
   FILE *fp;
   int i;
-  double temp, pres;
-  char buf[4096];
+  double temp, pres, boltz, presfac;
+  char buf[4096], *p;
   char **fns;
 
   if ( (fp = fopen(fn, "r")) == NULL ) {
@@ -129,8 +133,21 @@ static char **getls(const char *fn,
     /* copy the line */
     xnew(fns[i], strlen(buf) + 1);
     temp = parsefn(buf, &pres, fns[i]);
-    (*beta)[i] = 1 / (BOLTZ * temp);
-    (*bpres)[i] = (*beta)[i] * pres / PRESFAC;
+  
+    /* determine the unit system
+     * if the ending is .xvg, we use the GROMACS unit system
+     * otherwise, we use the reduced units */
+    p = strrchr(fn, '.');
+    if ( p != NULL && strcmp(p, ".xvg" ) == 0 ) {
+      boltz = BOLTZ;
+      presfac = PRESFAC;
+    } else {
+      boltz = 1;
+      presfac = 1;
+    }
+
+    (*beta)[i] = 1 / (boltz * temp);
+    (*bpres)[i] = (*beta)[i] * pres / presfac;
   }
 
   fclose(fp);

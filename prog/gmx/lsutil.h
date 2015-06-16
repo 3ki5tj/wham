@@ -69,14 +69,14 @@ static double parsefn(char *buf, char *fn)
 
 
 
-/* load the list of energy files */
+/* load the list of the names of energy files */
 static char **getls(const char *fn,
     int *nbeta, double **beta)
 {
   FILE *fp;
   int i;
-  double tp;
-  char buf[4096] = "";
+  double tp, boltz;
+  char buf[4096] = "", *p;
   char **fns;
 
   if ( (fp = fopen(fn, "r")) == NULL ) {
@@ -118,7 +118,17 @@ static char **getls(const char *fn,
     /* copy the line */
     xnew(fns[i], strlen(buf) + 1);
     tp = parsefn(buf, fns[i]);
-    (*beta)[i] = 1 / (BOLTZ * tp);
+
+    /* if the file extension is .xvg, then use
+     * the GROMACS units, otherwise use the reduced units */
+    p = strrchr(fns[i], '.');
+    if ( p != NULL && strcmp(p, ".xvg") == 0 ) {
+      boltz = BOLTZ;
+    } else {
+      boltz = 1;
+    }
+
+    (*beta)[i] = 1 / (boltz * tp);
   }
 
   fclose(fp);

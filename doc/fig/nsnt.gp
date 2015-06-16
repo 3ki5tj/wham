@@ -15,12 +15,12 @@ set xlabel "Number of bases, {/Times-Italic M}" offset 0, 0.9
 set logscale y
 set format y "10^{%T}"
 set ytics nomirror font "Times,20" offset 0.5, 0
-set ylabel "Number of iterations, {/Times-Italic N}@_{/=16 iter}^{/=14 &{i}(DIIS)}" offset 0.5, 0
+set ylabel "Number of iterations, {/Times-Italic N}@_{/=16 iter}" offset 0.5, 0
 set yrange [:3000]
 
 set logscale y2
 set y2tics nomirror font "Times,20" offset -0.5, 0
-set y2label "Run time, {/Times-Italic t}^{/=14 &{i}(DIIS)} (seconds)" textcolor rgb "#808080" offset -3.5, 0
+set y2label "Run time, {/Times-Italic t} (seconds)" textcolor rgb "#404040" offset -3.5, 0
 set y2range [:30]
 set rmargin 5.0
 
@@ -46,10 +46,10 @@ set style line 11 lw 2.0 lt 1 lc rgb color11 pt 5   ps 1.8
 set style line 12 lw 2.0 lt 2 lc rgb color12 pt 9   ps 2.0
 
 plot [0:20][] \
-  "../../data/is2/is2tmwham.dat"  u 1:(($1 > -1) ? ($2) : 1/0) axes x1y2 w lp ls 11 notitle, \
-  "../../data/1VII/xvgtmwham.dat" u 1:(($1 > -1) ? ($2) : 1/0) axes x1y2 w lp ls 12 notitle, \
-  "../../data/is2/is2wham.dat"    u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 1 t "Ising model", \
-  "../../data/1VII/xvgwham.dat"   u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 2 t "Villin headpiece", \
+  "../../data/is2/is2tmwham.dat"  u 1:(($1 > -1) ? ($2) : 1/0) axes x1y2 w lp ls 11 t "Ising model, {/Times-Italic t}", \
+  "../../data/1VII/xvgtmwham.dat" u 1:(($1 > -1) ? ($2) : 1/0) axes x1y2 w lp ls 12 t "Villin headpiece, {/Times-Italic t}", \
+  "../../data/is2/is2wham.dat"    u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 1 t "Ising model, {/Times-Italic N}@_{/=16 iter}", \
+  "../../data/1VII/xvgwham.dat"   u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 2 t "Villin headpiece, {/Times-Italic N}@_{/=16 iter}", \
 
 
 

@@ -60,7 +60,7 @@ typedef struct {
   int nsteps;
 #endif /* IS2_MODEL */
 #ifdef LJ_MODEL
-  int np;
+  int nn;
   double rho;
   double rcdef;
   double mddt;
@@ -70,12 +70,12 @@ typedef struct {
   double emax;
   double vmin;
   double vmax;
-  int nT;
   double Tmin;
   double Tdel;
-  int nP;
+  int nT;
   double Pmin;
   double Pdel;
+  int nP;
   int nequil;
   int nsteps;
 #endif /* LJ_MODEL */
@@ -190,14 +190,14 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --fnac=:       set the autocorrelation functions, default: %s\n", m->fnac);
   fprintf(stderr, "  --re:          do replica exchange when possible, default: %d\n", m->re);
 #ifdef IS2_MODEL
-  fprintf(stderr, "  --nT=:         set the number of temperatures, default: %d\n", m->nT);
   fprintf(stderr, "  --T0=:         set the minimal temperature, default: %g\n", m->Tmin);
   fprintf(stderr, "  --dT=:         set the temperature increment, default: %g\n", m->Tdel);
+  fprintf(stderr, "  --nT=:         set the number of temperatures, default: %d\n", m->nT);
   fprintf(stderr, "  --nsteps=:     set the number of simulation steps, default: %d\n", m->nsteps);
   fprintf(stderr, "  --nequil=:     set the number of equilibration steps, default: %d\n", m->nequil);
 #endif /* IS2_MODEL */
 #ifdef LJ_MODEL
-  fprintf(stderr, "  --np=:         set the number of particles, default: %d\n", m->np);
+  fprintf(stderr, "  --nn=:         set the number of particles, default: %d\n", m->nn);
   fprintf(stderr, "  --rho=:        set the density, default: %g\n", m->rho);
   fprintf(stderr, "  --rcdef=:      set the preferred cutoff of the pair potential, default: %g\n", m->rcdef);
   fprintf(stderr, "  --mddt=:       set the MD time step, default: %g\n", m->mddt);
@@ -207,9 +207,12 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --emax=:       set the maximal potential energy per particle, default: %g\n", m->emax);
   fprintf(stderr, "  --vmin=:       set the minimal volume per particle, default: %g\n", m->vmin);
   fprintf(stderr, "  --vmax=:       set the maximal volume per particle, default: %g\n", m->vmax);
-  fprintf(stderr, "  --nT=:         set the number of temperatures, default: %d\n", m->nT);
   fprintf(stderr, "  --T0=:         set the minimal temperature, default: %g\n", m->Tmin);
   fprintf(stderr, "  --dT=:         set the temperature increment, default: %g\n", m->Tdel);
+  fprintf(stderr, "  --nT=:         set the number of temperatures, default: %d\n", m->nT);
+  fprintf(stderr, "  --P0=:         set the minimal pressure, default: %g\n", m->Pmin);
+  fprintf(stderr, "  --dP=:         set the pressure increment, default: %g\n", m->Pdel);
+  fprintf(stderr, "  --nP=:         set the number of pressure, default: %d\n", m->nP);
   fprintf(stderr, "  --nsteps=:     set the number of simulation steps, default: %d\n", m->nsteps);
   fprintf(stderr, "  --nequil=:     set the number of equilibration steps, default: %d\n", m->nequil);
 #endif /* LJ_MODEL */
@@ -313,8 +316,8 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->nequil = atoi(q);
 #endif /* IS2_MODEL */
 #ifdef LJ_MODEL
-      } else if ( strcmpfuzzy(p, "np") == 0 ) {
-        m->nT = atoi(q);
+      } else if ( strcmpfuzzy(p, "nn") == 0 ) {
+        m->nn = atoi(q);
       } else if ( strcmpfuzzy(p, "rho") == 0 ) {
         m->rho = atof(q);
       } else if ( strcmpfuzzy(p, "rcdef") == 0 ) {
@@ -337,10 +340,14 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->Tmin = atof(q);
       } else if ( strcmpfuzzy(p, "dT") == 0 ) {
         m->Tdel = atof(q);
+      } else if ( strcmpfuzzy(p, "nT") == 0 ) {
+        m->nT = atoi(q);
       } else if ( strcmpfuzzy(p, "P0") == 0 ) {
         m->Pmin = atof(q);
       } else if ( strcmpfuzzy(p, "dP") == 0 ) {
         m->Pdel = atof(q);
+      } else if ( strcmpfuzzy(p, "nP") == 0 ) {
+        m->nP = atoi(q);
       } else if ( strcmpfuzzy(p, "nsteps") == 0 ) {
         m->nsteps = atoi(q);
       } else if ( strcmpfuzzy(p, "nequil") == 0 ) {

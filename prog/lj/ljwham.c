@@ -13,7 +13,7 @@
 static void model_default_lj(model_t *m)
 {
   model_default(m);
-  m->np = 108;
+  m->nn = 108;
   m->rho = 0.3;
   m->rcdef = 2.5;
   m->mddt = 0.002;
@@ -59,8 +59,8 @@ int main(int argc, char **argv)
     lj_t **lj;
 
     /* round emin and emax to multiples of m->de */
-    emin = (int) (m->np * m->emin / m->de) * m->de;
-    emax = (int) (m->np * m->emax / m->de) * m->de;
+    emin = (int) (m->nn * m->emin / m->de) * m->de;
+    emax = (int) (m->nn * m->emax / m->de) * m->de;
 
     hs = hist_open(m->nT, emin, emax, m->de);
 
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 
     xnew(lj, m->nT);
     for ( iT = 0; iT < m->nT; iT++ ) {
-      lj[iT] = lj_open(m->np, m->rho, m->rcdef);
+      lj[iT] = lj_open(m->nn, m->rho, m->rcdef);
     }
 
     /* do simulations */
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
           int i;
 
           /* scale the velocities */
-          for ( i = 0; i < m->np; i++ ) {
+          for ( i = 0; i < m->nn; i++ ) {
             vsmul(lj[iT]->v[i], scl);
             vsmul(lj[jT]->v[i], 1/scl);
           }
@@ -133,6 +133,15 @@ int main(int argc, char **argv)
       m->mdiis_update_method, m->mdiis_threshold,
       m->itmax, m->tol, m->itmin, m->verbose,
       m->fnlndos, m->fneav, m->wham_method);
+
+  if ( m->verbose ) {
+    for ( iT = 0; iT < hs->rows; iT++ ) {
+      double tot, eav, var;
+      eav = hist_getave(hs, iT, &tot, &var);
+      printf("%3d %10.7f %14.7f %8.0f %15.7f %14.7f\n",
+          iT, beta[iT], lnz[iT], tot, eav, sqrt(var));
+    }
+  }
 
   hist_close(hs);
   free(beta);

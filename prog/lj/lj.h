@@ -349,8 +349,6 @@ __inline static void lj_vv(lj_t *lj, double dt)
 
 
 /* position Langevin barostat, with coordinates only
- * NOTE: the first parameter is the degree of freedom
- * the scaling is r = r*s
  * set cutoff to half of the box */
 __inline static void lj_langp0(lj_t *lj, double dt,
     double tp, double pext, int ensx)
@@ -364,8 +362,9 @@ __inline static void lj_langp0(lj_t *lj, double dt,
   s = exp( dlnv / D );
   lj->vol *= exp( dlnv );
   lj_setrho(lj, lj->n / lj->vol);
-  for ( i = 0; i < lj->n; i++ )
+  for ( i = 0; i < lj->n; i++ ) {
     vsmul(lj->x[i], s);
+  }
   lj_force(lj);
 }
 
