@@ -15,8 +15,7 @@
 
 /* construct the histogram */
 static xvg_t **mkxvg(const char *fnls,
-    int *nbeta, double **beta, double de,
-    double radd)
+    int *nbeta, double **beta, double radd)
 {
   int i;
   char **fns;
@@ -60,7 +59,7 @@ int main(int argc, char **argv)
     model_help(m);
   }
 
-  xvg = mkxvg(m->fninp, &nbeta, &beta, m->de, m->radd);
+  xvg = mkxvg(m->fninp, &nbeta, &beta, m->radd);
   if ( xvg == NULL ) {
     return -1;
   }

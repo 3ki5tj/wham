@@ -293,7 +293,7 @@ static double wham2_step(wham2_t *w, double *lnz, double *res, int update)
        *        den     Sum_k tot_k exp(-bx_k * x - by_k * y) / Z_k
        * */
       for ( k = 0; k < nbeta; k++ ) {
-        if ( (h = hist->arr[k*nm + ij]) <= 0 ) continue;
+        h = hist->arr[k*nm + ij];
         num += h;
         bx = w->bx[k];
         by = w->by[k];

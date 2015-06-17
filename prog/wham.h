@@ -190,7 +190,7 @@ static void wham_getlnz(wham_t *w, double *lnz)
 
   for ( j = 0; j < nbeta; j++ ) {
     for ( lnz[j] = LOG0, i = 0; i < n; i++ ) {
-      if ( w->lndos[i] <= LOG0) continue;
+      if ( w->lndos[i] <= LOG0 ) continue;
       e = hist->xmin + (i + .5) * hist->dx;
       lnz[j] = wham_lnadd(lnz[j], w->lndos[i] - w->beta[j] * e);
     }
@@ -217,7 +217,7 @@ static double wham_step(wham_t *w, double *lnz, double *res, int update)
      * */
     for ( j = 0; j < nbeta; j++ ) {
       x = hist->arr[j*n + i];
-      if ( x <= 0 ) continue;
+      //if ( x <= 0 ) continue;
       num += x;
       lnden = wham_lnadd(lnden, w->lntot[j] - w->beta[j] * e - lnz[j]);
     }
@@ -339,7 +339,7 @@ static void stwham_getlndos(wham_t *w)
       w->lndos[i] = 0;
       continue;
     }
-  
+
     if ( imin < 0 ) imin = i;
     if ( i > imax ) imax = i;
   }

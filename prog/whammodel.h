@@ -19,6 +19,12 @@
 
 
 
+enum { SIMUL_MC, SIMUL_MD, SIMUL_NMETHODS };
+
+const char *simul_methods[] = {"MC", "MD", "SIMUL_NMETHODS"};
+
+
+
 typedef struct {
   char *prog;
   char *fnhis;
@@ -63,6 +69,7 @@ typedef struct {
   int nn;
   double rho;
   double rcdef;
+  double mcamp;
   double mddt;
   double thdt;
   double pdt;
@@ -76,8 +83,12 @@ typedef struct {
   double Pmin;
   double Pdel;
   int nP;
-  int nequil;
+  int nstadj;
   int nsteps;
+  int nequil;
+  int simul;
+  double vamp;
+  int nstvmov;
 #endif /* LJ_MODEL */
 } model_t;
 
@@ -178,8 +189,9 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --itmin=:      set the minimal number of iterations, default %d\n", m->itmin);
   fprintf(stderr, "  --nbases=:     set the number of bases in the MDIIS method, default: %d\n", m->mdiis_nbases);
   fprintf(stderr, "  --mdamp=:      set the mixing factor in the MDIIS method, default: %g\n", m->mdiis_damp);
-  fprintf(stderr, "  --KTH:         use the Kovalenko-Ten-no-Hirata (queue-like) updating scheme to update the basis in the MDIIS method\n");
-  fprintf(stderr, "  --HP:          use the Howard-Pettitt (dump the largest) updating scheme to update the basis in the MDIIS method\n");
+  fprintf(stderr, "  --KTH:         use the Kovalenko-Ten-no-Hirata (queue-like) scheme to update the basis in the MDIIS method\n");
+  fprintf(stderr, "  --HP:          use the Howard-Pettitt (dump the largest) scheme to update the basis in the MDIIS method\n");
+  fprintf(stderr, "  --HPL:         use the modified Howard-Pettitt scheme to update the basis in the MDIIS method\n");
   fprintf(stderr, "  --mthreshold=: set the threshold to clean up the basis in the MDIIS method, default %g\n", m->mdiis_threshold);
   fprintf(stderr, "  --fndos=:      set the file for the density of states, default %s\n", m->fnlndos);
   fprintf(stderr, "  --fneav=:      set the file for the average energy, default %s\n", m->fneav);
@@ -193,13 +205,14 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --T0=:         set the minimal temperature, default: %g\n", m->Tmin);
   fprintf(stderr, "  --dT=:         set the temperature increment, default: %g\n", m->Tdel);
   fprintf(stderr, "  --nT=:         set the number of temperatures, default: %d\n", m->nT);
-  fprintf(stderr, "  --nsteps=:     set the number of simulation steps, default: %d\n", m->nsteps);
   fprintf(stderr, "  --nequil=:     set the number of equilibration steps, default: %d\n", m->nequil);
+  fprintf(stderr, "  --nsteps=:     set the number of simulation steps, default: %d\n", m->nsteps);
 #endif /* IS2_MODEL */
 #ifdef LJ_MODEL
   fprintf(stderr, "  --nn=:         set the number of particles, default: %d\n", m->nn);
   fprintf(stderr, "  --rho=:        set the density, default: %g\n", m->rho);
   fprintf(stderr, "  --rcdef=:      set the preferred cutoff of the pair potential, default: %g\n", m->rcdef);
+  fprintf(stderr, "  --mcamp:       set the Monte Carlo move size, default: %g\n", m->mcamp);
   fprintf(stderr, "  --mddt=:       set the MD time step, default: %g\n", m->mddt);
   fprintf(stderr, "  --thdt=:       set the thermostat time step, default: %g\n", m->thdt);
   fprintf(stderr, "  --pdt=:        set the barostat time step, default: %g\n", m->pdt);
@@ -213,8 +226,13 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --P0=:         set the minimal pressure, default: %g\n", m->Pmin);
   fprintf(stderr, "  --dP=:         set the pressure increment, default: %g\n", m->Pdel);
   fprintf(stderr, "  --nP=:         set the number of pressure, default: %d\n", m->nP);
-  fprintf(stderr, "  --nsteps=:     set the number of simulation steps, default: %d\n", m->nsteps);
+  fprintf(stderr, "  --nstadj=:     set the number of steps for adjustment, default: %d\n", m->nstadj);
   fprintf(stderr, "  --nequil=:     set the number of equilibration steps, default: %d\n", m->nequil);
+  fprintf(stderr, "  --nsteps=:     set the number of simulation steps, default: %d\n", m->nsteps);
+  fprintf(stderr, "  --mc:          do Monte Carlo simulations\n");
+  fprintf(stderr, "  --md:          do molecular dynamics simulations\n");
+  fprintf(stderr, "  --vamp=:       set the Monte Carlo log volume move size, default: %g\n", m->vamp);
+  fprintf(stderr, "  --nstvmov=:    set the number of steps for volume moves, default: %d\n", m->nstvmov);
 #endif /* LJ_MODEL */
   fprintf(stderr, "  -v:            be verbose, -vv to be more verbose, etc., default %d\n", m->verbose);
   fprintf(stderr, "  -h, --help:    display this message\n");
@@ -284,6 +302,8 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->mdiis_update_method = MDIIS_UPDATE_KTH;
       } else if ( strcmpfuzzy(p, "HP") == 0 ) {
         m->mdiis_update_method = MDIIS_UPDATE_HP;
+      } else if ( strcmpfuzzy(p, "HPL") == 0 ) {
+        m->mdiis_update_method = MDIIS_UPDATE_HPL;
 #endif
       } else if ( strncmpfuzzy(p, "mthreshold", 4) == 0 ) {
         m->mdiis_threshold = atof(q);
@@ -310,10 +330,10 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->Tmin = atof(q);
       } else if ( strcmpfuzzy(p, "dT") == 0 ) {
         m->Tdel = atof(q);
-      } else if ( strcmpfuzzy(p, "nsteps") == 0 ) {
-        m->nsteps = atoi(q);
       } else if ( strcmpfuzzy(p, "nequil") == 0 ) {
         m->nequil = atoi(q);
+      } else if ( strcmpfuzzy(p, "nsteps") == 0 ) {
+        m->nsteps = atoi(q);
 #endif /* IS2_MODEL */
 #ifdef LJ_MODEL
       } else if ( strcmpfuzzy(p, "nn") == 0 ) {
@@ -322,6 +342,8 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->rho = atof(q);
       } else if ( strcmpfuzzy(p, "rcdef") == 0 ) {
         m->rcdef = atof(q);
+      } else if ( strcmpfuzzy(p, "mcamp") == 0 ) {
+        m->mcamp = atof(q);
       } else if ( strcmpfuzzy(p, "mddt") == 0 ) {
         m->mddt = atof(q);
       } else if ( strcmpfuzzy(p, "thdt") == 0 ) {
@@ -348,10 +370,20 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->Pdel = atof(q);
       } else if ( strcmpfuzzy(p, "nP") == 0 ) {
         m->nP = atoi(q);
-      } else if ( strcmpfuzzy(p, "nsteps") == 0 ) {
-        m->nsteps = atoi(q);
+      } else if ( strcmpfuzzy(p, "nstadj") == 0 ) {
+        m->nstadj = atoi(q);
       } else if ( strcmpfuzzy(p, "nequil") == 0 ) {
         m->nequil = atoi(q);
+      } else if ( strcmpfuzzy(p, "nsteps") == 0 ) {
+        m->nsteps = atoi(q);
+      } else if ( strcmpfuzzy(p, "mc") == 0 ) {
+        m->simul = SIMUL_MC;
+      } else if ( strcmpfuzzy(p, "md") == 0 ) {
+        m->simul = SIMUL_MD;
+      } else if ( strcmpfuzzy(p, "vamp") == 0 ) {
+        m->vamp = atof(q);
+      } else if ( strncmpfuzzy(p, "nstvmov", 7) == 0 ) {
+        m->nstvmov = atoi(q);
 #endif /* LJ_MODEL */
       } else if ( strcmpfuzzy(p, "help") == 0 ) {
         model_help(m);

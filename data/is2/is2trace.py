@@ -21,6 +21,7 @@ fntr = "is2.tr"
 update_method = " "
 mthreshold = " "
 itmin = "--itmin=100"
+itmax = "--itmax=10000"
 tol = "--tol=1e-10"
 cmdopt = ""
 verbose = 0
@@ -45,8 +46,10 @@ def usage():
     -o, --trace=    set the output trace file
     --kth           use the KTH scheme in MDIIS
     --hp            use the HP scheme in MDIIS
+    --hpl           use the HPL scheme in MDIIS
     --mthreshold=   set the clean up threshold for MDIIS
     --itmin=        set the minimal number of iterations
+    --itmax=        set the maximal number of iterations
     --tol=          set the tolerance of error
     --opt=          set options to be passed to the command line
     -v              be verbose
@@ -63,8 +66,8 @@ def doargs():
     opts, args = getopt.gnu_getopt(sys.argv[1:],
         "hvN:M:D:m:n:o:",
         [ "help", "verbose=",
-          "nbases=", "dnbases=", "KTH", "kth", "HP", "hp",
-          "mthreshold=", "itmin=", "tol=",
+          "nbases=", "dnbases=", "KTH", "kth", "HP", "hp", "HPL", "hpl",
+          "mthreshold=", "itmin=", "itmax=", "tol=",
           "nequil=", "nsteps=", "trace=", "opt=",
         ] )
   except getopt.GetoptError, err:
@@ -72,7 +75,7 @@ def doargs():
     usage()
 
   global nsamp, nbases, dnbases, update_method
-  global mthreshold, itmin, tol
+  global mthreshold, itmin, itmax, tol
   global nequil, nsteps, fntr, cmdopt, verbose
 
   for o, a in opts:
@@ -90,10 +93,14 @@ def doargs():
       update_method = "--kth"
     elif o in ("--HP", "--hp"):
       update_method = "--hp"
+    elif o in ("--HPL", "--hpl"):
+      update_method = "--hpl"
     elif o in ("--mthreshold",):
       mthreshold = "--mthreshold=%g" % float(a)
     elif o in ("--itmin",):
       itmin = "--itmin=%d" % int(a)
+    elif o in ("--itmax",):
+      itmax = "--itmax=%d" % int(a)
     elif o in ("--tol",):
       tol = "--tol=%g" % float(a)
     elif o in ("--opt",):
@@ -164,8 +171,8 @@ def main():
   except:
     pass
 
-  cmd0 = "./%s -v --re --nequil=%d --nsteps=%d --fnhis=%s %s %s %s" % (
-      prog, nequil, nsteps, fnhis, itmin, tol, cmdopt)
+  cmd0 = "./%s -v --re --nequil=%d --nsteps=%d --fnhis=%s %s %s %s %s" % (
+      prog, nequil, nsteps, fnhis, itmin, itmax, tol, cmdopt)
   cmd0 = cmd0.strip()
 
   for i in range(nsamp):

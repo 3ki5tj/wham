@@ -6,7 +6,7 @@ progs = $(patsubst %.c, %, $(csrcs))
 all: $(progs)
 
 $(progs): % : %.c $(deps)
-	gcc -Wall -Wextra $< -lm -o $@
+	gcc -Wall -Wextra -O3 $< -lm -o $@
 
 remote = cz1@129.109.88.204
 remoteBossman = $(remote):/Bossman/cz1/mu

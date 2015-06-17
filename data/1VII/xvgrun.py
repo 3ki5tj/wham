@@ -12,6 +12,7 @@ import zcom
 
 
 
+mbar = False
 nsamp = 10000
 radd = 0.1
 nbases = 20
@@ -36,6 +37,7 @@ def usage():
   WHAM on XVG files
 
   OPTIONS:
+    --mbar          set the program to MBAR
     -N              set the number of samples
     -r              set the sampling rate
     -M, --nbases=   set the maximal number of bases
@@ -43,6 +45,7 @@ def usage():
     -o, --log=      set the output log file
     --kth           use the KTH scheme in MDIIS
     --hp            use the HP scheme in MDIIS
+    --hpl           use the HP scheme in MDIIS
     --mthreshold=   set the clean up threshold for MDIIS
     --tol=          set the tolerance of error
     --opt=          set options to be passed to the command line
@@ -61,7 +64,8 @@ def doargs():
     opts, args = getopt.gnu_getopt(sys.argv[1:],
         "hvN:r:M:l:o:",
         [ "help", "verbose=",
-          "nbases=", "KTH", "kth", "HP", "hp",
+          "mbar",
+          "nbases=", "KTH", "kth", "HP", "hp", "HPL", "hpl",
           "mthreshold=", "tol=",
           "ls=", "log=",
           "opt=", "ev", "xvg2", "gmx2",
@@ -70,7 +74,7 @@ def doargs():
     print str(err)
     usage()
 
-  global nsamp, radd, nbases, update_method, mthreshold, tol
+  global mbar, nsamp, radd, nbases, update_method, mthreshold, tol
   global fnls, fnlog, doev, cmdopt, verbose
 
   for o, a in opts:
@@ -78,6 +82,8 @@ def doargs():
       verbose += 1  # such that -vv gives verbose = 2
     elif o in ("--verbose",):
       verbose = int(a)
+    elif o in ("--mbar",):
+      mbar = True
     elif o in ("-N",):
       nsamp = int(a)
     elif o in ("-r",):
@@ -88,6 +94,8 @@ def doargs():
       update_method = "--kth"
     elif o in ("--HP", "--hp"):
       update_method = "--hp"
+    elif o in ("--HPL", "--hpl"):
+      update_method = "--hpl"
     elif o in ("--mthreshold",):
       mthreshold = "--mthreshold=%g" % float(a)
     elif o in ("--tol",):
@@ -127,32 +135,48 @@ def getnstepstime(err):
 
 
 def main():
-  global radd, cmdopt, fnls, fnlog
+  global mbar, radd, cmdopt, fnls, fnlog
 
   zcom.runcmd("make -C ../../prog/gmx")
 
   if doev:
-    prog = "xvgwham2"
+    if mbar:
+      prog = "xvgmbar2"
+    else:
+      prog = "xvgwham2"
     if not fnlog: fnlog = "xvg2.log"
     if not fnls: fnls = "ev.ls"
     fnhis = "hist2.dat"
   else:
-    prog = "xvgwham"
+    if mbar:
+      prog = "xvgmbar"
+    else:
+      prog = "xvgwham"
     if not fnlog: fnlog = "xvg.log"
     if not fnls: fnls = "e.ls"
     fnhis = "hist.dat"
 
+  if mbar:
+    strfnhis = ""
+    # modify the the log file name 
+    arr = os.path.splitext(fnlog)
+    fnlog = arr[0] + "_mbar" + arr[1]
+  else:
+    arr = os.path.splitext(fnlog)
+    fnlog = arr[0] + "_wham" + arr[1]
+    fnhis = arr[0] + "_" + fnhis
+    strfnhis = "--fnhis=" + fnhis
+
   arr = os.path.splitext(fnlog)
   fntmlog = arr[0] + "tm" + arr[1]
-  fnhis = arr[0] + "_" + fnhis
 
   try:
     shutil.copy("../../prog/gmx/%s" % prog, "./%s" % prog)
   except:
     pass
 
-  cmd0 = "./%s --fnhis=%s -r %g %s %s %s" % (
-      prog, fnhis, radd, fnls, tol, cmdopt)
+  cmd0 = "./%s %s -r %g %s %s %s" % (
+      prog, strfnhis, radd, fnls, tol, cmdopt)
   cmd0 = cmd0.strip()
 
   ns = [0]*(nbases + 1)
@@ -165,8 +189,9 @@ def main():
     ns[0], tm[0] = getnstepstime(err)
 
     for nb in range(1, nbases + 1):
-      cmd = "%s --wham=MDIIS --nbases=%d -H %s %s" % (
-          cmd0.strip(), nb, update_method, mthreshold)
+      cmd = "%s --%s=MDIIS --nbases=%d -H %s %s" % (
+          cmd0.strip(), "mbar" if mbar else "wham",
+          nb, update_method, mthreshold)
       ret, out, err = zcom.runcmd(cmd.strip(), capture = True)
       ns[nb], tm[nb] = getnstepstime(err)
 

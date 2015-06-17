@@ -6,7 +6,7 @@ progs = $(patsubst %.c, %, $(csrcs))
 all: $(progs)
 
 $(progs): % : %.c $(deps)
-	gcc -Wall -O2 $< -lm -o $@
+	gcc -O3 -Wall -Wextra $< -lm -o $@
 
 # use gcc for reproducibility
 #icc -Wall -Wremarks $< -o $@

@@ -133,7 +133,7 @@ static char **getls(const char *fn,
     /* copy the line */
     xnew(fns[i], strlen(buf) + 1);
     temp = parsefn(buf, &pres, fns[i]);
-  
+
     /* determine the unit system
      * if the ending is .xvg, we use the GROMACS unit system
      * otherwise, we use the reduced units */

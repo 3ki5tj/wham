@@ -332,6 +332,58 @@ static int mdiis_update_hp(mdiis_t *m, double *f, double *res,
 
 
 /* try to add the new vector `f` and its residue `res`
+ * into the base using the Howard-Pettitt scheme */
+static int mdiis_update_hpl(mdiis_t *m, double *f, double *res,
+    double err)
+{
+  int i, ibmax, ib, nb, mnb, npt = m->npt;
+
+  nb = m->nb;
+  mnb = m->mnb;
+
+  /* save this function if it achieves the minimal error so far */
+  if ( err < m->errmin ) {
+    cparr(m->fbest, m->f[nb], npt);
+    m->errmin = err;
+  }
+
+  /* find the base with the largest (except the previous) residue */
+  ibmax = ( m->ibQ == 0 && nb > 1 ) ? 1 : 0;
+  for ( i = ibmax + 1; i < nb; i++ ) {
+    if ( i == m->ibQ ) continue;
+    /* the diagonal represents the error */
+    if ( m->mat[i*mnb + i] > m->mat[ibmax*mnb + ibmax] ) {
+      ibmax = i;
+    }
+  }
+
+  if ( nb < m->mnb ) {
+    ib = nb;
+    m->nb = ++nb;
+  } else {
+    ib = ibmax;
+    /* Note: we only set ibQ if the basis is full */
+    m->ibQ = ib;
+  }
+
+  /* replace base ib by f */
+  for ( i = 0; i < npt; i++ ) {
+    m->f[ib][i] = f[i];
+    m->res[ib][i] = res[i];
+  }
+
+  /* update the residue correlation matrix
+   * note: we do not need to update the last row & column */
+  for ( i = 0; i < nb; i++ ) {
+    m->mat[i*mnb + ib] = m->mat[ib*mnb + i]
+      = mdiis_getdot(m->res[i], res, npt);
+  }
+  return ib;
+}
+
+
+
+/* try to add the new vector `f` and its residue `res`
  * into the base */
 static int mdiis_update(mdiis_t *m, double *f, double *res,
     double err)
@@ -414,6 +466,7 @@ enum {
   MDIIS_UPDATE_DEFAULT,
   MDIIS_UPDATE_KTH,
   MDIIS_UPDATE_HP,
+  MDIIS_UPDATE_HPL,
   MDIIS_UPDATE_NMETHODS
 };
 
@@ -421,6 +474,7 @@ const char *mdiis_update_methods[] = {
   "Default",
   "KTH",
   "HP",
+  "HPL",
   "MDIIS_UPDATE_NMETHODS"
 };
 
@@ -468,6 +522,8 @@ static double iter_mdiis(double *f, int npt,
       ib = mdiis_update_kth(mdiis, f, res, err, threshold);
     } else if ( update_method == MDIIS_UPDATE_HP ) {
       ib = mdiis_update_hp(mdiis, f, res, err);
+    } else if ( update_method == MDIIS_UPDATE_HPL ) {
+      ib = mdiis_update_hpl(mdiis, f, res, err);
     } else {
       ib = mdiis_update(mdiis, f, res, err);
     }

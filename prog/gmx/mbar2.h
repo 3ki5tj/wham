@@ -1,5 +1,5 @@
-#ifndef MBAR_H__
-#define MBAR_H__
+#ifndef MBAR2_H__
+#define MBAR2_H__
 
 
 
@@ -301,5 +301,5 @@ static double mbar2x(int nbp, xvg_t **xvg,
 
 
 
-#endif /* MBAR_H__ */
+#endif /* MBAR2_H__ */
 

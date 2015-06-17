@@ -38,7 +38,7 @@ def doargs():
   try:
     opts, args = getopt.gnu_getopt(sys.argv[1:],
         "hv",
-        [ "geo", "eps=",
+        [ "geo=", "eps=",
           "help", "verbose=",
         ] )
   except getopt.GetoptError, err:
@@ -49,7 +49,7 @@ def doargs():
 
   for o, a in opts:
     if o in ("--geo",):
-      geomean = 1
+      geomean = int(a)
     elif o in ("--eps",):
       epsilon = float(a)
     elif o in ("-v",):
@@ -120,7 +120,17 @@ def dostat(fninp):
       std = 0
     s += "%d %g %g\n" % (j, ave[j], std)
 
-  fnout = fninp.split(".")[0] + "wham.dat"
+  # construct the output file name
+  nm = os.path.splitext(fninp)[0]
+  p = nm.find("_wham")
+  q = nm.find("_mbar")
+  if p >= 0:
+    fnout = nm[:p] + nm[p+5:] + "wham.dat"
+  elif q >= 0:
+    fnout = nm[:q] + nm[q+5:] + "mbar.dat"
+  else:
+    fnout = nm + "wham.dat"
+  
   open(fnout, "w").write(s)
   print "save results to %s" % fnout
 
