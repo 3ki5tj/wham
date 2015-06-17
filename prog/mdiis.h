@@ -414,8 +414,17 @@ enum {
   MDIIS_UPDATE_DEFAULT,
   MDIIS_UPDATE_KTH,
   MDIIS_UPDATE_HP,
-  MDIIS_UPDATE_METHODS
+  MDIIS_UPDATE_NMETHODS
 };
+
+const char *mdiis_update_methods[] = {
+  "Default",
+  "KTH",
+  "HP",
+  "MDIIS_UPDATE_NMETHODS"
+};
+
+
 
 static double iter_mdiis(double *f, int npt,
     double (*getres)(void *, double *, double *),
@@ -455,10 +464,10 @@ static double iter_mdiis(double *f, int npt,
     mdiis_gen(mdiis, f, normalize, damp);
     err = mdiis->getres(obj, f, res);
     /* add the new f into the basis */
-    if ( update_method == MDIIS_UPDATE_HP ) {
-      ib = mdiis_update_hp(mdiis, f, res, err);
-    } else if ( update_method == MDIIS_UPDATE_KTH ) {
+    if ( update_method == MDIIS_UPDATE_KTH ) {
       ib = mdiis_update_kth(mdiis, f, res, err, threshold);
+    } else if ( update_method == MDIIS_UPDATE_HP ) {
+      ib = mdiis_update_hp(mdiis, f, res, err);
     } else {
       ib = mdiis_update(mdiis, f, res, err);
     }
@@ -489,7 +498,7 @@ static double iter_mdiis(double *f, int npt,
 
   t1 = clock();
   fprintf(stderr, "MDIIS finished in %d steps, error %g (%s), time %.4fs\n",
-      it, err, (success ? "succeeded" : "failed"),
+      it + 1, err, (success ? "succeeded" : "failed"),
       1.0*(t1 - t0)/CLOCKS_PER_SEC);
   return err;
 }

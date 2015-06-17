@@ -42,11 +42,11 @@ def usage():
     -o, --log=      set the output log file
     --kth           use the KTH scheme in MDIIS
     --hp            use the HP scheme in MDIIS
-    --mthreshold=   set the clean up threshold for MDIIS
+    --mthreshold=   set the cleanup threshold for MDIIS
     --tol=          set the tolerance of error
     --opt=          set options to be passed to the command line
     -v              be verbose
-    --verbose=      set verbocity
+    --verbose=      set verbosity
     -h, --help      help
   """
   exit(1)

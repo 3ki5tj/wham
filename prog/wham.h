@@ -20,7 +20,7 @@
 
 
 enum { WHAM_DIRECT = 0, WHAM_MDIIS = 1, WHAM_ST = 2, WHAM_NMETHODS };
-const char *wham_methods[] = {"Direct", "MDIIS", "ST"};
+const char *wham_methods[] = {"Direct", "MDIIS", "ST", "WHAM_NMETHODS"};
 
 
 

@@ -48,7 +48,7 @@ def usage():
     --opt=          set options to be passed to the command line
     --ev, --lj2     do the two-dimensional case
     -v              be verbose
-    --verbose=      set verbocity
+    --verbose=      set verbosity
     -h, --help      help
   """
   exit(1)
