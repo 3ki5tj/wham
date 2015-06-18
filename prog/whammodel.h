@@ -41,11 +41,11 @@ typedef struct {
 #ifdef MBAR
   int mbar_method;
 #endif
+  int itmin;
   int itmax;
   double tol;
-  int itmin;
+  double damp;
   int mdiis_nbases; /* number of bases in MDIIS */
-  double mdiis_damp; /* mixing factor in MDIIS */
   int mdiis_update_method;
   double mdiis_threshold; /* controls when to clean up the basis in MDIIS */
   char *fnlndos;
@@ -111,11 +111,11 @@ __inline static void model_default(model_t *m)
 #ifdef MBAR
   m->mbar_method = MBAR_DIRECT;
 #endif
+  m->itmin = 0;
   m->itmax = 100000;
   m->tol = 1e-8;
-  m->itmin = 0;
+  m->damp = 1.0;
   m->mdiis_nbases = 10;
-  m->mdiis_damp = 1.0;
 #ifdef ENABLE_MDIIS
   m->mdiis_update_method = MDIIS_UPDATE_DEFAULT;
 #endif
@@ -184,11 +184,11 @@ __inline static void model_help(const model_t *m)
 #ifdef MBAR
   fprintf(stderr, "  --mbar=:       set the MBAR method, 'Direct' or 'MDIIS', default: %s\n", mbar_methods[m->mbar_method]);
 #endif
+  fprintf(stderr, "  --itmin=:      set the minimal number of iterations, default %d\n", m->itmin);
   fprintf(stderr, "  --itmax=:      set the maximal number of iterations, default %d\n", m->itmax);
   fprintf(stderr, "  --tol=:        set the tolerance of error, default %g\n", m->tol);
-  fprintf(stderr, "  --itmin=:      set the minimal number of iterations, default %d\n", m->itmin);
+  fprintf(stderr, "  --damp=:       set the mixing factor in the direct method, default: %g\n", m->damp);
   fprintf(stderr, "  --nbases=:     set the number of bases in the MDIIS method, default: %d\n", m->mdiis_nbases);
-  fprintf(stderr, "  --mdamp=:      set the mixing factor in the MDIIS method, default: %g\n", m->mdiis_damp);
   fprintf(stderr, "  --KTH:         use the Kovalenko-Ten-no-Hirata (queue-like) scheme to update the basis in the MDIIS method\n");
   fprintf(stderr, "  --HP:          use the Howard-Pettitt (dump the largest) scheme to update the basis in the MDIIS method\n");
   fprintf(stderr, "  --HPL:         use the modified Howard-Pettitt scheme to update the basis in the MDIIS method\n");
@@ -287,16 +287,17 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
       } else if ( strcmpfuzzy(p, "mbar") == 0 ) {
         m->mbar_method = model_select(q, MBAR_NMETHODS, mbar_methods);
 #endif
+      } else if ( strcmpfuzzy(p, "itmin") == 0 ) {
+        m->itmin = atoi(q);
       } else if ( strcmpfuzzy(p, "itmax") == 0 ) {
         m->itmax = atoi(q);
       } else if ( strcmpfuzzy(p, "tol") == 0 ) {
         m->tol = atof(q);
-      } else if ( strcmpfuzzy(p, "itmin") == 0 ) {
-        m->itmin = atoi(q);
+      } else if ( strcmpfuzzy(p, "damp") == 0
+               || strcmpfuzzy(p, "mdamp") == 0 ) {
+        m->damp = atof(q);
       } else if ( strcmpfuzzy(p, "nbases") == 0 ) {
         m->mdiis_nbases = atoi(q);
-      } else if ( strcmpfuzzy(p, "mdamp") == 0 ) {
-        m->mdiis_damp = atof(q);
 #ifdef ENABLE_MDIIS
       } else if ( strcmpfuzzy(p, "KTH") == 0 ) {
         m->mdiis_update_method = MDIIS_UPDATE_KTH;

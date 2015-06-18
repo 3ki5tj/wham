@@ -30,6 +30,7 @@ typedef struct {
   double *lndos; /* density of states */
   double *lntot; /* total number of visits to each temperature */
   hist_t *hist; /* histograms, reference */
+  int imin, imax;
 } wham_t;
 
 
@@ -38,6 +39,7 @@ static wham_t *wham_open(const double *beta, hist_t *hist)
 {
   wham_t *w;
   int i, j, nbeta = hist->rows, n = hist->n;
+  double h;
 
   xnew(w, 1);
   w->beta = beta;
@@ -54,6 +56,26 @@ static wham_t *wham_open(const double *beta, hist_t *hist)
     w->lntot[j] = (x > 0) ? log(x) : LOG0;
   }
 
+  /* determine the boundaries */
+  /* find imin */
+  for ( i = 0; i < n; i++ ) {
+    for ( h = 0, j = 0; j < nbeta; j++ ) {
+      h += hist->arr[j * n + i];
+    }
+    if ( h > 0 ) break;
+  }
+  w->imin = i;
+
+  /* find imax */
+  for ( i = n - 1; i >= 0; i-- ) {
+    for ( h = 0, j = 0; j < nbeta; j++ ) {
+      h += hist->arr[j * n + i];
+    }
+    if ( h > 0 ) break;
+  }
+  w->imax = i + 1;
+
+  fprintf(stderr, "i: [%d, %d)\n", w->imin, w->imax);
   return w;
 }
 
@@ -83,14 +105,14 @@ __inline static double wham_lnadd(double a, double b)
 static int wham_savelndos(wham_t *w, const char *fn)
 {
   FILE *fp;
-  int i, n = w->hist->n;
+  int i;
   double emin = w->hist->xmin, de = w->hist->dx;
 
   if ((fp = fopen(fn, "w")) == NULL) {
     fprintf(stderr, "cannot write %s\n", fn);
     return -1;
   }
-  for ( i = 0; i < n; i++ )
+  for ( i = w->imin; i < w->imax; i++ )
     if ( w->lndos[i] > LOG0 )
       fprintf(fp, "%g %g\n", emin + (i+.5)*de, w->lndos[i]);
   fclose(fp);
@@ -105,7 +127,7 @@ static void wham_getav(wham_t *w, const char *fn)
   hist_t *hist = w->hist;
   double T, b, e, ee, lne, lnz, slne, slnee, lnw;
   double de = hist->dx, emin = hist->xmin;
-  int i, j, n = hist->n, nbeta = hist->rows;
+  int i, j, nbeta = hist->rows;
   FILE *fp = NULL;
 
   if ( fn != NULL && (fp = fopen(fn, "w")) == NULL )
@@ -115,7 +137,7 @@ static void wham_getav(wham_t *w, const char *fn)
     b = w->beta[j];
     T = 1./b;
     lnz = slne = slnee = LOG0;
-    for ( i = 0; i < n; i++ ) {
+    for ( i = w->imin; i < w->imax; i++ ) {
       if ( w->lndos[i] <= LOG0 ) continue;
       /* note: we do not add emin here for it may lead to
        * a negative energy whose logarithm is undefined */
@@ -156,7 +178,7 @@ static void wham_estimatelnz(wham_t *w, double *lnz)
      * = ---------------------------------------------
      *               Sum_E h_j(E)
      **/
-    for ( i = 0; i < n; i++ ) {
+    for ( i = w->imin; i < w->imax; i++ ) {
       h = hist->arr[j*n + i];
       if ( h <= 0 ) continue;
       e = hist->xmin + (i + .5) * hist->dx;
@@ -185,11 +207,12 @@ static void wham_normalize(double *lnz, int nbeta)
 static void wham_getlnz(wham_t *w, double *lnz)
 {
   hist_t *hist = w->hist;
-  int i, j, n = hist->n, nbeta = hist->rows;
+  int i, j, nbeta = hist->rows;
   double e;
 
   for ( j = 0; j < nbeta; j++ ) {
-    for ( lnz[j] = LOG0, i = 0; i < n; i++ ) {
+    lnz[j] = LOG0;
+    for ( i = w->imin; i < w->imax; i++ ) {
       if ( w->lndos[i] <= LOG0 ) continue;
       e = hist->xmin + (i + .5) * hist->dx;
       lnz[j] = wham_lnadd(lnz[j], w->lndos[i] - w->beta[j] * e);
@@ -200,14 +223,15 @@ static void wham_getlnz(wham_t *w, double *lnz)
 
 
 
-static double wham_step(wham_t *w, double *lnz, double *res, int update)
+static double wham_step(wham_t *w, double *lnz, double *res,
+    double damp)
 {
   hist_t *hist = w->hist;
   int i, j, imin, n = hist->n, nbeta = hist->rows;
   double x, num, lnden, e, emin = hist->xmin, de = hist->dx, err;
 
   imin = -1;
-  for ( i = 0; i < n; i++ ) {
+  for ( i = w->imin; i < w->imax; i++ ) {
     num = 0;
     lnden = LOG0;
     e = emin + (i + .5) * de;
@@ -234,12 +258,21 @@ static double wham_step(wham_t *w, double *lnz, double *res, int update)
     if ( w->lndos[i] > LOG0 )
       w->lndos[i] -= x;
 
+  /* refresh the partition function */
   wham_getlnz(w, res);
-  for ( err = 0, j = 0; j < nbeta; j++ ) {
-    x = res[j];
-    res[j] = x - lnz[j];
-    if ( fabs(res[j]) > err ) err = fabs(res[j]);
-    if ( update ) lnz[j] = x;
+
+  for ( err = 0, i = 0; i < nbeta; i++ ) {
+    res[i] -= lnz[i];
+    if ( fabs(res[i]) > err ) {
+      err = fabs(res[i]);
+    }
+  }
+
+  if ( damp > 0 ) {
+    for ( i = 0; i < nbeta; i++ ) {
+      lnz[i] += damp * res[i];
+    }
+    wham_normalize(lnz, nbeta);
   }
 
   return err;
@@ -250,7 +283,7 @@ static double wham_step(wham_t *w, double *lnz, double *res, int update)
 /* iteratively compute the logarithm of the density of states
  * using the weighted histogram method */
 static double wham_getlndos(wham_t *w, double *lnz,
-    int itmax, double tol, int itmin, int verbose)
+    double damp, int itmin, int itmax, double tol, int verbose)
 {
   int it;
   double err, errp;
@@ -259,7 +292,7 @@ static double wham_getlndos(wham_t *w, double *lnz,
   t0 = clock();
   err = errp = 1e30;
   for ( it = 0; it < itmax; it++ ) {
-    err = wham_step(w, lnz, w->res, 1);
+    err = wham_step(w, lnz, w->res, damp);
     if ( verbose ) {
       fprintf(stderr, "it %d, err %g -> %g\n",
           it, errp, err);
@@ -280,14 +313,15 @@ static double wham_getlndos(wham_t *w, double *lnz,
 
 /* weighted histogram analysis method */
 static double wham(hist_t *hist, const double *beta, double *lnz,
-    int itmax, double tol, int itmin, int verbose,
+    double damp, int itmin, int itmax, double tol, int verbose,
     const char *fnlndos, const char *fneav)
 {
   wham_t *w = wham_open(beta, hist);
   double err;
 
   wham_estimatelnz(w, lnz);
-  err = wham_getlndos(w, lnz, itmax, tol, itmin, verbose);
+  err = wham_getlndos(w, lnz,
+      damp, itmin, itmax, tol, verbose);
   if ( fnlndos ) {
     wham_savelndos(w, fnlndos);
   }
@@ -401,7 +435,7 @@ static double wham_getres(void *w, double *lnz, double *res)
 
 static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
     int nbases, double damp, int queue, double threshold,
-    int itmax, double tol, int itmin, int verbose,
+    int itmin, int itmax, double tol, int verbose,
     const char *fnlndos, const char *fneav)
 {
   wham_t *w = wham_open(beta, hist);
@@ -411,7 +445,7 @@ static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
   err = iter_mdiis(lnz, hist->rows,
       wham_getres, wham_normalize, w,
       nbases, damp, queue, threshold,
-      itmax, tol, itmin, verbose);
+      itmin, itmax, tol, verbose);
   if ( fnlndos ) wham_savelndos(w, fnlndos);
   wham_getav(w, fneav);
   wham_close(w);
@@ -425,20 +459,21 @@ static double wham_mdiis(hist_t *hist, const double *beta, double *lnz,
 
 
 static double whamx(hist_t *hist, const double *beta, double *lnz,
-    int nbases, double damp, int update_method, double threshold,
-    int itmax, double tol, int itmin, int verbose,
+    double damp, int nbases, int update_method, double threshold,
+    int itmin, int itmax, double tol, int verbose,
     const char *fnlndos, const char *fneav, int method)
 {
   if ( method == WHAM_DIRECT ) {
-    return wham(hist, beta, lnz, itmax, tol, itmin, verbose,
-        fnlndos, fneav);
+    return wham(hist, beta, lnz,
+        damp, itmin, itmax, tol,
+        verbose, fnlndos, fneav);
   } else if ( method == WHAM_ST ) {
     return stwham(hist, beta, lnz, fnlndos, fneav);
 #ifdef ENABLE_MDIIS
   } else if ( method == WHAM_MDIIS ) {
     return wham_mdiis(hist, beta, lnz,
         nbases, damp, update_method, threshold,
-        itmax, tol, itmin, verbose,
+        itmin, itmax, tol, verbose,
         fnlndos, fneav);
 #endif
   }

@@ -72,9 +72,9 @@ int main(int argc, char **argv)
   }
 
   mbar2x(nbp, xvg, beta, bpres, lnz,
-      m->mdiis_nbases, m->mdiis_damp,
+      m->damp, m->mdiis_nbases,
       m->mdiis_update_method, m->mdiis_threshold,
-      m->itmax, m->tol, m->itmin, m->verbose, m->mbar_method);
+      m->itmin, m->itmax, m->tol, m->verbose, m->mbar_method);
 
   if ( m->verbose ) {
     for ( i = 0; i < nbp; i++ ) {

@@ -321,10 +321,8 @@ int main(int argc, char **argv)
     for ( ip = 0; ip < m->nP; ip++ ) {
       double P = m->Pmin + m->Pdel * ip;
       beta[itp] = 1./T;
-      //pres[itp] = P;
-      //bp[itp] = beta[itp] * pres[itp];
-      pres[itp] = P/beta[itp];
-      bp[itp] = P;
+      pres[itp] = P;
+      bp[itp] = beta[itp] * pres[itp];
       lnz[itp] = 0;
       itp++;
     }
@@ -349,9 +347,9 @@ int main(int argc, char **argv)
 
   /* do WHAM */
   wham2x(hs, beta, bp, lnz,
-      m->mdiis_nbases, m->mdiis_damp,
+      m->damp, m->mdiis_nbases,
       m->mdiis_update_method, m->mdiis_threshold,
-      m->itmax, m->tol, m->itmin, m->verbose,
+      m->itmin, m->itmax, m->tol, m->verbose,
       m->fnlndos2, m->fneav2, m->wham_method);
 
   if ( m->verbose ) {

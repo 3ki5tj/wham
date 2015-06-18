@@ -485,7 +485,7 @@ static double iter_mdiis(double *f, int npt,
     void (*normalize)(double *, int), void *obj,
     int nbases, double damp,
     int update_method, double threshold,
-    int itmax, double tol, int itmin, int verbose)
+    int itmin, int itmax, double tol, int verbose)
 {
   mdiis_t *mdiis;
   int it, ibp = 0, ib, success;

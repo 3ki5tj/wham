@@ -136,7 +136,7 @@ static void mbar_normalize(double *lnz, int nbeta)
 
 
 
-static double mbar_step(mbar_t *mbar, double *lnz, double *res, int update)
+static double mbar_step(mbar_t *mbar, double *lnz, double *res, double damp)
 {
   xvg_t *xvg;
   int i, j, l, n, nbeta = mbar->nbeta;
@@ -174,9 +174,9 @@ static double mbar_step(mbar_t *mbar, double *lnz, double *res, int update)
     }
   }
 
-  if ( update ) {
+  if ( damp > 0 ) {
     for ( i = 0; i < nbeta; i++ ) {
-      lnz[i] += res[i];
+      lnz[i] += damp * res[i];
     }
     mbar_normalize(lnz, nbeta);
   }
@@ -189,7 +189,7 @@ static double mbar_step(mbar_t *mbar, double *lnz, double *res, int update)
 /* weighted histogram analysis method */
 static double mbar(int nbeta,
     xvg_t **xvg, const double *beta, double *lnz,
-    int itmax, double tol, int itmin, int verbose)
+    double damp, int itmin, int itmax, double tol, int verbose)
 {
   mbar_t *mbar = mbar_open(nbeta, beta, xvg);
   int it;
@@ -201,7 +201,7 @@ static double mbar(int nbeta,
   t0 = clock();
   err = errp = 1e30;
   for ( it = 0; it < itmax; it++ ) {
-    err = mbar_step(mbar, lnz, mbar->res, 1);
+    err = mbar_step(mbar, lnz, mbar->res, damp);
     if ( verbose ) {
       fprintf(stderr, "it %d, err %g -> %g\n",
           it, errp, err);
@@ -236,7 +236,7 @@ static double mbar_getres(void *mbar, double *lnz, double *res)
 static double mbar_mdiis(int nbeta,
     xvg_t **xvg, const double *beta, double *lnz,
     int nbases, double damp, int queue, double threshold,
-    int itmax, double tol, int itmin, int verbose)
+    int itmin, int itmax, double tol, int verbose)
 {
   mbar_t *mbar = mbar_open(nbeta, beta, xvg);
   double err;
@@ -245,7 +245,7 @@ static double mbar_mdiis(int nbeta,
   err = iter_mdiis(lnz, nbeta,
       mbar_getres, mbar_normalize, mbar,
       nbases, damp, queue, threshold,
-      itmax, tol, itmin, verbose);
+      itmin, itmax, tol, verbose);
   mbar_close(mbar);
   return err;
 }
@@ -256,17 +256,17 @@ static double mbar_mdiis(int nbeta,
 
 static double mbarx(int nbeta, xvg_t **xvg,
     const double *beta, double *lnz,
-    int nbases, double damp, int update_method, double threshold,
-    int itmax, double tol, int itmin, int verbose, int method)
+    double damp, int nbases, int update_method, double threshold,
+    int itmin, int itmax, double tol, int verbose, int method)
 {
   if ( method == MBAR_DIRECT ) {
     return mbar(nbeta, xvg, beta, lnz,
-        itmax, tol, itmin, verbose);
+        damp, itmin, itmax, tol, verbose);
 #ifdef ENABLE_MDIIS
   } else if ( method == MBAR_MDIIS ) {
     return mbar_mdiis(nbeta, xvg, beta, lnz,
         nbases, damp, update_method, threshold,
-        itmax, tol, itmin, verbose);
+        itmin, itmax, tol, verbose);
 #endif
   }
 

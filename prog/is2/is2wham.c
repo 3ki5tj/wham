@@ -1,7 +1,9 @@
 /* WHAM for two-dimensional Ising model */
 #define ENABLE_MDIIS
 #include "../wham.h"
+#ifndef IS2_LB
 #define IS2_LB 6
+#endif
 #include "is2.h"
 #include <time.h>
 #define WHAM
@@ -129,9 +131,9 @@ int main(int argc, char **argv)
   }
 
   whamx(hs, beta, lnz,
-      m->mdiis_nbases, m->mdiis_damp,
+      m->damp, m->mdiis_nbases,
       m->mdiis_update_method, m->mdiis_threshold,
-      m->itmax, m->tol, m->itmin, m->verbose,
+      m->itmin, m->itmax, m->tol, m->verbose,
       m->fnlndos, m->fneav, m->wham_method);
 
   if ( m->verbose ) {
