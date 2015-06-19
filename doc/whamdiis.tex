@@ -297,7 +297,7 @@ We briefly mentions a few extensions.
 First,
 for simulations
 on multiple isothermal-isobaric ensembles
-at different temperature and pressure,
+with different temperatures and pressures,
 %
 we replace $E$ by $(E, V)$
 and the Boltzmann weight
@@ -926,20 +926,18 @@ with $10^7$ MC steps on each temperature.
 
 
 
-In Fig. \ref{fig:is2ref},
-we show that
-the dimensionless free energies computed from WHAM
+Figure \ref{fig:is2ref} shows that
+DIIS WHAM and direct WHAM produced the same
+dimensionless free energies, which
 agreed well with the exact result\cite{
-ferdinand1969},
-and DIIS WHAM produced the same results
-as the direct WHAM.
+ferdinand1969}.
 %
 On the other hand,
-ST-WHAM produced slightly different results
-(note the accumulative difference
-in the density of states
-from integrating the WHAM and ST-WHAM
-statistical temperatures).
+there is slight difference between
+the values from ST-WHAM and WHAM,
+which is likely due to
+the accumulative difference
+in the two statistical temperatures.
 
 
 
@@ -957,6 +955,11 @@ statistical temperatures).
     $\varepsilon(a) \equiv a - a^\mathrm{(ref)}$.
     %
     The bin size $\Delta E = 4$.
+    %
+    The reference values of the free energy and
+    the density of states were obtained
+    from Refs. \cite{ferdinand1969} and \cite{beale1996},
+    respectively.
   }
 \end{figure}
 
@@ -1152,6 +1155,8 @@ kim2011} may also help improve the ST-WHAM results.
     The results of MBAR, which is
     the zero bin-size limit of WHAM,
     are used as the reference.
+    %
+    All frames in the trajectory are used.
     %
     The lines are to guide the eyes.
   }

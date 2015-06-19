@@ -130,7 +130,7 @@ def dostat(fninp):
     fnout = nm[:q] + nm[q+5:] + "mbar.dat"
   else:
     fnout = nm + "wham.dat"
-  
+
   open(fnout, "w").write(s)
   print "save results to %s" % fnout
 

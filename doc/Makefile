@@ -1,9 +1,8 @@
 prj=whamdiis
 
-figs=
-pdffigs=$(patsubst %,fig/%.pdf, $(figs))
-epsfigs=$(patsubst %,fig/%.eps, $(figs))
-figgps=$(patsubst %,fig/%.gp,  $(figs))
+figgps=$(wildcard fig/*.gp)
+pdffigs=$(patsubst %.gp,%.pdf, $(figgps))
+epsfigs=$(patsubst %.gp,%.eps, $(figgps))
 
 texpdf = $(prj).pdf
 

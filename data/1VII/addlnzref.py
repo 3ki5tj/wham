@@ -59,7 +59,7 @@ def doargs():
   if len(args) > 0:
     fninp = args
   else:
-    fninp = glob.glob("*wham*.out")
+    fninp = glob.glob("*wham*.out") + glob.glob("*mbar*.out")
 
 
 
@@ -106,5 +106,6 @@ def main(fn, fnref):
 if __name__ == "__main__":
   doargs()
   for fn in fninp:
-    main(fn, fnref)
+    if fn != fnref:
+      main(fn, fnref)
 

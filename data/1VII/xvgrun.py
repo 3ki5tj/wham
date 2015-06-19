@@ -146,6 +146,7 @@ def main():
       prog = "xvgwham2"
     if not fnlog: fnlog = "xvg2.log"
     if not fnls: fnls = "ev.ls"
+    hisopt = "--fnhis2"
     fnhis = "hist2.dat"
   else:
     if mbar:
@@ -154,18 +155,19 @@ def main():
       prog = "xvgwham"
     if not fnlog: fnlog = "xvg.log"
     if not fnls: fnls = "e.ls"
+    hisopt = "--fnhis"
     fnhis = "hist.dat"
 
   if mbar:
     strfnhis = ""
-    # modify the the log file name 
+    # modify the the log file name
     arr = os.path.splitext(fnlog)
     fnlog = arr[0] + "_mbar" + arr[1]
   else:
     arr = os.path.splitext(fnlog)
     fnlog = arr[0] + "_wham" + arr[1]
     fnhis = arr[0] + "_" + fnhis
-    strfnhis = "--fnhis=" + fnhis
+    strfnhis = hisopt + "=" + fnhis
 
   arr = os.path.splitext(fnlog)
   fntmlog = arr[0] + "tm" + arr[1]

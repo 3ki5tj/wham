@@ -14,7 +14,7 @@
 static void model_default_lj2(model_t *m)
 {
   model_default(m);
-  m->nn = 108;
+  m->nn = 256;
   m->rho = 0.3;
   m->rcdef = 1e+30;
   m->mcamp = 0.5;
@@ -24,21 +24,22 @@ static void model_default_lj2(model_t *m)
   m->de = 1.0;
   m->emin = -10.0;
   m->emax = -0.0;
-  m->dv = 1.0;
+  m->dv = 2.0;
   m->vmin = 0.0;
-  m->vmax = 20.0;
-  m->nT = 5;
-  m->Tmin = 1.3;
-  m->Tdel = 0.05;
-  m->nP = 6;
+  m->vmax = 25.0;
+  m->nT = 8;
+  m->Tmin = 1.0;
+  m->Tdel = 0.1;
+  m->nP = 3;
   m->Pmin = 0.1;
-  m->Pdel = 0.02;
+  m->Pdel = 0.05;
   m->nstadj = 20000;
   m->nequil = 100000;
-  m->nsteps = 1000000;
+  m->nsteps = 2000000;
   m->simul = SIMUL_MC;
   m->vamp = 0.1;
   m->nstvmov = 10;
+  m->defsetup = 0;
 }
 
 
@@ -200,7 +201,8 @@ hist2_t *lj_domd(model_t *m, int ntp, double *beta, double *bp)
 
   xnew(lj, ntp);
   for ( itp = 0; itp < ntp; itp++ ) {
-    lj[itp] = lj_open(m->nn, m->rho, m->rcdef);
+    double rho = bp[itp] / beta[itp];
+    lj[itp] = lj_open(m->nn, rho, m->rcdef);
   }
 
   /* do simulations */
@@ -272,7 +274,7 @@ hist2_t *lj_domd(model_t *m, int ntp, double *beta, double *bp)
 
 
 
-/* return the density at with pressure being `pres` */
+/* return the density at which pressure is `pres` */
 double refsolve(double rho, double tp, double pres)
 {
   double drho, pref, fref, muref;
@@ -304,28 +306,46 @@ int main(int argc, char **argv)
   hist2_t *hs;
   double *beta, *pres, *bp, *lnz;
   int it, ip, itp, ntp;
+#define NTPDEF 24
+  double tpdef[NTPDEF]   = {1.30, 1.30, 1.30, 1.30, 1.30, 1.30, 1.40, 1.40, 1.40, 1.40, 1.40, 1.40, 1.50, 1.50, 1.50, 1.50, 1.50, 1.50, 1.60, 1.60, 1.60, 1.60, 1.60, 1.60};
+  double presdef[NTPDEF] = {0.08, 0.09, 0.10, 0.11, 0.12, 0.13, 0.09, 0.10, 0.12, 0.15, 0.18, 0.21, 0.10, 0.12, 0.17, 0.22, 0.27, 0.32, 0.11, 0.12, 0.20, 0.28, 0.36, 0.44};
 
   model_default_lj2(m);
   model_doargs(m, argc, argv);
 
-  ntp = m->nT * m->nP;
+  if ( m->defsetup ) {
+    ntp = NTPDEF;
+  } else {
+    ntp = m->nT * m->nP;
+  }
+
   xnew(beta, ntp);
   xnew(pres, ntp);
   xnew(bp, ntp);
   xnew(lnz, ntp);
 
-  /* initialize the systems */
-  itp = 0;
-  for ( it = 0; it < m->nT; it++ ) {
-    double T = m->Tmin + m->Tdel * it;
-    for ( ip = 0; ip < m->nP; ip++ ) {
-      double P = m->Pmin + m->Pdel * ip;
-      beta[itp] = 1./T;
-      pres[itp] = P;
-      bp[itp] = beta[itp] * pres[itp];
-      lnz[itp] = 0;
-      itp++;
+  /* set up the temperatures and pressures */
+  if ( m->defsetup ) {
+    for ( itp = 0; itp < ntp; itp++ ) {
+      beta[itp] = 1/tpdef[itp];
+      pres[itp] = presdef[itp];
     }
+  } else {
+    itp = 0;
+    for ( it = 0; it < m->nT; it++ ) {
+      double T = m->Tmin + m->Tdel * it;
+      for ( ip = 0; ip < m->nP; ip++ ) {
+        double P = m->Pmin + m->Pdel * ip;
+        beta[itp] = 1./T;
+        pres[itp] = P;
+        itp++;
+      }
+    }
+  }
+
+  for ( itp = 0; itp < ntp; itp++ ) {
+    bp[itp] = beta[itp] * pres[itp];
+    lnz[itp] = 0;
   }
 
   if ( m->loadprev ) {

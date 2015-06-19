@@ -89,6 +89,7 @@ typedef struct {
   int simul;
   double vamp;
   int nstvmov;
+  int defsetup;
 #endif /* LJ_MODEL */
 } model_t;
 
@@ -233,6 +234,7 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --md:          do molecular dynamics simulations\n");
   fprintf(stderr, "  --vamp=:       set the Monte Carlo log volume move size, default: %g\n", m->vamp);
   fprintf(stderr, "  --nstvmov=:    set the number of steps for volume moves, default: %d\n", m->nstvmov);
+  fprintf(stderr, "  --defsetup:    use the default setup, default: %d\n", m->defsetup);
 #endif /* LJ_MODEL */
   fprintf(stderr, "  -v:            be verbose, -vv to be more verbose, etc., default %d\n", m->verbose);
   fprintf(stderr, "  -h, --help:    display this message\n");
@@ -385,6 +387,8 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->vamp = atof(q);
       } else if ( strncmpfuzzy(p, "nstvmov", 7) == 0 ) {
         m->nstvmov = atoi(q);
+      } else if ( strcmpfuzzy(p, "defsetup") == 0 ) {
+        m->defsetup = 1;
 #endif /* LJ_MODEL */
       } else if ( strcmpfuzzy(p, "help") == 0 ) {
         model_help(m);
