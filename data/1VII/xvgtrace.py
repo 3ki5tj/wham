@@ -21,6 +21,7 @@ fntr = None
 update_method = " "
 mthreshold = " "
 itmin = "--itmin=100"
+itmax = "--itmax=10000"
 tol = "--tol=1e-8"
 cmdopt = ""
 doev = False
@@ -48,6 +49,7 @@ def usage():
     --hp            use the HP scheme in MDIIS
     --mthreshold=   set the clean up threshold for MDIIS
     --itmin=        set the minimal number of iterations
+    --itmax=        set the maximal number of iterations
     --tol=          set the tolerance of error
     --opt=          set options to be passed to the command line
     --ev, --xvg2    do the two-dimensional case
@@ -66,7 +68,7 @@ def doargs():
         "hvN:r:M:D:l:o:",
         [ "help", "verbose=",
           "nbases=", "dnbases=", "KTH", "kth", "HP", "hp",
-          "mthreshold=", "itmin=", "tol=",
+          "mthreshold=", "itmin=", "itmax=", "tol=",
           "ls=", "trace=",
           "opt=", "ev", "xvg2", "gmx2",
         ] )
@@ -75,7 +77,7 @@ def doargs():
     usage()
 
   global nsamp, radd, nbases, dnbases, update_method
-  global mthreshold, itmin, tol
+  global mthreshold, itmin, itmax, tol
   global fnls, fntr, doev, cmdopt, verbose
 
   for o, a in opts:
@@ -99,6 +101,8 @@ def doargs():
       mthreshold = "--mthreshold=%g" % float(a)
     elif o in ("--itmin",):
       itmin = "--itmin=%d" % int(a)
+    elif o in ("--itmax",):
+      itmax = "--itmax=%d" % int(a)
     elif o in ("--tol",):
       tol = "--tol=%g" % float(a)
     elif o in ("--opt",):
@@ -178,15 +182,15 @@ def main():
   except:
     pass
 
-  cmd0 = "./%s -v --fnhis=%s -r %g %s %s %s %s" % (
-      prog, fnhis, radd, fnls, itmin, tol, cmdopt)
+  cmd0 = "./%s -v --fnhis=%s -r %g %s %s %s %s %s" % (
+      prog, fnhis, radd, fnls, itmin, itmax, tol, cmdopt)
   cmd0 = cmd0.strip()
 
   for i in range(nsamp):
     print "running sample %d/%d..." % (i, nsamp)
 
     # use the direct WHAM
-    ret, out, err = zcom.runcmd(cmd0, capture = True)
+    ret, out, err = zcom.runcmd(cmd, capture = True)
     gettrace(0, err)
 
     for nb in range(dnbases, nbases + 1, dnbases):

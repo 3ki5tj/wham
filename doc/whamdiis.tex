@@ -344,7 +344,8 @@ f_i^\mathrm{(new)}
 \end{equation*}
 %
 This approach, or direct WHAM below,
-can suffer from a slow convergence,
+can suffer from a slow convergence
+(cf. Appendix \ref{sec:convwham}),
 resulting in thousands of iterations\cite{
 bereau2009, kim2011}.
 %
@@ -1236,6 +1237,144 @@ Computer time on the Lonestar supercomputer
 at the Texas Advanced Computing Center
 at the University of Texas at Austin
 is gratefully acknowledged.
+
+
+
+
+\appendix
+
+\section{\label{sec:convwham}
+Convergence of direct WHAM and MBAR}
+
+
+
+Here, we use a simple analytical model
+to study the convergence of direct WHAM and MBAR.
+%
+Consider two temperatures,
+denoted by $\beta_1$ and $\beta_2$
+with distributions $\rho_1(E)$ and $\rho_2(E)$
+normalized as
+%
+\begin{equation}
+\int \rho_i(E) \, dE
+= 1
+\quad
+(i = 1, 2).
+\label{eq:rho_normalize}
+\end{equation}
+%
+We assume that the two distributions
+are symmetric with respect to some $\bar E$.
+%
+For simplicity, we shift the origin of energy
+to $\bar E$ such that $\bar E = 0$.
+%
+Thus,
+\begin{equation}
+\rho_1(E)
+=
+\rho_2(-E).
+\label{eq:rho_symm}
+\end{equation}
+
+
+
+One can readily show that,
+in terms of $\Delta f = f_2 - f_1$,
+Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}
+can be written as
+%
+\begin{align}
+\Delta f
+&=
+-\log \int
+\frac{ \rho_1(E) + \rho_2(E) }
+{ \exp(\Delta \beta \, E) + \exp \Delta f }
+dE
+\notag \\
+&=
+\Delta f
+-
+\log
+  \int
+    \frac{ y + \exp \Delta f }
+         { y + \cosh \Delta f }
+    \rho_1(E) \, dE,
+\label{eq:delf_WHAM}
+\end{align}
+%
+where $y \equiv \cosh(\Delta \beta \, E)$,
+and we have used
+Eqs. \eqref{eq:rho_symm} and
+\eqref{eq:rho_normalize}
+in the second step.
+
+
+
+The solution of Eq. \eqref{eq:delf_WHAM}
+is $\Delta f^* = 0$,
+which is also apparent from the symmetry.
+%
+In direct WHAM or MBAR,
+Eq. \eqref{eq:delf_WHAM}
+is treated as an iterative equation,
+with $\Delta f$
+on the left- and right-hand sides
+being the new and old values,
+respectively.
+%
+For a sufficiently small $\Delta f$,
+we can linearize it as
+%
+\begin{align}
+\Delta f^\mathrm{(new)}
+=
+\left[
+  \int
+    \frac{ y } { 1 + y }
+    \rho_1(E) \, dE
+\right] \,
+\Delta f^\mathrm{(old)}
+\equiv
+\gamma \,
+\Delta f^\mathrm{(old)}.
+\label{eq:delf_lin}
+\end{align}
+%
+We expect that
+$\Delta f$
+decays asymptotically as $\gamma^n$
+with the number of iterations, $n$.
+%
+Since
+\[
+0 < \gamma < \int
+\frac{1 + y}
+{1 + y}
+\, \rho_1(E) \, dE = 1,
+\]
+Eq. \eqref{eq:delf_lin}
+is always convergent,
+and a smaller $\gamma$ means
+a faster convergence.
+%
+However,
+if the distribution
+is dominated by a large $|E|$,
+at which $y \gg 1$,
+%
+then $\gamma$
+can be very close 1.
+%
+This suggests that
+if direct WHAM or MBAR
+is used on a wide temperature,
+hence energy, range,
+we expect a very slow convergence.
+
+
+
 
 
 

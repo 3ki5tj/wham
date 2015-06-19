@@ -59,12 +59,16 @@ we have
 %
 \begin{equation}
 g(E)
-= \frac{ n_k(E) }
-{ N_k \, \exp(-\beta_k E) / Z_k }.
+=
+\frac{ n_k(E) }
+     { d_k(E) },
 \label{eq:gE_single}
 \end{equation}
+where
+$d_k(E) \equiv N_k \exp(-\beta_k E) / Z_k$.
 %
-Taking the harmonic average over $k$
+Taking the average over $k$ with
+weight $d_k(E) / \sum_{j = 1}^K d_j(E)$
 yields Eq. \eqref{eq:gE_WHAM}.
 
 
@@ -82,12 +86,9 @@ we get
      { \sum_{k = 1}^K n_k(E) }
 +
 \frac{ \sum_{k = 1}^K d_k(E) \, \beta_k }
-     { \sum_{k = 1}^K d_k(E) },
+     { \sum_{k = 1}^K d_k(E) }.
 \label{eq:beta0_STWHAM}
 \end{equation}
-%
-where
-$d_k(E) \equiv N_k \exp(-\beta_k E) / Z_k$.
 %
 By Eq. \eqref{eq:gE_single},
 we have

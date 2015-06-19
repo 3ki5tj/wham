@@ -27,8 +27,8 @@ static void model_default_lj2(model_t *m)
   m->dv = 2.0;
   m->vmin = 0.0;
   m->vmax = 25.0;
-  m->nT = 8;
-  m->Tmin = 1.0;
+  m->nT = 6;
+  m->Tmin = 1.2;
   m->Tdel = 0.1;
   m->nP = 3;
   m->Pmin = 0.1;

@@ -43,6 +43,7 @@ def usage():
     -o, --log=      set the output log file
     --kth           use the KTH scheme in MDIIS
     --hp            use the HP scheme in MDIIS
+    --hpl           use the HPL scheme in MDIIS
     --mthreshold=   set the clean up threshold for MDIIS
     --tol=          set the tolerance of error
     --opt=          set options to be passed to the command line
@@ -61,7 +62,7 @@ def doargs():
     opts, args = getopt.gnu_getopt(sys.argv[1:],
         "hvN:M:m:n:o:",
         [ "help", "verbose=",
-          "nbases=", "KTH", "kth", "HP", "hp",
+          "nbases=", "KTH", "kth", "HP", "hp", "HPL", "hpl",
           "mthreshold=", "tol=",
           "nequil=", "nsteps=", "log=",
           "opt=", "ev", "lj2",
@@ -86,6 +87,8 @@ def doargs():
       update_method = "--kth"
     elif o in ("--HP", "--hp"):
       update_method = "--hp"
+    elif o in ("--HPL", "--hpl"):
+      update_method = "--hpl"
     elif o in ("--mthreshold",):
       mthreshold = "--mthreshold=%g" % float(a)
     elif o in ("--tol",):
