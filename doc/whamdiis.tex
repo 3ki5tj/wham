@@ -1,6 +1,5 @@
-%
-\documentclass[reprint,superscriptaddress]{revtex4-1}
-%\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
+%\documentclass[reprint,superscriptaddress]{revtex4-1}
+\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{color}
@@ -21,7 +20,7 @@
 by direct inversion in the iterative subspace}
 
 \begin{abstract}
-It is shown that the convergence of the weighted histogram analysis method for free energy calculation
+The convergence of the weighted histogram analysis method for free energy calculation
 can be improved by using the method of direct inversion in the iterative subspace.
 \end{abstract}
 
@@ -68,7 +67,8 @@ shirts2008}
 as an extension of the Bennett acceptance ratio (BAR) method\cite{
 bennett1976}.
 %
-The statistical efficiency of using data
+The statistical efficiency
+%of using data
 makes WHAM and MBAR popular trajectory analysis tools
 for enhanced-sampling simulations,
 such as umbrella sampling\cite{
@@ -91,7 +91,7 @@ Several remedies were proposed\cite{
 shirts2008, bereau2009, kim2011}.
 %
 For example, one may use the Newton-Raphson method,
-which involves computing the Hessian matrix,
+which involves the Hessian matrix,
 although the approach sometimes can be unstable\cite{
 shirts2008}.
 %
@@ -111,7 +111,7 @@ over the simulated temperatures
 using the histogram heights as the weights.
 %
 This variant, however, gives
-a slightly different estimate of free energy
+a slightly different estimate of the free energy
 from the original WHAM,
 and the extension to multiple-parameter ensembles,
 e.g., the isothermal-isobaric ensemble,
@@ -127,7 +127,7 @@ kovalenko1999, howard2011}.
 Although the method is still iterative,
 we shall see that
 the rate of convergence can often be
-significantly improved.
+significantly improved in difficult cases.
 
 
 
@@ -157,7 +157,7 @@ as
 $\beta_1, \ldots, \beta_K$.
 %
 Suppose we have performed the respective
-canonical-ensemble simulations
+canonical ($NVT$) ensemble simulations
 at the $K$ temperatures,
 we wish to estimate the free energies
 at the temperatures.
@@ -211,9 +211,9 @@ Z_k
 
 
 From Eqs. \eqref{eq:gE_WHAM} and \eqref{eq:Z},
-we find the dimensionless free energy
+we find that the dimensionless free energies
 $f_i \equiv -\log Z_i$
-satisfies
+satisfy
 \begin{align}
 f_i
 &=
@@ -258,7 +258,7 @@ n_j(E)
 \end{equation}
 %
 where,
-$\E$
+$\E(\vx)$
 is the energy function,
 and
 $\sum_{\vx}^{(j)}$
@@ -296,7 +296,7 @@ We briefly mentions a few extensions.
 %
 First,
 for simulations
-on multiple isothermal-isobaric ensembles
+on multiple isothermal-isobaric ($NpT$) ensembles
 with different temperatures and pressures,
 %
 we replace $E$ by $(E, V)$
@@ -371,7 +371,9 @@ whose integral yields $\log g(E)$.
 ST-WHAM, however,
 is more sensitive to the bin size
 and its multidimensional generalization
-is numerially challenging\cite{
+is numerically challenging
+owing to the involvement of
+the derivative, $n'_j(E)$\cite{
 kim2011}.
 
 
@@ -454,7 +456,7 @@ from the vectors.
 To do so, we first find the combination of the residual vectors
 $\vct{\hat R} = \sum_i c_i \, \vct R_i$,
 that minimizes the error
-$\| \vct{\hat R} \|$
+$\left\| \vct{\hat R} \right\|$
 under the constraint
 \begin{equation}
   \sum_i c_i = 1.
@@ -462,13 +464,13 @@ under the constraint
 \end{equation}
 %
 That is,
-we find $c_i$ and the Lagrange multiplier $\lambda$
-from Eq. \eqref{eq:c_normalize} and
+we find $c_i$ from Eq. \eqref{eq:c_normalize} and
 \begin{equation*}
   \sum_j \left( \vct R_i \cdot \vct R_j \right) \, c_j = \lambda,
   %\label{eq:cj_DIIS}
 \end{equation*}
-for all $i$.
+for all $i$,
+with $\lambda$ being the Lagrange multiplier.
 %
 If Eq. \eqref{eq:R_f} is nearly linear
 around the solutions,
@@ -755,7 +757,7 @@ is used to update the basis as follows.
     DIIS seeks the combination
     $\vct {\hat R} = \sum_i c_i \, \vct R_i$
     that minimizes the magnitude
-    $\| \vct{\hat R} \|$
+    $\left\| \vct{\hat R} \right\|$
     under the constraint
     $\sum_i c_i = 1$ [panel (b)].
     %
@@ -782,7 +784,7 @@ is used to update the basis as follows.
 In each iteration of DIIS,
 the basis is updated
 by the new trial vector $\vct f^{(n)}$
-from the above iteration step.
+from the above step.
 %
 Initially,
 the basis contains a single vector.
@@ -811,7 +813,7 @@ we rebuild the basis
 from $\vct f_\mathrm{min}$.
 %
 Here, the error of a vector $\vct f$ is defined as
-$\| \vct R(\vct f) \|$,
+$\left\| \vct R(\vct f) \right\|$,
 and
 $K_r = 10.0$ as recommended\cite{
 kovalenko1999}.
@@ -870,9 +872,90 @@ only if multiple bases are used.
 
 
 
+We tested DIIS WHAM and MBAR on three systems:
+Ising model,
+villin headpiece,
+and
+Lennard-Jones (LJ) fluid
+(see Secs.
+\ref{sec:results_Ising},
+\ref{sec:results_villin},
+and
+\ref{sec:results_LJ},
+respectively,
+for details).
+%
+We tuned the parameters
+such that direct WHAM and MBAR
+would take thousands of iterations
+to finish.
+%
+The main results
+are summarized
+in Fig. \ref{fig:nsnt},
+from which one can see that
+DIIS can speed up WHAM and MBAR
+dramatically in these cases.
+
+
+
+\begin{figure}[h]
+  \makebox[\linewidth][c]{
+    \includegraphics[angle=0, width=1.0\linewidth]{fig/nsnt.pdf}
+  }
+  \caption{
+    \label{fig:nsnt}
+    Number of iterations
+    and run time
+    versus the number of bases, $M$,
+    in DIIS.
+    %
+    Here, the error tolerance
+    $\epsilon$ is $10^{-8}$ for WHAM
+    or $10^{-7}$ for MBAR.
+    %
+    The $M = 0$ points represent direct WHAM.
+    %
+    The run times are inversely scaled
+    by a factor $\tau$
+    to better align with the numbers of iterations.
+    %
+    The four test cases are
+    Ising model in the $NVT$ ensemble with WHAM,
+    villin headpiece in the $NVT$ ensemble with WHAM and MBAR,
+    and
+    LJ fluid in the $NpT$ ensemble with WHAM.
+    %
+    The scaling factors $\tau$ are
+    $0.98$, $0.98$, $125$, $159$,
+    respectively.
+    %
+    For the Ising model and LJ fluid,
+    the results were averaged
+    over many independent samples.
+    %
+    For the villin headpiece,
+    roughly 10\% of the trajectory frames
+    were randomly selected
+    to build a sample each time.
+    %
+    The results were then averaged.
+    %
+    The lines are to guide the eyes.
+  }
+\end{figure}
+
+
+
+
+
+\subsection{\label{sec:results_setup}
+Set-up}
+
+
 
 In testing direct and DIIS WHAM,
-the initial free energy was obtained from
+the initial free energies were obtained from
 the single histogram method:
 %
 \begin{equation*}
@@ -887,13 +970,14 @@ f_i - f_{i-1}
 \end{equation*}
 %
 Iterations are continued
-until all $|R_i|$ are reduced under a certain tolerance level.
+until all $|R_i|$ are reduced
+below a certain tolerance level $\epsilon$.
 
 
 
 For ST-WHAM,
 the $n_j'(E)$ in Eq. \eqref{eq:beta_STWHAM}
-is estimated from
+was estimated from
 \begin{equation}
 n_j'(E)
 =
@@ -908,7 +992,8 @@ of the energy histogram.
 
 
 
-\subsection{Ising model}
+\subsection{\label{sec:results_Ising}
+Ising model}
 
 
 
@@ -923,20 +1008,20 @@ swendsen1986, *geyer1991, *hukushima1996, *hansmann1997,
 Monte Carlo (MC)
 for
 eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$,
-with $10^7$ MC steps on each temperature.
+with $10^7$ single-site MC steps on each temperature.
 
 
 
 Figure \ref{fig:is2ref} shows that
-DIIS WHAM and direct WHAM produced the same
-dimensionless free energies, which
-agreed well with the exact result\cite{
+DIIS and direct WHAMs produced identical
+dimensionless free energies, which also
+agreed well with the exact results\cite{
 ferdinand1969}.
 %
 On the other hand,
-there is slight difference between
+there was slight difference between
 the values from ST-WHAM and WHAM,
-which is likely due to
+which was likely due to
 the accumulative difference
 in the two statistical temperatures.
 
@@ -948,7 +1033,7 @@ in the two statistical temperatures.
   }
   \caption{
     \label{fig:is2ref}
-    (a) Dimensionless free energy and
+    (a) Dimensionless free energies and
     (b) the logarithm of the density of states
     for the $N = 64\times64$ two-dimensional Ising model.
     %
@@ -957,7 +1042,7 @@ in the two statistical temperatures.
     %
     The bin size $\Delta E = 4$.
     %
-    The reference values of the free energy and
+    The reference values of the free energies and
     the density of states were obtained
     from Refs. \cite{ferdinand1969} and \cite{beale1996},
     respectively.
@@ -976,12 +1061,13 @@ Optimally, DIIS WHAM can
 deliver a speedup of two orders of magnitude.
 %
 As shown in Fig. \ref{fig:nsnt},
-the real run time was roughly
-proportional to the number of iterations.
-The overhead of DIIS was negligible,
-in comparison to the expense of computing
-the right-hand side of
-Eq. \eqref{eq:f_WHAM}.
+the real run time roughly matched
+the number of iterations,
+suggesting negligible overhead of DIIS.
+%
+This is unsurprising,
+for it is more expensive to compute
+the right-hand side of Eq. \eqref{eq:f_WHAM}.
 
 
 
@@ -1006,70 +1092,8 @@ Eq. \eqref{eq:f_WHAM}.
 
 
 
-
-%The second system is the 108-particle Lennard-Jones system.
-%%
-%Molecular dynamics (MD)
-%was used with a time step of $0.002$.
-%The velocity rescaling thermostat\cite{bussi2007}
-%was used with a time step of $0.02$.
-%%
-%The potential was cutoff at $r = 2.5$.
-%%
-%We simulated the system under
-%the canonical ($NVT$), and isothermal-isobaric ($NPT$) ensembles,
-%both using parallel tempering.
-%%
-%For the $NVT$ ensemble,
-%we used ten temperatures: $T = 0.7, 0.8, \dots, 1.6$,
-%and fixed the density at $\rho = 0.3$.
-%%
-%For the $NpT$ ensemble,
-%we simulated the system
-%under $N_T \times N_p = 5\times 10$ conditions:
-%the temperatures were $T = 1.0, 1.1, \dots, 1.4$,
-%the pressures were $p = 0.2, 0.4, \dots, 1.8$.
-%%
-%The position Langevin barostat based on $\log V$
-%was used with a step size of $10^{-5}$.
-
-
-
-\begin{figure}[h]
-  \makebox[\linewidth][c]{
-    \includegraphics[angle=0, width=1.0\linewidth]{fig/nsnt.pdf}
-  }
-  \caption{
-    \label{fig:nsnt}
-    Number of iterations (empty symbols)
-    and
-    the real run time (filled symbols)
-    to achieve $|R_i| < 10^{-8}$
-    versus the number of bases, $M$,
-    in DIIS WHAM.
-    %
-    The $M = 0$ points represent direct WHAM.
-    %
-    For the Ising model,
-    the results have been averaged over many independent samples.
-    %
-    For the villin headpiece,
-    roughly 10\% of the trajectory frames
-    were randomly selected
-    to build a sample each time.
-    %
-    The results are then averaged.
-    %
-    The bin size $\Delta E = 1.0$.
-    %
-    The lines are to guide the eyes.
-  }
-\end{figure}
-
-
-
-
-\subsection{Villin headpiece}
+\subsection{\label{sec:results_villin}
+Villin headpiece}
 
 
 
@@ -1108,8 +1132,9 @@ We simulated the system under 12 temperatures
 $T$ = 300 K, 310 K, \dots, 410 K,
 each for about {\color{red} 110} ns.
 %
+The histogram bin size was $1.0$.
+%
 As shown in Fig. \ref{fig:nsnt},
-despite the few number of temperature,
 direct WHAM suffers from a slow convergence,
 while the DIIS version again
 delivered a speedup of two orders of magnitude,
@@ -1120,14 +1145,10 @@ in the number of iterations or real run time.
 The bin size dependency of WHAM and ST-WHAM
 is compared in Fig. \ref{fig:whamcmp}.
 %
-WHAM was stable for $\Delta \le 100.0$
-and it lost accuracy
-only with a very large bin size $\Delta E = 1000.0$.
+WHAM was stable for $\Delta E \le 100.0$.
 %
-ST-WHAM, however,
-produced accurate results for $\Delta E \approx 100.0$,
-and its errors increased dramatically
-with decreasing bin size.
+The error of ST-WHAM, however,
+increased dramatically with decreasing bin size.
 %
 The bin-size sensitivity was partially due to
 the relatively small sample size.
@@ -1138,7 +1159,7 @@ and the trapezoidal rule for integration.
 %
 Better numerical differentiation\cite{press}
 and/or integration schemes\cite{
-kim2011} may also help improve the ST-WHAM results.
+kim2011} may also help improve ST-WHAM.
 
 
 
@@ -1166,54 +1187,59 @@ kim2011} may also help improve the ST-WHAM results.
 
 
 
+\subsection{\label{sec:results_LJ}
+LJ fluid}
+
+
+We tested the two-dimensional WHAM
+on the 256-particle LJ fluid.
 %
-% In the NPT case,
-% the influence of pressure is minimal
-% so we do not need this example
+The potential was cutoff at half box size.
 %
-%In the $NpT$ case,
-%the temperatures were the same,
-%and the pressures were
-%1.0 bar, 1.1 bar, \dots, 2.1 bar,
-%respectively.
+We simulated the system in isothermal-isobaric ($NpT$) ensembles,
+both using parallel tempering MC.
+%
+We simulated the system
+under $N_T \times N_p = 6\times 3$ conditions:
+the temperatures were $T = 1.2, 1.3, \dots, 1.7$,
+the pressures were $p = 0.1, 0.15, 0.2$.
+%
+The bin sizes for energy and volume
+are $1.0$ and $2.0$, respectively.
+
+
+As shown in Fig. \ref{fig:nsnt},
+DIIS WHAM also effectively
+reduced the run time significantly.
 
 
 
 
 
-\section{Discussions}
+\section{Conclusions}
 
 
 
 We showed that the DIIS technique
-can often significantly reduce
-the number of iterations
-for converging the free energy methods
-WHAM and MBAR.
+can often significantly accelerate
+the free energy methods WHAM and MBAR
+in difficult cases.
 %
 The technique achieves a fast convergence
 by an optimal combination of the approximate
-solutions obtained during the iteration.
+solutions obtained during iteration.
 %
-It is easy to implement
+The method is stable and easy to implement
 and has only a small run time overhead.
 %
-The method,
-being still iterative,
-is slower than
-the non-iterative ST-WHAM.
-%
-However, DIIS WHAM
-is more stable for small bin size
-and/or small data sets,
-making it more suitable
-for analyzing trajectories
-of molecular simulations.
-%
-Besides, the DIIS technique
-is readily extensible to
-multidimensional cases
-and MBAR.
+However, the method is still iterative,
+and thus,
+for one-dimensional problems
+with ample data,
+one may also consider
+the non-iterative alternative, ST-WHAM,
+given that the bin size of histograms
+are carefully chosen.
 
 
 
@@ -1265,10 +1291,9 @@ normalized as
 \end{equation}
 %
 We assume that the two distributions
-are symmetric with respect to some $\bar E$.
-%
-For simplicity, we shift the origin of energy
-to $\bar E$ such that $\bar E = 0$.
+are symmetric with respect to some $\bar E$,
+which is set to zero
+by a shift of the origin of energy.
 %
 Thus,
 \begin{equation}
@@ -1342,9 +1367,9 @@ we can linearize it as
 \label{eq:delf_lin}
 \end{align}
 %
-We expect that
+We expect
 $\Delta f$
-decays asymptotically as $\gamma^n$
+to decay asymptotically as $\gamma^n$
 with the number of iterations, $n$.
 %
 Since
@@ -1368,12 +1393,9 @@ then $\gamma$
 can be very close 1.
 %
 This suggests that
-if direct WHAM or MBAR
-is used on a wide temperature,
-hence energy, range,
-we expect a very slow convergence.
-
-
+a wide temperature, hence energy, range
+can lead to a slow convergence
+for direct WHAM or MBAR.
 
 
 

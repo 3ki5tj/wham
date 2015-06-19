@@ -159,7 +159,7 @@ hist2_t *lj_domc(model_t *m, int ntp, double *beta, double *bp)
     }
   }
 
-  hist2_save(hs, m->fnhis2, HIST2_ADDAHALF);
+  hist2_save(hs, m->fnhis2, HIST2_ADDAHALF | HIST2_NOZEROES | HIST2_VERBOSE);
   fprintf(stderr, "simulation ended, doing WHAM, reacc = %g%%\n",
       100*reacc/retot);
 
@@ -261,7 +261,7 @@ hist2_t *lj_domd(model_t *m, int ntp, double *beta, double *bp)
     }
   }
 
-  hist2_save(hs, m->fnhis2, HIST2_ADDAHALF);
+  hist2_save(hs, m->fnhis2, HIST2_ADDAHALF | HIST2_NOZEROES | HIST2_VERBOSE);
   fprintf(stderr, "simulation ended, doing WHAM, reacc = %g%%\n",
       100*reacc/retot);
 

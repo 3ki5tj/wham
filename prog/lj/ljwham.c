@@ -123,7 +123,7 @@ static hist_t *lj_domc(model_t *m, const double *beta)
     }
   }
 
-  hist_save(hs, m->fnhis, HIST_ADDAHALF);
+  hist_save(hs, m->fnhis, HIST_ADDAHALF | HIST_NOZEROES | HIST_VERBOSE);
   fprintf(stderr, "simulation ended, doing WHAM\n");
 
   for ( iT = 0; iT < m->nT; iT++ ) {
@@ -206,7 +206,7 @@ static hist_t *lj_domd(model_t *m, const double *beta)
     }
   }
 
-  hist_save(hs, m->fnhis, HIST_ADDAHALF);
+  hist_save(hs, m->fnhis, HIST_ADDAHALF | HIST_NOZEROES | HIST_VERBOSE);
   fprintf(stderr, "simulation ended, doing WHAM\n");
 
   for ( iT = 0; iT < m->nT; iT++ ) {

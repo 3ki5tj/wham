@@ -80,7 +80,7 @@ static hist_t *is2_simul(model_t *m, double *beta)
     }
   }
 
-  hist_save(hs, m->fnhis, HIST_ADDAHALF);
+  hist_save(hs, m->fnhis, HIST_ADDAHALF | HIST_NOZEROES | HIST_VERBOSE);
   fprintf(stderr, "simulation ended in %d steps, doing WHAM\n", m->nsteps);
 
   for ( iT = 0; iT < m->nT; iT++ ) {
