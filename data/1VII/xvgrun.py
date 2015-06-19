@@ -137,7 +137,11 @@ def getnstepstime(err):
 def main():
   global mbar, radd, cmdopt, fnls, fnlog
 
-  zcom.runcmd("make -C ../../prog/gmx")
+  progdir = "../../prog"
+  if not os.path.isdir(progdir):
+    progdir = "../" + progdir
+
+  zcom.runcmd("make -C %s/gmx" % progdir)
 
   if doev:
     if mbar:
@@ -173,7 +177,7 @@ def main():
   fntmlog = arr[0] + "tm" + arr[1]
 
   try:
-    shutil.copy("../../prog/gmx/%s" % prog, "./%s" % prog)
+    shutil.copy("%s/gmx/%s" % (progdir, prog), "./%s" % prog)
   except:
     pass
 

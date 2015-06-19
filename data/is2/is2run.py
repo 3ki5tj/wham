@@ -14,8 +14,8 @@ import zcom
 
 nsamp = 10000
 nbases = 20
-nequil = 100000
-nsteps = 10000000
+nequil = " "
+nsteps = " "
 fnlog = "is2.log"
 update_method = " "
 mthreshold = " "
@@ -93,9 +93,9 @@ def doargs():
     elif o in ("--opt",):
       cmdopt = a
     elif o in ("-m", "--nequil"):
-      nequil = int(a)
+      nequil = "--nequil=%d" % int(a)
     elif o in ("-n", "--nsteps"):
-      nsteps = int(a)
+      nsteps = "--nsteps=%d" % int(a)
     elif o in ("-o", "--log="):
       fnlog = a
     elif o in ("-h", "--help"):
@@ -131,14 +131,18 @@ def main():
   fntmlog = arr[0] + "tm" + arr[1]
   fnhis = arr[0] + "_hist.dat"
 
-  zcom.runcmd("make -C ../../prog/is2")
+  progdir = "../../prog"
+  if not os.path.isdir(progdir):
+    progdir = "../" + progdir
+
+  zcom.runcmd("make -C %s/is2" % progdir)
 
   prog = "is2wham"
 
-  shutil.copy("../../prog/is2/%s" % prog, "./%s" % prog)
+  shutil.copy("%s/is2/%s" % (progdir, prog), "./%s" % prog)
 
-  cmd0 = "./%s --re --nequil=%d --nsteps=%d --fnhis=%s %s %s" % (
-      prog, nequil, nsteps, fnhis, tol, cmdopt)
+  cmd0 = "./%s --fnhis=%s %s %s" % (
+      prog, fnhis, tol, cmdopt)
   cmd0 = cmd0.strip()
 
   ns = [0]*(nbases + 1)
@@ -147,7 +151,8 @@ def main():
     print "running sample %d/%d..." % (i, nsamp)
 
     # use the direct WHAM
-    ret, out, err = zcom.runcmd(cmd0, capture = True)
+    cmd = "%s --re %s %s" % (cmd0, nequil, nsteps)
+    ret, out, err = zcom.runcmd(cmd.strip(), capture = True)
     ns[0], tm[0] = getnstepstime(err)
 
     for nb in range(1, nbases + 1):

@@ -20,7 +20,7 @@ static void model_default_is2(model_t *m)
 int main(int argc, char **argv)
 {
   model_t m[1];
-  double T, lnz, lnz0;
+  double T, lnz, lnz0 = 0;
   int iT;
 
   model_default_is2(m);

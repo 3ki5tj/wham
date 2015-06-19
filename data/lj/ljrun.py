@@ -132,7 +132,11 @@ def getnstepstime(err):
 def main():
   global cmdopt, fnlog
 
-  zcom.runcmd("make -C ../../prog/lj")
+  progdir = "../../prog"
+  if not os.path.isdir(progdir):
+    progdir = "../" + progdir
+
+  zcom.runcmd("make -C %s/lj" % progdir)
 
   if doev:
     prog = "ljwham2"
@@ -150,7 +154,7 @@ def main():
   fnhis = arr[0] + "_" + fnhis
 
   try:
-    shutil.copy("../../prog/lj/%s" % prog, "./%s" % prog)
+    shutil.copy("%s/lj/%s" % (progdir, prog), "./%s" % prog)
   except:
     pass
 

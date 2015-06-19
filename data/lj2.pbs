@@ -1,0 +1,70 @@
+#!/bin/bash
+#$ -V                           # Inherit the submission environment
+#$ -cwd                         # Start job in submission directory
+#$ -N lj2                       # Job Name
+#$ -j y                         # Combine stderr and stdout
+#$ -o $JOB_NAME.o$JOB_ID        # Name of the output file (eg. myMPI.oJobID)
+#$ -pe 12way 12                 # Requests 12 tasks/node, 12 cores total
+#$ -q normal                    # Queue name normal
+#$ -l h_rt=24:00:00             # Run time (hh:mm:ss) - 24.0 hours
+#$ -A Proteins-and-DNA-sol      # Account
+
+
+
+cd     lj/runevhp1
+python ljrun.py --ev --hp -o lj2hp.log &
+cd ../..
+
+cd     lj/runevhp2
+python ljrun.py --ev --hp -o lj2hp.log &
+cd ../..
+
+cd     lj/runevhp3
+python ljrun.py --ev --hp -o lj2hp.log &
+cd ../..
+
+cd     lj/runevhp4
+python ljrun.py --ev --hp -o lj2hp.log &
+cd ../..
+
+
+
+cd     lj/runevhpl1
+python ljrun.py --ev --hpl -o lj2hpl.log &
+cd ../..
+
+cd     lj/runevhpl2
+python ljrun.py --ev --hpl -o lj2hpl.log &
+cd ../..
+
+cd     lj/runevhpl3
+python ljrun.py --ev --hpl -o lj2hpl.log &
+cd ../..
+
+cd     lj/runevhpl4
+python ljrun.py --ev --hpl -o lj2hpl.log &
+cd ../..
+
+
+
+cd     lj/runevkth1
+python ljrun.py --ev --kth -o lj2kth.log &
+cd ../..
+
+cd     lj/runevkth2
+python ljrun.py --ev --kth -o lj2kth.log &
+cd ../..
+
+cd     lj/runevkth3
+python ljrun.py --ev --kth -o lj2kth.log &
+cd ../..
+
+cd     lj/runevkth4
+python ljrun.py --ev --kth -o lj2kth.log &
+cd ../..
+
+
+
+wait
+
+

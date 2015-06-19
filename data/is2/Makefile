@@ -1,0 +1,2 @@
+lonestar:
+	make -C .. lonestar

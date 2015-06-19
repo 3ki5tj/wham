@@ -20,7 +20,7 @@ fnls = None
 fntr = None
 update_method = " "
 mthreshold = " "
-itmin = "--itmin=100"
+itmin = "--itmin=200"
 itmax = "--itmax=10000"
 tol = "--tol=1e-8"
 cmdopt = ""
@@ -161,7 +161,10 @@ def gettrace(nb, err):
 def main():
   global radd, cmdopt, fnls, fntr
 
-  zcom.runcmd("make -C ../../prog/gmx")
+  progdir = "../../prog"
+  if not os.path.isdir(progdir):
+    progdir = "../" + progdir
+  zcom.runcmd("make -C %s/gmx" % progdir)
 
   if doev:
     prog = "xvgwham2"
@@ -178,7 +181,7 @@ def main():
   fnhis = arr[0] + "_tr_" + fnhis
 
   try:
-    shutil.copy("../../prog/gmx/%s" % prog, "./%s" % prog)
+    shutil.copy("%s/gmx/%s" % (progdir, prog), "./%s" % prog)
   except:
     pass
 

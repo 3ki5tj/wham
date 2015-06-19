@@ -53,13 +53,13 @@ set style line 15 lw 2.0 lt 1 lc rgb color15 pt 13  ps 2.0
 
 plot [0:20][] \
   "../../data/lj/lj2tmwham.dat"   u 1:(($1 > -1) ? ($2/159) : 1/0) axes x1y2 w lp ls 14 t "LJ, {/Times-Italic NpT}, WHAM, {/Times-Italic t}_{/=16 rel}", \
-  "../../data/1VII/xvgtmmbar.dat" u 1:(($1 > -1) ? ($2/125) : 1/0) axes x1y2 w lp ls 13 t "Villin, MBAR, {/Times-Italic t}_{/=16 rel}", \
-  "../../data/1VII/xvgtmwham.dat" u 1:(($1 > -1) ? ($2/0.98) : 1/0) axes x1y2 w lp ls 12 t "Villin, WHAM, {/Times-Italic t}_{/=16 rel}", \
-  "../../data/is2/is2tmwham.dat"  u 1:(($1 > -1) ? ($2/0.98) : 1/0) axes x1y2 w lp ls 11 t "Ising, WHAM, {/Times-Italic t}_{/=16 rel}", \
+  "../../data/1VII/xvgtmmbar.dat" u 1:(($1 > -1) ? ($2/125) : 1/0) axes x1y2 w lp ls 13 t "Villin, {/Times-Italic NVT}, MBAR, {/Times-Italic t}_{/=16 rel}", \
+  "../../data/1VII/xvgtmwham.dat" u 1:(($1 > -1) ? ($2/0.98) : 1/0) axes x1y2 w lp ls 12 t "Villin, {/Times-Italic NVT}, WHAM, {/Times-Italic t}_{/=16 rel}", \
+  "../../data/is2/is2tmwham.dat"  u 1:(($1 > -1) ? ($2/0.98) : 1/0) axes x1y2 w lp ls 11 t "Ising, {/Times-Italic NVT}, WHAM, {/Times-Italic t}_{/=16 rel}", \
   "../../data/lj/lj2wham.dat"     u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 4 t "LJ, {/Times-Italic NpT}, WHAM, {/Times-Italic N}@_{/=16 iter}", \
-  "../../data/1VII/xvgmbar.dat"   u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 3 t "Villin, MBAR, {/Times-Italic N}@_{/=16 iter}", \
-  "../../data/1VII/xvgwham.dat"   u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 2 t "Villin, WHAM, {/Times-Italic N}@_{/=16 iter}", \
-  "../../data/is2/is2wham.dat"    u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 1 t "Ising, WHAM, {/Times-Italic N}@_{/=16 iter}", \
+  "../../data/1VII/xvgmbar.dat"   u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 3 t "Villin, {/Times-Italic NVT}, MBAR, {/Times-Italic N}@_{/=16 iter}", \
+  "../../data/1VII/xvgwham.dat"   u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 2 t "Villin, {/Times-Italic NVT}, WHAM, {/Times-Italic N}@_{/=16 iter}", \
+  "../../data/is2/is2wham.dat"    u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 1 t "Ising, {/Times-Italic NVT}, WHAM, {/Times-Italic N}@_{/=16 iter}", \
 
 
 

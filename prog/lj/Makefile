@@ -8,15 +8,12 @@ all: $(progs)
 $(progs): % : %.c $(deps)
 	gcc -Wall -Wextra -O3 $< -lm -o $@
 
-remote = cz1@129.109.88.204
-remoteBossman = $(remote):/Bossman/cz1/mu
+Bossman:
+	make -C .. Bossman
 
-Bossman: clean
-	rsync -avLz *.[ch] *.py Makefile $(remoteBossman)/prog/ie/
+lonestar:
+	make -C .. lonestar
 
 clean:
-	find . -name "*~" | xargs rm -f
-	rm -rf bin obj a.out *.dat $(progs) \
-		*.obj *.exe
-	rstrip.py -Rlv
+	make -C .. clean
 

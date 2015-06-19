@@ -44,7 +44,7 @@ static void model_default_lj2(model_t *m)
 
 
 
-hist2_t *lj_domc(model_t *m, int ntp, double *beta, double *bp)
+static hist2_t *lj_domc(model_t *m, int ntp, double *beta, double *bp)
 {
   double emin, emax, vmin, vmax;
   int istep, itp, jtp, acc;
@@ -178,7 +178,7 @@ hist2_t *lj_domc(model_t *m, int ntp, double *beta, double *bp)
 
 
 
-hist2_t *lj_domd(model_t *m, int ntp, double *beta, double *bp)
+static hist2_t *lj_domd(model_t *m, int ntp, double *beta, double *bp)
 {
   double emin, emax, vmin, vmax;
   int istep, itp, jtp, acc;
@@ -275,7 +275,7 @@ hist2_t *lj_domd(model_t *m, int ntp, double *beta, double *bp)
 
 
 /* return the density at which pressure is `pres` */
-double refsolve(double rho, double tp, double pres)
+static double refsolve(double rho, double tp, double pres)
 {
   double drho, pref, fref, muref;
   double rhol = 0, rhoh = DBL_MAX;
@@ -377,7 +377,7 @@ int main(int argc, char **argv)
 
     for ( itp = 0; itp < ntp; itp++ ) {
       double tp = 1/beta[itp], rho;
-      double tot, eav, vav, see, sev, svv;
+      double tot, eav, vav, see, sev, svv, sige, sigv;
       double eref, pref, fref, muref, lnzref;
 
       eav = hist2_getave(hs, itp, &tot, &vav, &see, &sev, &svv);
@@ -388,11 +388,13 @@ int main(int argc, char **argv)
       //printf("tp %g, beta %g, bp %g, %g, -bfref %g\n", tp, beta[itp], beta[itp]*pres[itp], beta[itp]*pref, -beta[itp]*fref*m->nn);
       lnzref = -m->nn * fref / tp;
       if ( itp == 0 ) lnzref0 = lnzref;
+      sige = sqrt(see);
+      sigv = sqrt(svv);
       printf("%3d %10.7f %10.7f %14.7f %8.0f "
           "%15.7f %14.7f %15.7f %14.7f %15.7f | "
           "%10.3f %10.3f %10.3f\n",
           itp, tp, pres[itp], lnz[itp], tot,
-          eav, sqrt(see), vav, sqrt(svv), sev,
+          eav, sige, vav, sigv, sev,
           lnzref - lnzref0, eref * m->nn, m->nn / rho);
     }
   }

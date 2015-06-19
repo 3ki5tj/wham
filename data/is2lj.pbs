@@ -1,0 +1,69 @@
+#!/bin/bash
+#$ -V                           # Inherit the submission environment
+#$ -cwd                         # Start job in submission directory
+#$ -N is2lj                     # Job Name
+#$ -j y                         # Combine stderr and stdout
+#$ -o $JOB_NAME.o$JOB_ID        # Name of the output file (eg. myMPI.oJobID)
+#$ -pe 12way 12                 # Requests 12 tasks/node, 12 cores total
+#$ -q normal                    # Queue name normal
+#$ -l h_rt=24:00:00             # Run time (hh:mm:ss) - 24.0 hours
+#$ -A Proteins-and-DNA-sol      # Account
+
+
+
+cd     is2/run
+python is2run.py &
+cd ../..
+
+cd     is2/runhp
+python is2run.py  --hp  -o is2hp.log  &
+cd ../..
+
+cd     is2/runhpl
+python is2run.py --hpl -o is2hpl.log &
+cd ../..
+
+cd     is2/runkth
+python is2run.py --kth -o is2kth.log &
+cd ../..
+
+
+
+cd     is2/trace
+python is2trace.py &
+cd ../..
+
+cd     is2/tracehp
+python is2trace.py --hp -o is2hp.tr &
+cd ../..
+
+cd     is2/tracehpl
+python is2trace.py --hpl -o is2hpl.tr &
+cd ../..
+
+cd     is2/tracekth
+python is2trace.py --kth -o is2kth.tr &
+cd ../..
+
+
+
+cd     lj/runev1
+python ljrun.py --ev &
+cd ../..
+
+cd     lj/runev2
+python ljrun.py --ev &
+cd ../..
+
+cd     lj/runev3
+python ljrun.py --ev &
+cd ../..
+
+cd     lj/runev4
+python ljrun.py --ev &
+cd ../..
+
+
+
+wait
+

@@ -15,12 +15,12 @@ import zcom
 nsamp = 10000
 nbases = 20
 dnbases = 5
-nequil = 5000
-nsteps = 500000
+nequil = " "
+nsteps = " "
 fntr = None
 update_method = " "
 mthreshold = " "
-itmin = "--itmin=100"
+itmin = "--itmin=200"
 itmax = "--itmax=1000"
 tol = "--tol=1e-10"
 cmdopt = ""
@@ -109,9 +109,9 @@ def doargs():
     elif o in ("--opt",):
       cmdopt = a
     elif o in ("-m", "--nequil"):
-      nequil = int(a)
+      nequil = "--nequil=%d" % int(a)
     elif o in ("-n", "--nsteps"):
-      nsteps = int(a)
+      nsteps = "--nsteps=%d" % int(a)
     elif o in ("-o", "--trace="):
       fntr = a
     elif o in ("--ev", "--lj2"):
@@ -164,7 +164,11 @@ def gettrace(nb, err):
 def main():
   global cmdopt, fntr
 
-  zcom.runcmd("make -C ../../prog/lj")
+  progdir = "../../prog"
+  if not os.path.isdir(progdir):
+    progdir = "../" + progdir
+
+  zcom.runcmd("make -C %s/lj" % progdir)
 
   if doev:
     prog = "ljwham2"
@@ -179,7 +183,7 @@ def main():
   fnhis = arr[0] + "_tr_" + fnhis
 
   try:
-    shutil.copy("../../prog/lj/%s" % prog, "./%s" % prog)
+    shutil.copy("%s/lj/%s" % (progdir, prog), "./%s" % prog)
   except:
     pass
 
@@ -191,7 +195,7 @@ def main():
     print "running sample %d/%d..." % (i, nsamp)
 
     # use the direct WHAM
-    cmd = "%s --re --nequil=%d --nsteps=%d" % (cmd0, nequil, nsteps)
+    cmd = "%s --re %s %s" % (cmd0, nequil, nsteps)
     ret, out, err = zcom.runcmd(cmd.strip(), capture = True)
     gettrace(0, err)
 

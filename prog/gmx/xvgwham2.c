@@ -127,12 +127,14 @@ int main(int argc, char **argv)
 
   if ( m->verbose ) {
     for ( i = 0; i < hs->rows; i++ ) {
-      double tot, eav, vav, see, sev, svv;
+      double tot, eav, vav, see, sev, svv, sige, sigv;
       eav = hist2_getave(hs, i, &tot, &vav, &see, &sev, &svv);
+      sige = sqrt(see);
+      sigv = sqrt(svv);
       printf("%3d %10.7f %10.7f %14.7f %8.0f "
           "%15.7f %14.7f %15.7f %14.7f %15.7f\n",
           i, beta[i], bpres[i]/beta[i], lnz[i], tot,
-          eav, sqrt(see), vav, sqrt(svv), sev);
+          eav, sige, vav, sigv, sev);
     }
   }
 
