@@ -99,7 +99,7 @@ An ingenious non-iterative alternative is
 the statistical-temperature WHAM (ST-WHAM)\cite{
 kim2011},
 which can also be considered as a refinement of
-the umbrella integration method\cite{
+the umbrella integration method (UIM)\cite{
 kastner2005}.
 %
 Here,
@@ -289,10 +289,16 @@ where,
 $q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$.
 %the denominator has been moved into the sum
 %as it now depends on the configuration, $\vx$.
+%
+Note that both Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR}
+are invariant under $f_i \rightarrow f_i + c$
+for all $i$ and an arbitrary $c$.
+%
+Thus, $f_i$ are determined up to a constant shift.
 
 
 
-We briefly mentions a few extensions.
+We briefly mention a few extensions.
 %
 First,
 for simulations
@@ -375,6 +381,12 @@ is numerically challenging
 owing to the involvement of
 the derivative, $n'_j(E)$\cite{
 kim2011}.
+%
+If one further approximates
+the distribution $n'_j(E)$ by a Gaussian,
+we recover UIM\cite{
+kastner2005}.
+
 
 
 
@@ -872,6 +884,7 @@ only if multiple bases are used.
 
 
 
+
 We tested DIIS WHAM and MBAR on three systems:
 Ising model,
 villin headpiece,
@@ -951,6 +964,15 @@ dramatically in these cases.
 
 \subsection{\label{sec:results_setup}
 Set-up}
+
+
+
+For simplicity,
+we assumed equal autocorrelation times
+from different temperatures (and pressures).
+%
+The approximation should not greatly affect
+the general performance of the methods.
 
 
 
@@ -1053,7 +1075,7 @@ in the two statistical temperatures.
 
 
 Figure \ref{fig:is2trace}
-shows a more rapid reduction of error
+shows a faster exponential decay of error
 in DIIS WHAM
 than in direct WHAM.
 %
@@ -1066,7 +1088,7 @@ the number of iterations,
 suggesting negligible overhead of DIIS.
 %
 This is unsurprising,
-for it is more expensive to compute
+for it is often much more expensive to compute
 the right-hand side of Eq. \eqref{eq:f_WHAM}.
 
 
@@ -1082,6 +1104,7 @@ the right-hand side of Eq. \eqref{eq:f_WHAM}.
     \label{fig:is2trace}
     Convergence error, $\max_i \{ |R_i| \}$,
     versus the number of iterations
+    in direct and DIIS WHAMs
     for the $64\times64$ two-dimensional Ising model.
     %
     Results were geometrically averaged over independent samples.
@@ -1089,6 +1112,8 @@ the right-hand side of Eq. \eqref{eq:f_WHAM}.
     The lines are to guide the eyes.
   }
 \end{figure}
+
+
 
 
 
@@ -1157,9 +1182,16 @@ Note also that
 we used Eq. \eqref{eq:dn} for differentiation
 and the trapezoidal rule for integration.
 %
-Better numerical differentiation\cite{press}
+Better handling of missing data,
+numerical differentiation
 and/or integration schemes\cite{
 kim2011} may also help improve ST-WHAM.
+%
+With a sufficiently large bin size,
+ST-WHAM and UIM produced similar and reasonable results.
+%
+The latter is, albeit more approximate,
+insensitive to the bin size, and hence more stable.
 
 
 
@@ -1169,10 +1201,12 @@ kim2011} may also help improve ST-WHAM.
   }
   \caption{
     \label{fig:whamcmp}
-    Dimensionless free energies
-    from WHAM and ST-WHAM
+    Dimensionless free energies, $f_i$,
+    from WHAM, ST-WHAM and UIM
     for the villin headpiece
     with different bin sizes, $\Delta E$.
+    %
+    $f_i$ at $T = 300$ K is fixed at zero.
     %
     The results of MBAR, which is
     the zero bin-size limit of WHAM,
@@ -1235,11 +1269,13 @@ and has only a small run time overhead.
 However, the method is still iterative,
 and thus,
 for one-dimensional problems
-with ample data,
-one may also consider
-the non-iterative alternative, ST-WHAM,
-given that the bin size of histograms
-are carefully chosen.
+one may also use
+the non-iterative ST-WHAM
+given sufficient data
+and a carefully-chosen bin size.
+%
+UIM also offers a non-iterative,
+albeit more approximate, alternative.
 
 
 

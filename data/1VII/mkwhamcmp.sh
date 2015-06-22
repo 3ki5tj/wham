@@ -14,6 +14,7 @@ make -C $pdir
 
 $prog   --wham=mdiis --tol=1e-9 --de=0.1      -v e.ls > wham_de0.1.out
 $prog   --wham=st               --de=0.1   -H -v e.ls > stwham_de0.1.out
+$prog   --wham=ui               --de=0.1   -H -v e.ls > uiwham_de0.1.out
 $prog   --wham=mdiis --tol=1e-9 --de=1        -v e.ls > wham_de1.out
 $prog   --wham=st               --de=1     -H -v e.ls > stwham_de1.out
 $prog   --wham=mdiis --tol=1e-9 --de=10       -v e.ls > wham_de10.out
