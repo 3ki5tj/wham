@@ -281,7 +281,7 @@ __inline static xvg_t *xvg_bootstrap(xvg_t* xvg0)
   }
 
   for ( k = 0; k < m; k++ ) {
-    xvg->y[k] = calloc(n * sizeof(xvg->y[k][0]));
+    xvg->y[k] = calloc(n, sizeof(xvg->y[k][0]));
     if ( xvg->y[k] == NULL ) {
       fprintf(stderr, "no memory for xvg->y, %d\n", xvg->ncap);
       return NULL;
@@ -297,7 +297,7 @@ __inline static xvg_t *xvg_bootstrap(xvg_t* xvg0)
 #endif
     xvg->x[i] = xvg0->x[i0];
     for ( k = 0; k < m; k++ ) {
-      xvg->y[k][i] = xvg0->xvg[k][i0];
+      xvg->y[k][i] = xvg0->y[k][i0];
     }
   }
   return xvg;

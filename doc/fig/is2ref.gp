@@ -57,6 +57,7 @@ plot [1.5:3.1][:] \
   "../../data/is2/is2nb0.out"   u (1/$2):(-$3/n) w p ls 1 t "Direct WHAM", \
   "../../data/is2/is2nb10.out"  u (1/$2):(-$3/n) w p ls 2 t "DIIS WHAM, {/Times-Italic M} = 10", \
   "../../data/is2/is2st.out"    u (1/$2):(-$3/n) w p ls 3 t "ST-WHAM", \
+  "../../data/is2/is2ui.out"    u (1/$2):(-$3/n) w p ls 4 t "UIM", \
   "../../data/is2/is2ref.dat"   u ($1):(-$2/n)   w l ls 9 t "Ref.", \
 
 
@@ -74,10 +75,11 @@ set ytics 0.1 font "Times,28" offset 0.5, 0
 set mytics 5
 
 
-plot [1.5:3.1][:] \
+plot [1.5:3.1][-0.24:] \
   "../../data/is2/is2nb0.out"   u (1/$2):(-$3+$4) w p ls 1 notitle, \
   "../../data/is2/is2nb10.out"  u (1/$2):(-$3+$4) w p ls 2 notitle, \
   "../../data/is2/is2st.out"    u (1/$2):(-$3+$4) w p ls 3 notitle, \
+  "../../data/is2/is2ui.out"    u (1/$2):(-$3+$4) w p ls 4 notitle, \
 
 
 
@@ -100,6 +102,7 @@ plot [:-0.7][:] \
   "../../data/is2/lndosnb0.dat"   u ($1/n):($2/n) every 20 w p ls 1 t "Direct WHAM", \
   "../../data/is2/lndosnb10.dat"  u ($1/n):($2/n) every 20 w p ls 2 t "DIIS WHAM, {/Times-Italic M} = 10", \
   "../../data/is2/lndosst.dat"    u ($1/n):($2/n) every 20 w p ls 3 t "ST-WHAM", \
+  "../../data/is2/lndosui.dat"    u ($1/n):($2/n) every 20 w p ls 4 t "UIM", \
   ""                              u ($1/n):($3/n) w l ls 9 t "Ref.", \
 
 
@@ -113,13 +116,14 @@ set format x ""
 
 set ylabel "{/Symbol-Oblique e} [log {/Times-Italic g}({/Times-Italic E})]" font "Times,32" offset 3.0, -0.5
 set ytics 0.1 font "Times,28" offset 0.5, 0
-set mytics 1
+set mytics 5
 
 
-plot [:-0.7][-0.16:0.36] \
+plot [:-0.7][-0.2:0.3] \
   "../../data/is2/lndosnb0.dat"   u ($1/n):($2-$3) every 20 w p ls 1 notitle, \
   "../../data/is2/lndosnb10.dat"  u ($1/n):($2-$3) every 20 w p ls 2 notitle, \
   "../../data/is2/lndosst.dat"    u ($1/n):($2-$3) every 20 w p ls 3 notitle, \
+  "../../data/is2/lndosui.dat"    u ($1/n):($2-$3) every 20 w p ls 4 notitle, \
 
 
 
