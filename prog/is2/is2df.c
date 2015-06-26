@@ -27,8 +27,8 @@ static double getdfui(double beta1, double eav1, double var1,
     x = emin + i * de;
     dx1 = x - eav1;
     dx2 = x - eav2;
-    logn1 = -dx1 * dx1 / var1 - 0.5 * log(2*M_PI*var1);
-    logn2 = -dx2 * dx2 / var2 - 0.5 * log(2*M_PI*var2);
+    logn1 = -dx1 * dx1 / 2 / var1 - 0.5 * log(2*M_PI*var1);
+    logn2 = -dx2 * dx2 / 2 / var2 - 0.5 * log(2*M_PI*var2);
     b1 = -dx1 / var1 + beta1;
     b2 = -dx2 / var2 + beta2;
     if ( logn1 > logn2 ) {

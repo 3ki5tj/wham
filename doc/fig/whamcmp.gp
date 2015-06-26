@@ -19,13 +19,13 @@ set logscale y
 set format y "10^{%T}"
 set ytics font "Times,20" offset 0.5, 0
 set mytics 20
-set ylabel "{/*1.4|} {/Times-Italic f_i} - {/Times-Italic f_i}^{/*0.7 (MBAR)} {/*1.4|}" offset 1.0, 1.0
+set ylabel "&{i}_{/*2.4|} {/Times-Italic f_i} - {/Times-Italic f_i}^{/*0.7 (MBAR)}&{i}_{/*2.4|}" offset 1.0, 1.0
 
 set key at 420, 1e-6 Left reverse font "Times,20" width -5 vertical maxrows 5 spacing 1.0
 
-color1  = "#4466aa"
-color2  = "#cc6666"
-color3  = "#228822"
+color1  = "#224488"
+color2  = "#aa2222"
+color3  = "#006000"
 
 color9  = "#000000"
 
@@ -39,7 +39,7 @@ set style line 12 lw 2.0 lt 4 lc rgb color2  pt 7   ps 1.8
 set style line 13 lw 2.0 lt 4 lc rgb color2  pt 9   ps 2.0
 set style line 14 lw 2.0 lt 4 lc rgb color2  pt 13  ps 2.0
 
-set style line 21 lw 6.0 lt 4 lc rgb color3  pt 1   ps 2.0
+set style line 21 lw 8.0 lt 4 lc rgb color3  pt 1   ps 2.0
 
 set style line 9  lw 2.0 lt 1 lc rgb color9  pt 1   ps 1.0
 

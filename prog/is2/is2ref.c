@@ -29,7 +29,7 @@ static void model_default_is2(model_t *m)
 
 
 
-/* compute dlnz from umbrella integration */
+/* compute lnz from umbrella integration */
 static double getlnzui(int m, double *lnz,
     double *beta, double *eav, double *var)
 {
@@ -40,17 +40,22 @@ static double getlnzui(int m, double *lnz,
 
   /* estimate the range and width of energy histograms */
   emin = emax = eav[0];
-  de = var[0];
+  de = dx = var[0];
   for ( j = 1; j < m; j++ ) {
-    if ( var[j] > de ) de = var[j];
+    if ( var[j] < de ) de = var[j];
+    if ( var[j] > dx ) dx = var[j];
     if ( eav[j] < emin ) emin = eav[j];
     if ( eav[j] > emax ) emax = eav[j];
+    //printf("j %d, beta %g, eav %g\n", j, beta[j], eav[j]);
   }
   de = sqrt(de);
+  dx = sqrt(dx);
   emin -= 10 * de;
-  emax += 10 * de;
-  de = de / 200;
+  emax += 10 * dx;
+  de = de / 500;
   ne = (int) ((emax - emin) / de);
+  //printf("de %g, emin %g, emax %g\n", de, emin, emax);
+
   xnew(barr, ne);
   xnew(sarr, ne);
   xnew(logn, m);
@@ -58,10 +63,10 @@ static double getlnzui(int m, double *lnz,
 
   for ( i = 0; i < ne; i++ ) {
     x = emin + i * de;
-    ymax = -1e30;
+    ymax = -1e300;
     for ( j = 0; j < m; j++ ) {
       dx = x - eav[j];
-      logn[j] = -dx * dx / var[j] - 0.5 * log(2 * M_PI * var[j]);
+      logn[j] = -dx * dx / 2 / var[j] - 0.5 * log(2 * M_PI * var[j]);
       if ( logn[j] > ymax ) {
         ymax = logn[j];
       }

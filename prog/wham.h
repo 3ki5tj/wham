@@ -495,8 +495,8 @@ static void umbint_getlndos(wham_t *w)
     w->hnorm[j] = w->sum[j] * de / sqrt(2 * M_PI * w->var[j]);
   }
 
-  imin = w->imin;
-  imax = w->imax;
+  imin = 0; // w->imin;
+  imax = n; // w->imax;
   for ( i = imin; i < imax; i++ ) {
     double ei = hist->xmin + (i + 0.5) * de;
 

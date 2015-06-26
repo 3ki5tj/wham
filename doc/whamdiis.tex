@@ -1363,8 +1363,12 @@ is gratefully acknowledged.
 
 \appendix
 
+
+
+
+
 \section{\label{sec:convwham}
-Convergence of direct WHAM and MBAR}
+Model for the convergence of direct WHAM and MBAR}
 
 
 
@@ -1491,6 +1495,158 @@ This suggests that
 a wide temperature, hence energy, range
 can lead to a slow convergence
 for direct WHAM or MBAR.
+
+
+
+
+\section{\label{sec:approxf}
+Approximate formulae for the free energy}
+
+
+
+For a pair of temperatures,
+$\beta_i$ and $\beta_{i+1}$,
+the free energy difference
+can be approximated as\cite{park2007}
+%
+\begin{equation}
+\Delta f_i
+\approx
+\bar E_i \, \Delta \beta_i,
+\label{eq:df_eav}
+\end{equation}
+where
+$\Delta f_i = f_{i+1} - f_i$,
+$\bar E_i = (\langle E \rangle_{i+1} + \langle E \rangle_i)/2$,
+and
+$\Delta \beta_i = \beta_{i + 1} - \beta_i$.
+%
+A more accurate version is
+%
+\begin{equation}
+\Delta f_i
+\approx
+\bar E_i \, \Delta \beta_i
++
+\frac{1}{12} \left(
+  \langle \Delta E^2 \rangle_{i + 1}
+  -
+  \langle \Delta E^2 \rangle_{i}
+\right)
+\Delta \beta_i^2.
+\label{eq:df_eavx}
+\end{equation}
+%
+For on-the-fly estimates
+in simulated tempering,
+Eqs. \eqref{eq:df_eav}
+and \eqref{eq:df_eavx}
+are more suitable
+than the WHAM-like methods.
+%
+Below, we show that
+Eq. \eqref{eq:df_eavx}
+is preferred
+for simulations of large systems
+in a finite temperature range.
+
+
+
+The last term on the right-hand side of Eq. \eqref{eq:df_eavx}
+shows that the accuracy
+of Eq. \eqref{eq:df_eav}
+is of order $N \, \Delta \beta_i^3$
+of a system of size $N$,
+since
+$\partial \langle \Delta E^2 \rangle / \partial \beta
+= -\partial^2 \langle E \rangle / \partial \beta^2$
+is extensive.
+%
+Thus,
+if Eq. \eqref{eq:df_eav} is applied to
+an $O(1)$ temperature range
+with an average temperature separation $\Delta \beta$,
+the accumulative error of the
+dimensionless free energy
+is $O(N \, \Delta \beta^2)$,
+which is negligible only
+for a sufficiently small $\Delta \beta$.
+%
+However,
+in a common tempering simulation,
+one sets up the temperatures
+such that the energy distributions
+of neighboring temperatures
+barely overlap.
+%
+That is,
+the average energy difference,
+$\Delta E = \left| \langle E \rangle_{i+1} - \langle E \rangle_i \right|$,
+between neighboring temperatures
+is a multiple of the width of
+the energy distribution
+$\sqrt{ \langle \Delta E^2 \rangle }$,
+which is $O(\sqrt{N})$.
+%
+So $\Delta \beta$,
+given by $\Delta E / |\partial E/\partial \beta|$,
+is $O(1/\sqrt{N})$,
+%
+and the accumulative error
+of dimensionless free energy, $f_i$,
+is $O(1)$.
+%
+If the $f_i$ from Eq. \eqref{eq:df_eav}
+are used for the weights
+in simulated tempering\cite{park2007},
+there can a non-negligible deviation of
+the resulting temperature distribution
+from the designed one.
+
+
+
+In Fig. \ref{fig:is2approx}
+the accuracy of
+Eqs. \eqref{eq:df_eav},
+\eqref{eq:df_eavx},
+was compared with the result of
+UIM\cite{kastner2006}
+(which is also approximate).
+%
+We used the exact results\cite{
+ferdinand1969}
+for
+$\langle E \rangle$
+and
+$\langle \Delta E \rangle$,
+since we wish to study
+the accuracy (not precision).
+%
+Equation \eqref{eq:df_eav}
+produced an $O(1)$ error
+in the accumulated free energy
+with $\Delta T = 0.1$,
+while
+the error of Eq. \eqref{eq:df_eavx}
+was negligible.
+
+
+
+\begin{figure}[h]
+  \makebox[\linewidth][c]{
+    \includegraphics[angle=0, width=1.0\linewidth]{fig/is2approx.pdf}
+  }
+  \caption{
+    \label{fig:is2approx}
+    Errors of the dimensionless free energies, $f_i$,
+    from Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavx},
+    and UIM for $32\times 32$ Ising model.
+    %
+    $f_i$ at $T = 1.5$ is fixed at zero.
+    %
+    Lines are to guide the eyes.
+  }
+\end{figure}
 
 
 
