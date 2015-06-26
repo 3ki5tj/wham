@@ -59,6 +59,7 @@ typedef struct {
   int verbose;
   int re;
 #ifdef IS2_MODEL
+  int L; /* override the length */
   int nT;
   double Tmin;
   double Tdel;
@@ -210,6 +211,7 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --nsteps=:     set the number of simulation steps, default: %d\n", m->nsteps);
 #endif /* IS2_MODEL */
 #ifdef LJ_MODEL
+  fprintf(stderr, "  --L:           set the side length, default: %d\n", m->L);
   fprintf(stderr, "  --nn=:         set the number of particles, default: %d\n", m->nn);
   fprintf(stderr, "  --rho=:        set the density, default: %g\n", m->rho);
   fprintf(stderr, "  --rcdef=:      set the preferred cutoff of the pair potential, default: %g\n", m->rcdef);
@@ -327,6 +329,8 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
       } else if ( strcmpfuzzy(p, "re") == 0 ) {
         m->re = 1;
 #ifdef IS2_MODEL
+      } else if ( strcmpfuzzy(p, "L") == 0 ) {
+        m->L = atoi(q);
       } else if ( strcmpfuzzy(p, "nT") == 0 ) {
         m->nT = atoi(q);
       } else if ( strcmpfuzzy(p, "T0") == 0 ) {

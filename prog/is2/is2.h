@@ -230,7 +230,7 @@ __inline static double lnaddn(double a, double b)
 
 
 
-/* exact solution of ising model */
+/* exact solution of the Ising model */
 __inline static double is2_exact(int lx, int ly, double beta, double *eav, double *cv)
 {
   double lxh, n, ex, f, th, sech, bet2, bsqr, log2, x;

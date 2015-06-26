@@ -1,3 +1,13 @@
+# Files #
+
+File        |   Description
+------------+------------------------------
+is2wham.c   | WHAM on Ising model
+is2ref.c    | Reference partition function
+is2df.c     | Test the accuracy for free energies
+
+
+
 # Notes #
 
 
