@@ -204,6 +204,7 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --fnac=:       set the autocorrelation functions, default: %s\n", m->fnac);
   fprintf(stderr, "  --re:          do replica exchange when possible, default: %d\n", m->re);
 #ifdef IS2_MODEL
+  fprintf(stderr, "  --L:           set the side length, default: %d\n", m->L);
   fprintf(stderr, "  --T0=:         set the minimal temperature, default: %g\n", m->Tmin);
   fprintf(stderr, "  --dT=:         set the temperature increment, default: %g\n", m->Tdel);
   fprintf(stderr, "  --nT=:         set the number of temperatures, default: %d\n", m->nT);
@@ -211,7 +212,6 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --nsteps=:     set the number of simulation steps, default: %d\n", m->nsteps);
 #endif /* IS2_MODEL */
 #ifdef LJ_MODEL
-  fprintf(stderr, "  --L:           set the side length, default: %d\n", m->L);
   fprintf(stderr, "  --nn=:         set the number of particles, default: %d\n", m->nn);
   fprintf(stderr, "  --rho=:        set the density, default: %g\n", m->rho);
   fprintf(stderr, "  --rcdef=:      set the preferred cutoff of the pair potential, default: %g\n", m->rcdef);

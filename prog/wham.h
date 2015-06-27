@@ -24,7 +24,6 @@ enum {
   WHAM_MDIIS = 1,
   WHAM_ST = 2,
   WHAM_UI = 3,
-  WHAM_SCUI = 4,
   WHAM_NMETHODS
 };
 
@@ -33,7 +32,6 @@ const char *wham_methods[] = {
   "MDIIS",
   "ST",
   "UI",
-  "SCUI",
   "WHAM_NMETHODS"
 };
 
@@ -556,136 +554,6 @@ static double umbint(const hist_t *hist, const double *beta, double *lnz,
 
 
 
-/* iteratively compute the logarithm of the density of states
- * using self-consistent umbrella integration */
-static void scui_getlndos(wham_t *w,
-    double damp, int itmin, int itmax, double tol, int verbose)
-{
-  const hist_t *hist = w->hist;
-  int it, i, j, imin, imax, n = hist->n, nbeta = hist->rows;
-  double x, y, tot, stbeta, de = hist->dx, err, errp;
-  clock_t t0, t1;
-
-  t0 = clock();
-  err = errp = 1e30;
-  /* compute averages and variance */
-  wham_gethave(w);
-  for ( j = 0; j < nbeta; j++ ) {
-    w->ave1[j] = w->ave[j];
-    w->var1[j] = w->var[j];
-  }
-
-  imin = w->imin;
-  imax = w->imax;
-  for ( it = 0; it < itmax; it++ ) {
-    for ( j = 0; j < nbeta; j++ ) {
-      w->hnorm[j] = w->sum[j] * de / sqrt(2 * M_PI * w->var1[j]);
-    }
-
-    err = 0;
-    for ( i = imin; i < imax; i++ ) {
-      double ei = hist->xmin + (i + 0.5) * de;
-
-      tot = 0;
-      stbeta = 0;
-      for ( j = 0; j < nbeta; j++ ) {
-        /* use Gaussian approximation */
-        double De = w->ave1[j] - ei;
-        x = w->hnorm[j] * exp( -0.5 * De * De / w->var1[j] );
-        tot += x;
-        stbeta += x * (w->beta[j] + De / w->var1[j]);
-      }
-
-      /* lndos currently holds the statistical temperature */
-      w->lndos[i] = (tot > 0) ? stbeta / tot : 0;
-    }
-
-    /* integrate the statistical temperature
-     * to get the density of states */
-    x = y = 0;
-    for ( i = imin; i < imax; i++ ) {
-      stbeta = w->lndos[i];
-      w->lndos[i] = y + 0.5 * (x + stbeta) * de;
-      x = stbeta; /* previous temperature */
-      y = w->lndos[i]; /* previous lndos */
-    }
-
-    int jj = -1;
-    /* update the averages and variances */
-    for ( j = 0; j < nbeta; j++ ) {
-      double lnz, slne, slnee, e, lne, lnw, ee;
-      lnz = slne = slnee = LOG0;
-      for ( i = imin; i < imax; i++ ) {
-        /* note: we do not add emin here for it may lead to
-         * a negative energy whose logarithm is undefined */
-        e = (i + .5) * de;
-        lne = log(e);
-        lnw = w->lndos[i] - w->beta[j] * e;
-        lnz = wham_lnadd(lnz, lnw);
-        slne = wham_lnadd(slne, lne + lnw);
-        slnee = wham_lnadd(slnee, 2*lne + lnw);
-      }
-      e = exp(slne - lnz);
-      ee = exp(slnee - lnz) - e * e;
-      e += hist->xmin;
-      if ( verbose >= 2 ) {
-        fprintf(stderr, "j %d: ave %g vs %g (%g), var %g vs %g (%g)\n", j, e, w->ave1[j], w->ave[j], ee, w->var1[j], w->var[j]);
-      }
-
-      x = w->ave[j] - e;
-      if ( fabs(x) > err ) { jj = j; err = fabs(x); }
-      w->ave1[j] += damp * x;
-
-      x = log( w->var[j] / ee );
-      if ( fabs(x) > err ) { jj = j; err = fabs(x); }
-      w->var1[j] *= exp(damp * x);
-    }
-
-    if ( verbose ) {
-      fprintf(stderr, "it %d, err %g -> %g, jj %d\n",
-          it, errp, err, jj);
-      if ( verbose >= 2 ) getchar();
-    }
-    if ( err < tol && it > itmin ) {
-      break;
-    }
-    if ( err > errp ) break;
-    errp = err;
-  }
-
-  for ( i = 0; i < imin; i++ ) {
-    w->lndos[i] = LOG0;
-  }
-  for ( i = w->imax; i < n; i++ ) {
-    w->lndos[i] = LOG0;
-  }
-
-  t1 = clock();
-  fprintf(stderr, "ST-WHAM completed, time %.4fs\n",
-      1.0*(t1 - t0)/CLOCKS_PER_SEC);
-}
-
-
-
-/* self-consistent umbrella integration */
-static double scui(const hist_t *hist, const double *beta, double *lnz,
-    double damp, int itmin, int itmax, double tol,
-    int verbose, const char *fnlndos, const char *fneav)
-{
-  wham_t *w = wham_open(beta, hist);
-
-  scui_getlndos(w, damp, itmin, itmax, tol, verbose);
-  wham_getlnz(w, lnz);
-  if ( fnlndos ) {
-    wham_savelndos(w, fnlndos);
-  }
-  wham_getav(w, fneav);
-  wham_close(w);
-  return 0.0;
-}
-
-
-
 #ifdef ENABLE_MDIIS
 /* MDIIS method */
 #include "mdiis.h"
@@ -737,10 +605,6 @@ static double whamx(const hist_t *hist, const double *beta, double *lnz,
     return stwham(hist, beta, lnz, fnlndos, fneav);
   } else if ( method == WHAM_UI ) {
     return umbint(hist, beta, lnz, fnlndos, fneav);
-  } else if ( method == WHAM_SCUI ) {
-    return scui(hist, beta, lnz,
-        damp, itmin, itmax, tol,
-        verbose, fnlndos, fneav);
 #ifdef ENABLE_MDIIS
   } else if ( method == WHAM_MDIIS ) {
     return wham_mdiis(hist, beta, lnz,
