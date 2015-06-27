@@ -8,10 +8,15 @@
 
 
 
+\renewcommand{\theequation}{N.\arabic{equation}}
+
 \newcommand{\vct}[1]{\mathbf{#1}}
 \newcommand{\vx}{\vct{x}}
+\newcommand{\vy}{\vct{y}}
 \newcommand{\Z}{\mathcal{Z}}
 \newcommand{\E}{\mathcal{E}}
+\newcommand{\Ham}{\mathcal{H}}
+\newcommand{\W}{\mathcal{W}}
 
 
 
@@ -73,6 +78,172 @@ yields Eq. \eqref{eq:gE_WHAM}.
 
 
 
+\section{Derivation of Eq. (5) from Eqs. (3) and (4)}
+
+
+
+From Eq. (3)
+\begin{align*}
+f_i
+&=
+-\log
+  \int
+    \frac{
+      \sum_{j = 1}^K n_j(E) \, \exp(-\beta_i E)
+    }
+    {
+      \sum_{k = 1}^K N_k \, \exp(-\beta_k E + f_k)
+    }
+    dE
+\\
+&=
+-\log
+  \int
+    \frac{
+      \sum_{j = 1}^K \sum_{\vct x}^{(j)}
+      \delta(\E(\vx) - E) \, \exp(-\beta_i E)
+    }
+    {
+      \sum_{k = 1}^K N_k \, \exp(-\beta_k E + f_k)
+    }
+    dE
+\\
+&=
+-\log
+  \sum_{j = 1}^K \sum_{\vct x}^{(j)}
+  \int
+    \frac{
+      \exp(-\beta_j E)
+    }
+    {
+      \sum_{k = 1}^K N_k \, \exp(-\beta_k E + f_k)
+    }
+    \delta(\E(\vx) - E) \, dE
+\\
+&=
+-\log
+  \sum_{j = 1}^K \sum_{\vct x}^{(j)}
+    \frac{
+      \exp(-\beta_i \, \E(\vx))
+    }
+    {
+      \sum_{k = 1}^K N_k \, \exp(-\beta_k \, \E(\vx) + f_k)
+    },
+\end{align*}
+which is Eq. (5).
+
+
+
+\section{Derivation of Eq. (6) from Eq. (5)}
+
+
+From Eq. (5)
+\begin{align*}
+f_i
+&=
+-\log
+\sum_{j = 1}^K
+\sum_{\vx}^{(j)}
+\frac{
+  q_i(\vx)
+}
+{
+  \sum_{k = 1}^K N_k \, q_k(\vx) \exp f_k
+}
+\\
+&=
+-\log
+\sum_{j = 1}^K
+\sum_{\vx}^{(j)}
+\frac{
+  \exp[-\Ham_0(\vx) - \lambda_i \W(\vx)]
+}
+{
+  \sum_{k = 1}^K N_k \,
+  \exp[-\Ham_0(\vx) - \lambda_k \W(\vx)]
+  \exp f_k
+}
+\\
+&=
+-\log
+\sum_{j = 1}^K
+\sum_{\vx}^{(j)}
+\frac{
+  \exp[- \lambda_i \W(\vx)]
+}
+{
+  \sum_{k = 1}^K N_k \,
+  \exp[ - \lambda_k \W(\vx)]
+  \exp f_k
+}
+\\
+&=
+-\log
+\sum_{j = 1}^K
+\sum_{\vx}^{(j)}
+\int
+\frac{
+  \exp[- \lambda_i \W(\vx)]
+}
+{
+  \sum_{k = 1}^K N_k \,
+  \exp[ - \lambda_k \W(\vx)]
+  \exp f_k
+}
+\delta(\W(\vx) - W) \, dW
+\\
+&=
+-\log
+\sum_{j = 1}^K
+\sum_{\vx}^{(j)}
+\int
+\frac{
+  \exp(- \lambda_i W)
+}
+{
+  \sum_{k = 1}^K N_k \,
+  \exp( - \lambda_k \W)
+  \exp f_k
+}
+\delta(\W(\vx) - W)
+\, dW
+\\
+&=
+-\log
+\int
+\frac{
+  \sum_{j = 1}^K
+  \left[
+    \sum_{\vx}^{(j)}
+    \delta(\W(\vx) - W)
+  \right]
+  \exp(- \lambda_i W)
+}
+{
+  \sum_{k = 1}^K N_k \,
+  \exp( - \lambda_k \W + f_k )
+}
+\, dW
+\\
+&=
+-\log
+\int
+\frac{
+  \sum_{j = 1}^K
+  n_j(W)
+  \exp(- \lambda_i W)
+}
+{
+  \sum_{k = 1}^K N_k \,
+  \exp( - \lambda_k \W + f_k )
+}
+\, dW,
+\end{align*}
+which is Eq. (6).
+
+
+
+
 \section{Statistical-temperature WHAM}
 
 
@@ -92,7 +263,11 @@ we get
 %
 By Eq. \eqref{eq:gE_single},
 we have
-$n_k(E) = d_k(E) \, g(E)$.
+$n_k(E) = d_k(E) \, g(E)$,
+which shows that
+$d_k(E)$
+is proportional to $n_k(E)$
+for a fixed $g(E)$.
 %
 So we can rewrite Eq. \eqref{eq:beta0_STWHAM} as
 %
@@ -406,6 +581,140 @@ $\sqrt{ {\bar x}^2 + {\bar y}^2 } = \sqrt{ 8 + \sqrt 8 } R$,
 and
 $\phi = \arctan(\bar y/\bar x) = \arctan \left(-\sqrt 2 - 1\right) = -3 \, \pi/8$.
 
+
+
+
+\section{Probabilistic derivation}
+
+
+
+From the unnumbered equation after Eq. (A1),
+we get the posterior probability
+\begin{align*}
+p\left( g | \{ \vct x \} \right)
+&=
+\frac{
+  p\left( \{ \vct x \} | g \right) \, p(g)
+}
+{
+  p\left( \{ \vct x \} \right)
+}
+\\
+&\propto
+p\left( \{ \vct x \} | g \right).
+\end{align*}
+%
+Taking the logarithm, we get
+%
+\begin{align*}
+\log p\left( g | \{ \vct x \} \right)
+&=
+\sum_{k = 1}^K
+  \sum_{\vct x}^{(k)}
+    \left(
+      \log g(\vct x) + \log q_k(\vct x) - \log Z_k[g]
+    \right)
++ C
+\\
+&=
+\sum_{k = 1}^K
+\left(
+  \sum_{\vct x}^{(k)}
+  \log g(\vct x)
+- N_k \log Z_k[g]
+\right) + C',
+\end{align*}
+%
+where $C$ and $C'$
+are constants independent of $g$.
+%
+We now differentiate it with respect to $g(\vct y)$,
+%
+\begin{align}
+\frac{
+  \delta \log p\left( g | \{ \vct x \} \right)
+}
+{
+  \delta g(\vct y)
+}
+&=
+\sum_{k = 1}^K
+\left(
+  \sum_{\vct x}^{(k)}
+  \frac{ \delta( \vct y - \vct x ) }
+       { g(\vct y) }
+  -
+  \frac {N_k} { Z_k[g] }
+  \frac{ \delta Z_k[g] } { \delta g(\vct y) }
+\right)
+= 0.
+\label{eq:dpdg}
+\end{align}
+%
+Now since
+\begin{equation}
+Z_k[g]
+=
+\int g(\vct y) \, q_k(\vct y) \, d\vct y,
+\tag{A1}
+\label{eq:Zg}
+\end{equation}
+we have
+\begin{equation*}
+\frac{ \delta Z_k[g] } { \delta g(\vct y) }
+= q_k(\vct y).
+\end{equation*}
+%
+Using this in Eq. \eqref{eq:dpdg},
+we get
+\begin{equation}
+g(\vct y)
+=
+\frac{
+  \sum_{j = 1}^K \sum_{\vct x}^{(j)} \delta(\vct x - \vct y)
+}
+{
+  \sum_{k = 1}^K N_k \, q_k(\vct y) / Z_k[g]
+}.
+\tag{A2}
+\label{eq:gy}
+\end{equation}
+%
+Finally,
+we use Eq. \eqref{eq:gy} in Eq. \eqref{eq:Zg},
+%
+\begin{align}
+Z_i[g]
+&=
+\int
+\frac{
+  \sum_{j = 1}^K \sum_{\vct x}^{(j)} \delta(\vct x - \vct y)
+}
+{
+  \sum_{k = 1}^K N_k \, q_k(\vct y) / Z_k[g]
+}
+q_i(\vct y) d\vct y
+\notag \\
+&=
+\sum_{j = 1}^K \sum_{\vct x}^{(j)}
+\int
+\frac{
+  \delta(\vct x - \vct y)
+}
+{
+  \sum_{k = 1}^K N_k \, q_k(\vct y) / Z_k[g]
+}
+q_i(\vct y) d\vct y
+\notag \\
+&=
+\sum_{j = 1}^K \sum_{\vct x}^{(j)}
+\frac{
+  q_i(\vct x)
+}
+{
+  \sum_{k = 1}^K N_k \, q_k(\vct x) / Z_k[g]
+}.
+\end{align}
 
 
 

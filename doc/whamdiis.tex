@@ -1,4 +1,4 @@
-\documentclass[reprint,superscriptaddress]{revtex4-1}
+\documentclass[reprint,aip,jcp,superscriptaddress]{revtex4-1}
 %\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
 \usepackage{amsmath}
 \usepackage{bm}
@@ -11,6 +11,7 @@
 
 \newcommand{\vct}[1]{\mathbf{#1}}
 \newcommand{\vx}{\vct{x}}
+\newcommand{\vy}{\vct{y}}
 \newcommand{\Z}{\mathcal{Z}}
 \newcommand{\E}{\mathcal{E}}
 \newcommand{\Ham}{\mathcal{H}}
@@ -42,7 +43,9 @@ The multiple histogram method\cite{
 ferrenberg1988, *ferrenberg1989}
 or its generalization,
 the weighted histogram analysis method (WHAM)\cite{
-kumar1992, *souaille2001, kastner2005,
+kumar1992,
+bartels1997, *habeck2007, *habeck2012,
+souaille2001, kastner2005,
 chodera2007, bereau2009,
 kim2011},
 is a useful tool
@@ -186,7 +189,6 @@ where,
 $n_j(E)$,
 the unnormalized energy distribution
 observed from simulation $j$,
-%
 is usually estimated
 from the energy histogram as
 the number of independent trajectory frames
@@ -213,7 +215,7 @@ Z_k
 The $K = 1$ case of Eq. \eqref{eq:gE_WHAM}
 follows from definition,
 and the $K > 1$ case can be considered
-as a weighted average.
+as a weighted average\cite{souaille2001}.
 
 
 
@@ -227,7 +229,7 @@ f_i
 -\log
   \int
     \frac{
-      \sum_{j = 1}^K n_j(E) \, \exp(-\beta_j E)
+      \sum_{j = 1}^K n_j(E) \, \exp(-\beta_i E)
     }
     {
       \sum_{k = 1}^K N_k \, \exp(-\beta_k E + f_k)
@@ -274,8 +276,10 @@ of simulation $j$.
 %
 %
 %
-Using Eq. \eqref{eq:n_delta} in Eq. \eqref{eq:f_WHAM} yields\cite{
-kumar1992, *souaille2001, shirts2008}:
+Using Eq. \eqref{eq:n_delta}
+in Eq. \eqref{eq:f_WHAM} yields
+the MBAR result\cite{
+kumar1992, souaille2001, shirts2008}:
 %
 \begin{equation}
 f_i
@@ -293,15 +297,15 @@ f_i
 \end{equation}
 %
 where,
-$q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$.
-%the denominator has been moved into the sum
-%as it now depends on the configuration, $\vx$.
+$q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$
 %
-Note that both Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR}
+(see Appendix \ref{sec:deriveMBAR}
+for a more general derivation).
+%
+Since both Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR}
 are invariant under $f_i \rightarrow f_i + c$
-for all $i$ and an arbitrary $c$.
-%
-Thus, $f_i$ are determined up to a constant shift.
+for all $i$ and an arbitrary $c$,
+$f_i$ are determined up to a constant shift.
 
 
 
@@ -443,12 +447,14 @@ kim2011}.
 Thus, UIM\cite{
 kastner2005}
 further approximates
-the distribution $n'_j(E)$ by a Gaussian.
+the distribution $n'_j(E)$ by a Gaussian
+(see Appendix \ref{sec:approxf}
+for a discussion on the accuracy).
 
 
 
-
-Below we shall still focus on the original WHAM,
+Because of the limitations of the alternatives,
+below we shall still focus on the original WHAM,
 and give a numerical technique
 that accelerates the solution
 of Eq. \eqref{eq:f_WHAM}.
@@ -1104,6 +1110,10 @@ the values from ST-WHAM and WHAM,
 which was likely due to
 the accumulative difference
 in the two statistical temperatures.
+%
+UIM behaved similarly to ST-WHAM,
+although the latter is expected to superior
+in the long run (cf. Appendix \ref{sec:approxf}).
 
 
 
@@ -1124,7 +1134,7 @@ in the two statistical temperatures.
     %
     The reference values of the free energies and
     the density of states were obtained
-    from Refs. \cite{ferdinand1969} and \cite{beale1996},
+    from Refs. \onlinecite{ferdinand1969} and \onlinecite{beale1996},
     respectively.
   }
 \end{figure}
@@ -1329,7 +1339,7 @@ and thus,
 for one-dimensional problems
 one may also use
 the non-iterative ST-WHAM
-given sufficient data
+given ample data
 and a carefully-chosen bin size.
 %
 UIM also offers a non-iterative,
@@ -1363,6 +1373,80 @@ is gratefully acknowledged.
 
 \appendix
 
+
+
+
+
+\section{\label{sec:deriveMBAR}
+Probabilistic derivation}
+
+
+
+We follow probabilistic approach\cite{
+bartels1997, *habeck2007, *habeck2012} to derive
+Eq. \eqref{eq:f_MBAR}.
+%
+We first assume
+a (hypothetically nonuniform)
+phase-space density of states
+$g(\vy)$.
+%
+Then, the partition function can be written
+as a functional of $g$:
+%
+\begin{equation}
+Z_k[g]
+=
+\int g(\vy) \, q_k(\vy) \, d\vy.
+\label{eq:Zg}
+\end{equation}
+%
+Given a certain $g$,
+the probability of observing the data set,
+$\{ \vx \}$,
+is given by
+%
+\begin{equation*}
+p\left( \{ \vx \} | g \right)
+=
+\prod_{k = 1}^K
+\prod_{\vx}^{(k)}
+g(\vx) \, q_k(\vx) / Z_k[g],
+%\label{eq:pg}
+\end{equation*}
+%
+If we assume a uniform prior distribution of $g$,
+then by the Bayesian theorem,
+the posterior distribution of $g$,
+given the observed data set,
+$p\left( g | \{ \vx \} \right)$,
+is also proportional to
+$p\left( \{ \vx \} | g \right)$.
+%
+To find the most probable $g(\vy)$,
+we maximize
+$p\left( g | \{ \vx \} \right)$
+by taking the functional derivative
+with respect to $g(\vy)$
+and setting it to zero,
+which yields
+%
+\begin{equation}
+g(\vy)
+=
+\frac{
+  \sum_{j = 1}^K \sum_{\vx}^{(j)} \delta(\vx - \vy)
+}
+{
+  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g]
+}.
+\label{eq:gy}
+\end{equation}
+%
+Using Eq. \eqref{eq:gy}
+in Eq. \eqref{eq:Zg},
+and finally setting the $g$ in $Z[g]$ to 1.0
+yields Eq. \eqref{eq:f_MBAR}.
 
 
 
@@ -1504,6 +1588,10 @@ Approximate formulae for the free energy}
 
 
 
+Since UIM is an approximate method,
+we wish to study its accuracy
+by a comparison with some simpler formulae.
+%
 For a pair of temperatures,
 $\beta_i$ and $\beta_{i+1}$,
 the free energy difference
@@ -1521,7 +1609,7 @@ $\bar E_i = (\langle E \rangle_{i+1} + \langle E \rangle_i)/2$,
 and
 $\Delta \beta_i = \beta_{i + 1} - \beta_i$.
 %
-A more accurate version is
+More accurately,
 %
 \begin{equation}
 \Delta f_i
@@ -1537,98 +1625,46 @@ A more accurate version is
 \label{eq:df_eavx}
 \end{equation}
 %
-For on-the-fly estimates
-in simulated tempering,
-Eqs. \eqref{eq:df_eav}
-and \eqref{eq:df_eavx}
-are more suitable
-than the WHAM-like methods.
-%
-Below, we show that
-Eq. \eqref{eq:df_eavx}
-is preferred
-for simulations of large systems
-in a finite temperature range.
+The dimensionless free energy, $f_i$,
+can then be computed as
+$f_1 + \sum_{j = 1}^{i - 1} \Delta f_j$.
 
 
 
-The last term on the right-hand side of Eq. \eqref{eq:df_eavx}
-shows that the accuracy
-of Eq. \eqref{eq:df_eav}
-is of order $N \, \Delta \beta_i^3$
-of a system of size $N$,
-since
-$\partial \langle \Delta E^2 \rangle / \partial \beta
-= -\partial^2 \langle E \rangle / \partial \beta^2$
-is extensive.
+We compared Eqs. \eqref{eq:df_eav} and \eqref{eq:df_eavx}
+with UIM\cite{kastner2006}
+(which is also an approximate method)
+on the $32\times 32$ Ising model,
 %
-Thus,
-if Eq. \eqref{eq:df_eav} is applied to
-an $O(1)$ temperature range
-with an average temperature separation $\Delta \beta$,
-the accumulative error of the
-dimensionless free energy
-is $O(N \, \Delta \beta^2)$,
-which is negligible only
-for a sufficiently small $\Delta \beta$.
-%
-However,
-in a common tempering simulation,
-one sets up the temperatures
-such that the energy distributions
-of neighboring temperatures
-barely overlap.
-%
-That is,
-the average energy difference,
-$\Delta E = \left| \langle E \rangle_{i+1} - \langle E \rangle_i \right|$,
-between neighboring temperatures
-is a multiple of the width of
-the energy distribution
-$\sqrt{ \langle \Delta E^2 \rangle }$,
-which is $O(\sqrt{N})$.
-%
-So $\Delta \beta$,
-given by $\Delta E / |\partial E/\partial \beta|$,
-is $O(1/\sqrt{N})$,
-%
-and the accumulative error
-of dimensionless free energy, $f_i$,
-is $O(1)$.
-%
-If the $f_i$ from Eq. \eqref{eq:df_eav}
-are used for the weights
-in simulated tempering\cite{park2007},
-there can a non-negligible deviation of
-the resulting temperature distribution
-from the designed one.
-
-
-
-In Fig. \ref{fig:is2approx}
-the accuracy of
-Eqs. \eqref{eq:df_eav},
-\eqref{eq:df_eavx},
-was compared with the result of
-UIM\cite{kastner2006}
-(which is also approximate).
-%
-We used the exact results\cite{
-ferdinand1969}
-for
-$\langle E \rangle$
+using the exact
+$\langle E \rangle_i$
 and
-$\langle \Delta E \rangle$,
-since we wish to study
-the accuracy (not precision).
+$\langle \Delta E^2 \rangle_i$\cite{
+ferdinand1969}
+(since we wish to study
+the accuracy, not precision).
 %
-Equation \eqref{eq:df_eav}
-produced an $O(1)$ error
-in the accumulated free energy
-with $\Delta T = 0.1$,
-while
-the error of Eq. \eqref{eq:df_eavx}
-was negligible.
+Figure \ref{fig:is2approx}
+shows that
+Eq. \eqref{eq:df_eavx}
+was more accurate than
+Eq. \eqref{eq:df_eav}.
+%
+With $\Delta T = 0.2$,
+the error of Eq. \eqref{eq:df_eav}
+was up to $O(1)$.
+%
+Generally, the UIM results were more accurate
+than those of Eq. \eqref{eq:df_eav},
+and less sensitive to the spacing $\Delta T$.
+%
+However, for a small spacing,
+Eq. \eqref{eq:df_eavx} was superior.
+%
+Thus, with ample data
+UIM should be replaced
+by more accurate alternatives, such as ST-WHAM.
+
 
 
 
@@ -1648,6 +1684,70 @@ was negligible.
   }
 \end{figure}
 
+
+
+Finally, we give a cautionary comment
+on the use of Eq. \eqref{eq:df_eav} for $f_i$,
+especially for the on-the-fly weight estimates
+in simulated tempering\cite{park2007}.
+%
+We show below that
+for accurate calculations,
+Eq. \eqref{eq:df_eavx}
+is preferred
+for simulations of large systems
+in an $O(1)$ temperature range.
+%
+The correction of Eq. \eqref{eq:df_eavx}
+to Eq. \eqref{eq:df_eav}
+is of order $N \, \Delta \beta_i^3$
+of a system of size $N$,
+since
+$\partial \langle \Delta E^2 \rangle / \partial \beta
+= -\partial^2 \langle E \rangle / \partial \beta^2$
+is extensive.
+%
+Thus,
+if Eq. \eqref{eq:df_eav} is applied to
+an $O(1)$ temperature range
+with an average temperature separation $\Delta \beta$,
+the accumulative error of the
+dimensionless free energies, $f_i$,
+is $O(N \, \Delta \beta^2)$.
+%
+In a tempering simulation,
+one often sets up the temperatures
+such that the energy distributions
+of neighboring temperatures
+barely overlap.
+%
+That is,
+the average energy difference,
+$\Delta E = \left| \langle E \rangle_{i+1} - \langle E \rangle_i \right|$,
+between neighboring temperatures
+is a roughly multiple of the width of
+the energy distribution
+$\sqrt{ \langle \Delta E^2 \rangle }$,
+which is $O(\sqrt{N})$.
+%
+So $\Delta \beta$,
+given by $\Delta E / |\partial E/\partial \beta|$,
+is $O(1/\sqrt{N})$,
+%
+and the accumulative error
+of $f_i$ is $O(1)$ [cf. Fig. \ref{fig:is2approx}].
+%
+Thus, if the $f_i$ from Eq. \eqref{eq:df_eav}
+are used for the weights
+in simulated tempering\cite{park2007},
+there can be a non-negligible deviation of
+the resulting temperature distribution
+from the designed one.
+%
+One can fix this by choosing
+a finer spacing or
+use Eq. \eqref{eq:df_eavx}
+instead.
 
 
 
