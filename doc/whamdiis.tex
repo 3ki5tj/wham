@@ -211,11 +211,31 @@ Z_k
 \int g(E) \, \exp(-\beta_k E) \, dE.
 \label{eq:Z}
 \end{equation}
+
+
+
+To show Eq. \eqref{eq:gE_WHAM},
+we first observe, for any $k$,
+\begin{equation}
+  g(E) = n_k(E) / d_k(E),
+  \label{eq:gnk}
+\end{equation}
+where $d_k(E) \equiv N_k \exp(-\beta_k E)/Z_k$.
+%denoting the $k$th term on the denominator.
 %
-The $K = 1$ case of Eq. \eqref{eq:gE_WHAM}
-follows from definition,
-and the $K > 1$ case can be considered
-as a weighted average\cite{souaille2001}.
+To combine the estimates from different $k$'s,
+the relative weight should be inversely
+proportional to the variance\cite{
+newman, *frenkel},
+$\mathrm{var}(n_k/d_k) \approx n_k / d_k^2 \propto 1/d_k$,
+where we have assumed $\mathrm{var}(n_k) = n_k$,
+and $N_k \gg n_k$ so that
+the relative error of $d_k$ is negligible
+compared to that of $n_k$.
+%
+Linearly combining Eq. \eqref{eq:gnk}
+using $d_k$ as the relative weight yields
+Eq. \eqref{eq:gE_WHAM}\cite{souaille2001}.
 
 
 
@@ -257,7 +277,8 @@ In the above,
 $n_j(E)$ is estimated from the energy histogram.
 %
 To avoid this dependency,
-we notice from definition that
+we notice from definition that\cite{
+souaille2001}
 %
 \begin{equation}
 n_j(E)
@@ -1035,8 +1056,8 @@ For simplicity,
 we assumed equal autocorrelation times
 from different temperatures (and pressures).
 %
-The approximation should not greatly affect
-the general performance of the methods.
+The approximation should not affect
+the general behavior of the methods.
 
 
 
@@ -1333,17 +1354,27 @@ solutions obtained during iteration.
 %
 The method is stable and easy to implement
 and has only a small run time overhead.
+
+
+
+There are several
+non-iterative alternatives to WHAM,
+although they are less general.
 %
-However, the method is still iterative,
-and thus,
-for one-dimensional problems
-one may also use
+For one-dimensional problems
+one may use
 the non-iterative ST-WHAM
 given ample data
 and a carefully-chosen bin size.
 %
-UIM also offers a non-iterative,
-albeit more approximate, alternative.
+For scarce data,
+UIM also offers a reasonable alternative.
+%
+Besides,
+rough estimates
+may be drawn from simple formulae
+such as
+Eqs. \eqref{eq:df_eav} and \eqref{eq:df_eavx}.
 
 
 
@@ -1354,7 +1385,8 @@ albeit more approximate, alternative.
 
 
 
-It is a pleasure to thank Dr. Y. Zhao
+It is a pleasure to thank
+Dr. Y. Zhao, Dr. M. R. Shirts and J. A. Drake
 for many helpful discussions.
 %
 The authors gratefully acknowledge
@@ -1416,7 +1448,7 @@ g(\vx) \, q_k(\vx) / Z_k[g],
 \end{equation*}
 %
 If we assume a uniform prior distribution of $g$,
-then by the Bayesian theorem,
+then by the Bayes' theorem\cite{leonard},
 the posterior distribution of $g$,
 given the observed data set,
 $p\left( g | \{ \vx \} \right)$,
@@ -1628,11 +1660,43 @@ More accurately,
 The dimensionless free energy, $f_i$,
 can then be computed as
 $f_1 + \sum_{j = 1}^{i - 1} \Delta f_j$.
+%
+These equations follow from
+the Euler-Maclaurin formula\cite{
+arfken}:
+%
+\begin{align*}
+\Delta f_i
+&= \int_{\beta_i}^{\beta_{i+1}} f'(\beta) \, d\beta \\
+&\approx
+\frac{\Delta \beta_i}{2}
+\left[
+  f'(\beta_{i+1}) + f'(\beta_i)
+\right]
+\\
+&\phantom{=}
+-
+\sum_{s = 1}^{S}
+  \frac{ (\Delta \beta_i)^{2s} } { (2 s)! }
+  B_{2s}
+  \left[
+    f^{(2s)}(\beta_{i+1})
+    -
+    f^{(2s)}(\beta_i)
+  \right],
+\end{align*}
+%
+where $B_{2s}$ is the Bernoulli numbers,
+$B_2 = 1/6$, $B_4 = -1/30$, \ldots.
+%
+Equations \eqref{eq:df_eav} and \eqref{eq:df_eavx}
+are the $S = 0$ and $S = 1$ cases,
+respectively.
 
 
 
 We compared Eqs. \eqref{eq:df_eav} and \eqref{eq:df_eavx}
-with UIM\cite{kastner2006}
+with UIM\cite{kastner2005}
 (which is also an approximate method)
 on the $32\times 32$ Ising model,
 %
@@ -1661,9 +1725,9 @@ and less sensitive to the spacing $\Delta T$.
 However, for a small spacing,
 Eq. \eqref{eq:df_eavx} was superior.
 %
-Thus, with ample data
+Thus, with ample data,
 UIM should be replaced
-by more accurate alternatives, such as ST-WHAM.
+by a more accurate alternative, e.g., ST-WHAM.
 
 
 
@@ -1676,7 +1740,7 @@ by more accurate alternatives, such as ST-WHAM.
     \label{fig:is2approx}
     Errors of the dimensionless free energies, $f_i$,
     from Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavx},
-    and UIM for $32\times 32$ Ising model.
+    and UIM for the $32\times 32$ Ising model.
     %
     $f_i$ at $T = 1.5$ is fixed at zero.
     %
@@ -1687,19 +1751,12 @@ by more accurate alternatives, such as ST-WHAM.
 
 
 Finally, we give a cautionary comment
-on the use of Eq. \eqref{eq:df_eav} for $f_i$,
-especially for the on-the-fly weight estimates
+on using Eq. \eqref{eq:df_eav}
+for the on-the-fly weight estimates
 in simulated tempering\cite{park2007}.
 %
-We show below that
-for accurate calculations,
-Eq. \eqref{eq:df_eavx}
-is preferred
-for simulations of large systems
-in an $O(1)$ temperature range.
-%
-The correction of Eq. \eqref{eq:df_eavx}
-to Eq. \eqref{eq:df_eav}
+Equation \eqref{eq:df_eavx} shows that
+the error of Eq. \eqref{eq:df_eav}
 is of order $N \, \Delta \beta_i^3$
 of a system of size $N$,
 since
@@ -1711,43 +1768,41 @@ Thus,
 if Eq. \eqref{eq:df_eav} is applied to
 an $O(1)$ temperature range
 with an average temperature separation $\Delta \beta$,
-the accumulative error of the
-dimensionless free energies, $f_i$,
+the accumulative error of $f_i$
 is $O(N \, \Delta \beta^2)$.
 %
-In a tempering simulation,
-one often sets up the temperatures
+If the simulation temperatures
+are arranged
 such that the energy distributions
 of neighboring temperatures
-barely overlap.
+barely overlap,
 %
-That is,
 the average energy difference,
 $\Delta E = \left| \langle E \rangle_{i+1} - \langle E \rangle_i \right|$,
 between neighboring temperatures
-is a roughly multiple of the width of
+is roughly a multiple of the width of
 the energy distribution
-$\sqrt{ \langle \Delta E^2 \rangle }$,
-which is $O(\sqrt{N})$.
+$\sqrt{ \langle \Delta E^2 \rangle_i } \propto O(\sqrt{N})$.
 %
 So $\Delta \beta$,
 given by $\Delta E / |\partial E/\partial \beta|$,
 is $O(1/\sqrt{N})$,
 %
 and the accumulative error
-of $f_i$ is $O(1)$ [cf. Fig. \ref{fig:is2approx}].
+of $f_i$ is $O(1)$
+(as illustrated in Fig. \ref{fig:is2approx}).
 %
-Thus, if the $f_i$ from Eq. \eqref{eq:df_eav}
+Thus, if Eq. \eqref{eq:df_eav}
 are used for the weights
 in simulated tempering\cite{park2007},
-there can be a non-negligible deviation of
 the resulting temperature distribution
-from the designed one.
+may deviate appreciably
+from the flat one.
 %
-One can fix this by choosing
-a finer spacing or
-use Eq. \eqref{eq:df_eavx}
-instead.
+%One can fix this by choosing
+%a finer spacing or
+%use Eq. \eqref{eq:df_eavx}
+%instead.
 
 
 
