@@ -719,5 +719,510 @@ q_i(\vct y) d\vct y
 
 
 
-%\bibliography{simul}
+\section{Approximate formulae}
+
+
+
+
+\subsection{Bernoulli polynomials and numbers}
+
+
+
+The Bernoulli numbers are defined as
+%
+\begin{equation}
+  \frac{ t }
+  {e^t - 1}
+=
+\sum_{n = 0}^\infty
+  B_n \frac{ t^n } { n! }.
+\label{eq:Bernoulli_number}
+\end{equation}
+%
+The first few $B_n$ are\cite{
+  whittaker, arfken, abramowitz, wang_specfunc}
+$B_0 = 1$,
+$B_1 = -1/2$,
+$B_2 = 1/6$,
+$B_4 = -1/30$,
+$B_6 = 1/42$,
+$B_8 = -1/30$,
+\dots,
+$B_3 = B_5 = B_7 = \dots = 0$.
+
+
+
+\subsubsection{First few Bernoulli polynomials}
+
+
+
+The Bernoulli polynomials are defined as
+%
+\begin{equation}
+  \frac{ t \, e^{x t} }
+  {e^t - 1}
+=
+\sum_{n = 0}^\infty
+  B_n(x) \frac{ t^n } { n! }.
+\label{eq:Bernoulli_polynomial}
+\end{equation}
+%
+The $x = 0$ case
+recovers the Bernoulli numbers,
+$B_n \equiv B_n(0)$.
+%
+The first few polynomials are\cite{
+  whittaker, arfken, abramowitz, wang_specfunc}
+\begin{align*}
+B_0(x) &= 1, \\
+B_1(x) &= x - \frac 1 2, \\
+B_2(x) &= x^2 - x + \frac 1 6, \\
+B_3(x) &= x^3 - \frac 3 2 x^2 + \frac 1 2 x, \\
+B_4(x) &= x^4 - 2 \, x^3 + x^2 - \frac{1}{30}, \\
+B_5(x) &= x^5 - \frac 5 2 x^4 + \frac 5 3 x^3 - \frac{1}{6} x, \\
+B_6(x) &= x^6 - 3 \, x^5 + \frac 5 2 x^4 - \frac 1 2 x^2 + \frac{1}{42}, \\
+B_7(x) &= x^7 - \frac 7 2 x^6 + \frac 7 2 \, x^5 - \frac 7 6 x^3 + \frac 1 6 x, \\
+B_8(x) &= x^8 - 4 \, x^7 + \frac{14} 3 x^6 - \frac 7 3 \, x^4 + \frac 2 3 x^2 - \frac{1}{30}. \\
+\end{align*}
+
+
+
+
+\subsubsection{Symmetry}
+
+
+
+Bernoulli polynomials have the following symmetry.
+%
+\begin{equation*}
+\sum_{n = 0}^\infty
+B_n(1 - x) \, t^n/n!
+=
+\frac{ 2 \, t \, e^{(1 - x) \, t} }
+{ e^t - 1 }
+=
+\frac{ 2 \, (-t) \, e^{ x \, (-t)} }
+{ e^{-t} - 1 }
+=
+\sum_{n = 0}^\infty
+B_n(x) (-t)^n / n!.
+\end{equation*}
+%
+This shows
+\[
+B_n(1 - x) = (-)^n \, B_n(x).
+\]
+Particularly,
+\[
+B_n(1) = (-)^n \, B_n(0).
+\]
+and $B_1(1) = -B_1(0) = 1/2$, and
+\begin{align}
+B_{2s}(1) = B_{2s}(0).
+\label{eq:Bernoulli1_even}
+\end{align}
+
+
+
+\subsubsection{Derivative}
+
+
+
+
+Differentiating Eq. \eqref{eq:Euler_polynomial}
+with respect to $x$ yields
+\[
+\sum_{n = 0}^\infty \frac{ B'_n(x) \, t^{n} } { n! }.
+=
+\frac{ t^2 \, e^{x t} }
+{ e^t - 1 }
+=
+\sum_{n = 0}^\infty \frac{ B_n(x) \, t^{n + 1} } { n! }.
+\]
+Comparing the coefficients of $t^n$ yields
+\[
+B'_n(x)
+=
+n \, B_{n-1}(x).
+\]
+and
+\begin{equation}
+  B^{(p)}_n(x)
+=
+\frac{n!}{(n-p)!} \, B_{n-p}(x).
+\label{eq:dBernoulli_polynomial}
+\end{equation}
+Particularly,
+$B^{(n)}_n(x) = n!$.
+
+
+
+\subsection{Euler polynomials}
+
+
+
+The Euler polynomials are similarly defined
+%
+\begin{equation}
+  \frac{ 2 \, e^{x t} }
+  {e^t + 1}
+=
+\sum_{n = 0}^\infty
+  E_n(x) \frac{ t^n } { n! }.
+\label{eq:Euler_polynomial}
+\end{equation}
+%
+Again, we shall first study the $x = 0$ case.
+%
+\begin{equation}
+  \frac{ 2 }
+  {e^t + 1}
+=
+\sum_{n = 0}^\infty
+  E_n(0) \frac{ t^n } { n! }.
+\label{eq:Euler0}
+\end{equation}
+
+
+
+\subsubsection{Evaluate $E_n(0)$}
+
+
+
+Since
+\[
+\frac{ 2 } {e^t + 1} - 1
+=
+-\frac{ e^t - 1 } {e^t + 1}
+=
+-\tanh \frac t 2,
+\]
+is an odd function,
+$E_{n}(0) = 0$
+for $n = 2, 4, 6, \dots$.
+
+
+
+To evaluate $E_n(0)$,
+we multiply Eq. \eqref{eq:Euler0}
+by
+\[
+e^t + 1
+=
+\sum_{m = 0}^\infty
+  (1 + \delta_{m0}) \frac{ t^m }{ m! }.
+\]
+This yields
+\[
+E_n(0)
+=
+-\frac{1}{2}
+\sum_{k = 0}^{n - 1}
+{n \choose k} E_k(0).
+\]
+The first values are
+$E_0(0) = 1$,
+$E_1(0) = -1/2$,
+$E_3(0) = 1/4$,
+$E_5(0) = -1/2$,
+$E_7(0) = 17/8$,
+\dots,
+%
+and
+%
+\begin{equation}
+\frac 2 {e^t + 1}
+=
+1 - \frac 1 2 t
++ \frac 1 4 \frac{ t^3 }{ 3! }
+- \frac 1 2 \frac{ t^5 }{ 5! }
++ \frac{ 17 }{ 8 } \frac{ t^7 }{ 7! }
+- \dots.
+\label{eq:Euler0_first}
+\end{equation}
+
+
+The numbers can also be derived from the Bernoulli numbers
+%
+Expanding both sides of
+\[
+t \times \frac{ 2 }{ e^t + 1}
+=
+2 \times \left(
+  \frac{ t }{ e^t - 1 }
+  -
+  \frac{ 2 \, t } { e^{2 \, t} - 1 }
+\right)
+\]
+as series of $t$ yields
+\[
+E_n(0)
+=
+\frac{ 2 \, B_{n + 1} } { n + 1 }
+\left( 1 - 2^{n + 1} \right).
+\]
+%
+For $n = 2 s - 1$,
+\[
+E_{2 s - 1}(0)
+=
+\frac{ B_{2 s} } { s }
+\left( 1 - 4^s \right).
+\]
+
+
+
+\subsubsection{First few Euler polynomials}
+
+
+
+
+Multiplying Eq. \eqref{eq:Euler0_first}
+by $e^{x t} = \sum_{m = 0}^\infty x^m \, t^m/m!$ yields
+the first few Euler polynomials\cite{
+abramowitz, wang_specfunc}
+\begin{align*}
+  E_0(x) &= 1, \\
+  E_1(x) &= x -\frac 1 2, \\
+  E_2(x) &= x^2 - x, \\
+  E_3(x) &= x^3 - \frac 3 2 x^2 + \frac 1 4, \\
+  E_4(x) &= x^4 - 2 \, x^3  + x, \\
+  E_5(x) &= x^5 - \frac 5 2 x^4 + \frac 5 2 x^2 -\frac 1 2, \\
+  E_6(x) &= x^6 - 3 \, x^5 + 5 \, x^3 - 3 \, x, \\
+  E_7(x) &= x^7 - \frac 7 2 x^6 + \frac{35}{4} x^4 - \frac{21}{2} x^2 + \frac{ 17 } 8, \\
+  E_8(x) &= x^8 - 4 \, x^7 + 14 \, x^5 - 28 \, x^3 + 17 \, x.
+\end{align*}
+
+
+
+\subsubsection{Symmetry}
+
+
+
+Euler polynomials have the following symmetry.
+%
+\begin{equation*}
+\sum_{n = 0}^\infty
+E_n(1 - x) \, t^n/n!
+=
+\frac{ 2 \, e^{(1 - x) \, t} }
+{ e^t + 1 }
+=
+\frac{ 2 \, e^{ x \, (-t)} }
+{ e^{-t} + 1 }
+=
+\sum_{n = 0}^\infty
+E_n(x) (-t)^n / n!.
+\end{equation*}
+%
+This shows
+\[
+E_n(1 - x) = (-)^n \, E_n(x).
+\]
+Particularly,
+\[
+E_n(1) = (-)^n \, E_n(0).
+\]
+and
+\begin{equation}
+E_{2s - 1}(1) = - \, E_{2s - 1}(0).
+\label{eq:Euler1_odd}
+\end{equation}
+
+
+
+\subsubsection{Derivative}
+
+
+
+
+Differentiating Eq. \eqref{eq:Euler_polynomial}
+with respect to $x$ yields
+\[
+\sum_{n = 0}^\infty \frac{ E'_n(x) \, t^{n} } { n! }.
+=
+\frac{ 2 \, t \, e^{x t} }
+{ e^t + 1 }
+=
+\sum_{n = 0}^\infty \frac{ E_n(x) \, t^{n + 1} } { n! }.
+\]
+Comparing the coefficients of $t^n$ yields
+\[
+E'_n(x)
+=
+n \, E_{n-1}(x).
+\]
+and
+\begin{equation}
+  E^{(p)}_n(x)
+=
+\frac{n!}{(n-p)!} \, E_{n-p}(x).
+\label{eq:dEuler_polynomial}
+\end{equation}
+Particularly,
+$E^{(n)}_n(x) = n!$.
+
+
+
+
+\subsection{Darboux's formula}
+
+
+
+The Darboux's formula\cite{
+whittaker, wang_specfunc}
+is
+%
+\begin{align}
+\psi^{(2n)}(0) [f(b) - f(a)]
+&=
+\sum_{m = 1}^{2n}
+  (-)^{m - 1} h^m
+  \left[
+    \psi^{(2n - m)}(1) \, f^{(m)}(b)
+    -
+    \psi^{(2n - m)}(0) \, f^{(m)}(a)
+  \right]
+\notag \\
+&
++h^{2m + 1}
+\int_0^1
+  \psi(t) \, f^{(2n+1)}(a + t \, h) \, dt,
+\label{eq:Darboux}
+\end{align}
+where
+$\psi(x)$ is a polynomial of $2n$ degrees,
+and $h = b - a$.
+
+
+
+To show Eq. \eqref{eq:Darboux},
+we start from
+%
+\begin{align*}
+&\frac{ d } { dt }
+\left[
+  (-)^{m - 1} h^m \,
+  \psi^{(2 n - m)}(t) \, f^{(m)}(a + t \, h)
+\right]
+\\
+&=
+(-)^{m-1} h^m \,
+  \psi^{(2 n - m + 1)}(t) \, f^{(m)}(a + t \, h)
+-
+(-)^m h^{m + 1} \,
+  \psi^{(2 n - m)}(t) \, f^{(m + 1)}(a + t \, h).
+\end{align*}
+%
+Summing $m$ from $1$ to $2 n$ yields
+%
+\begin{align*}
+&\sum_{m = 1}^{2 n}
+\frac{ d } { dt }
+  \left[
+    (-)^{m - 1} h^m \,
+    \psi^{(2 n - m)}(t) \, f^{(m)}(a + t \, h)
+  \right]
+\\
+&=
+h \,
+  \psi^{(2 n)}(t) \, f^{(1)}(a + t \, h)
+-
+h^{2 n + 1} \,
+  \psi^{(0)}(t) \, f^{(2 n + 1)}(a + t \, h)
+\\
+&=
+h \,
+  \psi^{(2 n)}(0) \, f'(a + t \, h)
+-
+h^{2 n + 1} \,
+  \psi(t) \, f^{(2 n + 1)}(a + t \, h),
+\end{align*}
+%
+where
+we have used the fact that
+$\psi(x)$ is a polynomial of degree $2n$,
+so that
+$\psi^{(2 n)}(t) = \psi^{(2 n)}(0)$.
+%
+Integrating $t$ from $0$ to $1$
+yields Eq. \eqref{eq:Darboux}.
+
+
+
+\subsubsection{Using Bernoulli polynomials}
+
+
+
+Using $\psi(t) = B_{2n}(t)/(2n)!$ in Eq. \eqref{eq:Darboux},
+we get
+\begin{align}
+f(b) - f(a)
+&=
+\sum_{m = 1}^{2n}
+  (-)^{m - 1} h^m
+  \left[
+    \frac{ B_m(1) } {m!} \, f^{(m)}(b)
+    -
+    \frac{ B_m(0) } {m!} \, f^{(m)}(a)
+  \right]
+\notag \\
+&=
+\frac{ h \, \left[
+    f'(b) + f'(a)
+  \right]
+} {2 }
+-
+\sum_{s = 1}^{n}
+\, h^{2 s}
+\frac{ B_{2 s} }{ (2 s)! }
+    \, \left[f^{(2 s)}(b) - f^{(2 s)}(a)\right]
+  + \dots,
+\label{eq:Darboux_Bernoulli}
+\end{align}
+where we have used
+Eqs. \eqref{eq:dBernoulli_polynomial} and \eqref{eq:Bernoulli1_even}.
+%
+In the main text,
+we set $b = \beta_{i + 1}$,
+$a = \beta_i$.
+
+
+
+\subsubsection{Using Euler polynomials}
+
+
+
+Using $\psi(t) = E_{2n}(t)/(2n)!$ in Eq. \eqref{eq:Darboux},
+we get
+\begin{align}
+f(b) - f(a)
+&=
+\sum_{m = 1}^{2n}
+  (-)^{m - 1} h^m
+  \left[
+    \frac{ E_m(1) } {m!} \, f^{(m)}(b)
+    -
+    \frac{ E_m(0) } {m!} \, f^{(m)}(a)
+  \right]
+\notag \\
+&=
+-\sum_{s = 1}^{n}
+h^{2 s - 1}
+\frac{ E_{2 s - 1}(0) }{ (2 s - 1)! }
+    \, \left[f^{(2 s - 1)}(b) + f^{(2 s - 1)}(a)\right]
+  + \dots,
+\label{eq:Darboux_Euler}
+\end{align}
+where we have used
+Eqs. \eqref{eq:dEuler_polynomial} and \eqref{eq:Euler1_odd}.
+%
+In the main text,
+we set $b = \beta_{i + 1}$,
+$a = \beta_i$,
+and $E_{2s - 1} \rightarrow a_s$.
+
+
+
+\bibliography{simul}
 \end{document}

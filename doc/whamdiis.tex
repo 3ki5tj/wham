@@ -1374,7 +1374,7 @@ Besides,
 rough estimates
 may be drawn from simple formulae
 such as
-Eqs. \eqref{eq:df_eav} and \eqref{eq:df_eavx}.
+Eqs. \eqref{eq:df_eav} and \eqref{eq:df_eavb}.
 
 
 
@@ -1620,9 +1620,10 @@ Approximate formulae for the free energy}
 
 
 
-Since UIM is an approximate method,
-we wish to study its accuracy
-by a comparison with some simpler formulae.
+Since WHAM and related methods
+are relatively expensive,
+here explore a few cheaper,
+albeit less accurate alternatives.
 %
 For a pair of temperatures,
 $\beta_i$ and $\beta_{i+1}$,
@@ -1654,20 +1655,20 @@ More accurately,
   \langle \Delta E^2 \rangle_{i}
 \right)
 \Delta \beta_i^2.
-\label{eq:df_eavx}
+\label{eq:df_eavb}
 \end{equation}
 %
-The dimensionless free energy, $f_i$,
-can then be computed as
+For multiple temperatures, $f_i$
+can be computed as
 $f_1 + \sum_{j = 1}^{i - 1} \Delta f_j$.
 %
-These equations follow from
+This equation follows from
 the Euler-Maclaurin formula\cite{
-arfken}:
+arfken, whittaker, wang_specfunc, abramowitz}:
 %
 \begin{align*}
 \Delta f_i
-&= \int_{\beta_i}^{\beta_{i+1}} f'(\beta) \, d\beta \\
+%&= \int_{\beta_i}^{\beta_{i+1}} f'(\beta) \, d\beta \\
 &\approx
 \frac{\Delta \beta_i}{2}
 \left[
@@ -1677,8 +1678,8 @@ arfken}:
 &\phantom{=}
 -
 \sum_{s = 1}^{S}
-  \frac{ (\Delta \beta_i)^{2s} } { (2 s)! }
   B_{2s}
+  \frac{ (\Delta \beta_i)^{2s} } { (2 s)! }
   \left[
     f^{(2s)}(\beta_{i+1})
     -
@@ -1687,15 +1688,60 @@ arfken}:
 \end{align*}
 %
 where $B_{2s}$ is the Bernoulli numbers,
-$B_2 = 1/6$, $B_4 = -1/30$, \ldots.
+$B_2 = 1/6$, $B_4 = -1/30$, \ldots,
+and $S = 1$.
 %
-Equations \eqref{eq:df_eav} and \eqref{eq:df_eavx}
-are the $S = 0$ and $S = 1$ cases,
-respectively.
+An alternative expansion is
+%
+\begin{align*}
+\Delta f_i
+&\approx
+-\sum_{s = 1}^{S'}
+  a_s
+  \frac{ (\Delta \beta_i)^{2s - 1} } { (2 s - 1)! }
+  \left[
+    f^{(2s-1)}(\beta_{i+1})
+    +
+    f^{(2s-1)}(\beta_i)
+  \right],
+\end{align*}
+where
+$a_s = (1 - 4^s) B_{2s} /s$,
+%
+and
+$a_1 = a_3 = -1/2$,
+$a_2 = 1/4$,
+\dots.
+%
+This variant can be similarly derived
+by repeated partial integrations
+(or by Darboux's formula\cite{
+whittaker, wang_specfunc})
+using Euler polynomials\cite{
+wang_specfunc, abramowitz}
+in place of Bernoulli ones.
+%
+For $S' = 2$, we get
+\begin{align}
+\Delta f_i
+\approx
+\bar E_i \, \Delta \beta_i
+-
+\frac{1}{24} \left(
+  \langle \Delta E^3 \rangle_{i + 1}
+  +
+  \langle \Delta E^3 \rangle_{i}
+\right)
+\Delta \beta_i^3.
+\label{eq:df_eavc}
+\end{align}
 
 
 
-We compared Eqs. \eqref{eq:df_eav} and \eqref{eq:df_eavx}
+
+
+We compared the above equations
+%Eqs. \eqref{eq:df_eav} and \eqref{eq:df_eavb}
 with UIM\cite{kastner2005}
 (which is also an approximate method)
 on the $32\times 32$ Ising model,
@@ -1710,7 +1756,7 @@ the accuracy, not precision).
 %
 Figure \ref{fig:is2approx}
 shows that
-Eq. \eqref{eq:df_eavx}
+Eq. \eqref{eq:df_eavb}
 was more accurate than
 Eq. \eqref{eq:df_eav}.
 %
@@ -1723,7 +1769,7 @@ than those of Eq. \eqref{eq:df_eav},
 and less sensitive to the spacing $\Delta T$.
 %
 However, for a small spacing,
-Eq. \eqref{eq:df_eavx} was superior.
+Eq. \eqref{eq:df_eavb} was superior.
 %
 Thus, with ample data,
 UIM should be replaced
@@ -1739,7 +1785,7 @@ by a more accurate alternative, e.g., ST-WHAM.
   \caption{
     \label{fig:is2approx}
     Errors of the dimensionless free energies, $f_i$,
-    from Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavx},
+    from Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavb},
     and UIM for the $32\times 32$ Ising model.
     %
     $f_i$ at $T = 1.5$ is fixed at zero.
@@ -1755,7 +1801,7 @@ on using Eq. \eqref{eq:df_eav}
 for the on-the-fly weight estimates
 in simulated tempering\cite{park2007}.
 %
-Equation \eqref{eq:df_eavx} shows that
+Equation \eqref{eq:df_eavb} shows that
 the error of Eq. \eqref{eq:df_eav}
 is of order $N \, \Delta \beta_i^3$
 of a system of size $N$,
@@ -1801,7 +1847,7 @@ from the flat one.
 %
 %One can fix this by choosing
 %a finer spacing or
-%use Eq. \eqref{eq:df_eavx}
+%use Eq. \eqref{eq:df_eavb}
 %instead.
 
 
