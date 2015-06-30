@@ -3,11 +3,13 @@
 # make the data files for is2approx.gp
 
 pdir=../../prog/is2
-prog=$pdir/is2ref
+prg=is2ref
+prog=$pdir/$prg
 side=32
 
-make -C $pdir $prog
+make -C $pdir $prg
 
+$prog --dT=0.02  --nT=81  --L=$side -v > is2approx0.02.out
 $prog --dT=0.05  --nT=33  --L=$side -v > is2approx0.05.out
 $prog --dT=0.10  --nT=17  --L=$side -v > is2approx0.1.out
 $prog --dT=0.20  --nT=9   --L=$side -v > is2approx0.2.out

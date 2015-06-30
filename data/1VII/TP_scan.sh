@@ -32,7 +32,7 @@ fi
 
 for dir in $mydirs; do
   cd $dir
-  echo "11 16 21 0" | $gmx energy -f npt.edr -o ev.xvg
+  echo "11 21 0" | $gmx energy -f npt.edr -o ev.xvg
   rm -f \#*
   cd ..
 done

@@ -193,8 +193,8 @@ is usually estimated
 from the energy histogram as
 the number of independent trajectory frames
 whose energies fall in the interval
-$(E - \Delta E/2, E + \Delta E/2)$
-divided by $\Delta E$
+$(E - h/2, E + h/2)$
+divided by $h$
 (we shall omit ``independent'' below for simplicity);
 %
 $N_k$
@@ -202,8 +202,7 @@ is the total number of frames
 from simulation $k$;
 %
 $Z_k$
-is the partition function,
-defined as
+is the partition function:
 %
 \begin{equation}
 Z_k
@@ -215,7 +214,7 @@ Z_k
 
 
 To show Eq. \eqref{eq:gE_WHAM},
-we first observe, for any $k$,
+we first observe that, for any $k$,
 \begin{equation}
   g(E) = n_k(E) / d_k(E),
   \label{eq:gnk}
@@ -223,25 +222,28 @@ we first observe, for any $k$,
 where $d_k(E) \equiv N_k \exp(-\beta_k E)/Z_k$.
 %denoting the $k$th term on the denominator.
 %
-To combine the estimates from different $k$'s,
+To optimally combine the estimates from different $k$'s,
 the relative weight should be inversely
 proportional to the variance\cite{
-newman, *frenkel},
-$\mathrm{var}(n_k/d_k) \approx n_k / d_k^2 \propto 1/d_k$,
-where we have assumed $\mathrm{var}(n_k) = n_k$,
+newman, *frenkel}.
+%
+Assuming a Poisson distribution
+so that $\mathrm{var}(n_k) = n_k$,
 and $N_k \gg n_k$ so that
 the relative error of $d_k$ is negligible
-compared to that of $n_k$.
+compared to that of $n_k$,
+we have
+$\mathrm{var}(n_k/d_k) \approx n_k / d_k^2 \propto 1/d_k$.
 %
-Linearly combining Eq. \eqref{eq:gnk}
+Averaging the values from Eq. \eqref{eq:gnk}
 using $d_k$ as the relative weight yields
-Eq. \eqref{eq:gE_WHAM}\cite{souaille2001}.
+Eq. \eqref{eq:gE_WHAM}.
 
 
 
 From Eqs. \eqref{eq:gE_WHAM} and \eqref{eq:Z},
-we find that the dimensionless free energies
-$f_i \equiv -\log Z_i$
+we find that the dimensionless free energies,
+$f_i \equiv -\log Z_i$,
 satisfy
 \begin{align}
 f_i
@@ -292,7 +294,7 @@ $\E(\vx)$
 is the energy function,
 and
 $\sum_{\vx}^{(j)}$
-denotes the sum over trajectory frames
+denotes a sum over trajectory frames
 of simulation $j$.
 %
 %
@@ -318,34 +320,35 @@ f_i
 \end{equation}
 %
 where,
-$q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$
+$q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$.
 %
+In fact, Eq. \eqref{eq:f_MBAR}
+is applicable to a more general parameter dependence
 (see Appendix \ref{sec:deriveMBAR}
-for a more general derivation).
+for a derivation).
 %
 Since both Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR}
 are invariant under $f_i \rightarrow f_i + c$
 for all $i$ and an arbitrary $c$,
-$f_i$ are determined up to a constant shift.
+$f_i$ are determined only up to a constant shift.
 
 
 
 We briefly mention a few extensions.
 %
 First,
-Eq. \eqref{eq:f_MBAR}
-is valid for a general Hamiltonian
+for a general Hamiltonian
 with a linear bias
 \[
 \Ham_i(\vx) = \Ham_0(\vx) + \lambda_i \, \W(\vx),
 \]
-such that $q_i = \exp\left[ -\Ham_i(\vx) \right]$.
+such that $q_i(\vx) = \exp\left[ -\Ham_i(\vx) \right]$,
 %
-In this case,
-inserting
+we can show,
+by inserting
 $\int \delta(\W(\vx) - W) \, dW$
-into Eq. \eqref{eq:f_MBAR}
-yields
+into Eq. \eqref{eq:f_MBAR},
+that
 %
 \begin{align}
 f_i
@@ -368,9 +371,8 @@ is understood as
 the unnormalized distribution of
 the bias $\W(\vx)$.
 %
-Equation \eqref{eq:fx_WHAM}
-is reduced to Eq. \eqref{eq:f_WHAM}
-if
+Equation \eqref{eq:f_WHAM}
+is the special case of
 $\Ham_0(\vx) = 0$,
 $\W(\vx) = \E(\vx)$,
 and $\lambda_i = \beta_i$.
@@ -406,7 +408,7 @@ Eq. \eqref{eq:f_MBAR},
 instead of the histogram-based Eq. \eqref{eq:fx_WHAM}.
 %
 Besides,
-non-Boltzmann
+a non-Boltzmann
 (e.g., the multicanonical\cite{
 mezei1987, *berg1992, *lee1993},
 Tsallis\cite{tsallis1988},
@@ -1088,11 +1090,11 @@ was estimated from
 \begin{equation}
 n_j'(E)
 =
-\frac{ n_j(E + \Delta E) - n_j(E - \Delta E) }
-     { 2 \, \Delta E },
+\frac{ n_j(E + h) - n_j(E - h) }
+     { 2 \, h },
 \label{eq:dn}
 \end{equation}
-with $\Delta E$ being the bin size
+with $h$ being the bin size
 of the energy histogram.
 
 
@@ -1126,7 +1128,7 @@ agreed well with the exact results\cite{
 ferdinand1969}.
 %
 On the other hand,
-there was slight difference between
+there were differences between
 the values from ST-WHAM and WHAM,
 which was likely due to
 the accumulative difference
@@ -1144,19 +1146,20 @@ in the long run (cf. Appendix \ref{sec:approxf}).
   }
   \caption{
     \label{fig:is2ref}
-    (a) Dimensionless free energies and
+    The errors of
+    (a) dimensionless free energies and
     (b) the logarithm of the density of states
     for the $N = 64\times64$ two-dimensional Ising model.
     %
-    The insets show the errors, with
+    Here,
     $\varepsilon(a) \equiv a - a^\mathrm{(ref)}$.
-    %
-    The bin size $\Delta E = 4$.
     %
     The reference values of the free energies and
     the density of states were obtained
     from Refs. \onlinecite{ferdinand1969} and \onlinecite{beale1996},
     respectively.
+    %
+    The bin size of energy histograms is $h = 4$.
   }
 \end{figure}
 
@@ -1197,8 +1200,6 @@ the right-hand side of Eq. \eqref{eq:f_WHAM}.
     for the $64\times64$ two-dimensional Ising model.
     %
     Results were geometrically averaged over independent samples.
-    %
-    The lines are to guide the eyes.
   }
 \end{figure}
 
@@ -1244,7 +1245,7 @@ Energy frames were registered every 0.1 ps.
 
 We simulated the system under 12 temperatures
 $T$ = 300 K, 310 K, \dots, 410 K,
-each for about {\color{red} 110} ns.
+each for about 200 ns.
 %
 The histogram bin size was $1.0$.
 %
@@ -1259,7 +1260,7 @@ in the number of iterations or real run time.
 The bin size dependency of WHAM and ST-WHAM
 is compared in Fig. \ref{fig:whamcmp}.
 %
-WHAM was stable for $\Delta E \le 100.0$.
+WHAM was stable for bin sizes $h \le 100.0$.
 %
 The error of ST-WHAM, however,
 increased dramatically with decreasing bin size.
@@ -1290,10 +1291,11 @@ insensitive to the bin size, and hence more stable.
   }
   \caption{
     \label{fig:whamcmp}
-    Dimensionless free energies, $f_i$,
+    Errors of the dimensionless free energies, $f_i$,
     from WHAM, ST-WHAM and UIM
     for the villin headpiece
-    with different bin sizes, $\Delta E$.
+    with different bin sizes, $h$
+    of the energy histograms.
     %
     $f_i$ at $T = 300$ K is fixed at zero.
     %
@@ -1345,8 +1347,7 @@ reduced the run time significantly.
 
 We showed that the DIIS technique
 can often significantly accelerate
-the free energy methods WHAM and MBAR
-in difficult cases.
+the free energy methods WHAM and MBAR.
 %
 The technique achieves a fast convergence
 by an optimal combination of the approximate
@@ -1359,7 +1360,7 @@ and has only a small run time overhead.
 
 There are several
 non-iterative alternatives to WHAM,
-although they are less general.
+although they are less general and/or accurate.
 %
 For one-dimensional problems
 one may use
@@ -1372,9 +1373,8 @@ UIM also offers a reasonable alternative.
 %
 Besides,
 rough estimates
-may be drawn from simple formulae
-such as
-Eqs. \eqref{eq:df_eav} and \eqref{eq:df_eavb}.
+can be obtained from simpler formulae
+(Appendix \ref{sec:approxf}).
 
 
 
@@ -1488,7 +1488,7 @@ Model for the convergence of direct WHAM and MBAR}
 
 
 
-Here, we use a simple analytical model
+Here, we use a simple analytic model
 to study the convergence of direct WHAM and MBAR.
 %
 Consider two temperatures,
@@ -1616,14 +1616,14 @@ for direct WHAM or MBAR.
 
 
 \section{\label{sec:approxf}
-Approximate formulae for the free energy}
+Approximate formulae}
 
 
 
 Since WHAM and related methods
 are relatively expensive,
-here explore a few cheaper,
-albeit less accurate alternatives.
+here we explore a few cheaper,
+albeit less accurate, alternatives.
 %
 For a pair of temperatures,
 $\beta_i$ and $\beta_{i+1}$,
@@ -1633,12 +1633,13 @@ can be approximated as\cite{park2007}
 \begin{equation}
 \Delta f_i
 \approx
-\bar E_i \, \Delta \beta_i,
+\overline{ \langle E \rangle }_i \, \Delta \beta_i,
 \label{eq:df_eav}
 \end{equation}
 where
-$\Delta f_i = f_{i+1} - f_i$,
-$\bar E_i = (\langle E \rangle_{i+1} + \langle E \rangle_i)/2$,
+$\Delta A_i \equiv A_{i+1} - A_i$,
+$\overline{ A }_i \equiv (A_{i+1} + A_i)/2$
+for any quantity $A$,
 and
 $\Delta \beta_i = \beta_{i + 1} - \beta_i$.
 %
@@ -1647,16 +1648,21 @@ More accurately,
 \begin{equation}
 \Delta f_i
 \approx
-\bar E_i \, \Delta \beta_i
+\overline{ \langle E \rangle }_i \, \Delta \beta_i
 +
-\frac{1}{12} \left(
-  \langle \Delta E^2 \rangle_{i + 1}
-  -
-  \langle \Delta E^2 \rangle_{i}
-\right)
-\Delta \beta_i^2.
+\Delta \langle \delta E^2 \rangle_i
+\frac{ \Delta \beta_i^2 }{ 12 },
 \label{eq:df_eavb}
 \end{equation}
+%
+where
+$\langle \delta E^m \rangle_k
+\equiv \langle (E - \langle E \rangle_k)^m \rangle_k$
+for $k = i$ and $i + 1$,
+and
+$\Delta \langle \delta E^m \rangle_i
+= \langle \delta E^m \rangle_{i + 1}
+- \langle \delta E^m \rangle_{i}$.
 %
 For multiple temperatures, $f_i$
 can be computed as
@@ -1687,7 +1693,7 @@ arfken, whittaker, wang_specfunc, abramowitz}:
   \right],
 \end{align*}
 %
-where $B_{2s}$ is the Bernoulli numbers,
+where $B_{2s}$ are the Bernoulli numbers,
 $B_2 = 1/6$, $B_4 = -1/30$, \ldots,
 and $S = 1$.
 %
@@ -1721,60 +1727,109 @@ using Euler polynomials\cite{
 wang_specfunc, abramowitz}
 in place of Bernoulli ones.
 %
-For $S' = 2$, we get
+Thus,
 \begin{align}
 \Delta f_i
 \approx
-\bar E_i \, \Delta \beta_i
+\overline{ \langle E \rangle }_i \, \Delta \beta_i
 -
-\frac{1}{24} \left(
-  \langle \Delta E^3 \rangle_{i + 1}
-  +
-  \langle \Delta E^3 \rangle_{i}
-\right)
-\Delta \beta_i^3.
+\overline{ \langle \delta E^3 \rangle }_i
+\, \frac{ \Delta \beta_i^3 } { 12 }
++ \cdots.
 \label{eq:df_eavc}
 \end{align}
 
 
 
 
+If the WHAM or BAR equation
+is applied to the two temperature,
+$\Delta f_i$ satisfies
+%
+\begin{equation*}
+\left\langle
+\frac{ 1 }
+{ 1 + e^{-\Delta \beta_j E + \Delta f_j} }
+\right\rangle_j
+=
+\left\langle
+\frac{ 1 }
+{ 1 + e^{\Delta \beta_j E - \Delta f_j} }
+\right\rangle_{j+1}.
+\end{equation*}
+%
+Expanding the solution
+in powers of $\Delta \beta_j$
+yields
+\begin{align}
+\Delta f_i
+&
+\approx
+\overline{ \langle E \rangle }_i \, \Delta \beta_i
+%
+-\overline{ \langle \delta E^3 \rangle }_i
+\, \frac{ \Delta \beta_i^3 } { 12 }
+%
+-\Delta \langle E \rangle_i
+\, \Delta \langle \delta E^2 \rangle_i
+\, \frac{ \Delta \beta_i^3 } { 16 }
+\notag \\
+&
+\phantom{\approx}
+%
+-\overline{ \langle \delta E^2 \rangle }_i
+\, \overline{ \langle \delta E^3 \rangle }_i
+\, \frac{ \Delta \beta_i^5 } { 48 }
+%
++\overline{ \langle \delta E^5 \rangle }_i
+\, \frac{ \Delta \beta_i^5 } { 120 }
++ \cdots.
+\notag
+%\label{eq:df_eavbar}
+\end{align}
+%
+The first two terms, up to $O(\Delta \beta_i^3)$,
+are the same as those in Eq. \eqref{eq:df_eavc},
+although higher-order terms differ.
+
+
 
 We compared the above equations
-%Eqs. \eqref{eq:df_eav} and \eqref{eq:df_eavb}
+%Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavb}, and \eqref{eq:df_eavc}
 with UIM\cite{kastner2005}
 (which is also an approximate method)
 on the $32\times 32$ Ising model,
 %
-using the exact
-$\langle E \rangle_i$
-and
-$\langle \Delta E^2 \rangle_i$\cite{
+using the exact solution\cite{
 ferdinand1969}
 (since we wish to study
 the accuracy, not precision).
 %
-Figure \ref{fig:is2approx}
-shows that
-Eq. \eqref{eq:df_eavb}
-was more accurate than
+In Fig. \ref{fig:is2approx}(a),
+we show that
+Eqs. \eqref{eq:df_eavb},
+\eqref{eq:df_eavc},
+and UIM
+produced more accurate results than
 Eq. \eqref{eq:df_eav}.
 %
 With $\Delta T = 0.2$,
 the error of Eq. \eqref{eq:df_eav}
 was up to $O(1)$.
 %
-Generally, the UIM results were more accurate
-than those of Eq. \eqref{eq:df_eav},
-and less sensitive to the spacing $\Delta T$.
+The accuracy of
+Eqs. \eqref{eq:df_eavb} and \eqref{eq:df_eavc}
+decreased with temperature spacing $\Delta T$,
+whereas
+UIM was less sensitive.
 %
 However, for a small spacing,
-Eq. \eqref{eq:df_eavb} was superior.
+Eqs. \eqref{eq:df_eavb} and \eqref{eq:df_eavc}
+were superior.
 %
 Thus, with ample data,
 UIM should be replaced
 by a more accurate alternative, e.g., ST-WHAM.
-
 
 
 
@@ -1785,7 +1840,7 @@ by a more accurate alternative, e.g., ST-WHAM.
   \caption{
     \label{fig:is2approx}
     Errors of the dimensionless free energies, $f_i$,
-    from Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavb},
+    from Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavb}, \eqref{eq:df_eavc},
     and UIM for the $32\times 32$ Ising model.
     %
     $f_i$ at $T = 1.5$ is fixed at zero.
@@ -1806,7 +1861,7 @@ the error of Eq. \eqref{eq:df_eav}
 is of order $N \, \Delta \beta_i^3$
 of a system of size $N$,
 since
-$\partial \langle \Delta E^2 \rangle / \partial \beta
+$\partial \langle \delta E^2 \rangle / \partial \beta
 = -\partial^2 \langle E \rangle / \partial \beta^2$
 is extensive.
 %
@@ -1824,14 +1879,14 @@ of neighboring temperatures
 barely overlap,
 %
 the average energy difference,
-$\Delta E = \left| \langle E \rangle_{i+1} - \langle E \rangle_i \right|$,
+$\Delta \langle E \rangle_i = \langle E \rangle_{i+1} - \langle E \rangle_i$,
 between neighboring temperatures
 is roughly a multiple of the width of
 the energy distribution
-$\sqrt{ \langle \Delta E^2 \rangle_i } \propto O(\sqrt{N})$.
+$\sqrt{ \langle \delta E^2 \rangle_i } \propto O(\sqrt{N})$.
 %
-So $\Delta \beta$,
-given by $\Delta E / |\partial E/\partial \beta|$,
+So $\Delta \beta_i$,
+given by $\Delta \langle E \rangle_i / |\partial E/\partial \beta|$,
 is $O(1/\sqrt{N})$,
 %
 and the accumulative error

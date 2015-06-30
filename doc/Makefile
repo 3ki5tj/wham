@@ -6,7 +6,8 @@ epsfigs=$(patsubst %.gp,%.eps, $(figgps))
 
 texpdf = $(prj).pdf
 
-$(texpdf) : %.pdf : %.tex simul.bib $(pdffigs) Makefile
+$(texpdf) : %.pdf : %.tex simul.bib $(pdffigs) $(figgps) Makefile
+	make -C fig
 	pdflatex $<
 	bibtex $*
 	pdflatex $<

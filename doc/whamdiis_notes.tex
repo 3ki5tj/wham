@@ -1,5 +1,5 @@
 %\documentclass[reprint,superscriptaddress]{revtex4-1}
-\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
+\documentclass[aip,jcp,preprint,notitlepage, superscriptaddress]{revtex4-1}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{color}
@@ -21,13 +21,17 @@
 
 
 
-\title{Notes}
+\title{Notes on WHAM, MBAR and DIIS}
 
 \maketitle
 
 
 
-\section{Mnemonic derivation of WHAM}
+\section{Methods: WHAM}
+
+
+
+\subsection{Mnemonic derivation of WHAM}
 
 
 
@@ -78,7 +82,7 @@ yields Eq. \eqref{eq:gE_WHAM}.
 
 
 
-\section{Derivation of Eq. (5) from Eqs. (3) and (4)}
+\subsection{Derivation of Eq. (5) from Eqs. (3) and (4)}
 
 
 
@@ -134,7 +138,7 @@ which is Eq. (5).
 
 
 
-\section{Derivation of Eq. (6) from Eq. (5)}
+\subsection{Derivation of Eq. (6) from Eq. (5)}
 
 
 From Eq. (5)
@@ -244,7 +248,7 @@ which is Eq. (6).
 
 
 
-\section{Statistical-temperature WHAM}
+\subsection{Statistical-temperature WHAM}
 
 
 
@@ -286,7 +290,11 @@ This is the main result of ST-WHAM.
 
 
 
-\section{Determination of coefficients in DIIS}
+
+\section{Methods: DIIS}
+
+
+\subsection{Determination of coefficients in DIIS}
 
 
 
@@ -381,7 +389,7 @@ can be written in matrix form
 
 
 
-\section{Parameters for Figure 1}
+\subsection{Parameters for Figure 1}
 
 
 
@@ -584,7 +592,7 @@ $\phi = \arctan(\bar y/\bar x) = \arctan \left(-\sqrt 2 - 1\right) = -3 \, \pi/8
 
 
 
-\section{Probabilistic derivation}
+\section{Appendix A: Probabilistic derivation}
 
 
 
@@ -719,7 +727,7 @@ q_i(\vct y) d\vct y
 
 
 
-\section{Approximate formulae}
+\section{Appendix C: Approximate formulae}
 
 
 
@@ -1221,6 +1229,279 @@ In the main text,
 we set $b = \beta_{i + 1}$,
 $a = \beta_i$,
 and $E_{2s - 1} \rightarrow a_s$.
+
+
+
+\subsection{Solution to the BAR equation}
+
+
+
+For two temperatures, $\beta_0$ and $\beta_1$,
+the BAR or WHAM equation reads
+%
+\begin{equation*}
+\int
+  \frac{ \rho_j(E) + \rho_{j+1}(E) }
+  { 1 + \exp( -\Delta \beta_j \, E + \Delta f_j ) }
+  \, d E
+= 1,
+\end{equation*}
+%
+or
+%
+\begin{equation*}
+\int
+  \frac{ \rho_0(E) }
+  { 1 + \exp( -\Delta \beta \, E + \Delta f ) }
+  \, d E
+=
+\int
+  \frac{ \rho_1(E) }
+  { 1 + \exp( \Delta \beta \, E - \Delta f ) }
+  \, d E,
+\end{equation*}
+%
+where
+$\Delta \beta = \beta_1 - \beta_0$,
+and
+$\Delta f = f_1 - f_0$.
+%
+In terms of averages,
+\begin{equation}
+\left\langle
+  \frac{ 2 }
+  { 1 + \exp( -\Delta \beta \, E + \Delta f ) }
+\right\rangle_0
+=
+\left\langle
+  \frac{ 2 }
+  { 1 + \exp( \Delta \beta \, E - \Delta f ) }
+\right\rangle_1
+\label{eq:bar}
+\end{equation}
+%
+We expand $\Delta f$ in terms of powers of $\Delta \beta$:
+\[
+\Delta f
+=
+\sum_{n = 1}^\infty f_n \, \Delta \beta^n.
+\]
+
+
+
+For convenience,
+we define
+\[
+\phi_n \equiv (f_n - \delta_{n,1} \Delta E) \, \Delta \beta^n
+\]
+and
+\[
+\phi = \sum_{n = 1}^\infty \phi_n.
+\]
+Thus, Eq. \eqref{eq:bar} can be written as
+\begin{align*}
+\left\langle
+  \frac{ 2 }
+  { 1 + \exp \phi  }
+\right\rangle_0
+=
+\left\langle
+  \frac{ 2 }
+  { 1 + \exp -\phi }
+\right\rangle_1
+\label{eq:bar1}
+\end{align*}
+
+
+We now expand the left-hand side as
+%
+\begin{align*}
+\left\langle
+  \frac{ 2 }
+  { 1 + \exp \phi  }
+\right\rangle_0
+&=
+\left\langle
+\sum_{n = 0}^\infty
+E_n(0) \frac{ \phi^n } { n! }
+\right\rangle_0
+\notag \\
+&=
+\sum_{n = 0}^\infty
+\sum_{n_1 + n_2 + \dots = n}
+E_n(0)
+\frac{ \langle \phi_1^{n_1} \rangle_0 \,
+      \phi_2^{n_2} \, \cdots } { n_1! \, n_2! \, \cdots }.
+\end{align*}
+%
+Note that only $\phi_1$ depends on $E$,
+so the averaging only applies to $\phi_1$ and its powers.
+%
+The right-hand side
+can be similarly expanded
+with substitutions
+$\phi_k \rightarrow -\phi_k$,
+and
+$\langle \dots \rangle_0 \rightarrow \langle \dots \rangle_1$.
+
+
+
+We collect terms proportional $\Delta \beta^M$
+and let $M$ increase gradually from 1.
+%
+Since $\phi_k \propto \Delta \beta^k$,
+we are collecting terms with
+\begin{equation}
+n_1 + 2 \, n_2 + 3 \, n_3 + \dots = M,
+\label{eq:sumn_M}
+\end{equation}
+Also,
+for $n \ge 1$,
+$E_n(0) = 0$ if $n$ is even,
+thus $n$ has to be odd.
+
+
+
+\subsubsection{$M = 1$}
+
+
+
+For $M = 1$,
+we have $n_1 = 1$,
+\[
+\langle \phi_1 \rangle_0
+=
+-\langle \phi_1 \rangle_1.
+\]
+or
+\[
+f_1 =
+\frac{
+  \langle E \rangle_0
+  +
+  \langle E \rangle_1
+}{ 2 }.
+\]
+
+
+
+\subsubsection{Parity}
+
+
+
+For $M = 2$,
+we have only the term $n_1 = 0, n_2 = 1$,
+because the term $n_1 = 2, n_2 = 0$
+makes $n = n_1 + n_2$ even,
+and $E_n(0) = 0$.
+%
+Thus,
+\[
+\phi_2
+=
+-\phi_2,
+\]
+or $\phi_2 = 0$.
+
+
+
+Generally,
+for any even $M$,
+$\phi_M = 0$.
+%
+To see that, we carry an induction on even $M$
+%
+If $M$ is even,
+we find from Eq. \eqref{eq:sumn_M} that
+$n_1 + n_3 + \cdots + n_{M - 1}$ must be even.
+But
+$n = n_1 + n_3 + \cdots + n_{M - 1} + n_M$
+must be odd
+(note that the induction hypothesis asserts
+that $n_2 = n_4 = \cdots = n_{M-2} = 0$).
+%
+Thus, $n_M$ must be odd,
+and to satisfy $\sum_{k = 1}^M k n_k = M$,
+we have $n_1 = \dots = n_{M-1} = 0$,
+and $n_M = 1$.
+%
+Thus,
+%
+\[
+E_1(0) \, \phi_M
+=
+-E_1(0) \, \phi_M,
+\]
+which shows that $\phi_M = 0$.
+
+
+
+\subsubsection{$M = 3$}
+
+
+
+There are two relevant terms
+$n_3 = 1$,
+and $n_1 = 3$.
+%
+\[
+E_1(0) \, \phi_3
++
+E_3(0) \, \langle \phi_1^3 /3! \rangle_0
+=
+-E_1(0) \, \phi_3
+-
+E_3(0) \, \langle \phi_1^3 /3! \rangle_1
+\]
+and
+\[
+\phi_3
+=
+\frac{
+\langle \phi_1^3 \rangle_0
++
+\langle \phi_1^3 \rangle_1
+}{24}.
+\]
+%
+Let
+$c = \left( \langle E \rangle_1 - \langle E \rangle_0 \right) / 2$,
+For $\beta_0$
+$\phi_1 = \Delta \beta \, (c - \delta E)$,
+where
+$\delta E = E - \langle E \rangle_0$.
+%
+For $\beta_1$,
+$\phi_1 = \Delta \beta \, (-c -\delta E)$
+where
+$\delta E = E - \langle E \rangle_1$.
+%
+So
+\[
+\phi_3
+=
+-
+\frac{
+\langle \delta E^3 \rangle_0
++
+\langle \delta E^3 \rangle_1
+}{24}
+-
+\frac{
+  \left(
+    \langle E \rangle_1
+    -
+    \langle E \rangle_0
+  \right)
+  \left(
+    \langle \delta E^2 \rangle_1
+    -
+    \langle \delta E^2 \rangle_0
+  \right)
+}{16}.
+\]
+
+
 
 
 

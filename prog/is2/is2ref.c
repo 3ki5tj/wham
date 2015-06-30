@@ -29,6 +29,27 @@ static void model_default_is2(model_t *m)
 
 
 
+static double is2_exactx(int lx, int ly, double beta,
+    double *eav, double *var, double *skw)
+{
+  double lnz, db = 1e-6;
+  double beta1, eav1, var1;
+  double beta2, eav2, var2;
+
+  lnz = is2_exact(lx, ly, beta, eav, var);
+  *var /= beta * beta;
+  beta1 = beta - db;
+  is2_exact(lx, ly, beta1, &eav1, &var1);
+  var1 /= beta1 * beta1;
+  beta2 = beta + db;
+  is2_exact(lx, ly, beta2, &eav2, &var2);
+  var2 /= beta2 * beta2;
+  *skw = (var1 - var2) / (2 * db);
+  return lnz;
+}
+
+
+
 /* compute lnz from umbrella integration */
 static double getlnzui(int m, double *lnz,
     double *beta, double *eav, double *var)
@@ -115,9 +136,9 @@ static double getlnzui(int m, double *lnz,
 int main(int argc, char **argv)
 {
   model_t m[1];
-  double *beta, *eav, *var, *lnz;
-  double *lnza, *lnzb, *lnzuip, *lnzui;
-  double db, dlnza, dlnzb, dlnzuip;
+  double *beta, *eav, *var, *skw, *lnz;
+  double *lnza, *lnzb, *lnzc, *lnzuip, *lnzui;
+  double db, dlnza, dlnzb, dlnzc, dlnzuip;
   int iT, jT;
 
   model_default_is2(m);
@@ -126,9 +147,11 @@ int main(int argc, char **argv)
   xnew(beta, m->nT);
   xnew(eav, m->nT);
   xnew(var, m->nT);
+  xnew(skw, m->nT);
   xnew(lnz, m->nT);
   xnew(lnza, m->nT);
   xnew(lnzb, m->nT);
+  xnew(lnzc, m->nT);
   xnew(lnzuip, m->nT);
   xnew(lnzui, m->nT);
 
@@ -136,15 +159,14 @@ int main(int argc, char **argv)
   for ( iT = 0; iT < m->nT; iT++ ) {
     double T = m->Tmin + m->Tdel * iT;
     beta[iT] = 1 / T;
-    lnz[iT] = is2_exact(m->L, m->L, beta[iT], &eav[iT], &var[iT]);
-    var[iT] *= T * T;
+    lnz[iT] = is2_exactx(m->L, m->L, beta[iT], &eav[iT], &var[iT], &skw[iT]);
   }
   for ( iT = m->nT - 1; iT >= 0; iT-- ) {
     lnz[iT] -= lnz[0];
   }
 
   /* compute pairwise estimates values */
-  lnza[0] = lnzb[0] = lnzuip[0];
+  lnza[0] = lnzb[0] = lnzc[0] = lnzuip[0];
   for ( iT = 1; iT < m->nT; iT++ ) {
     jT = iT - 1;
     db = beta[iT] - beta[jT];
@@ -152,22 +174,27 @@ int main(int argc, char **argv)
     lnza[iT] = lnza[jT] + dlnza;
     dlnzb = dlnza - (var[iT] - var[jT]) / 12 * db * db;
     lnzb[iT] = lnzb[jT] + dlnzb;
+    dlnzc = dlnza + (skw[iT] + skw[jT]) / 24 * db * db * db;
+    lnzc[iT] = lnzc[jT] + dlnzc;
     dlnzuip = getlnzui(2, lnzui, beta + jT, eav + jT, var + jT);
     lnzuip[iT] = lnzuip[jT] + dlnzuip;
   }
 
   getlnzui(m->nT, lnzui, beta, eav, var);
   for ( iT = 0; iT < m->nT; iT++ ) {
-    printf("%5.3f %14.7f %14.7f %14.7f %14.7f %14.7f\n",
-        1/beta[iT], lnz[iT], lnza[iT], lnzb[iT], lnzuip[iT], lnzui[iT]);
+    printf("%5.3f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f\n",
+        1/beta[iT], lnz[iT], lnza[iT], lnzb[iT], lnzc[iT],
+        lnzuip[iT], lnzui[iT]);
   }
 
   free(beta);
   free(eav);
   free(var);
+  free(skw);
   free(lnz);
   free(lnza);
   free(lnzb);
+  free(lnzc);
   free(lnzuip);
   free(lnzui);
 

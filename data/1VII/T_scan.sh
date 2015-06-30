@@ -25,7 +25,7 @@ fi
 
 for dir in `ls --color=none -d T[0-9][0-9][0-9]`; do
   cd $dir
-  echo "11 17 0" | $gmx energy -f nvt.edr -o e.xvg
+  echo "11 0" | $gmx energy -f nvt.edr -o e.xvg
   rm -f \#*
   cd ..
 done

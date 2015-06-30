@@ -43,14 +43,14 @@ set style line 21 lw 8.0 lt 4 lc rgb color3  pt 1   ps 2.0
 
 set style line 9  lw 2.0 lt 1 lc rgb color9  pt 1   ps 1.0
 
-plot [300:420][1e-9:2e2] \
-  "../../data/1VII/stwham_de1.out"    u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 11  t "ST-WHAM, {/Symbol D}{/Times-Italic E} = 1.0", \
-  "../../data/1VII/stwham_de10.out"   u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 12  t "ST-WHAM, {/Symbol D}{/Times-Italic E} = 10.0", \
-  "../../data/1VII/stwham_de100.out"  u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 13  t "ST-WHAM, {/Symbol D}{/Times-Italic E} = 100.0", \
-  "../../data/1VII/uiwham_de0.1.out"  u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w  p ls 21  t "UIM, {/Symbol D}{/Times-Italic E} = 0.1", \
-  "../../data/1VII/wham_de1.out"      u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 1   t "WHAM, {/Symbol D}{/Times-Italic E} = 1.0", \
-  "../../data/1VII/wham_de10.out"     u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 2   t "WHAM, {/Symbol D}{/Times-Italic E} = 10.0", \
-  "../../data/1VII/wham_de100.out"    u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 3   t "WHAM, {/Symbol D}{/Times-Italic E} = 100.0", \
+plot [300:420][1e-9:1e2] \
+  "../../data/1VII/stwham_de1.out"    u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 11  t "ST-WHAM, {/Times-Italic h} = 1.0", \
+  "../../data/1VII/stwham_de10.out"   u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 12  t "ST-WHAM, {/Times-Italic h} = 10.0", \
+  "../../data/1VII/stwham_de100.out"  u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 13  t "ST-WHAM, {/Times-Italic h} = 100.0", \
+  "../../data/1VII/uiwham_de0.1.out"  u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w  p ls 21  t "UIM, {/Times-Italic h} = 0.1", \
+  "../../data/1VII/wham_de1.out"      u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 1   t "WHAM, {/Times-Italic h} = 1.0", \
+  "../../data/1VII/wham_de10.out"     u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 2   t "WHAM, {/Times-Italic h} = 10.0", \
+  "../../data/1VII/wham_de100.out"    u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 3   t "WHAM, {/Times-Italic h} = 100.0", \
 
 
 

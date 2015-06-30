@@ -2,61 +2,92 @@
 
 set encoding cp1250 # make the minus sign longer
 set terminal push
-set terminal postscript eps enhanced size 5, 3.5 font "Times, 24"
+set terminal postscript eps enhanced size 10, 4.5 font "Times, 48"
 set output "is2approx.eps"
 
 
-set xlabel "{/Times-Italic T}" offset 0, 0.5
-set xtics 0.2 font "Times,20" offset 0, 0.3
-set mxtics 2
+set multiplot
+
+
+wl = 0.54
+wr = 1 - wl
+ht = 0.87
+
+
+set size wl, ht
+set origin 0, 1 - ht
+
+
+
+set xlabel "{/Times-Italic T}" offset -1.0, 1.0
+set xtics 0.5 offset 0, 0.3
+set mxtics 5
+set xrange [1.5:3.2]
 
 set logscale y
 set format y "10^{%T}"
-set ylabel "&{i}_{/*2.5 |} {/Times-Itaic f_i} - {/Times-Italic f_i}^{ref}&{i}_{/*2.5 |}" offset 0.5, 0
-set ytics font "Times,20" offset 0.5, 0
+set ylabel "&{i}_{/*2.5 |} {/Times-Itaic f_i} - {/Times-Italic f_i}^{ref}&{i}_{/*2.5 |}" offset 0, 0
+set ytics offset 0.5, 0
 set mytics 10
+set yrange [2e-6:40]
 
-color1  = "#224488"
-color2  = "#aa2222"
-color3  = "#aa22aa"
-color4  = "#008000"
+set tmargin 1
+set rmargin 0.
 
-color11 = "#aaaaff"
-color12 = "#ffaaaa"
-color13 = "#ffaaff"
+color1  = "#882222"
+color2  = "#224488"
+color3  = "#8822aa"
+color4  = "#006000"
+
+color11 = "#ffaaaa"
+color12 = "#aaaaff"
+color13 = "#ddaaff"
 color14 = "#80cc80"
 
 
 
-set style line 1  lw 1.0 lt 1 lc rgb color1  pt 4   ps 1.2
-set style line 2  lw 1.0 lt 2 lc rgb color2  pt 8   ps 1.5
-set style line 3  lw 1.0 lt 3 lc rgb color3  pt 10  ps 1.5
-set style line 4  lw 1.0 lt 4 lc rgb color4  pt 6   ps 1.5
+set style line 1  lw 1.0 lt 4 lc rgb color1  pt 5  ps 2.3
+set style line 2  lw 1.0 lt 4 lc rgb color2  pt 9  ps 3.0
+set style line 3  lw 1.0 lt 4 lc rgb color3  pt 11 ps 3.0
+set style line 4  lw 1.0 lt 4 lc rgb color4  pt 7  ps 2.5
 
-set style line 11 lw 1.0 lt 1 lc rgb color11 pt 5   ps 1.2
-set style line 12 lw 1.0 lt 2 lc rgb color12 pt 9   ps 1.5
-set style line 13 lw 1.0 lt 3 lc rgb color13 pt 11  ps 1.5
-set style line 14 lw 1.0 lt 4 lc rgb color14 pt 7   ps 1.5
+set key at screen 0, 0.02 left bottom Left reverse invert samplen 4 width -1 spacing 1.3 maxrows 1
 
-set style line 21 lw 1.0 lt 1 lc rgb color1  pt 5   ps 1.2
-set style line 22 lw 1.0 lt 2 lc rgb color2  pt 9   ps 1.5
-set style line 23 lw 1.0 lt 3 lc rgb color3  pt 11  ps 1.5
-set style line 24 lw 1.0 lt 4 lc rgb color4  pt 7   ps 1.5
+set label 1 "(a) {/Symbol-Oblique D}{/Times-Italic T} = 0.05" at 1.55, 8.0
 
-set key at 3.1, 4e-6 Left reverse invert maxrows 4 samplen 1.8 width -9.7 font "Times,18" spacing 1.0
-
-plot [1.5:3.1][1e-7:4] \
-  "../../data/is2/is2approx0.2.out"  u 1:($1 > 1.501 ? abs($2-$3) : 1/0) w lp ls 22 t "Eq. (C1), {/Symbol-Oblique D}{/Times-Italic T} = 0.2", \
-  "../../data/is2/is2approx0.1.out"  u 1:($1 > 1.501 ? abs($2-$3) : 1/0) w lp ls 12 t "Eq. (C1), {/Symbol-Oblique D}{/Times-Italic T} = 0.1", \
-  "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$3) : 1/0) w lp ls  2 t "Eq. (C1), {/Symbol-Oblique D}{/Times-Italic T} = 0.05", \
-  "../../data/is2/is2approx0.2.out"  u 1:($1 > 1.501 ? abs($2-$4) : 1/0) w lp ls 21 t "Eq. (C2), {/Symbol-Oblique D}{/Times-Italic T} = 0.2", \
-  "../../data/is2/is2approx0.1.out"  u 1:($1 > 1.501 ? abs($2-$4) : 1/0) w lp ls 11 t "Eq. (C2), {/Symbol-Oblique D}{/Times-Italic T} = 0.1", \
-  "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$4) : 1/0) w lp ls  1 t "Eq. (C2), {/Symbol-Oblique D}{/Times-Italic T} = 0.05", \
-  "../../data/is2/is2approx0.2.out"  u 1:($1 > 1.501 ? abs($2-$6) : 1/0) w lp ls 24 t "UIM, {/Symbol-Oblique D}{/Times-Italic T} = 0.2", \
-  "../../data/is2/is2approx0.1.out"  u 1:($1 > 1.501 ? abs($2-$6) : 1/0) w lp ls 14 t "UIM, {/Symbol-Oblique D}{/Times-Italic T} = 0.1", \
-  "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$6) : 1/0) w lp ls  4 t "UIM, {/Symbol-Oblique D}{/Times-Italic T} = 0.05", \
+plot \
+  "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$3) : 1/0) w lp ls 1 notitle, \
+  "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$4) : 1/0) w lp ls 2 notitle, \
+  "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$5) : 1/0) w lp ls 3 notitle, \
+  "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$7) : 1/0) w lp ls 4 notitle, \
+  1e10 w lp ls 1 ps 3.2 t "Eq. (C1)", \
+  1e10 w lp ls 2 ps 4.0 t "Eq. (C2)", \
+  1e10 w lp ls 3 ps 4.0 t "Eq. (C3)", \
+  1e10 w lp ls 4 ps 3.2 t "UIM"
 
 
+
+set size wr, ht
+set origin wl, 1 - ht
+
+
+unset ylabel
+set format y ""
+set lmargin 0
+set rmargin 1
+
+set key at 2.9, 4e-6
+
+set label 1 "(b) {/Symbol-Oblique D}{/Times-Italic T} = 0.2"
+
+plot \
+  "../../data/is2/is2approx0.2.out" u 1:($1 > 1.501 ? abs($2-$3) : 1/0) w lp ls 1 ps 3.2 notitle, \
+  "../../data/is2/is2approx0.2.out" u 1:($1 > 1.501 ? abs($2-$4) : 1/0) w lp ls 2 ps 4.0 notitle, \
+  "../../data/is2/is2approx0.2.out" u 1:($1 > 1.501 ? abs($2-$5) : 1/0) w lp ls 3 ps 4.0 notitle, \
+  "../../data/is2/is2approx0.2.out" u 1:($1 > 1.501 ? abs($2-$7) : 1/0) w lp ls 4 ps 3.2 notitle, \
+
+
+unset multiplot
 
 unset output
 set terminal pop

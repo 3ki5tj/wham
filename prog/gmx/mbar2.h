@@ -133,7 +133,7 @@ static void mbar2_estimatelnz(mbar2_t *mbar, double *lnz)
     n = xvg->n;
     for ( i = 0; i < n; i++ ) {
       x = xvg->y[0][i];
-      y = xvg->y[2][i];
+      y = xvg->y[1][i];
       dlnz = mbar2_lnadd(dlnz, dbx * x + dby * y);
     }
     lnz[k] = lnz[kk] + (n > 0 ? log(n) - dlnz : 0);
@@ -167,7 +167,7 @@ static double mbar2_step(mbar2_t *mbar, double *lnz, double *res, double damp)
     for ( l = 0; l < n; l++ ) {
       /* compute the denominator for frame (i, l) */
       x = xvg->y[0][l];
-      y = xvg->y[2][l];
+      y = xvg->y[1][l];
       lnden = LOG0;
       for ( j = 0; j < nbeta; j++ ) {
         lnden = mbar2_lnadd(lnden,
@@ -185,7 +185,7 @@ static double mbar2_step(mbar2_t *mbar, double *lnz, double *res, double damp)
       n = xvg->n;
       for ( l = 0; l < n; l++ ) {
         x = xvg->y[0][l];
-        y = xvg->y[2][l];
+        y = xvg->y[1][l];
         lny = mbar2_lnadd(lny,
             -mbar->bx[i] * x - mbar->by[j] * y - mbar->lnden[j][l]);
       }

@@ -12,6 +12,9 @@
 
 
 
+#define EVCNT  2
+
+
 
 /* construct the histogram */
 static hist2_t *mkhist2(const char *fnls,
@@ -22,8 +25,8 @@ static hist2_t *mkhist2(const char *fnls,
   int i, j, nbp, k;
   char **fns;
   xvg_t **xvg = NULL;
-  double evmin[3] = {1e30, 1e30, 1e30}, evmax[3] = {-1e30, -1e30, -1e30};
-  double evmin1[3], evmax1[3];
+  double evmin[EVCNT] = {1e30, 1e30}, evmax[EVCNT] = {-1e30, -1e30};
+  double evmin1[EVCNT], evmax1[EVCNT];
 
   /* scramble the random number seed */
   mtscramble( time(NULL) );
@@ -38,7 +41,7 @@ static hist2_t *mkhist2(const char *fnls,
       exit(1);
     }
     xvg_minmax(xvg[i], evmin1, evmax1);
-    for ( k = 0; k < 3; k++ ) {
+    for ( k = 0; k < EVCNT; k++ ) {
       if ( evmin1[k] < evmin[k] ) {
         evmin[k] = evmin1[k];
       }
@@ -50,11 +53,11 @@ static hist2_t *mkhist2(const char *fnls,
 
   evmin[0] = ((int) (evmin[0] / de) - 1) * de;
   evmax[0] = ((int) (evmax[0] / de) + 1) * de;
-  evmin[2] = ((int) (evmin[2] / dv) - 1) * dv;
-  evmax[2] = ((int) (evmax[2] / dv) + 1) * dv;
+  evmin[1] = ((int) (evmin[1] / dv) - 1) * dv;
+  evmax[1] = ((int) (evmax[1] / dv) + 1) * dv;
 
   hs = hist2_open(nbp, evmin[0], evmax[0], de,
-      evmin[2], evmax[2], dv);
+      evmin[1], evmax[1], dv);
 
   for ( i = 0; i < nbp; i++ ) {
     for ( j = 0; j < xvg[i]->n; j++ ) {
