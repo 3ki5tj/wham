@@ -39,6 +39,10 @@ can be improved by using the method of direct inversion in the iterative subspac
 
 
 
+A central theme in free-energy calculation
+is to extract best estimate of the free energy
+from a given set of simulation data.
+%
 The multiple histogram method\cite{
 ferrenberg1988, *ferrenberg1989}
 or its generalization,
@@ -48,7 +52,7 @@ bartels1997, *habeck2007, *habeck2012,
 souaille2001, kastner2005,
 chodera2007, bereau2009,
 kim2011},
-is a useful tool
+is such an efficient tool
 of calculating free energy
 in computer simulations\cite{
 newman, *frenkel}.
@@ -1021,25 +1025,22 @@ dramatically in these cases.
     for better comparison.
     %
     The four test cases are
-    Ising model in the $NVT$ ensemble with WHAM,
-    villin headpiece in the $NVT$ ensemble with WHAM and MBAR,
+    (1) Ising model in the $NVT$ ensemble with WHAM,
+    (2) villin headpiece in the $NVT$ ensemble with WHAM
+    (with the bin width of energy histograms being 1.0),
+    (3) the same system with MBAR,
     and
-    LJ fluid in the $NpT$ ensemble with WHAM.
+    (4) LJ fluid in the $NpT$ ensemble with WHAM.
     %
     The scaling factors $\tau$ are
     {\color{red} $9.8$, $9.8$, $1250$, and $1525$} seconds,
     respectively.
     %
-    For the Ising model and LJ fluid,
-    the results were averaged
-    over many independent samples.
-    %
-    For the villin headpiece,
-    roughly 10\% of the trajectory frames
-    were randomly selected
-    to build a sample each time.
-    %
-    The results were then averaged.
+    The results were averaged
+    over independent samples
+    for the Ising model and LJ fluid,
+    or over bootstrap samples
+    for the villin headpiece.
     %
     The lines are to guide the eyes.
   }
@@ -1146,13 +1147,13 @@ in the long run (cf. Appendix \ref{sec:approxf}).
   }
   \caption{
     \label{fig:is2ref}
-    The errors of
-    (a) dimensionless free energies and
+    Errors of
+    (a) the dimensionless free energies and
     (b) the logarithm of the density of states
     for the $N = 64\times64$ two-dimensional Ising model.
     %
     Here,
-    $\varepsilon(a) \equiv a - a^\mathrm{(ref)}$.
+    $\varepsilon(a) \equiv a - a^\mathrm{ref}$.
     %
     The reference values of the free energies and
     the density of states were obtained
@@ -1239,34 +1240,36 @@ and by the SETTLE method\cite{
 miyamoto1992}
 for water molecules.
 %
-Energy frames were registered every 0.1 ps.
 
 
 
 We simulated the system under 12 temperatures
 $T$ = 300 K, 310 K, \dots, 410 K,
-each for about 200 ns.
+each for about 200 ns,
 %
-The histogram bin size was $1.0$.
+Energy frames were registered every 0.1 ps,
+so that there were about 2 million frames
+in each temperature.
 %
 As shown in Fig. \ref{fig:nsnt},
-direct WHAM suffers from a slow convergence,
+direct WHAM suffered from a slow convergence,
 while the DIIS version again
 delivered a speedup of two orders of magnitude,
 in the number of iterations or real run time.
 
 
 
-The bin size dependency of WHAM and ST-WHAM
-is compared in Fig. \ref{fig:whamcmp}.
+We compared the errors of WHAM, ST-WHAM, UIM
+and approximate formulae in Fig. \ref{fig:whamcmp}.
 %
-WHAM was stable for bin sizes $h \le 100.0$.
+While WHAM was
+relatively indifferent to the bin size,
 %
-The error of ST-WHAM, however,
+the error of ST-WHAM
 increased dramatically with decreasing bin size.
 %
-The bin-size sensitivity was partially due to
-the relatively small sample size.
+This is not unexpected for ST-WHAM depended strongly
+on the precision of histograms.
 %
 Note also that
 we used Eq. \eqref{eq:dn} for differentiation
@@ -1275,13 +1278,25 @@ and the trapezoidal rule for integration.
 Better handling of missing data,
 numerical differentiation
 and/or integration schemes\cite{
-kim2011} may also help improve ST-WHAM.
+kim2011} may help.
 %
 With a sufficiently large bin size,
 ST-WHAM and UIM produced similar and reasonable results.
 %
 The latter is, albeit more approximate,
-insensitive to the bin size, and hence more stable.
+insensitive to the bin size, hence more stable.
+%
+However, both methods might have room for improvement
+as their errors were larger than the estimated error of WHAM.
+%
+We also found that the errors
+of the approximate formulae,
+Eqs. \eqref{eq:df_eav} and \eqref{eq:df_eavb},
+were comparable,
+with the latter being slightly more accurate.
+%
+
+
 
 
 
@@ -1291,8 +1306,9 @@ insensitive to the bin size, and hence more stable.
   }
   \caption{
     \label{fig:whamcmp}
-    Errors of the dimensionless free energies, $f_i$,
-    from WHAM, ST-WHAM and UIM
+    Errors of
+    the dimensionless free energies, $f_i$,
+    from WHAM, ST-WHAM, approximate formulae and UIM
     for the villin headpiece
     with different bin sizes, $h$
     of the energy histograms.
@@ -1303,7 +1319,11 @@ insensitive to the bin size, and hence more stable.
     the zero bin-size limit of WHAM,
     are used as the reference.
     %
-    All frames in the trajectory are used.
+    The random error of WHAM (gray line)
+    was estimated using bootstrapping
+    from the $h = 1.0$ case;
+    the errors of the $h = 10.0$
+    and $h = 100.0$ cases were similar.
     %
     The lines are to guide the eyes.
   }
@@ -1414,7 +1434,7 @@ Probabilistic derivation}
 
 
 
-We follow probabilistic approach\cite{
+Here we follow the probabilistic approach\cite{
 bartels1997, *habeck2007, *habeck2012} to derive
 Eq. \eqref{eq:f_MBAR}.
 %
@@ -1433,7 +1453,7 @@ Z_k[g]
 \label{eq:Zg}
 \end{equation}
 %
-Given a certain $g$,
+Given a certain $g(\vy)$,
 the probability of observing the data set,
 $\{ \vx \}$,
 is given by
@@ -1443,21 +1463,24 @@ p\left( \{ \vx \} | g \right)
 =
 \prod_{k = 1}^K
 \prod_{\vx}^{(k)}
-g(\vx) \, q_k(\vx) / Z_k[g],
+\frac{ g(\vx) \, q_k(\vx) }
+     { Z_k[g] },
 %\label{eq:pg}
 \end{equation*}
 %
-If we assume a uniform prior distribution of $g$,
-then by the Bayes' theorem\cite{leonard},
-the posterior distribution of $g$,
+If we assume a uniform prior distribution,
+$p[g(\vy)]$, of the value of $g(\vy)$,
+at each phase-space point $\vy$,
+then Bayes' theorem\cite{leonard} states that
 given the observed data set,
+the posterior distribution of $g$,
 $p\left( g | \{ \vx \} \right)$,
-is also proportional to
-$p\left( \{ \vx \} | g \right)$.
+is proportional to
+$p\left( \{ \vx \} | g \right) \, p(g) \propto p\left( \{ \vx \} | g \right)$.
 %
 To find the most probable $g(\vy)$,
 we maximize
-$p\left( g | \{ \vx \} \right)$
+$\log p\left( g | \{ \vx \} \right)$
 by taking the functional derivative
 with respect to $g(\vy)$
 and setting it to zero,
@@ -1471,13 +1494,18 @@ g(\vy)
 }
 {
   \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g]
-}.
+},
 \label{eq:gy}
 \end{equation}
 %
+where we have used
+$\delta \log g(\vx) / \delta g(\vy) = \delta(\vx - \vy)/g(\vy)$,
+and
+$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.
+%
 Using Eq. \eqref{eq:gy}
 in Eq. \eqref{eq:Zg},
-and finally setting the $g$ in $Z[g]$ to 1.0
+and finally setting the $g$ in $Z_k[g]$ to 1.0
 yields Eq. \eqref{eq:f_MBAR}.
 
 
@@ -1817,9 +1845,9 @@ With $\Delta T = 0.2$,
 the error of Eq. \eqref{eq:df_eav}
 was up to $O(1)$.
 %
-The accuracy of
+The error of
 Eqs. \eqref{eq:df_eavb} and \eqref{eq:df_eavc}
-decreased with temperature spacing $\Delta T$,
+increased with temperature spacing $\Delta T$,
 whereas
 UIM was less sensitive.
 %
@@ -1827,7 +1855,7 @@ However, for a small spacing,
 Eqs. \eqref{eq:df_eavb} and \eqref{eq:df_eavc}
 were superior.
 %
-Thus, with ample data,
+This suggests that with ample data,
 UIM should be replaced
 by a more accurate alternative, e.g., ST-WHAM.
 
@@ -1839,11 +1867,17 @@ by a more accurate alternative, e.g., ST-WHAM.
   }
   \caption{
     \label{fig:is2approx}
-    Errors of the dimensionless free energies, $f_i$,
+    (a) and (b) Errors of the dimensionless free energies, $f_i$,
     from Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavb}, \eqref{eq:df_eavc},
-    and UIM for the $32\times 32$ Ising model.
+    and UIM for the $32\times 32$ Ising model,
+    $\Delta T = 0.05$ and $0.2$, respectively.
     %
-    $f_i$ at $T = 1.5$ is fixed at zero.
+    The temperatures $T_i$ are uniformly distributed
+    in the range $[1.5, 3.1]$.
+    %
+    (c) Energy histograms at $\Delta T = 0.2$.
+    %
+    $f_1$ at the lowest temperature $T = 1.5$ is fixed at zero.
     %
     Lines are to guide the eyes.
   }
@@ -1853,8 +1887,7 @@ by a more accurate alternative, e.g., ST-WHAM.
 
 Finally, we give a cautionary comment
 on using Eq. \eqref{eq:df_eav}
-for the on-the-fly weight estimates
-in simulated tempering\cite{park2007}.
+for the weight in simulated tempering\cite{park2007}.
 %
 Equation \eqref{eq:df_eavb} shows that
 the error of Eq. \eqref{eq:df_eav}
@@ -1868,7 +1901,7 @@ is extensive.
 Thus,
 if Eq. \eqref{eq:df_eav} is applied to
 an $O(1)$ temperature range
-with an average temperature separation $\Delta \beta$,
+with an average spacing $\Delta \beta$,
 the accumulative error of $f_i$
 is $O(N \, \Delta \beta^2)$.
 %
@@ -1894,7 +1927,7 @@ of $f_i$ is $O(1)$
 (as illustrated in Fig. \ref{fig:is2approx}).
 %
 Thus, if Eq. \eqref{eq:df_eav}
-are used for the weights
+is used for the weights
 in simulated tempering\cite{park2007},
 the resulting temperature distribution
 may deviate appreciably

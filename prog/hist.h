@@ -98,7 +98,10 @@ __inline static void hist_getsums(double *h, int n,
   }
   if ( s[0] > 0 ) {
     s[1] /= s[0];
-    s[2] = s[2] / s[0] - s[1] * s[1];
+    s[2] = s[2] - s[1] * s[1] * s[0];
+    if ( s[0] > 1 ) {
+      s[2] /= s[0] - 1;
+    }
   }
 }
 

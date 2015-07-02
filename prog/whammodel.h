@@ -31,6 +31,7 @@ typedef struct {
   char *fnhis2;
   int loadprev; /* load previous histogram */
   double radd; /* rate of adding trajectory frames into the histogram */
+  int bootstrap;
   double de;
 #ifndef IS2MODEL
   double dv;
@@ -41,6 +42,7 @@ typedef struct {
 #ifdef MBAR
   int mbar_method;
 #endif
+  int estimate;
   int itmin;
   int itmax;
   double tol;
@@ -105,6 +107,7 @@ __inline static void model_default(model_t *m)
   m->fnhis2 = "hist2.dat";
   m->loadprev = 0;
   m->radd = 1.0;
+  m->bootstrap = 0;
   m->de = 1.0;
   m->dv = 0.02;
 #ifdef WHAM
@@ -113,6 +116,7 @@ __inline static void model_default(model_t *m)
 #ifdef MBAR
   m->mbar_method = MBAR_DIRECT;
 #endif
+  m->estimate = 0;
   m->itmin = 0;
   m->itmax = 100000;
   m->tol = 1e-8;
@@ -177,7 +181,8 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --fnhis=:      set the histogram file, default: %s\n", m->fnhis);
   fprintf(stderr, "  --fnhis2=:     set the 2D histogram file, default: %s\n", m->fnhis2);
   fprintf(stderr, "  -H:            load the previous histogram\n");
-  fprintf(stderr, "  -r:            set the rate of adding trajectory frames into the histogram\n");
+  fprintf(stderr, "  -r:            set the rate of adding trajectory frames into the histogram, default %g\n", m->radd);
+  fprintf(stderr, "  --bootstrap=:  set the number of tries for bootstrapping, default %d\n", m->bootstrap);
   fprintf(stderr, "  --de=:         set the energy bin size, default %g\n", m->de);
   fprintf(stderr, "  --dv=:         set the volume bin size, default %g\n", m->dv);
 #ifdef WHAM
@@ -186,6 +191,7 @@ __inline static void model_help(const model_t *m)
 #ifdef MBAR
   fprintf(stderr, "  --mbar=:       set the MBAR method, 'Direct' or 'MDIIS', default: %s\n", mbar_methods[m->mbar_method]);
 #endif
+  fprintf(stderr, "  --est:         only estimate free energies, default %d\n", m->estimate);
   fprintf(stderr, "  --itmin=:      set the minimal number of iterations, default %d\n", m->itmin);
   fprintf(stderr, "  --itmax=:      set the maximal number of iterations, default %d\n", m->itmax);
   fprintf(stderr, "  --tol=:        set the tolerance of error, default %g\n", m->tol);
@@ -277,6 +283,8 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->fnhis = q;
       } else if ( strcmpfuzzy(p, "fnhis2") == 0 ) {
         m->fnhis2 = q;
+      } else if ( strncmpfuzzy(p, "bootstrap", 4) == 0 ) {
+        m->bootstrap = (q != NULL) ? atoi(q) : 1;
       } else if ( strcmpfuzzy(p, "de") == 0 ) {
         m->de = atof(q);
 #ifndef IS2MODEL
@@ -291,6 +299,8 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
       } else if ( strcmpfuzzy(p, "mbar") == 0 ) {
         m->mbar_method = model_select(q, MBAR_NMETHODS, mbar_methods);
 #endif
+      } else if ( strcmpfuzzy(p, "est") == 0 ) {
+        m->estimate = 1;
       } else if ( strcmpfuzzy(p, "itmin") == 0 ) {
         m->itmin = atoi(q);
       } else if ( strcmpfuzzy(p, "itmax") == 0 ) {

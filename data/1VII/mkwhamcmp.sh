@@ -23,6 +23,7 @@ $prog   --wham=mdiis --tol=1e-9 --de=100      -v e.ls > wham_de100.out
 $prog   --wham=st               --de=100   -H -v e.ls > stwham_de100.out
 $prog   --wham=mdiis --tol=1e-9 --de=1000     -v e.ls > wham_de1000.out
 $prog   --wham=st               --de=1000  -H -v e.ls > stwham_de1000.out
-$prog2  --mbar=mdiis --tol=2.5e-8 --itmax=100   -v e.ls > mbar.out
+$prog2  --mbar=mdiis --tol=2.5e-8 --itmax=100 -v e.ls > mbar.out
+$prog2  --est                                 -v e.ls > est.out
 
 python addlnzref.py

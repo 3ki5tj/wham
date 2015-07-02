@@ -60,7 +60,7 @@ def doargs():
   if len(args):
     return args
   else:
-    return glob.glob("*.log") + glob.glob("*.tr")
+    return glob.glob("*.log") + glob.glob("*.tr") + glob.glob("*.bs")
 
 
 
@@ -78,13 +78,27 @@ def dostat(fninp):
 
   s = open(fninp).readlines()
 
-  n = len(s)
+  # number of lines, which is the sample size
+  n = 0
+  for i in range(len(s)):
+    if not s[i].startswith("#"):
+      n += 1
 
-  # find the longest length
+  s0 = s
+  s = []
+  header = None
+  for i in range(len(s0)):
+    if not s0[i].startswith("#"):
+      s += [ s0[i], ]
+    elif s0[i].startswith("#HEADER"):
+      header = s0[i][7:].strip().split()
+
+  # find the maximal number of columns
   m = 0
   for i in range(n):
     m = max(m, len(s[i].strip().split()))
 
+  # compute the statistical moments for each column
   sy = [0.0] * m
   syy = [0.0] * m
   for i in range(n):
@@ -106,21 +120,22 @@ def dostat(fninp):
   ave = [0.0] * m
   var = [0.0] * m
   for j in range(m):
+    # compute the average and variances for column j
     ave[j] = sy[j] / n;
-    var[j] = syy[j] / n - ave[j] * ave[j]
+    var[j] = syy[j] - ave[j] * ave[j] * n
+    if n > 1:
+      var[j] /= n - 1
     if geom:
       ave[j] = exp( ave[j] )
 
   # write the output file
   s = "# %d %d\n" % (n, m)
   for j in range(m):
-    if n >= 2:
-      std = (var[j]*n/(n-1)) ** 0.5
-    else:
-      std = 0
-    s += "%d %g %g\n" % (j, ave[j], std)
+    hdr = header[j] if header else ""
+    s += "%d %s %g %g\n" % (j, hdr, ave[j], var[j] ** 0.5)
 
   # construct the output file name
+  # the input file name is usually xxx.log, xxx.tr, or xxx.bs
   nm = os.path.splitext(fninp)[0]
   p = nm.find("_wham")
   q = nm.find("_mbar")

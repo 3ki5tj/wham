@@ -107,9 +107,9 @@ def doargs():
       tol = "--tol=%g" % float(a)
     elif o in ("--opt",):
       cmdopt = a
-    elif o in ("-l", "--ls="):
+    elif o in ("-l", "--ls"):
       fnls = a
-    elif o in ("-o", "--trace="):
+    elif o in ("-o", "--trace"):
       fntr = a
     elif o in ("--ev", "--xvg2", "--gmx2"):
       doev = True

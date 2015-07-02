@@ -1,0 +1,67 @@
+#!/bin/bash
+#$ -V                           # Inherit the submission environment
+#$ -cwd                         # Start job in submission directory
+#$ -N 1VII_T                    # Job Name
+#$ -j y                         # Combine stderr and stdout
+#$ -o $JOB_NAME.o$JOB_ID        # Name of the output file (eg. myMPI.oJobID)
+#$ -pe 12way 12                 # Requests 12 tasks/node, 12 cores total
+#$ -q normal                    # Queue name normal
+#$ -l h_rt=24:00:00             # Run time (hh:mm:ss) - 24.0 hours
+#$ -A Proteins-and-DNA-sol      # Account
+
+
+
+cd     1VII/whamrun1
+python xvgrun.py &
+cd ../..
+
+cd     1VII/whamrun2
+python xvgrun.py &
+cd ../..
+
+cd     1VII/whamrun3
+python xvgrun.py &
+cd ../..
+
+cd     1VII/whamrun4
+python xvgrun.py &
+cd ../..
+
+
+
+cd     1VII/mbarrun1
+python xvgrun.py --mbar &
+cd ../..
+
+cd     1VII/mbarrun2
+python xvgrun.py --mbar &
+cd ../..
+
+cd     1VII/mbarrun3
+python xvgrun.py --mbar &
+cd ../..
+
+cd     1VII/mbarrun4
+python xvgrun.py --mbar &
+cd ../..
+
+cd     1VII/mbarrun5
+python xvgrun.py --mbar &
+cd ../..
+
+cd     1VII/mbarrun6
+python xvgrun.py --mbar &
+cd ../..
+
+cd     1VII/mbarrun7
+python xvgrun.py --mbar &
+cd ../..
+
+cd     1VII/mbarrun8
+python xvgrun.py --mbar &
+cd ../..
+
+
+
+wait
+

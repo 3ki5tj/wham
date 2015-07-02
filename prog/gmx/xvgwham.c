@@ -70,6 +70,64 @@ static hist_t *mkhist(const char *fnls,
 
 
 
+/* bootstrapping */
+static hist_t *hist_bootstrap(hist_t *hs0)
+{
+  hist_t *hs;
+  int i, imin, imax, k, r, n, il, ir;
+  double x, tot, *arr, *cnt;
+
+  hs = hist_open(hs0->rows, hs0->xmin,
+      hs0->xmin + hs0->n * hs0->dx, hs0->dx);
+
+  n = hs->n;
+  xnew(cnt, n + 1);
+
+  for ( r = 0; r < hs->rows; r++ ) {
+    /* bootstrap for histogram r */
+    arr = hs0->arr + r * hs->n;
+
+    /* count the total for histogram r */
+    tot = 0;
+    imin = n;
+    imax = 0;
+    cnt[0] = 0;
+    for ( i = 0; i < n; i++ ) {
+      x = arr[i];
+      cnt[i + 1] = cnt[i] + x;
+      if ( x > 0 ) {
+        if ( i < imin ) imin = i;
+        if ( i + 1 > imax ) imax = i + 1;
+      }
+    }
+    tot = cnt[n];
+
+    /* bootstrapping */
+    for ( k = 0; k < tot; k++ ) {
+      x = tot * rand01();
+      /* find the bin i containing x using binary search
+       * that is cnt[i] < x < cnt[i+1] */
+      il = imin;
+      ir = imax;
+      while ( il < ir - 1 ) {
+        i = (il + ir + 1) / 2;
+        if ( x > cnt[i] ) {
+          il = i;
+        } else {
+          ir = i;
+        }
+      }
+      i = il;
+      hs->arr[r * n + i] += 1;
+    }
+  }
+
+  free(cnt);
+  return hs;
+}
+
+
+
 int main(int argc, char **argv)
 {
   model_t m[1];
@@ -102,6 +160,16 @@ int main(int argc, char **argv)
     if ( hs == NULL ) {
       return -1;
     }
+  }
+
+  if ( m->bootstrap ) {
+    hist_t *hs0 = hs;
+
+    /* scramble the random number seed */
+    mtscramble( time(NULL) );
+    /* bootstrapping */
+    hs = hist_bootstrap(hs0);
+    hist_close(hs0);
   }
 
   xnew(lnz, hs->rows);

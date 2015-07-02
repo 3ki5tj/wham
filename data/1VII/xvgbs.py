@@ -3,7 +3,7 @@
 
 
 ''' test WHAM for XVG files
-    find the number of iterations need to reach an error tolerance '''
+    estimate the error  '''
 
 
 
@@ -14,13 +14,9 @@ import zcom
 
 mbar = False
 nsamp = 10000
-radd = 1.0
-nbases = 20
 fnls = None
 fnlog = None
-update_method = " "
-mthreshold = " "
-tol = " "
+nbases = " "
 cmdopt = ""
 doev = False
 verbose = 0
@@ -39,15 +35,9 @@ def usage():
   OPTIONS:
     --mbar          set the program to MBAR
     -N              set the number of samples
-    -r              set the sampling rate
-    -M, --nbases=   set the maximal number of bases
+    -M, --nbases=   set the number of bases
     -l, --ls=       set the input list file
     -o, --log=      set the output log file
-    --kth           use the KTH scheme in MDIIS
-    --hp            use the HP scheme in MDIIS
-    --hpl           use the HP scheme in MDIIS
-    --mthreshold=   set the clean up threshold for MDIIS
-    --tol=          set the tolerance of error
     --opt=          set options to be passed to the command line
     --ev, --xvg2    do the two-dimensional case
     -v              be verbose
@@ -62,11 +52,10 @@ def doargs():
   ''' handle input arguments '''
   try:
     opts, args = getopt.gnu_getopt(sys.argv[1:],
-        "hvN:r:M:l:o:",
+        "hvN:M:l:o:",
         [ "help", "verbose=",
           "mbar",
-          "nbases=", "KTH", "kth", "HP", "hp", "HPL", "hpl",
-          "mthreshold=", "tol=",
+          "nbases=",
           "ls=", "log=",
           "opt=", "ev", "xvg2", "gmx2",
         ] )
@@ -74,7 +63,7 @@ def doargs():
     print str(err)
     usage()
 
-  global mbar, nsamp, radd, nbases, update_method, mthreshold, tol
+  global mbar, nsamp
   global fnls, fnlog, doev, cmdopt, verbose
 
   for o, a in opts:
@@ -86,20 +75,8 @@ def doargs():
       mbar = True
     elif o in ("-N",):
       nsamp = int(a)
-    elif o in ("-r",):
-      radd = float(a)
     elif o in ("-M", "--nbases"):
-      nbases = int(a)
-    elif o in ("--KTH", "--kth"):
-      update_method = "--kth"
-    elif o in ("--HP", "--hp"):
-      update_method = "--hp"
-    elif o in ("--HPL", "--hpl"):
-      update_method = "--hpl"
-    elif o in ("--mthreshold",):
-      mthreshold = "--mthreshold=%g" % float(a)
-    elif o in ("--tol",):
-      tol = "--tol=%g" % float(a)
+      nbases = "--nbases=%d" % int(a)
     elif o in ("--opt",):
       cmdopt = a
     elif o in ("-l", "--ls"):
@@ -113,29 +90,24 @@ def doargs():
 
 
 
-def getnstepstime(err):
-  ''' get the nsteps and time from the error output '''
 
-  ln = err.strip().split("\n")[-1]
+def getcol(out, col):
+  ''' get the partition from the output '''
 
-  m = re.search(" ([0-9]+) steps", ln)
-  if not m:
-    print "line %s: no number of iterations" % ln
-    raise Exception
-  ns = m.group(1) # keep it as a string, not an integer
+  s = out.strip().split("\n")
+  n = len(s)
+  arr = [""]*n
 
-  m = re.search("time ([0-9.]+)s", ln)
-  if not m:
-    print "line %s: no timing information" % ln
-    raise Exception
-  tm = m.group(1)
+  for i in range(n):
+    ln = s[i].strip()
+    arr[i] = ln.split()[col]
 
-  return ns, tm
+  return arr
 
 
 
 def main():
-  global mbar, radd, cmdopt, fnls, fnlog
+  global mbar, cmdopt, fnls, fnlog
 
   progdir = "../../prog"
   if not os.path.isdir(progdir):
@@ -148,19 +120,19 @@ def main():
       prog = "xvgmbar2"
     else:
       prog = "xvgwham2"
-    if not fnlog: fnlog = "xvg2.log"
+    if not fnlog: fnlog = "xvg2bs.log"
     if not fnls: fnls = "ev.ls"
     hisopt = "--fnhis2"
-    fnhis = "hist2.dat"
+    fnhis = "histbs2.dat"
   else:
     if mbar:
       prog = "xvgmbar"
     else:
       prog = "xvgwham"
-    if not fnlog: fnlog = "xvg.log"
+    if not fnlog: fnlog = "xvgbs.log"
     if not fnls: fnls = "e.ls"
     hisopt = "--fnhis"
-    fnhis = "hist.dat"
+    fnhis = "histbs.dat"
 
   if mbar:
     strfnhis = ""
@@ -173,49 +145,36 @@ def main():
     fnhis = arr[0] + "_" + fnhis
     strfnhis = hisopt + "=" + fnhis
 
-  arr = os.path.splitext(fnlog)
-  fntmlog = arr[0] + "tm" + arr[1]
-
   try:
     shutil.copy("%s/gmx/%s" % (progdir, prog), "./%s" % prog)
   except:
     pass
 
-  cmd0 = "./%s %s %s %s %s" % (
-      prog, strfnhis, fnls, tol, cmdopt)
+  cmd0 = "./%s -v %s %s %s --%s=MDIIS %s" % (
+      prog, strfnhis, fnls, cmdopt,
+      "mbar" if mbar else "wham", nbases)
   cmd0 = cmd0.strip()
-
-  if radd < 1:
-    cmd0 += " -r %g" % radd
 
   if not mbar:
     # run for the first time to save the histogram
     zcom.runcmd(cmd0)
-
     # we will load the histogram, and bootstrap later on
     cmd0 += " --bootstrap -H"
   else:
     cmd0 += " --bootstrap"
 
-  ns = [0]*(nbases + 1)
-  tm = [0]*(nbases + 1)
   for i in range(nsamp):
     print "running sample %d/%d..." % (i, nsamp)
 
     # use the direct WHAM
     ret, out, err = zcom.runcmd(cmd0.strip(), capture = True)
-    ns[0], tm[0] = getnstepstime(err)
-
-    for nb in range(1, nbases + 1):
-      cmd = "%s --%s=MDIIS --nbases=%d %s %s" % (
-          cmd0, "mbar" if mbar else "wham",
-          nb, update_method, mthreshold)
-      ret, out, err = zcom.runcmd(cmd.strip(), capture = True)
-      ns[nb], tm[nb] = getnstepstime(err)
+    if i == 0:
+      bet = getcol(out, 1)
+      open(fnlog, "a").write("#HEADER " + " ".join(bet) + "\n")
+    lnz = getcol(out, 2)
 
     # save to the log files
-    open(fnlog, "a").write(" ".join(ns) + "\n")
-    open(fntmlog, "a").write(" ".join(tm) + "\n")
+    open(fnlog, "a").write(" ".join(lnz) + "\n")
 
 
 

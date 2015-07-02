@@ -109,7 +109,7 @@ def doargs():
       nequil = "--nequil=%d" % int(a)
     elif o in ("-n", "--nsteps"):
       nsteps = "--nsteps=%d" % int(a)
-    elif o in ("-o", "--trace="):
+    elif o in ("-o", "--trace"):
       fntr = a
     elif o in ("-h", "--help"):
       usage()

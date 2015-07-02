@@ -59,7 +59,7 @@ def doargs():
   if len(args) > 0:
     fninp = args
   else:
-    fninp = glob.glob("*wham*.out") + glob.glob("*mbar*.out")
+    fninp = glob.glob("*wham*.out") + glob.glob("*mbar*.out") + glob.glob("est*.out")
 
 
 
@@ -87,13 +87,17 @@ def main(fn, fnref):
     raise Exception
   bet = [-0]*n
   arr = [-0]*n
+
+  maxcol = 6
+  if fn.startswith("est"):
+    maxcol = 8
   for i in range(n):
     ln = s[i].rstrip()
     arr = ln.split()
-    if len(arr) > 6:
-      # assuming every column beyond column 6 is added
+    if len(arr) > maxcol:
+      # assuming every column beyond column `maxcol` is added
       # by addlnzref, so we can remove them safely
-      p = ln.rfind( arr[6] )
+      p = ln.rfind( arr[maxcol] )
       if p >= 0:
         ln = ln[:p].rstrip()
     s[i] = ln + "\t" + arrref[i] + "\n"
