@@ -39,63 +39,79 @@ can be improved by using the method of direct inversion in the iterative subspac
 
 
 
-A central theme in free-energy calculation
-is to extract best estimate of the free energy
+A central subject in computational physics and chemistry
+is to extract the best estimate of some quantity of interest
 from a given set of simulation data.
 %
-The multiple histogram method\cite{
-ferrenberg1988, *ferrenberg1989}
+For free energy calculations,
+the multiple histogram method\cite{
+ferrenberg1988, *ferrenberg1989,
+newman, frenkel}
 or its generalization,
 the weighted histogram analysis method (WHAM)\cite{
-kumar1992,
+kumar1992, roux1995,
 bartels1997, *habeck2007, *habeck2012,
-souaille2001, kastner2005,
-chodera2007, bereau2009,
-kim2011},
-is such an efficient tool
-of calculating free energy
-in computer simulations\cite{
-newman, *frenkel}.
-%
-Given several trajectories collected
-for different thermodynamic states,
-the method yields optimal estimates
-of the free energy differences
-among the states.
-%
-Here, the free energy
-and the density of states
-are determined
-from a set of equations involving
-the (energy) histograms,
-hence the name of the method.
-%
-One can also avoid the histogram dependence
-and reformulate WHAM
-as the multistate Bennett acceptance ratio (MBAR) method\cite{
-shirts2008}
-as an extension of the Bennett acceptance ratio (BAR) method\cite{
-bennett1976}.
+souaille2001,
+chodera2007, shirts2008, bereau2009,
+hub2010},
+is such an efficient method.
 %
 The statistical efficiency
-%of using data
-makes WHAM and MBAR popular trajectory analysis tools
+makes WHAM a popular trajectory analysis tool
 for enhanced-sampling simulations,
 such as umbrella sampling\cite{
 torrie1974, *laio2002},
 and tempering\cite{
 marinari1992, *lyubartsev1992,
-swendsen1986, *geyer1991, *hukushima1996, *hansmann1997},
+swendsen1986, *geyer1991, *hukushima1996, *hansmann1997, *earl2005},
 and even single-molecule experiments\cite{
 shirts2008}.
 
 
 
+
+Given several trajectories collected
+for different thermodynamic states,
+WHAM is able to draw the optimal estimate
+of the free energies of the states.
+%
+The key is to seek an optimal estimate
+of the density of states,
+or the unbiased distribution,
+which allows
+the free energy to be evaluated
+as a weighted integral.
+%
+The optimal density of states
+is computed from a weighted average
+of the reweighted energy histograms
+(hence the name of the method)
+from different trajectories.
+%
+The weights, however,
+depend on the free energies,
+so that
+the free energies
+and the density of states
+must determined self-consistently.
+%
+Interestingly,
+WHAM can be reformulated
+as an extension
+of the Bennett acceptance ratio (BAR) method\cite{
+bennett1976}.
+%
+The form referred to as multistate BAR (MBAR) method\cite{
+shirts2008}
+avoids the histogram dependency.
+
+
+
 The straightforward implementation of WHAM or MBAR,
-in which the equations regarding the free energy
+in which the equations regarding the free energies
 are solved by direct iteration,
 can suffer from
-a slow convergence in later stages.
+a slow convergence in late stages.
 %
 Several remedies were proposed\cite{
 shirts2008, bereau2009, kim2011}.
@@ -104,40 +120,52 @@ For example, one may use the Newton-Raphson method,
 which involves the Hessian matrix,
 although the approach sometimes can be unstable\cite{
 shirts2008}.
+
+
+
+There are two non-iterative alternatives\cite{
+%shen1991, woolf1994, *crouzy1994,
+kastner2005, *kastner2009, kim2011}
+to WHAM.
 %
-An ingenious non-iterative alternative is
-the statistical-temperature WHAM (ST-WHAM)\cite{
-kim2011},
-which can also be considered as a refinement of
-the umbrella integration method (UIM)\cite{
-kastner2005}.
-%
-Here,
-one non-iteratively determines the density of states
-from integrating its logarithmic derivative,
+The statistical-temperature WHAM (ST-WHAM)\cite{
+kim2011}
+determines the density of states
+through its logarithmic derivative,
 or the statistical temperature,
-which is computed from averaging the values
-over the simulated temperatures
+by  averaging the values
+from different trajectories
 using the histogram heights as the weights.
 %
-This variant, however, gives
-a slightly different estimate of the free energy
-from the original WHAM,
-and the extension to multiple-parameter ensembles,
+The method can be regarded as a refinement of
+the more approximate umbrella integration method (UIM)\cite{
+kastner2005, *kastner2009},
+and both methods are non-iterative,
+for they avoid the free energies in constructing
+the density of states.
+%
+ST-WHAM, however,
+can be sensitive to the histogram bin size,
+%gives a slightly different estimate of the free energy from the original WHAM,
+and the extension to multidimensional ensembles,
 e.g., the isothermal-isobaric ensemble,
 can be numerically challenging\cite{kim2011}.
+%
+UIM is more stable, but less rigorous.
 
 
 
-Here, we consider improving WHAM using
+Here, we discuss a numerical improvement of
+the implementation of WHAM using
 the method of direct inversion in the iterative subspace (DIIS)\cite{
 pulay1980, *pulay1982, *hamilton1986,
 kovalenko1999, howard2011}.
 %
-Although the method is still iterative,
-we shall see that
-the rate of convergence can often be
-significantly improved in difficult cases.
+Although still iterative in nature,
+this implementation
+can often improve
+the convergence rate
+significantly in difficult cases.
 
 
 
@@ -175,13 +203,13 @@ at the temperatures.
 
 
 In WHAM,
-we first estimate the density of states $g(E)$ from
+we first estimate the density of states, $g(E)$, from
 %
 \begin{equation}
 g(E)
 =
 \frac{
-  \sum_{j = 1}^K n_j(E)
+  \sum_{k = 1}^K n_k(E)
 }
 {
   \sum_{k = 1}^K N_k \, \exp(-\beta_k E) / Z_k
@@ -190,9 +218,9 @@ g(E)
 \end{equation}
 %
 where,
-$n_j(E)$,
+$n_k(E)$,
 the unnormalized energy distribution
-observed from simulation $j$,
+observed from trajectory $k$,
 is usually estimated
 from the energy histogram as
 the number of independent trajectory frames
@@ -211,51 +239,78 @@ is the partition function:
 \begin{equation}
 Z_k
 =
-\int g(E) \, \exp(-\beta_k E) \, dE.
+\exp( - f_k )
+=
+\int g(E) \, \exp(-\beta_k E) \, dE,
 \label{eq:Z}
 \end{equation}
+and
+$f_k$
+is the dimensionless free energy.
 
 
 
-To show Eq. \eqref{eq:gE_WHAM},
-we first observe that, for any $k$,
+To understand Eq. \eqref{eq:gE_WHAM},
+we first observe from definition,
+%
 \begin{equation}
-  g(E) = n_k(E) / d_k(E),
-  \label{eq:gnk}
+g(E)
+=
+\frac{ n_k(E) }
+     { d_k(E) }
+\qquad
+\mbox{for $k = 1, \dots, K$},
+\label{eq:gnk}
 \end{equation}
 where $d_k(E) \equiv N_k \exp(-\beta_k E)/Z_k$.
-%denoting the $k$th term on the denominator.
 %
-To optimally combine the estimates from different $k$'s,
-the relative weight should be inversely
-proportional to the variance\cite{
-newman, *frenkel}.
+Then, Eq. \eqref{eq:gE_WHAM}
+can be regarded as
+a linear combination
+of the values from
+Eq. \eqref{eq:gnk}\cite{
+roux1995, souaille2001, frenkel}.
+%
+Now in an optimal combination,
+the relative weight is inversely
+proportional to the variance.
 %
 Assuming a Poisson distribution
 so that $\mathrm{var}(n_k) = n_k$,
 and $N_k \gg n_k$ so that
 the relative error of $d_k$ is negligible
-compared to that of $n_k$,
+in comparison to that of $n_k$,
 we have
 $\mathrm{var}(n_k/d_k) \approx n_k / d_k^2 \propto 1/d_k$.
 %
 Averaging the values from Eq. \eqref{eq:gnk}
-using $d_k$ as the relative weight yields
+using $(1/d_k)^{-1}$ as the relative weight yields
 Eq. \eqref{eq:gE_WHAM}.
+%
+Since, for a fixed $E$,
+$d_k(E)$ is proportional to $n_k(E)$,
+several variants of WHAM use $n_k(E)$
+as the relative weight for
+$g(E)$\cite{
+shen1991}
+or related quantities\cite{
+woolf1994, *crouzy1994, roux1995,
+kastner2005, *kastner2009, kim2011}.
+%
+
 
 
 
 From Eqs. \eqref{eq:gE_WHAM} and \eqref{eq:Z},
-we find that the dimensionless free energies,
-$f_i \equiv -\log Z_i$,
-satisfy
+we find that each $f_i$ satisfies
+%
 \begin{align}
 f_i
 &=
 -\log
   \int
     \frac{
-      \sum_{j = 1}^K n_j(E) \, \exp(-\beta_i E)
+      \sum_{k = 1}^K n_k(E) \, \exp(-\beta_i E)
     }
     {
       \sum_{k = 1}^K N_k \, \exp(-\beta_k E + f_k)
@@ -272,7 +327,7 @@ where,
 $\Z_i$
 denotes the integral on the right-hand side.
 %
-Once, $f_i$ and $g(E)$ are determined,
+Once all $f_i$ and $g(E)$ are determined,
 the free energy at a not simulated temperature, $\beta$,
 can be found from Eq. \eqref{eq:Z}
 by substituting $\beta$ for $\beta_k$.
@@ -280,16 +335,16 @@ by substituting $\beta$ for $\beta_k$.
 
 
 In the above,
-$n_j(E)$ is estimated from the energy histogram.
+$n_k(E)$ is estimated from the energy histogram.
 %
 To avoid this dependency,
 we notice from definition that\cite{
 souaille2001}
 %
 \begin{equation}
-n_j(E)
+n_k(E)
 =
-\sum_{\vx}^{(j)} \delta(\E(\vx) - E),
+\sum_{\vx}^{(k)} \delta(\E(\vx) - E),
 \label{eq:n_delta}
 \end{equation}
 %
@@ -297,9 +352,9 @@ where,
 $\E(\vx)$
 is the energy function,
 and
-$\sum_{\vx}^{(j)}$
+$\sum_{\vx}^{(k)}$
 denotes a sum over trajectory frames
-of simulation $j$.
+of simulation $k$.
 %
 %
 %
@@ -360,17 +415,18 @@ f_i
 -\log
   \int
     \frac{
-      \sum_{j = 1}^K n_j(W) \, \exp(-\lambda_j W)
+      \sum_{k = 1}^K n_k(W) \, \exp(-\lambda_i W)
     }
     {
       \sum_{k = 1}^K N_k \, \exp(-\lambda_k W + f_k)
     }
     d W,
-\label{eq:fx_WHAM}
+\notag
+%\label{eq:fx_WHAM}
 \end{align}
 %
 where
-$n_j(W)$
+$n_k(W)$
 is understood as
 the unnormalized distribution of
 the bias $\W(\vx)$.
@@ -405,11 +461,11 @@ respectively.
 %
 If the Hamiltonian $\Ham_i(\vx)$
 depends nonlinearly on $\lambda_i$,
-one prefers the MBAR method\cite{
-shirts2008},
-which is based directly on
-Eq. \eqref{eq:f_MBAR},
-instead of the histogram-based Eq. \eqref{eq:fx_WHAM}.
+one prefers the histogram-free MBAR form\cite{
+shirts2008}.
+%which is based directly on
+%Eq. \eqref{eq:f_MBAR},
+%instead of the histogram-based Eq. \eqref{eq:fx_WHAM}.
 %
 Besides,
 a non-Boltzmann
@@ -442,9 +498,11 @@ can suffer from a slow convergence
 (cf. Appendix \ref{sec:convwham}),
 resulting in thousands of iterations\cite{
 bereau2009, kim2011}.
-%
+
+
+
 An elegant non-iterative alternative, ST-WHAM,
-approximates the logarithmic derivative of $g(E)$
+computes the logarithmic derivative of $g(E)$
 in Eq. \eqref{eq:gE_WHAM} as\cite{
 kim2011}
 %
@@ -452,7 +510,7 @@ kim2011}
 (\log g)'(E)
 \approx
 \frac{
-  \sum_j n_j'(E) + n_j(E) \, \beta_j
+  \sum_k n_k'(E) + n_k(E) \, \beta_k
 }
 {
   \sum_k n_k(E)
@@ -462,21 +520,30 @@ kim2011}
 %
 whose integral yields $\log g(E)$.
 %
+The main approximation is
+the substitution of $n_k(E)$
+for $d_k(E)$ in the second term,
+which avoids the involvement of $f_k$.
+%
 ST-WHAM, however,
 is more sensitive to the bin size
-and its multidimensional generalization
-is numerically challenging
-owing to the difficulty of
-computing the derivative,
-$n'_j(E)$\cite{
+because it depends heavily on
+the precision of the histogram
+and its derivative.
+%
+The multidimensional generalization
+is also numerically challenging\cite{
 kim2011}.
 %
-Thus, UIM\cite{
-kastner2005}
-further approximates
-the distribution $n'_j(E)$ by a Gaussian
-(see Appendix \ref{sec:approxf}
-for a discussion on the accuracy).
+A related method is UIM\cite{
+kastner2005, *kastner2009},
+in which one approximates
+the distribution $n_k(E)$ as a Gaussian.
+%
+Although this approximation
+greatly improve the numerical stability,
+it also limits the long-term
+accuracy (cf Appendix \ref{sec:approxf}).
 
 
 
@@ -1039,7 +1106,9 @@ dramatically in these cases.
     The results were averaged
     over independent samples
     for the Ising model and LJ fluid,
-    or over bootstrap samples
+    or over bootstrap\cite{
+    newman, efron1979, hub2010}
+    samples
     for the villin headpiece.
     %
     The lines are to guide the eyes.
@@ -1113,8 +1182,7 @@ The first system is
 the two-dimensional $64\times64$ Ising model.
 %
 We used parallel tempering\cite{
-swendsen1986, *geyer1991, *hukushima1996, *hansmann1997,
-*earl2005}
+swendsen1986, *geyer1991, *hukushima1996, *hansmann1997, *earl2005}
 Monte Carlo (MC)
 for
 eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$,
@@ -1148,19 +1216,19 @@ in the long run (cf. Appendix \ref{sec:approxf}).
   \caption{
     \label{fig:is2ref}
     Errors of
-    (a) the dimensionless free energies and
-    (b) the logarithm of the density of states
+    (a) the dimensionless free energies, $f_i$, and
+    (b) the logarithmic density of states, $\log g(E)$,
     for the $N = 64\times64$ two-dimensional Ising model.
     %
     Here,
-    $\varepsilon(a) \equiv a - a^\mathrm{ref}$.
+    $\varepsilon(a) \equiv a - a^\mathrm{ref}$,
     %
-    The reference values of the free energies and
-    the density of states were obtained
-    from Refs. \onlinecite{ferdinand1969} and \onlinecite{beale1996},
+    and the reference values for $f_i$ and $g(E)$
+    were computed using the methods in
+    Refs. \onlinecite{ferdinand1969} and \onlinecite{beale1996},
     respectively.
     %
-    The bin size of energy histograms is $h = 4$.
+    The bin size of the energy histograms is $h = 4$.
   }
 \end{figure}
 
@@ -1172,8 +1240,8 @@ shows a faster exponential decay of error
 in DIIS WHAM
 than in direct WHAM.
 %
-Optimally, DIIS WHAM can
-deliver a speedup of two orders of magnitude.
+Optimally, DIIS
+delivered a speedup of two orders of magnitude.
 %
 As shown in Fig. \ref{fig:nsnt},
 the real run time roughly matched
@@ -1824,7 +1892,7 @@ although higher-order terms differ.
 
 We compared the above equations
 %Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavb}, and \eqref{eq:df_eavc}
-with UIM\cite{kastner2005}
+with UIM\cite{kastner2005, *kastner2009}
 (which is also an approximate method)
 on the $32\times 32$ Ising model,
 %
