@@ -197,13 +197,15 @@ def main():
   else:
     cmd0 += " --bootstrap"
 
+  cmd0 = cmd0.strip()
+
   ns = [0]*(nbases + 1)
   tm = [0]*(nbases + 1)
   for i in range(nsamp):
     print "running sample %d/%d..." % (i, nsamp)
 
     # use the direct WHAM
-    ret, out, err = zcom.runcmd(cmd0.strip(), capture = True)
+    ret, out, err = zcom.runcmd(cmd0, capture = True)
     ns[0], tm[0] = getnstepstime(err)
 
     for nb in range(1, nbases + 1):

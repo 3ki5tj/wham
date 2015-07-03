@@ -1,5 +1,6 @@
 %\documentclass[reprint,superscriptaddress]{revtex4-1}
 \documentclass[aip,jcp,preprint,notitlepage, superscriptaddress]{revtex4-1}
+\usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{color}
@@ -24,6 +25,9 @@
 \title{Notes on WHAM, MBAR and DIIS}
 
 \maketitle
+
+
+\tableofcontents
 
 
 
@@ -81,11 +85,11 @@ yields Eq. \eqref{eq:gE_WHAM}.
 
 
 
-\subsection{Derivation of Eq. (5) from Eqs. (3) and (4)}
+\subsection{Derivation of Eq. (6) from Eqs. (4) and (5)}
 
 
 
-From Eq. (3)
+From Eq. (4)
 \begin{align*}
 f_i
 &=
@@ -133,14 +137,15 @@ f_i
       \sum_{k = 1}^K N_k \, \exp(-\beta_k \, \E(\vx) + f_k)
     },
 \end{align*}
-which is Eq. (5).
+which is Eq. (6).
 
 
 
-\subsection{Derivation of Eq. (6) from Eq. (5)}
+\subsection{Derivation of Eq. (7) from Eq. (6)}
 
 
-From Eq. (5)
+
+From Eq. (6)
 \begin{align*}
 f_i
 &=
@@ -242,7 +247,7 @@ f_i
 }
 \, dW,
 \end{align*}
-which is Eq. (6).
+which is Eq. (7).
 
 
 
@@ -282,9 +287,55 @@ So we can rewrite Eq. \eqref{eq:beta0_STWHAM} as
 \end{equation}
 %
 where
-$c_k(E) \equiv n_k(E) / \sum_{l = 1}^{K} n_l(E)$.
+\begin{align}
+  c_k(E) \equiv \frac{ n_k(E)  }{ \sum_{l = 1}^{K} n_l(E) },
+  \label{eq:ck}
+\end{align}
 %
 This is the main result of ST-WHAM.
+
+
+
+
+
+\subsection{W-DF method}
+
+
+
+The W-DF method by Shen and McCammon\cite{
+shen1991, roux1995}
+used a similar weighting strategy.
+%
+\begin{align}
+g(E) = \sum_{k = 1}^K c_k(E) \, \frac{ n_k(E) } { d_k(E) },
+\end{align}
+%
+where $c_k(E)$ is given by Eq. \eqref{eq:ck}.
+%
+Note that
+if $c_k(E)$
+is replaced by $ d_k(E) / \sum_{l = 1}^K d_l(E)$,
+we recover WHAM.
+
+
+
+\subsection{W-PMF method}
+
+
+
+Another variant is the W-DF method by Woolf and Roux\cite{
+woolf1994, crouzy1994, roux1995}.
+%
+Here,
+%
+\begin{align}
+\log g(E) = \sum_{k = 1}^K c_k(E) \, \log \frac{ n_k(E) } { d_k(E) },
+\end{align}
+%
+where $c_k(E)$ is given by Eq. \eqref{eq:ck}.
+%
+
+
 
 
 
@@ -306,7 +357,7 @@ S
 =
 \vct{\hat R}^2 / 2
 =
-\left( \sum_i c_i \, \vct R_i \right)^2 / 2,
+\frac 1 2 \left( \sum_i c_i \, \vct R_i \right)^2.
 \]
 under the constraint
 %

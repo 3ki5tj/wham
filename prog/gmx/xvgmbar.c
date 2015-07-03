@@ -45,18 +45,84 @@ static xvg_t **mkxvg(const char *fnls,
 
 
 
+/* get the difference of lnz by BAR */
+xdouble getdlnzbar(xvg_t *xvg0, xvg_t *xvg1, xdouble db,
+    xdouble dlnz, xdouble tol, int itmax, int verbose)
+{
+  xdouble dlnn = LOG(1.0*xvg1->n/xvg1->n);
+  xdouble e, lnden, lns0, lns1, res;
+  xdouble dlnzp, resp;
+  int it, i;
+
+  /* exp(dlnz) =
+   *      [ n0(E) + n1(E) ] exp(-db E)
+   * Int ------------------------------- dE
+   *       N0 + N1 exp(-db E -dlnz)
+   * = N0 < exp(-db E) / [ N0 + N1 exp(-db E - dlnz) ] >_0
+   * + N1 < exp(-db E) / [ N0 + N1 exp(-db E - dlnz) ] >_1
+   *
+   * exp(res)
+   * = < 1 / [ exp(db E + dlnz) + N1/N0 ] >_0
+   * + N1/N0 < 1 / [ exp(db E + dlnz) + N1/N0 ] >_1
+   * */
+  resp = 1e30;
+  dlnzp = dlnz;
+  for ( it = 0; it < itmax; it++ ) {
+    lns0 = -1e30;
+    for ( i = 0; i < xvg0->n; i++ ) {
+      e = xvg0->y[0][i];
+      lnden = mbar_lnadd(db * e + dlnz, dlnn);
+      lns0 = mbar_lnadd(lns0, -lnden);
+    }
+    lns0 -= LOG(xvg0->n);
+
+    lns1 = -1e30;
+    for ( i = 0; i < xvg1->n; i++ ) {
+      e = xvg1->y[0][i];
+      lnden = mbar_lnadd(db * e + dlnz, dlnn);
+      lns1 = mbar_lnadd(lns1, -lnden);
+    }
+    lns1 -= LOG(xvg1->n);
+
+    res = mbar_lnadd(lns0, lns1 + dlnn);
+    /* extrapolate to the point where res = 0
+     * by the secant method */
+    e = (resp * dlnz - res * dlnzp) / (resp - res);
+
+    if ( verbose ) {
+      fprintf(stderr, "it %d, res %g/%g, dlnz %.7f/%.7f/%.7f\n",
+          it, (double) res, (double) resp, (double) dlnz, (double) dlnzp, (double) e);
+    }
+    if ( FABS(res) < tol ) break;
+
+    resp = res;
+    dlnzp = dlnz;
+    if ( it == 0 ) {
+      dlnz += res;
+    } else {
+      dlnz = e;
+    }
+  }
+
+  return dlnz;
+}
+
+
+
 /* estimate free energies */
-static int estimate(int nbeta, xvg_t **xvg,
-    const xdouble *beta)
+static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
+    xdouble tol, int itmax, int verbose)
 {
   xdouble *eav, *var, *skw;
-  xdouble *lnza, *lnzb, *lnzc;
-  xdouble dlnza, dlnzb, dlnzc, e, db;
+  xdouble *lnza, *lnzb, *lnzc, *lnzxpa, *lnzxpb, *lnzbar;
+  xdouble dlnza, dlnzb, dlnzc, dlnzxpa, dlnzxpb, dlnzbar;
+  xdouble emin, e, db;
   int i, j, n;
 
   xnew(eav, nbeta);
   xnew(var, nbeta);
   xnew(skw, nbeta);
+  emin = 1e30;
   /* compute the variances */
   for ( j = 0; j < nbeta; j++ ) {
     eav[j] = var[j] = skw[j] = 0;
@@ -66,6 +132,7 @@ static int estimate(int nbeta, xvg_t **xvg,
     for ( i = 0; i < n; i++ ) {
       e = xvg[j]->y[0][i];
       eav[j] += e;
+      if ( e < emin ) emin = e;
     }
     eav[j] /= n;
 
@@ -83,9 +150,14 @@ static int estimate(int nbeta, xvg_t **xvg,
     }
   }
 
+  emin -= 1;
+
   xnew(lnza, nbeta);
   xnew(lnzb, nbeta);
   xnew(lnzc, nbeta);
+  xnew(lnzxpa, nbeta);
+  xnew(lnzxpb, nbeta);
+  xnew(lnzbar, nbeta);
   lnza[0] = lnzb[0] = lnzc[0] = 0;
   for ( j = 0; j < nbeta - 1; j++ ) {
     db = beta[j+1] - beta[j];
@@ -95,12 +167,37 @@ static int estimate(int nbeta, xvg_t **xvg,
     lnza[j+1] = lnza[j] + dlnza;
     lnzb[j+1] = lnzb[j] + dlnzb;
     lnzc[j+1] = lnzc[j] + dlnzc;
+
+    dlnzxpa = dlnzxpb = -1e30;
+
+    /* from j to j+1 */
+    n = xvg[j]->n;
+    for ( i = 0; i < n; i++ ) {
+      e = xvg[j]->y[0][i] - emin;
+      dlnzxpa = mbar_lnadd(dlnzxpa, -db * e);
+    }
+    dlnzxpa += -db * emin - LOG(n);
+    lnzxpa[j+1] = lnzxpa[j] + dlnzxpa;
+
+    /* from j+1 to j */
+    n = xvg[j+1]->n;
+    for ( i = 0; i < n; i++ ) {
+      e = xvg[j+1]->y[0][i] - emin;
+      dlnzxpb = mbar_lnadd(dlnzxpb, db * e);
+    }
+    dlnzxpb += db * emin - LOG(n);
+    lnzxpb[j+1] = lnzxpb[j] - dlnzxpb;
+
+    dlnzbar = getdlnzbar(xvg[j], xvg[j+1], db, dlnzb,
+        tol, itmax, verbose);
+    lnzbar[j+1] = lnzbar[j] + dlnzbar;
   }
 
   for ( j = 0; j < nbeta; j++ ) {
-    printf("%3d %10.7f %14.7f %14.7f %14.7f %15.7f %14.7f %8d\n",
+    printf("%3d %10.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %15.7f %14.7f %8d\n",
         j, (double) beta[j],
         (double) lnza[j], (double) lnzb[j], (double) lnzc[j],
+        (double) lnzxpa[j], (double) lnzxpb[j], (double) lnzbar[j],
         (double) eav[j], (double) SQRT(var[j]), xvg[j]->n);
   }
 
@@ -110,6 +207,9 @@ static int estimate(int nbeta, xvg_t **xvg,
   free(lnza);
   free(lnzb);
   free(lnzc);
+  free(lnzxpa);
+  free(lnzxpb);
+  free(lnzbar);
   return 0;
 }
 
@@ -160,7 +260,8 @@ int main(int argc, char **argv)
 
   if ( m->estimate ) {
     /* estimate */
-    estimate(nbeta, xvg, beta);
+    estimate(nbeta, xvg, beta,
+        m->tol, m->itmax, m->verbose);
   } else {
     /* do MBAR */
     mbarx(nbeta, xvg, beta, lnz,

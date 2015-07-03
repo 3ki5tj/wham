@@ -90,7 +90,7 @@ def main(fn, fnref):
 
   maxcol = 6
   if fn.startswith("est"):
-    maxcol = 8
+    maxcol = 11
   for i in range(n):
     ln = s[i].rstrip()
     arr = ln.split()

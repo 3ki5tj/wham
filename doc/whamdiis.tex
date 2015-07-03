@@ -433,6 +433,22 @@ $\Ham_0(\vx) = 0$,
 $\W(\vx) = \E(\vx)$,
 and $\lambda_i = \beta_i$.
 %
+Another common example
+is a quadratic potential
+$\E_i = \frac 1 2 A \, (\xi - \lambda_i)^2$
+for some reaction coordinate $\xi \equiv \xi(\vx)$.
+%
+In this case,
+$\Ham_0(\vx) = \beta (\E_0 + \frac 1 2 A \, \xi^2)$,
+and
+$\W(\vx) = -\beta A \, \xi$.
+%
+The $\frac 1 2 A \, \lambda_i^2$ term
+is independent of coordinates
+and thus can be added back after the analysis.
+
+
+
 Further,
 $\lambda_i$ and $W$
 can be generalized
@@ -1203,23 +1219,19 @@ dramatically in these cases.
     versus the number of bases, $M$,
     in DIIS.
     %
-    Here, the error tolerance
-    $\epsilon$ is $10^{-8}$ for WHAM
-    or $10^{-7}$ for MBAR.
+    The four test cases are
+    (1) Ising model in the $NVT$ ensemble with WHAM,
+    (2) mini-protein villin headpiece in the $NVT$ ensemble with WHAM
+    (with the bin width of energy histograms being 1.0),
+    (3) the same protein system with MBAR,
+    and
+    (4) LJ fluid in the $NpT$ ensemble with WHAM.
     %
     The $M = 0$ points represent direct WHAM.
     %
     The run times are inversely scaled
     by a factor $\tau$
     for better comparison.
-    %
-    The four test cases are
-    (1) Ising model in the $NVT$ ensemble with WHAM,
-    (2) villin headpiece in the $NVT$ ensemble with WHAM
-    (with the bin width of energy histograms being 1.0),
-    (3) the same system with MBAR,
-    and
-    (4) LJ fluid in the $NpT$ ensemble with WHAM.
     %
     The scaling factors $\tau$ are
     {\color{red} $9.8$, $9.8$, $1250$, and $1525$} seconds,
@@ -1232,6 +1244,13 @@ dramatically in these cases.
     newman, efron1979, hub2010}
     samples
     for the villin headpiece.
+    %
+    Here, the error tolerance
+    $\epsilon$ is $10^{-8}$ for WHAM
+    or $10^{-7}$ for MBAR.
+    %
+    For MBAR, only about 1\% of the trajectory frames
+    were randomly selected to accelerate the calculation.
     %
     The lines are to guide the eyes.
   }
@@ -1436,22 +1455,26 @@ The MBAR case was similar.
 
 
 
-We compared the errors of WHAM, ST-WHAM, UIM
-and approximate formulae in Fig. \ref{fig:whamcmp}.
+We compared the errors of various methods,
+using the MBAR result as the reference.
 %
-All methods were insensitive to the bin size
-within the reasonable range.
+As shown in Fig. \ref{fig:whamcmp},
+both WHAM and ST-WHAM were insensitive to the bin size.
 %
-ST-WHAM and UIM produced similar and reasonable results,
-with the former being slightly better.
+ST-WHAM and UIM produced similar results,
+while the results of BAR,
+which was applied to successive temperature pairs $(i, i+1)$,
+were closer to the WHAM or MBAR results.
 %
-The approximate Eq. \eqref{eq:df_eav}
-was less accurate,
-although its improvement
+Among the approximate formulae
+(cf. Appendix \ref{sec:approxf}),
+Eq. \eqref{eq:df_eav}
+was not quite accurate.
+%
+The higher order correction,
 Eq. \eqref{eq:df_eavb},
-was comparable to ST-WHAM and UIM.
-%
-
+but not Eq. \eqref{eq:df_eavc},
+appeared to made an improvement.
 
 
 
@@ -1462,24 +1485,29 @@ was comparable to ST-WHAM and UIM.
   }
   \caption{
     \label{fig:whamcmp}
-    Errors of
+    (a) Errors of
     the dimensionless free energies, $f_i$,
-    from WHAM, ST-WHAM, approximate formulae and UIM
-    for the villin headpiece
-    %
-    The bin size of the energy histograms is $h = 1.0$.
+    from WHAM, BAR, ST-WHAM, UIM, and approximate formulae
+    for the villin headpiece.
     %
     $f_i$ at $T = 300$ K is fixed at zero.
     %
     The results of MBAR, which is
     the zero bin-size limit of WHAM,
-    are used as the reference.
+    were used as the reference.
+    %
+    The integration step of UIM was $h = 0.1$.
+    %
+    %All trajectory frames were used in this test.
     %
     %The random error of WHAM (gray line)
     %was estimated using bootstrapping
     %from the $h = 1.0$ case.
     %
     The lines are to guide the eyes.
+    %
+    (b) Energy histograms collected
+    with bin width $h = 1.0$.
   }
 \end{figure}
 
@@ -1559,7 +1587,7 @@ can be obtained from simpler formulae
 
 It is a pleasure to thank
 Dr. Y. Zhao, Dr. M. R. Shirts and J. A. Drake
-for many helpful discussions.
+for helpful discussions.
 %
 The authors gratefully acknowledge
 the financial support of
@@ -2046,61 +2074,61 @@ by a more accurate alternative, e.g., ST-WHAM.
   }
 \end{figure}
 
-
-
-%Finally, we give a cautionary comment
-%on using Eq. \eqref{eq:df_eav}
-%for the weight in simulated tempering\cite{park2007}.
-%%
-%Equation \eqref{eq:df_eavb} shows that
-%the error of Eq. \eqref{eq:df_eav}
-%is of order $N \, \Delta \beta_i^3$
-%of a system of size $N$,
-%since
-%$\partial \langle \delta E^2 \rangle / \partial \beta
-%= -\partial^2 \langle E \rangle / \partial \beta^2$
-%is extensive.
-%%
-%Thus,
-%if Eq. \eqref{eq:df_eav} is applied to
-%an $O(1)$ temperature range
-%with an average spacing $\Delta \beta$,
-%the accumulative error of $f_i$
-%is $O(N \, \Delta \beta^2)$.
-%%
-%If the simulation temperatures
-%are arranged
-%such that the energy distributions
-%of neighboring temperatures
-%barely overlap,
-%%
-%the average energy difference,
-%$\Delta \langle E \rangle_i = \langle E \rangle_{i+1} - \langle E \rangle_i$,
-%between neighboring temperatures
-%is roughly a multiple of the width of
-%the energy distribution
-%$\sqrt{ \langle \delta E^2 \rangle_i } \propto O(\sqrt{N})$.
-%%
-%So $\Delta \beta_i$,
-%given by $\Delta \langle E \rangle_i / |\partial E/\partial \beta|$,
-%is $O(1/\sqrt{N})$,
-%%
-%and the accumulative error
-%of $f_i$ is $O(1)$
-%(as illustrated in Fig. \ref{fig:is2approx}).
-%%
-%Thus, if Eq. \eqref{eq:df_eav}
-%is used for the weights
-%in simulated tempering\cite{park2007},
-%the resulting temperature distribution
-%may deviate appreciably
-%from the flat one.
-%%
-%%One can fix this by choosing
-%%a finer spacing or
-%%use Eq. \eqref{eq:df_eavb}
-%%instead.
-
+\definecolor{darkgray}{rgb}{0.2,0.2,0.3}
+{\color{darkgray}
+Finally, we give a cautionary comment
+on using Eq. \eqref{eq:df_eav}
+for the weight in simulated tempering\cite{park2007}.
+%
+Equation \eqref{eq:df_eavb} shows that
+the error of Eq. \eqref{eq:df_eav}
+is of order $N \, \Delta \beta_i^3$
+of a system of size $N$,
+since
+$\partial \langle \delta E^2 \rangle / \partial \beta
+= -\partial^2 \langle E \rangle / \partial \beta^2$
+is extensive.
+%
+Thus,
+if Eq. \eqref{eq:df_eav} is applied to
+an $O(1)$ temperature range
+with an average spacing $\Delta \beta$,
+the accumulative error of $f_i$
+is $O(N \, \Delta \beta^2)$.
+%
+If the simulation temperatures
+are arranged
+such that the energy distributions
+of neighboring temperatures
+barely overlap,
+%
+the average energy difference,
+$\Delta \langle E \rangle_i = \langle E \rangle_{i+1} - \langle E \rangle_i$,
+between neighboring temperatures
+is roughly a multiple of the width of
+the energy distribution
+$\sqrt{ \langle \delta E^2 \rangle_i } \propto O(\sqrt{N})$.
+%
+So $\Delta \beta_i$,
+given by $\Delta \langle E \rangle_i / |\partial E/\partial \beta|$,
+is $O(1/\sqrt{N})$,
+%
+and the accumulative error
+of $f_i$ is $O(1)$
+(as illustrated in Fig. \ref{fig:is2approx}).
+%
+Thus, if Eq. \eqref{eq:df_eav}
+is used for the weights
+in simulated tempering\cite{park2007},
+the resulting temperature distribution
+may deviate appreciably
+from the flat one.
+%
+%One can fix this by choosing
+%a finer spacing or
+%use Eq. \eqref{eq:df_eavb}
+%instead.
+}
 
 
 \bibliography{simul}
