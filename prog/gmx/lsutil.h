@@ -71,7 +71,7 @@ static double parsefn(char *buf, char *fn)
 
 /* load the list of the names of energy files */
 static char **getls(const char *fn,
-    int *nbeta, double **beta)
+    int *nbeta, xdouble **beta)
 {
   FILE *fp;
   int i;

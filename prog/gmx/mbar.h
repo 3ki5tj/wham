@@ -10,6 +10,7 @@
 
 #include <time.h>
 #include "xvg.h"
+#include "../xdouble.h"
 
 
 
@@ -36,16 +37,16 @@ const char *mbar_methods[] = {"Direct", "MDIIS"};
 
 typedef struct {
   int nbeta;
-  const double *beta; /* temperature array, reference */
-  double *res; /* difference between new and old lnz */
-  double *lntot; /* total number of visits to each temperature */
-  double **lnden; /* logarithm of the denominator */
+  const xdouble *beta; /* temperature array, reference */
+  xdouble *res; /* difference between new and old lnz */
+  xdouble *lntot; /* total number of visits to each temperature */
+  xdouble **lnden; /* logarithm of the denominator */
   xvg_t **xvg; /* xvg trajectory */
 } mbar_t;
 
 
 
-static mbar_t *mbar_open(int nbeta, const double *beta, xvg_t **xvg)
+static mbar_t *mbar_open(int nbeta, const xdouble *beta, xvg_t **xvg)
 {
   mbar_t *mbar;
   int i;
@@ -63,8 +64,8 @@ static mbar_t *mbar_open(int nbeta, const double *beta, xvg_t **xvg)
 
   /* copy the total */
   for ( i = 0; i < nbeta; i++ ) {
-    double x = xvg[i]->n;
-    mbar->lntot[i] = (x > 0) ? log(x) : LOG0;
+    xdouble x = xvg[i]->n;
+    mbar->lntot[i] = (x > 0) ? LOG(x) : LOG0;
   }
 
   return mbar;
@@ -88,22 +89,22 @@ static void mbar_close(mbar_t *mbar)
 
 
 /* log(exp(a) + exp(b)) */
-__inline static double mbar_lnadd(double a, double b)
+__inline static xdouble mbar_lnadd(xdouble a, xdouble b)
 {
-  double c;
+  xdouble c;
 
   if (a < b) { c = a; a = b; b = c; } /* ensure a >= b */
-  return ((c = a - b) > 50.0) ? a : a + log(1 + exp(-c));
+  return ((c = a - b) > 50.0) ? a : a + LOG(1 + EXP(-c));
 }
 
 
 
 /* estimate the partition function using the single histogram method */
-static void mbar_estimatelnz(mbar_t *mbar, double *lnz)
+static void mbar_estimatelnz(mbar_t *mbar, xdouble *lnz)
 {
   xvg_t *xvg;
   int i, j, n, nbeta = mbar->nbeta;
-  double db, e, dlnz;
+  xdouble db, e, dlnz;
 
   lnz[0] = 0;
   for ( j = 1; j < nbeta; j++ ) {
@@ -118,13 +119,13 @@ static void mbar_estimatelnz(mbar_t *mbar, double *lnz)
       e = xvg->y[0][i];
       dlnz = mbar_lnadd(dlnz, db * e);
     }
-    lnz[j] = lnz[j - 1] + (n > 0 ? log(n) - dlnz : 0);
+    lnz[j] = lnz[j - 1] + (n > 0 ? LOG(n) - dlnz : 0);
   }
 }
 
 
 
-static void mbar_normalize(double *lnz, int nbeta)
+static void mbar_normalize(xdouble *lnz, int nbeta)
 {
   int i;
 
@@ -136,11 +137,11 @@ static void mbar_normalize(double *lnz, int nbeta)
 
 
 
-static double mbar_step(mbar_t *mbar, double *lnz, double *res, double damp)
+static xdouble mbar_step(mbar_t *mbar, xdouble *lnz, xdouble *res, xdouble damp)
 {
   xvg_t *xvg;
   int i, j, l, n, nbeta = mbar->nbeta;
-  double lny, lnden, e, err = 0;
+  xdouble lny, lnden, e, err = 0;
 
   /* compute the denominator of each frame */
   for ( i = 0; i < nbeta; i++ ) {
@@ -187,13 +188,13 @@ static double mbar_step(mbar_t *mbar, double *lnz, double *res, double damp)
 
 
 /* weighted histogram analysis method */
-static double mbar(int nbeta,
-    xvg_t **xvg, const double *beta, double *lnz,
-    double damp, int itmin, int itmax, double tol, int verbose)
+static xdouble mbar(int nbeta,
+    xvg_t **xvg, const xdouble *beta, xdouble *lnz,
+    xdouble damp, int itmin, int itmax, xdouble tol, int verbose)
 {
   mbar_t *mbar = mbar_open(nbeta, beta, xvg);
   int it;
-  double err, errp;
+  xdouble err, errp;
   clock_t t0, t1;
 
   mbar_estimatelnz(mbar, lnz);
@@ -204,7 +205,7 @@ static double mbar(int nbeta,
     err = mbar_step(mbar, lnz, mbar->res, damp);
     if ( verbose ) {
       fprintf(stderr, "it %d, err %g -> %g\n",
-          it, errp, err);
+          it, (double) errp, (double) err);
     }
     if ( err < tol && it > itmin ) {
       break;
@@ -213,7 +214,7 @@ static double mbar(int nbeta,
   }
   t1 = clock();
   fprintf(stderr, "MBAR converged in %d steps, error %g, time %.4fs\n",
-      it, err, 1.0*(t1 - t0)/CLOCKS_PER_SEC);
+      it, (double) err, 1.0*(t1 - t0)/CLOCKS_PER_SEC);
   mbar_close(mbar);
   return err;
 }
@@ -222,24 +223,24 @@ static double mbar(int nbeta,
 
 #ifdef ENABLE_MDIIS
 /* MDIIS method */
-#include "../mdiis.h"
+#include "../mdiis_xdbl.h"
 
 
 
-static double mbar_getres(void *mbar, double *lnz, double *res)
+static xdouble mbar_getres(void *mbar, xdouble *lnz, xdouble *res)
 {
   return mbar_step((mbar_t *) mbar, lnz, res, 0);
 }
 
 
 
-static double mbar_mdiis(int nbeta,
-    xvg_t **xvg, const double *beta, double *lnz,
-    int nbases, double damp, int queue, double threshold,
-    int itmin, int itmax, double tol, int verbose)
+static xdouble mbar_mdiis(int nbeta,
+    xvg_t **xvg, const xdouble *beta, xdouble *lnz,
+    int nbases, xdouble damp, int queue, xdouble threshold,
+    int itmin, int itmax, xdouble tol, int verbose)
 {
   mbar_t *mbar = mbar_open(nbeta, beta, xvg);
-  double err;
+  xdouble err;
 
   mbar_estimatelnz(mbar, lnz);
   err = iter_mdiis(lnz, nbeta,
@@ -254,10 +255,10 @@ static double mbar_mdiis(int nbeta,
 
 
 
-static double mbarx(int nbeta, xvg_t **xvg,
-    const double *beta, double *lnz,
-    double damp, int nbases, int update_method, double threshold,
-    int itmin, int itmax, double tol, int verbose, int method)
+static xdouble mbarx(int nbeta, xvg_t **xvg,
+    const xdouble *beta, xdouble *lnz,
+    xdouble damp, int nbases, int update_method, xdouble threshold,
+    int itmin, int itmax, xdouble tol, int verbose, int method)
 {
   if ( method == MBAR_DIRECT ) {
     return mbar(nbeta, xvg, beta, lnz,

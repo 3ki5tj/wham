@@ -6,6 +6,7 @@ and multistate Bennett's acceptance ratio (MBAR) method
 applied on .xvg files (output of GROMACS)
 
 
+
 Files
 =====
 
@@ -22,6 +23,12 @@ lsutil.h    | utility to handle a list of NVT file names
 ls2util.h   | utility to handle a list of NPT file names
 
 
+
+xdouble versions
+=================
+
+MBAR related programs usually requires high precision than double.
+For this reason, they can be compiled with "-DLDBL" for long double precision.
 
 
 

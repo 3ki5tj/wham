@@ -85,7 +85,7 @@ static double parsefn(char *buf, double *pres, char *fn)
  * beta and beta*p values are saved in
  * (*beta)[] and (*bpres)[], respectively */
 static char **getls(const char *fn,
-    int *nbp, double **beta, double **bpres)
+    int *nbp, xdouble **beta, xdouble **bpres)
 {
   FILE *fp;
   int i;

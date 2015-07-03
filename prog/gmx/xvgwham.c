@@ -1,6 +1,6 @@
 /* WHAM for a set of xvg files */
 #define ENABLE_MDIIS
-#include "../wham.h"
+#include "../wham_xdbl.h"
 #include <time.h>
 #include "../mtrand.h"
 #define MTRAND
@@ -15,7 +15,7 @@
 
 /* construct the histogram */
 static hist_t *mkhist(const char *fnls,
-    double **beta, double de,
+    xdouble **beta, double de,
     const char *fnhis, double radd)
 {
   hist_t *hs;
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
   model_t m[1];
   hist_t *hs = NULL;
   int i, nbeta;
-  double *beta, *lnz;
+  xdouble *beta, *lnz;
 
   model_default(m);
   model_doargs(m, argc, argv);
@@ -188,7 +188,7 @@ int main(int argc, char **argv)
       double tot, eav, var;
       eav = hist_getave(hs, i, &tot, &var);
       printf("%3d %10.7f %14.7f %8.0f %15.7f %14.7f\n",
-          i, beta[i], lnz[i], tot, eav, sqrt(var));
+          i, (double) beta[i], (double) lnz[i], tot, eav, sqrt(var));
     }
   }
 

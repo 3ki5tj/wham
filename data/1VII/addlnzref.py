@@ -83,7 +83,7 @@ def main(fn, fnref):
   # load the input data
   s = open(fn).readlines()
   if len(s) != n:
-    print "number of lines mismatch %s vs %s" % (len(s), n)
+    print "number of lines mismatch %s(%s) vs %s " % (len(s), fn, n)
     raise Exception
   bet = [-0]*n
   arr = [-0]*n

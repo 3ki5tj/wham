@@ -15,7 +15,7 @@
 
 /* load trajectories */
 static xvg_t **mkxvg(const char *fnls,
-    int *nbeta, double **beta, double radd)
+    int *nbeta, xdouble **beta, double radd)
 {
   int i;
   char **fns;
@@ -47,11 +47,11 @@ static xvg_t **mkxvg(const char *fnls,
 
 /* estimate free energies */
 static int estimate(int nbeta, xvg_t **xvg,
-    const double *beta)
+    const xdouble *beta)
 {
-  double *eav, *var, *skw;
-  double *lnza, *lnzb, *lnzc;
-  double dlnza, dlnzb, dlnzc, e, db;
+  xdouble *eav, *var, *skw;
+  xdouble *lnza, *lnzb, *lnzc;
+  xdouble dlnza, dlnzb, dlnzc, e, db;
   int i, j, n;
 
   xnew(eav, nbeta);
@@ -79,7 +79,7 @@ static int estimate(int nbeta, xvg_t **xvg,
       var[j] /= n - 1;
     }
     if ( n > 2 ) {
-      skw[j] *= 1.0 * n / (n - 1) / (n - 2);
+      skw[j] *= (xdouble) n / (n - 1) / (n - 2);
     }
   }
 
@@ -99,8 +99,9 @@ static int estimate(int nbeta, xvg_t **xvg,
 
   for ( j = 0; j < nbeta; j++ ) {
     printf("%3d %10.7f %14.7f %14.7f %14.7f %15.7f %14.7f %8d\n",
-        j, beta[j], lnza[j], lnzb[j], lnzc[j],
-        eav[j], sqrt(var[j]), xvg[j]->n);
+        j, (double) beta[j],
+        (double) lnza[j], (double) lnzb[j], (double) lnzc[j],
+        (double) eav[j], (double) SQRT(var[j]), xvg[j]->n);
   }
 
   free(eav);
@@ -119,11 +120,13 @@ int main(int argc, char **argv)
   model_t m[1];
   xvg_t **xvg = NULL;
   int i, nbeta;
-  double *beta, *lnz;
+  xdouble *beta, *lnz;
 
   model_default(m);
-  /* reduce the error tolerance for MBAR */
-  m->tol = 1e-7;
+  /* reduce the error tolerance for MBAR, if the precision is double */
+  if ( strcmp(XDBLPRNF, "") == 0 ) {
+    m->tol = 1e-7;
+  }
   model_doargs(m, argc, argv);
 
   if ( m->fninp == NULL ) {
@@ -168,7 +171,7 @@ int main(int argc, char **argv)
     if ( m->verbose ) {
       for ( i = 0; i < nbeta; i++ ) {
         printf("%3d %10.7f %14.7f %8d\n",
-            i, beta[i], lnz[i], xvg[i]->n);
+            i, (double) beta[i], (double) lnz[i], xvg[i]->n);
       }
     }
   }

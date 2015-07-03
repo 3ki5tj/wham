@@ -15,7 +15,7 @@
 
 /* construct the histogram */
 static xvg_t **mkxvg(const char *fnls,
-    int *nbp, double **beta, double **bpres,
+    int *nbp, xdouble **beta, xdouble **bpres,
     double radd)
 {
   int i;
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
   model_t m[1];
   xvg_t **xvg = NULL;
   int i, nbp;
-  double *beta, *bpres, *lnz;
+  xdouble *beta, *bpres, *lnz;
 
   model_default(m);
   /* reduce the error tolerance for MBAR */
@@ -81,7 +81,8 @@ int main(int argc, char **argv)
   if ( m->verbose ) {
     for ( i = 0; i < nbp; i++ ) {
       printf("%3d %10.7f %10.7f %14.7f %8d\n",
-          i, beta[i], bpres[i]/beta[i], lnz[i], xvg[i]->n);
+          i, (double) beta[i], (double) (bpres[i]/beta[i]),
+          (double) lnz[i], xvg[i]->n);
     }
   }
 
