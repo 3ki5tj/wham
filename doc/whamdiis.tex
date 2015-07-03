@@ -682,8 +682,13 @@ would be most efficient.
 
 
 
-An instructive special case is $M = 2$, and $K = 1$,
-which reduces the method to the secant method\cite{press}.
+For an instructive special case,
+consider two vectors ($M = 2$)
+in the one-dimensional space ($K = 1$).
+%
+The above procedure
+is then reduced to the secant method\cite{press},
+as shown in Fig. \ref{fig:scheme}(c).
 
 
 
@@ -932,12 +937,103 @@ is used to update the basis as follows.
     %
     %
     %
+    %
+    % Secant plot
+    %
+    %
+    %
+    %
+    %
+    \newcommand{\Ssz}{0.6*\sz}
+    \newcommand{\Ssx}{\Ssz} % x scaling factor
+    \newcommand{\Ssy}{0.6*\Ssz} % y scaling factor
+    \newcommand{\Sox}{0.9*\sz}
+    \newcommand{\Soy}{-1.4*\Ssy}
+    %
+    %
+    %
+    %
+    \node (label-C) at ({\Sox - 1.60*\Ssx}, {\Soy + 1.00*\Ssy}) [label=below:{(c)}] {};
+    %
+    \node (Sx) at ({\Sox + 1.4*\Ssx}, {\Soy})
+      [ emptydot,
+        label={below:{$\vct f$}}] {};
+    \node (Sy) at({\Sox}, {\Soy + 0.7*\Ssy})
+      [ emptydot,
+        label={180:{$\vct R$}}] {};
+    %
+    % x axis
+    %
+    \draw [->] (\Sox - 1.50*\Ssx, \Soy) -- (\Sox + 1.50*\Ssx, \Soy);
+    %
+    % y axis
+    %
+    \draw [->] (\Sox, \Soy - 1.4*\Ssy) -- (\Sox, \Soy + 0.8*\Ssy);
+    %
+    %
+    % y = 1 - 2^x
+    %
+    %
+    \draw [very thick, gray] plot [smooth, tension=0.8]
+      coordinates {
+        ({\Sox - 1.20*\Ssx}, {\Soy + 0.564*\Ssy})
+        ({\Sox - 1.00*\Ssx}, {\Soy + 0.500*\Ssy})
+        ({\Sox - 0.50*\Ssx}, {\Soy + 0.292*\Ssy})
+        ({\Sox}, {\Soy})
+        ({\Sox + 0.50*\Ssx}, {\Soy - 0.414*\Ssy})
+        ({\Sox + 1.00*\Ssx}, {\Soy - 1.000*\Ssy})
+        ({\Sox + 1.20*\Ssx}, {\Soy - 1.298*\Ssy})
+      };
+    %
+    \node (Sf1R1) at ({\Sox + 1.0*\Ssx}, {\Soy - 1.000*\Ssy})
+      [emptydot,
+        label={[label distance=0.1mm]
+               0:{$\vct R_1$}}
+      ] {};
+    \node (Sf1) at ({\Sox + 1.0*\Ssx}, {\Soy})
+      [emptydot,
+        label={[label distance=0.1mm]
+               90:{$\vct f_1$}}
+      ] {}
+      edge[fRarrow1] (Sf1R1);
+    %
+    \node (Sf2R2) at ({\Sox - 1.0*\Ssx}, {\Soy + 0.500*\Ssy})
+      [emptydot,
+        label={[label distance=0.1mm]
+               90:{$\vct R_2$}}
+      ] {};
+    \node (Sf2) at ({\Sox - 1.0*\Ssx}, {\Soy})
+      [emptydot,
+        label={[label distance=0.1mm]
+               270:{$\vct f_2$}}
+      ] {}
+      edge[fRarrow2] (Sf2R2);
+    %
+    \node (SfhatRhat) at ({\Sox - \Ssx/3}, {\Soy + 0.206*\Ssy})
+      [emptydot,
+        label={[label distance=0.1mm]
+               90:{$\vct {\hat R}$}}
+      ] {};
+    \node (Sfhat) at ({\Sox - \Ssx/3}, {\Soy})
+      [emptydot,
+        label={[label distance=0.1mm]
+               270:{$\vct {\hat f}$}}
+      ] {}
+      edge[fRarrowx] (SfhatRhat);
+    %
+    \draw [dashed, gray]
+      ({\Sox + 4*\Ssx/3}, {\Soy - 1.25*\Ssy}) -- ({\Sox - 4*\Ssx/3}, {\Soy + 0.75*\Ssy});
+    %
+    \node (Sorigin) at (\Sox, \Soy) [emptydot] {}
+      edge[fRarrow1] (Sf1)
+      edge[fRarrow2] (Sf2)
+      edge[fRarrowx] (Sfhat);
   \end{tikzpicture}
   %
   %
   %
   \caption{\label{fig:scheme}
-    Schematic illustration of the method of
+    Schematic illustrations of the method of
     direct inversion of the iterative subspace (DIIS)
     for solving a set of equations.
     %
@@ -964,6 +1060,9 @@ is used to update the basis as follows.
     Then, $\vct f^{(n)}$ is used to
     update the basis
     for the next round of iteration.
+    %
+    (c) If the vectors are one-dimensional (i.e., scalars),
+    DIIS is reduced to the secant method.
   }
 \end{figure}
 
@@ -1332,6 +1431,8 @@ direct WHAM suffered from a slow convergence,
 while the DIIS version again
 delivered a speedup of two orders of magnitude,
 in the number of iterations or real run time.
+%
+The MBAR case was similar.
 
 
 
@@ -1374,9 +1475,9 @@ was comparable to ST-WHAM and UIM.
     the zero bin-size limit of WHAM,
     are used as the reference.
     %
-    The random error of WHAM (gray line)
-    was estimated using bootstrapping
-    from the $h = 1.0$ case.
+    %The random error of WHAM (gray line)
+    %was estimated using bootstrapping
+    %from the $h = 1.0$ case.
     %
     The lines are to guide the eyes.
   }
@@ -1947,58 +2048,58 @@ by a more accurate alternative, e.g., ST-WHAM.
 
 
 
-Finally, we give a cautionary comment
-on using Eq. \eqref{eq:df_eav}
-for the weight in simulated tempering\cite{park2007}.
-%
-Equation \eqref{eq:df_eavb} shows that
-the error of Eq. \eqref{eq:df_eav}
-is of order $N \, \Delta \beta_i^3$
-of a system of size $N$,
-since
-$\partial \langle \delta E^2 \rangle / \partial \beta
-= -\partial^2 \langle E \rangle / \partial \beta^2$
-is extensive.
-%
-Thus,
-if Eq. \eqref{eq:df_eav} is applied to
-an $O(1)$ temperature range
-with an average spacing $\Delta \beta$,
-the accumulative error of $f_i$
-is $O(N \, \Delta \beta^2)$.
-%
-If the simulation temperatures
-are arranged
-such that the energy distributions
-of neighboring temperatures
-barely overlap,
-%
-the average energy difference,
-$\Delta \langle E \rangle_i = \langle E \rangle_{i+1} - \langle E \rangle_i$,
-between neighboring temperatures
-is roughly a multiple of the width of
-the energy distribution
-$\sqrt{ \langle \delta E^2 \rangle_i } \propto O(\sqrt{N})$.
-%
-So $\Delta \beta_i$,
-given by $\Delta \langle E \rangle_i / |\partial E/\partial \beta|$,
-is $O(1/\sqrt{N})$,
-%
-and the accumulative error
-of $f_i$ is $O(1)$
-(as illustrated in Fig. \ref{fig:is2approx}).
-%
-Thus, if Eq. \eqref{eq:df_eav}
-is used for the weights
-in simulated tempering\cite{park2007},
-the resulting temperature distribution
-may deviate appreciably
-from the flat one.
-%
-%One can fix this by choosing
-%a finer spacing or
-%use Eq. \eqref{eq:df_eavb}
-%instead.
+%Finally, we give a cautionary comment
+%on using Eq. \eqref{eq:df_eav}
+%for the weight in simulated tempering\cite{park2007}.
+%%
+%Equation \eqref{eq:df_eavb} shows that
+%the error of Eq. \eqref{eq:df_eav}
+%is of order $N \, \Delta \beta_i^3$
+%of a system of size $N$,
+%since
+%$\partial \langle \delta E^2 \rangle / \partial \beta
+%= -\partial^2 \langle E \rangle / \partial \beta^2$
+%is extensive.
+%%
+%Thus,
+%if Eq. \eqref{eq:df_eav} is applied to
+%an $O(1)$ temperature range
+%with an average spacing $\Delta \beta$,
+%the accumulative error of $f_i$
+%is $O(N \, \Delta \beta^2)$.
+%%
+%If the simulation temperatures
+%are arranged
+%such that the energy distributions
+%of neighboring temperatures
+%barely overlap,
+%%
+%the average energy difference,
+%$\Delta \langle E \rangle_i = \langle E \rangle_{i+1} - \langle E \rangle_i$,
+%between neighboring temperatures
+%is roughly a multiple of the width of
+%the energy distribution
+%$\sqrt{ \langle \delta E^2 \rangle_i } \propto O(\sqrt{N})$.
+%%
+%So $\Delta \beta_i$,
+%given by $\Delta \langle E \rangle_i / |\partial E/\partial \beta|$,
+%is $O(1/\sqrt{N})$,
+%%
+%and the accumulative error
+%of $f_i$ is $O(1)$
+%(as illustrated in Fig. \ref{fig:is2approx}).
+%%
+%Thus, if Eq. \eqref{eq:df_eav}
+%is used for the weights
+%in simulated tempering\cite{park2007},
+%the resulting temperature distribution
+%may deviate appreciably
+%from the flat one.
+%%
+%%One can fix this by choosing
+%%a finer spacing or
+%%use Eq. \eqref{eq:df_eavb}
+%%instead.
 
 
 

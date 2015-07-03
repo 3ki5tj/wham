@@ -21,7 +21,7 @@ set ytics font "Times,20" offset 0.5, 0
 set mytics 20
 set ylabel "&{i}_{/*2.4|} {/Times-Italic f_i} - {/Times-Italic f_i}^{/*0.7 (MBAR)}&{i}_{/*2.4|}" offset 1.0, 1.0
 
-set key at 405, 3e-5 Left reverse font "Times,20" width -9 vertical maxrows 5 spacing 1.0
+set key at 405, 3e-5 Left reverse font "Times,20" width -9 vertical maxrows 3 spacing 1.0
 
 color1  = "#224488"
 color2  = "#aa2222"
@@ -53,7 +53,9 @@ plot [300:420][1e-6:1] \
   "../../data/1VII/uiwham_de0.1.out"  u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 23  t "UIM", \
   "../../data/1VII/wham_de1.out"      u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3) : 1/0) w lp ls 2   t "WHAM", \
   "../../data/1VII/est.out"           u (1/BOLTZ/$2):(($1 > 0) ? abs($9-$4) : 1/0) w  p ls 22  t "Eq. (C2)", \
-  "../../data/1VII/xvgbswham.dat"     u (1/BOLTZ/$2):(($1 > 0) ? abs($4)    : 1/0) w l  ls 9   t "Random error of WHAM", \
+
+
+# "../../data/1VII/xvgbswham.dat"     u (1/BOLTZ/$2):(($1 > 0) ? abs($4)    : 1/0) w l  ls 9   t "Random error of WHAM",
 
 
 
