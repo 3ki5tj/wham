@@ -598,59 +598,60 @@ $\phi = \arctan(\bar y/\bar x) = \arctan \left(-\sqrt 2 - 1\right) = -3 \, \pi/8
 From the unnumbered equation after Eq. (A1),
 we get the posterior probability
 \begin{align*}
-p\left( \psi | \{ \vct x \} \right)
+p\left( g | \{ \vct x \} \right)
 &=
 \frac{
-  p\left( \{ \vct x \} | \psi \right) \, p(\psi)
+  p\left( \{ \vct x \} | g \right) \, p(g)
 }
 {
   p\left( \{ \vct x \} \right)
 }
 \\
 &\propto
-p\left( \{ \vct x \} | \psi \right).
+p\left( \{ \vct x \} | g \right).
 \end{align*}
 %
 Taking the logarithm, we get
 %
 \begin{align*}
-\log p\left( \psi | \{ \vct x \} \right)
+\log p\left( g | \{ \vct x \} \right)
 &=
 \sum_{k = 1}^K
   \sum_{\vct x}^{(k)}
     \left(
-      \log q_k(\vct x) - \psi(\vct x) - \log Z_k[\psi]
+      \log g(\vx) + \log q_k(\vx) - \log Z_k[g]
     \right)
 + C
 \\
 &=
--\sum_{k = 1}^K
+\sum_{k = 1}^K
 \left(
-  \sum_{\vct x}^{(k)}
-    \psi(\vct x) + N_k \log Z_k[\psi]
+  \sum_{\vx}^{(k)}
+    \log g(\vx) - N_k \log Z_k[g]
 \right) + C',
 \end{align*}
 %
 where $C$ and $C'$
-are constants independent of $\psi$.
+are constants independent of $g$.
 %
-We now differentiate it with respect to $\psi(\vy)$,
+We now differentiate it with respect to $g(\vy)$,
 %
 \begin{align}
 \frac{
-  \delta \log p\left( \psi | \{ \vct x \} \right)
+  \delta \log p\left( g | \{ \vct x \} \right)
 }
 {
-  \delta \psi(\vy)
+  \delta g(\vy)
 }
 &=
--\sum_{k = 1}^K
+\sum_{k = 1}^K
 \left(
   \sum_{\vct x}^{(k)}
-    \delta( \vy - \vx )
-  +
-  \frac {N_k} { Z_k[\psi] }
-  \frac{ \delta Z_k[\psi] } { \delta \psi(\vy) }
+  \frac{ \delta( \vy - \vx ) }
+  { g(\vy) }
+  -
+  \frac {N_k} { Z_k[g] }
+  \frac{ \delta Z_k[g] } { \delta g(\vy) }
 \right)
 = 0.
 \label{eq:dpdg}
@@ -658,28 +659,28 @@ We now differentiate it with respect to $\psi(\vy)$,
 %
 Now since
 \begin{equation}
-Z_k[\psi]
+Z_k[g]
 =
-\int q_k(\vy) \, \exp[-\psi(\vy)] \, d\vy,
+\int g(\vy) \, q_k(\vy) \, d\vy,
 \tag{A1}
 \label{eq:Zg}
 \end{equation}
 we have
 \begin{equation*}
-\frac{ \delta Z_k[\psi] } { \delta \psi(\vy) }
-= -q_k(\vy) \, \exp[-\psi(\vy)].
+\frac{ \delta Z_k[g] } { \delta g(\vy) }
+= q_k(\vy).
 \end{equation*}
 %
 Using this in Eq. \eqref{eq:dpdg},
 we get
 \begin{equation}
-\exp[-\psi(\vy)]
+g(\vy)
 =
 \frac{
   \sum_{j = 1}^K \sum_{\vct x}^{(j)} \delta(\vx - \vy)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[\psi]
+  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g]
 }.
 \tag{A2}
 \label{eq:gy}
@@ -689,14 +690,14 @@ Finally,
 we use Eq. \eqref{eq:gy} in Eq. \eqref{eq:Zg},
 %
 \begin{align}
-Z_i[\psi]
+Z_i[g]
 &=
 \int
 \frac{
   \sum_{j = 1}^K \sum_{\vct x}^{(j)} \delta(\vx - \vy)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[\psi]
+  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g]
 }
 q_i(\vy) d\vy
 \notag \\
@@ -707,7 +708,7 @@ q_i(\vy) d\vy
   \delta(\vx - \vy)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[\psi]
+  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g]
 }
 q_i(\vy) d\vy
 \notag \\
@@ -717,7 +718,7 @@ q_i(\vy) d\vy
   q_i(\vx)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vct x) / Z_k[\psi]
+  \sum_{k = 1}^K N_k \, q_k(\vct x) / Z_k[g]
 }.
 \end{align}
 

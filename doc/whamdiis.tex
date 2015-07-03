@@ -50,10 +50,10 @@ newman, frenkel}
 or its generalization,
 the weighted histogram analysis method (WHAM)\cite{
 kumar1992, roux1995,
-bartels1997, *habeck2007, *habeck2012,
+bartels1997, *gallicchio2005, *habeck2007, *habeck2012,
 souaille2001,
 chodera2007, shirts2008, bereau2009,
-hub2010},
+hub2010, zhu2012},
 is such an efficient method.
 %
 The statistical efficiency
@@ -120,38 +120,34 @@ For example, one may use the Newton-Raphson method,
 which involves the Hessian matrix,
 although the approach sometimes can be unstable\cite{
 shirts2008}.
-
-
-
-There are two non-iterative alternatives\cite{
-%shen1991, woolf1994, *crouzy1994,
-kastner2005, *kastner2009, kim2011}
-to WHAM.
 %
-The statistical-temperature WHAM (ST-WHAM)\cite{
-kim2011}
+Other more advanced techniques include
+the trust region and BFGS methods\cite{zhu2012}.
+
+
+
+An ingenious non-iterative alternative is
+the statistical-temperature WHAM (ST-WHAM)\cite{
+kim2011}, which
 determines the density of states
 through its logarithmic derivative,
-or the statistical temperature,
-by  averaging the values
-from different trajectories
-using the histogram heights as the weights.
+or the statistical temperature.
 %
-The method can be regarded as a refinement of
+In this way,
+it manages to estimate
+the density of states non-iteratively
+with minimal approximation.
+%by averaging the values
+%from different trajectories
+%using the histogram heights as the weights.
+%
+ST-WHAM can be regarded as a refinement of
 the more approximate umbrella integration method (UIM)\cite{
-kastner2005, *kastner2009},
-and both methods are non-iterative,
-for they avoid the free energies in constructing
-the density of states.
+kastner2005, *kastner2009}.
 %
-ST-WHAM, however,
-can be sensitive to the histogram bin size,
-%gives a slightly different estimate of the free energy from the original WHAM,
-and the extension to multidimensional ensembles,
+However, the extension to multidimensional ensembles,
 e.g., the isothermal-isobaric ensemble,
 can be numerically challenging\cite{kim2011}.
-%
-UIM is more stable, but less rigorous.
 
 
 
@@ -262,7 +258,7 @@ g(E)
 \mbox{for $k = 1, \dots, K$},
 \label{eq:gnk}
 \end{equation}
-where $d_k(E) \equiv N_k \exp(-\beta_k E)/Z_k$.
+where $d_k(E) \equiv N_k \exp(-\beta_k E + f_k)$.
 %
 Then, Eq. \eqref{eq:gE_WHAM}
 can be regarded as
@@ -497,7 +493,7 @@ This approach, or direct WHAM below,
 can suffer from a slow convergence
 (cf. Appendix \ref{sec:convwham}),
 resulting in thousands of iterations\cite{
-bereau2009, kim2011}.
+bereau2009, kim2011, zhu2012}.
 
 
 
@@ -506,44 +502,66 @@ computes the logarithmic derivative of $g(E)$
 in Eq. \eqref{eq:gE_WHAM} as\cite{
 kim2011}
 %
-\begin{equation}
+\begin{align}
 (\log g)'(E)
 \approx
+\frac{d}{dE}
+\log \left[
+  \sum_{k = 1}^K n_k(E)
+\right]
++
 \frac{
-  \sum_k n_k'(E) + n_k(E) \, \beta_k
+  \sum_{k = 1}^K n_k(E) \, \beta_k
 }
 {
-  \sum_k n_k(E)
+  \sum_{k = 1}^K n_k(E)
 },
-\label{eq:beta_STWHAM}
-\end{equation}
+\notag
+%\label{eq:beta_STWHAM}
+\end{align}
 %
-whose integral yields $\log g(E)$.
+which involves no $f_k$,
+for $d_k(E)$ has been replaced by $n_k(E)$
+in the second term
+using Eq. \eqref{eq:gnk}.
 %
-The main approximation is
-the substitution of $n_k(E)$
-for $d_k(E)$ in the second term,
-which avoids the involvement of $f_k$.
+So
+\begin{align}
+g(E)
+\approx
+\sum_{j = 1}^K n_j(E)
+\exp
+\left[
+\int^E
+\frac{
+  \sum_{k = 1}^K n_k(E') \, \beta_k
+}
+{
+  \sum_{k = 1}^K n_k(E')
+} dE'
+\right].
+%\notag
+\label{eq:g_STWHAM}
+\end{align}
 %
-ST-WHAM, however,
-is more sensitive to the bin size
-because it depends heavily on
-the precision of the histogram
-and its derivative.
+In evaluating the integral,
+the denominator of the integrand
+may vanish for some bin.
 %
-The multidimensional generalization
-is also numerically challenging\cite{
-kim2011}.
+In this case, we let integrand inherit
+the last valid value of smaller $E'$
+(setting it to zero would cause a larger error).
 %
-A related method is UIM\cite{
+ST-WHAM is most convenient in one dimension,
+and its result is slightly different from WHAM\cite{kim2011}.
+%
+A related method, UIM\cite{
 kastner2005, *kastner2009},
-in which one approximates
+further approximates
 the distribution $n_k(E)$ as a Gaussian.
 %
-Although this approximation
-greatly improve the numerical stability,
-it also limits the long-term
-accuracy (cf Appendix \ref{sec:approxf}).
+This, however, may limit the long-term
+accuracy (cf. Appendix \ref{sec:approxf}).
 
 
 
@@ -661,6 +679,11 @@ Thus,
 an iteration based on
 $\vct{\hat f}$
 would be most efficient.
+
+
+
+An instructive special case is $M = 2$, and $K = 1$,
+which reduces the method to the secant method\cite{press}.
 
 
 
@@ -1138,34 +1161,19 @@ the initial free energies were obtained from
 the single histogram method:
 %
 \begin{equation*}
-f_i - f_{i-1}
+f_{i+1} - f_{i}
 =
 \log
 \left\langle
   \exp\left[
-    (\beta_j - \beta_{j-1}) \, E
+    (\beta_{i+1} - \beta_i) \, E
   \right]
-\right\rangle_j.
+\right\rangle_{i+1}.
 \end{equation*}
 %
 Iterations are continued
 until all $|R_i|$ are reduced
 below a certain tolerance level $\epsilon$.
-
-
-
-For ST-WHAM,
-the $n_j'(E)$ in Eq. \eqref{eq:beta_STWHAM}
-was estimated from
-\begin{equation}
-n_j'(E)
-=
-\frac{ n_j(E + h) - n_j(E - h) }
-     { 2 \, h },
-\label{eq:dn}
-\end{equation}
-with $h$ being the bin size
-of the energy histogram.
 
 
 
@@ -1330,38 +1338,17 @@ in the number of iterations or real run time.
 We compared the errors of WHAM, ST-WHAM, UIM
 and approximate formulae in Fig. \ref{fig:whamcmp}.
 %
-While WHAM was
-relatively indifferent to the bin size,
+All methods were insensitive to the bin size
+within the reasonable range.
 %
-the error of ST-WHAM
-increased dramatically with decreasing bin size.
+ST-WHAM and UIM produced similar and reasonable results,
+with the former being slightly better.
 %
-This is not unexpected for ST-WHAM depended strongly
-on the precision of histograms.
-%
-Note also that
-we used Eq. \eqref{eq:dn} for differentiation
-and the trapezoidal rule for integration.
-%
-Better handling of missing data,
-numerical differentiation
-and/or integration schemes\cite{
-kim2011} may help.
-%
-With a sufficiently large bin size,
-ST-WHAM and UIM produced similar and reasonable results.
-%
-The latter is, albeit more approximate,
-insensitive to the bin size, hence more stable.
-%
-However, both methods might have room for improvement
-as their errors were larger than the estimated error of WHAM.
-%
-We also found that the errors
-of the approximate formulae,
-Eqs. \eqref{eq:df_eav} and \eqref{eq:df_eavb},
-were comparable,
-with the latter being slightly more accurate.
+The approximate Eq. \eqref{eq:df_eav}
+was less accurate,
+although its improvement
+Eq. \eqref{eq:df_eavb},
+was comparable to ST-WHAM and UIM.
 %
 
 
@@ -1378,8 +1365,8 @@ with the latter being slightly more accurate.
     the dimensionless free energies, $f_i$,
     from WHAM, ST-WHAM, approximate formulae and UIM
     for the villin headpiece
-    with different bin sizes, $h$
-    of the energy histograms.
+    %
+    The bin size of the energy histograms is $h = 1.0$.
     %
     $f_i$ at $T = 300$ K is fixed at zero.
     %
@@ -1389,9 +1376,7 @@ with the latter being slightly more accurate.
     %
     The random error of WHAM (gray line)
     was estimated using bootstrapping
-    from the $h = 1.0$ case;
-    the errors of the $h = 10.0$
-    and $h = 100.0$ cases were similar.
+    from the $h = 1.0$ case.
     %
     The lines are to guide the eyes.
   }
@@ -1441,23 +1426,21 @@ The technique achieves a fast convergence
 by an optimal combination of the approximate
 solutions obtained during iteration.
 %
-The method is stable and easy to implement
+The method is numerically stable
 and has only a small run time overhead.
+%
+Compared to more advanced optimization techniques\cite{
+shirts2008, zhu2012},
+DIIS is easier to implement.
 
 
 
-There are several
-non-iterative alternatives to WHAM,
+There are several alternatives to WHAM,
 although they are less general and/or accurate.
 %
-For one-dimensional problems
-one may use
-the non-iterative ST-WHAM
-given ample data
-and a carefully-chosen bin size.
-%
-For scarce data,
-UIM also offers a reasonable alternative.
+One-dimensional problems
+may benefit from the non-iterative ST-WHAM,
+or the more approximate cousin UIM.
 %
 Besides,
 rough estimates
@@ -1502,75 +1485,87 @@ Probabilistic derivation of Eq. \eqref{eq:f_MBAR}}
 
 
 
-Here we show
-Eq. \eqref{eq:f_MBAR} by
-following the probabilistic approach\cite{
-bartels1997, *habeck2007, *habeck2012}.
+Here we show that
+Eq. \eqref{eq:f_MBAR}
+is a generalization of Eq. \eqref{eq:f_WHAM}
+from the energy space to the phase space.
 %
-We start by adding a phase-space field, $\psi(\vy)$,
-such that the partition function is modified as:
+We follow the probabilistic argument\cite{
+bartels1997, *gallicchio2005, *habeck2007, *habeck2012, zhu2012}
+for simplicity.
+%
+We assume that the system is subject to
+an unknown underlying phase-space field, $g(\vy)$,
+such that the distribution of state $k$ is
+$g(\vy) \, q_k(\vy) / Z_k[g]$, with
+%the partition function being
 %
 \begin{equation}
-Z_k[\psi]
+Z_k[g]
 =
-\int \, q_k(\vy) \, \exp[-\psi(\vy)] \, d\vy.
+\int g(\vy) \, q_k(\vy) \, d\vy.
 \label{eq:Zg}
 \end{equation}
+
+
+
+We now seek the most probable $g(\vy)$
+from the observed trajectory.
 %
-Given a certain $\psi(\vy)$,
+Given a certain $g(\vy)$,
 the probability of observing the data set,
 $\{ \vx \}$,
 is given by
 %
 \begin{equation*}
-p\left( \{ \vx \} | \psi \right)
+p\left( \{ \vx \} | g \right)
 =
 \prod_{k = 1}^K
 \prod_{\vx}^{(k)}
-\frac{ q_k(\vx) \, \exp[-\psi(\vx)] }
-     { Z_k[\psi] },
+\frac{ g(\vx) \, q_k(\vx) }
+     { Z_k[g] },
 %\label{eq:pg}
 \end{equation*}
 %
 Assuming a uniform prior distribution,
-$p[\psi(\vy)]$, of the value of $\psi(\vy)$,
+$p[g(\vy)]$, of the value of $g(\vy)$,
 at each phase-space point $\vy$,
 Bayes' theorem\cite{leonard} states that
 given the observed data, $\{\vx\}$,
-the posterior distribution of $\psi$,
-$p\left( \psi | \{ \vx \} \right)$,
+the posterior distribution of $g$,
+$p\left( g | \{ \vx \} \right)$,
 is proportional to
-$p\left( \{ \vx \} | \psi \right) \, p(\psi) \propto p\left( \{ \vx \} | \psi \right)$.
+$p\left( \{ \vx \} | g \right) \, p(g) \propto p\left( \{ \vx \} | g \right)$.
 %
 Thus,
-to find the most probable $\psi(\vy)$,
+to find the most probable $g(\vy)$,
 we only need to maximize
-$\log p\left( \psi | \{ \vx \} \right)$
+$\log p\left( g | \{ \vx \} \right)$
 by taking the functional derivative
-with respect to $\psi(\vy)$
+with respect to $g(\vy)$
 and setting it to zero,
 which yields
 %
 \begin{equation}
-\exp[-\psi(\vy)]
+g(\vy)
 =
 \frac{
   \sum_{j = 1}^K \sum_{\vx}^{(j)} \delta(\vx - \vy)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[\psi]
+  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g]
 },
 \label{eq:gy}
 \end{equation}
 %
 where we have used
-$\delta \psi(\vx) / \delta \psi(\vy) = -\delta(\vx - \vy)$,
+$\delta \log g(\vx) / \delta g(\vy) = \delta(\vx - \vy)/g(\vy)$,
 and
-$\delta Z_k[\psi] / \delta \psi(\vy) = -q_k(\vy) \, \exp[-\psi(\vy)]$.
+$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.
 %
 Using Eq. \eqref{eq:gy}
 in Eq. \eqref{eq:Zg},
-and then setting $\psi$ to zero
+and then setting $g$ to $1.0$
 yields Eq. \eqref{eq:f_MBAR}.
 
 

@@ -134,14 +134,25 @@ static int wham_savelndos(wham_t *w, const char *fn)
   FILE *fp;
   int i;
   double emin = w->hist->xmin, de = w->hist->dx;
+  double e, y, dy;
 
   if ((fp = fopen(fn, "w")) == NULL) {
     fprintf(stderr, "cannot write %s\n", fn);
     return -1;
   }
-  for ( i = w->imin; i < w->imax; i++ )
-    if ( w->lndos[i] > LOG0 )
-      fprintf(fp, "%g %g\n", emin + (i+.5)*de, w->lndos[i]);
+  for ( i = w->imin; i < w->imax; i++ ) {
+    e = emin + (i * 2 + 1) * de / 2;
+    y = w->lndos[i];
+    if ( y <= LOG0 ) continue;
+    if ( i == w->imin ) {
+      dy = (w->lndos[i+1] - y) / de;
+    } else if ( i + 1 < w->imax ) {
+      dy = (w->lndos[i+1] - w->lndos[i-1]) / (2 * de);
+    } else {
+      dy = (y - w->lndos[i-1]) / de;
+    }
+    fprintf(fp, "%g %g %g\n", e, y, dy);
+  }
   fclose(fp);
   return 0;
 }
@@ -162,7 +173,7 @@ static void wham_getav(wham_t *w, const char *fn)
 
   for ( j = 0; j < nbeta; j++ ) {
     b = w->beta[j];
-    T = 1./b;
+    T = 1 / b;
     lnz = slne = slnee = LOG0;
     for ( i = w->imin; i < w->imax; i++ ) {
       if ( w->lndos[i] <= LOG0 ) continue;
@@ -366,14 +377,16 @@ static void stwham_getlndos(wham_t *w)
 {
   const hist_t *hist = w->hist;
   int i, j, imin, imax, n = hist->n, nbeta = hist->rows;
-  double x, y, y2, tot, hn, hp, stbeta, de = hist->dx;
+  double x, y, tot, stbeta, stbeta0, de = hist->dx;
   clock_t t0, t1;
 
   t0 = clock();
 
   imin = w->imin;
   imax = w->imax;
+  stbeta = 0;
   for ( i = imin; i < imax; i++ ) {
+    stbeta0 = stbeta; /* save the previous value */
     tot = 0;
     stbeta = 0;
     for ( j = 0; j < nbeta; j++ ) {
@@ -384,34 +397,38 @@ static void stwham_getlndos(wham_t *w)
        * beta(E) = -----------------------------------
        *                     sum_k n_k(E)
        * y is the numerator */
-      y = x * w->beta[j];
-      y2 = 0;
-      if ( i - 1 >= imin && i + 1 < imax ) {
-        hn = hist->arr[j*n + i + 1];
-        hp = hist->arr[j*n + i - 1];
-        /* compute (n_j)'(E) + n_j(E) beta */
-        y2 = (hn - hp) / (2 * de);
-      }
-      stbeta += y + y2;
+      stbeta += x * w->beta[j];
     }
 
-    /* lndos currently holds the statistical temperature */
+    /* lndos currently holds the second part of
+     * the statistical temperature */
     if ( tot > 0 ) {
-      w->lndos[i] = stbeta / tot;
+      stbeta /= tot;
     } else {
-      w->lndos[i] = 0;
-      continue;
+      stbeta = stbeta0;
     }
+    w->lndos[i] = stbeta;
   }
 
-  /* integrate the statistical temperature
+  /* integrate the second part of the statistical temperature
    * to get the density of states */
   x = y = 0;
   for ( i = imin; i < imax; i++ ) {
     stbeta = w->lndos[i];
-    w->lndos[i] = y + 0.5 * (x + stbeta) * de;
+    w->lndos[i] = y + (x + stbeta) / 2 * de;
     x = stbeta; /* previous temperature */
     y = w->lndos[i]; /* previous lndos */
+  }
+
+  /* add the first part */
+  for ( i = imin; i < imax; i++ ) {
+    tot = 0;
+    for ( j = 0; j < nbeta; j++ ) {
+      tot += hist->arr[j*n + i];
+    }
+    if ( tot > 0 ) {
+      w->lndos[i] += log(tot);
+    }
   }
 
   for ( i = 0; i < imin; i++ ) {
