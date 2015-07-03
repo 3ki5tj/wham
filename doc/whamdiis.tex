@@ -1498,82 +1498,79 @@ is gratefully acknowledged.
 
 
 \section{\label{sec:deriveMBAR}
-Probabilistic derivation}
+Probabilistic derivation of Eq. \eqref{eq:f_MBAR}}
 
 
 
-Here we follow the probabilistic approach\cite{
-bartels1997, *habeck2007, *habeck2012} to derive
-Eq. \eqref{eq:f_MBAR}.
+Here we show
+Eq. \eqref{eq:f_MBAR} by
+following the probabilistic approach\cite{
+bartels1997, *habeck2007, *habeck2012}.
 %
-We first assume
-a (hypothetically nonuniform)
-phase-space density of states
-$g(\vy)$.
-%
-Then, the partition function can be written
-as a functional of $g$:
+We start by adding a phase-space field, $\psi(\vy)$,
+such that the partition function is modified as:
 %
 \begin{equation}
-Z_k[g]
+Z_k[\psi]
 =
-\int g(\vy) \, q_k(\vy) \, d\vy.
+\int \, q_k(\vy) \, \exp[-\psi(\vy)] \, d\vy.
 \label{eq:Zg}
 \end{equation}
 %
-Given a certain $g(\vy)$,
+Given a certain $\psi(\vy)$,
 the probability of observing the data set,
 $\{ \vx \}$,
 is given by
 %
 \begin{equation*}
-p\left( \{ \vx \} | g \right)
+p\left( \{ \vx \} | \psi \right)
 =
 \prod_{k = 1}^K
 \prod_{\vx}^{(k)}
-\frac{ g(\vx) \, q_k(\vx) }
-     { Z_k[g] },
+\frac{ q_k(\vx) \, \exp[-\psi(\vx)] }
+     { Z_k[\psi] },
 %\label{eq:pg}
 \end{equation*}
 %
-If we assume a uniform prior distribution,
-$p[g(\vy)]$, of the value of $g(\vy)$,
+Assuming a uniform prior distribution,
+$p[\psi(\vy)]$, of the value of $\psi(\vy)$,
 at each phase-space point $\vy$,
-then Bayes' theorem\cite{leonard} states that
-given the observed data set,
-the posterior distribution of $g$,
-$p\left( g | \{ \vx \} \right)$,
+Bayes' theorem\cite{leonard} states that
+given the observed data, $\{\vx\}$,
+the posterior distribution of $\psi$,
+$p\left( \psi | \{ \vx \} \right)$,
 is proportional to
-$p\left( \{ \vx \} | g \right) \, p(g) \propto p\left( \{ \vx \} | g \right)$.
+$p\left( \{ \vx \} | \psi \right) \, p(\psi) \propto p\left( \{ \vx \} | \psi \right)$.
 %
-To find the most probable $g(\vy)$,
-we maximize
-$\log p\left( g | \{ \vx \} \right)$
+Thus,
+to find the most probable $\psi(\vy)$,
+we only need to maximize
+$\log p\left( \psi | \{ \vx \} \right)$
 by taking the functional derivative
-with respect to $g(\vy)$
+with respect to $\psi(\vy)$
 and setting it to zero,
 which yields
 %
 \begin{equation}
-g(\vy)
+\exp[-\psi(\vy)]
 =
 \frac{
   \sum_{j = 1}^K \sum_{\vx}^{(j)} \delta(\vx - \vy)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g]
+  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[\psi]
 },
 \label{eq:gy}
 \end{equation}
 %
 where we have used
-$\delta \log g(\vx) / \delta g(\vy) = \delta(\vx - \vy)/g(\vy)$,
+$\delta \psi(\vx) / \delta \psi(\vy) = -\delta(\vx - \vy)$,
 and
-$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.
+$\delta Z_k[\psi] / \delta \psi(\vy) = -q_k(\vy) \, \exp[-\psi(\vy)]$.
 %
 Using Eq. \eqref{eq:gy}
 in Eq. \eqref{eq:Zg},
-and finally setting the $g$ in $Z_k[g]$ to 1.0
+and then setting $\psi$ to zero
 yields Eq. \eqref{eq:f_MBAR}.
 
 
@@ -1737,9 +1734,10 @@ $\Delta A_i \equiv A_{i+1} - A_i$,
 $\overline{ A }_i \equiv (A_{i+1} + A_i)/2$
 for any quantity $A$,
 and
-$\Delta \beta_i = \beta_{i + 1} - \beta_i$.
+$\langle\dots\rangle_i$
+denotes an average in trajectory $i$.
 %
-More accurately,
+This formula can be improved as
 %
 \begin{equation}
 \Delta f_i
@@ -1759,10 +1757,6 @@ and
 $\Delta \langle \delta E^m \rangle_i
 = \langle \delta E^m \rangle_{i + 1}
 - \langle \delta E^m \rangle_{i}$.
-%
-For multiple temperatures, $f_i$
-can be computed as
-$f_1 + \sum_{j = 1}^{i - 1} \Delta f_j$.
 %
 This equation follows from
 the Euler-Maclaurin formula\cite{
@@ -1834,7 +1828,7 @@ Thus,
 + \cdots.
 \label{eq:df_eavc}
 \end{align}
-
+%
 
 
 
@@ -1887,6 +1881,11 @@ yields
 The first two terms, up to $O(\Delta \beta_i^3)$,
 are the same as those in Eq. \eqref{eq:df_eavc},
 although higher-order terms differ.
+%
+For multiple temperatures, $f_i$
+can be computed as
+$f_1 + \sum_{j = 1}^{i - 1} \Delta f_j$.
+%
 
 
 

@@ -76,8 +76,7 @@ g(E)
 where
 $d_k(E) \equiv N_k \exp(-\beta_k E) / Z_k$.
 %
-Taking the average over $k$ with
-weight $d_k(E) / \sum_{j = 1}^K d_j(E)$
+Averaging the numerators and denominators of different $k$'s
 yields Eq. \eqref{eq:gE_WHAM}.
 
 
@@ -592,68 +591,66 @@ $\phi = \arctan(\bar y/\bar x) = \arctan \left(-\sqrt 2 - 1\right) = -3 \, \pi/8
 
 
 
-\section{Appendix A: Probabilistic derivation}
+\section{Appendix A: Probabilistic derivation of the MBAR equation}
 
 
 
 From the unnumbered equation after Eq. (A1),
 we get the posterior probability
 \begin{align*}
-p\left( g | \{ \vct x \} \right)
+p\left( \psi | \{ \vct x \} \right)
 &=
 \frac{
-  p\left( \{ \vct x \} | g \right) \, p(g)
+  p\left( \{ \vct x \} | \psi \right) \, p(\psi)
 }
 {
   p\left( \{ \vct x \} \right)
 }
 \\
 &\propto
-p\left( \{ \vct x \} | g \right).
+p\left( \{ \vct x \} | \psi \right).
 \end{align*}
 %
 Taking the logarithm, we get
 %
 \begin{align*}
-\log p\left( g | \{ \vct x \} \right)
+\log p\left( \psi | \{ \vct x \} \right)
 &=
 \sum_{k = 1}^K
   \sum_{\vct x}^{(k)}
     \left(
-      \log g(\vct x) + \log q_k(\vct x) - \log Z_k[g]
+      \log q_k(\vct x) - \psi(\vct x) - \log Z_k[\psi]
     \right)
 + C
 \\
 &=
-\sum_{k = 1}^K
+-\sum_{k = 1}^K
 \left(
   \sum_{\vct x}^{(k)}
-  \log g(\vct x)
-- N_k \log Z_k[g]
+    \psi(\vct x) + N_k \log Z_k[\psi]
 \right) + C',
 \end{align*}
 %
 where $C$ and $C'$
-are constants independent of $g$.
+are constants independent of $\psi$.
 %
-We now differentiate it with respect to $g(\vct y)$,
+We now differentiate it with respect to $\psi(\vy)$,
 %
 \begin{align}
 \frac{
-  \delta \log p\left( g | \{ \vct x \} \right)
+  \delta \log p\left( \psi | \{ \vct x \} \right)
 }
 {
-  \delta g(\vct y)
+  \delta \psi(\vy)
 }
 &=
-\sum_{k = 1}^K
+-\sum_{k = 1}^K
 \left(
   \sum_{\vct x}^{(k)}
-  \frac{ \delta( \vct y - \vct x ) }
-       { g(\vct y) }
-  -
-  \frac {N_k} { Z_k[g] }
-  \frac{ \delta Z_k[g] } { \delta g(\vct y) }
+    \delta( \vy - \vx )
+  +
+  \frac {N_k} { Z_k[\psi] }
+  \frac{ \delta Z_k[\psi] } { \delta \psi(\vy) }
 \right)
 = 0.
 \label{eq:dpdg}
@@ -661,28 +658,28 @@ We now differentiate it with respect to $g(\vct y)$,
 %
 Now since
 \begin{equation}
-Z_k[g]
+Z_k[\psi]
 =
-\int g(\vct y) \, q_k(\vct y) \, d\vct y,
+\int q_k(\vy) \, \exp[-\psi(\vy)] \, d\vy,
 \tag{A1}
 \label{eq:Zg}
 \end{equation}
 we have
 \begin{equation*}
-\frac{ \delta Z_k[g] } { \delta g(\vct y) }
-= q_k(\vct y).
+\frac{ \delta Z_k[\psi] } { \delta \psi(\vy) }
+= -q_k(\vy) \, \exp[-\psi(\vy)].
 \end{equation*}
 %
 Using this in Eq. \eqref{eq:dpdg},
 we get
 \begin{equation}
-g(\vct y)
+\exp[-\psi(\vy)]
 =
 \frac{
-  \sum_{j = 1}^K \sum_{\vct x}^{(j)} \delta(\vct x - \vct y)
+  \sum_{j = 1}^K \sum_{\vct x}^{(j)} \delta(\vx - \vy)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vct y) / Z_k[g]
+  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[\psi]
 }.
 \tag{A2}
 \label{eq:gy}
@@ -692,35 +689,35 @@ Finally,
 we use Eq. \eqref{eq:gy} in Eq. \eqref{eq:Zg},
 %
 \begin{align}
-Z_i[g]
+Z_i[\psi]
 &=
 \int
 \frac{
-  \sum_{j = 1}^K \sum_{\vct x}^{(j)} \delta(\vct x - \vct y)
+  \sum_{j = 1}^K \sum_{\vct x}^{(j)} \delta(\vx - \vy)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vct y) / Z_k[g]
+  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[\psi]
 }
-q_i(\vct y) d\vct y
+q_i(\vy) d\vy
 \notag \\
 &=
 \sum_{j = 1}^K \sum_{\vct x}^{(j)}
 \int
 \frac{
-  \delta(\vct x - \vct y)
+  \delta(\vx - \vy)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vct y) / Z_k[g]
+  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[\psi]
 }
-q_i(\vct y) d\vct y
+q_i(\vy) d\vy
 \notag \\
 &=
-\sum_{j = 1}^K \sum_{\vct x}^{(j)}
+\sum_{j = 1}^K \sum_{\vx}^{(j)}
 \frac{
-  q_i(\vct x)
+  q_i(\vx)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vct x) / Z_k[g]
+  \sum_{k = 1}^K N_k \, q_k(\vct x) / Z_k[\psi]
 }.
 \end{align}
 
@@ -1385,7 +1382,7 @@ f_1 =
 
 
 
-\subsubsection{Parity}
+\subsubsection{$M$ is even}
 
 
 
@@ -1447,11 +1444,11 @@ and $n_1 = 3$.
 \[
 E_1(0) \, \phi_3
 +
-E_3(0) \, \langle \phi_1^3 /3! \rangle_0
+E_3(0) \, \frac{ \langle \phi_1^3 \rangle_0 } { 3! }
 =
 -E_1(0) \, \phi_3
 -
-E_3(0) \, \langle \phi_1^3 /3! \rangle_1
+E_3(0) \, \frac{ \langle \phi_1^3 \rangle_1 }{ 3! }
 \]
 and
 \[
@@ -1466,7 +1463,7 @@ and
 %
 Let
 $c = \left( \langle E \rangle_1 - \langle E \rangle_0 \right) / 2$,
-For $\beta_0$
+For $\beta_0$,
 $\phi_1 = \Delta \beta \, (c - \delta E)$,
 where
 $\delta E = E - \langle E \rangle_0$.
@@ -1477,16 +1474,16 @@ where
 $\delta E = E - \langle E \rangle_1$.
 %
 So
-\[
+\begin{align*}
 \phi_3
-=
--
+&=
+-\left(
 \frac{
 \langle \delta E^3 \rangle_0
 +
 \langle \delta E^3 \rangle_1
 }{24}
--
++
 \frac{
   \left(
     \langle E \rangle_1
@@ -1498,10 +1495,131 @@ So
     -
     \langle \delta E^2 \rangle_0
   \right)
-}{16}.
-\]
+}{16}
+\right)
+\Delta \beta^3
+\notag \\
+&=
+-\left(
+\frac{
+  \overline{ \langle \delta E^3 \rangle }
+}{12}
++
+\frac{
+  \Delta \langle E \rangle
+  \,
+  \Delta \langle \delta E^2 \rangle
+}{16}
+\right) \Delta \beta^3.
+\end{align*}
 
 
+
+
+\subsubsection{$M = 5$}
+
+
+
+The relevant terms are
+%
+\begin{enumerate}
+\item $n_5 = 1$.
+\item $n_3 = 1$, $n_1 = 2$ (so that $n = 3$).
+\item $n_1 = 5$ (so that $n = 5$).
+\end{enumerate}
+%
+So
+\begin{equation*}
+E_1(0) \, \phi_5
++E_3(0) \, \phi_3 \, \frac{ \langle \phi_1^2 \rangle_0 } { 2! }
++E_5(0) \, \frac{ \langle \phi_1^5 \rangle_0 } { 5! }
+=
+-E_1(0) \, \phi_5
+-E_3(0) \, \phi_3 \, \frac{ \langle \phi_1^2 \rangle_1 } { 2! }
+-E_5(0) \, \frac{ \langle \phi_1^5 \rangle_1 } { 5! },
+\end{equation*}
+and
+\begin{align*}
+\phi_5
+&=
+\phi_3 \, \frac{ \langle \phi_1^2 \rangle_0 + \langle \phi_1^2 \rangle_1 } { 8 }
+-\frac{ \langle \phi_1^5 \rangle_0 + \langle \phi_1^5 \rangle_1 } { 240 }
+\\
+&=
+\phi_3 \, \frac{ \overline{ \langle \phi_1^2 \rangle } } { 4 }
+-\frac{ \overline{ \langle \phi_1^5 \rangle } } { 120 }
+\end{align*}
+%
+For $\beta_0$,
+$\phi_1 = \Delta \beta \, (c -\delta E)$,
+so
+$\langle \phi_1^2 \rangle_0 = \Delta \beta^2 \left( c^2 + \langle \delta E^2 \rangle_0 \right)$
+and
+$\overline{ \langle \phi_1^2 \rangle } = \Delta \beta^2 \left( c^2 + \overline{ \langle \delta E^2 \rangle } \right)$.
+
+
+Next
+\begin{align*}
+\langle \phi_1^5 \rangle_0
+=
+\Delta \beta^5
+\left(
+c^5 + 6 \, c^3 \langle \delta E^2 \rangle_0
+-6 \, c^2 \langle \delta E^3 \rangle_0
++4 \, c \langle \delta E^4 \rangle_0
+-\langle \delta E^5 \rangle_0
+\right).
+\end{align*}
+So
+\begin{align*}
+\overline{ \langle \phi_1^5 \rangle }
+=
+\Delta \beta^5
+\left(
+c^5
+- 3 \, c^3 \Delta \langle \delta E^2 \rangle
+-6 \, c^2 \overline{ \langle \delta E^3 \rangle }
+-2 \, c \Delta \langle \delta E^4 \rangle
+-\overline{ \langle \delta E^5 \rangle }
+\right).
+\end{align*}
+In sum
+\begin{align*}
+\phi_5
+&=
+\Delta \beta^5
+\left[
+  -\left(
+    \frac{ \overline{ \langle \delta E^3 \rangle } }
+         { 12 }
+    +
+    \frac{ c \, \Delta \langle \delta E^2 \rangle }
+         { 8 }
+  \right)
+\, \frac{ c^2 + \overline{ \langle \delta E^2 \rangle } }
+        { 4 }
+-\frac{
+  c^5
+  - 3 \, c^3 \Delta \langle \delta E^2 \rangle
+  -6 \, c^2 \overline{ \langle \delta E^3 \rangle }
+  -2 \, c \Delta \langle \delta E^4 \rangle
+  -\overline{ \langle \delta E^5 \rangle }
+} { 120 }
+\right] \\
+&=
+\Delta \beta^5
+\left[
+  -\frac{ \overline{ \langle \delta E^3 \rangle }
+          \overline{ \langle \delta E^2 \rangle } }
+        { 48 }
++\frac{
+  \overline{ \langle \delta E^5 \rangle }
+} { 120 }
+\right] + \cdots.
+\end{align*}
+%
+Note that the terms involving $c$ or $\Delta \dots$
+belong to higher orders.
 
 
 

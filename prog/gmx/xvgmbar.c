@@ -122,6 +122,8 @@ int main(int argc, char **argv)
   double *beta, *lnz;
 
   model_default(m);
+  /* reduce the error tolerance for MBAR */
+  m->tol = 1e-7;
   model_doargs(m, argc, argv);
 
   if ( m->fninp == NULL ) {
