@@ -4,7 +4,9 @@ figgps=$(wildcard fig/*.gp)
 pdffigs=$(patsubst %.gp,%.pdf, $(figgps))
 epsfigs=$(patsubst %.gp,%.eps, $(figgps))
 
-texpdf = $(prj).pdf
+texpdf = $(prj).pdf $(prj)_notes.pdf
+
+all: $(texpdf)
 
 $(texpdf) : %.pdf : %.tex simul.bib $(pdffigs) $(figgps) Makefile
 	make -C fig

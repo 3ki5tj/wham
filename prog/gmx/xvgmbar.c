@@ -148,6 +148,8 @@ static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
     if ( n > 2 ) {
       skw[j] *= (xdouble) n / (n - 1) / (n - 2);
     }
+    //printf("j %2d, beta %.6f, eav %.0f, var %8.0f, skew %8.0f\n", j, beta[j], eav[j], var[j], skw[j]);
+    //if ( j > 0 ) printf("     db %.7f,             deav %8.0f, dvar %8.0f\n", beta[j]-beta[j-1], (eav[j]-eav[j-1])/(beta[j-1]-beta[j]), (var[j]-var[j-1])/(beta[j-1]-beta[j])); getchar();
   }
 
   emin -= 1;

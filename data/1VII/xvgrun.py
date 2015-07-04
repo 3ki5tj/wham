@@ -195,7 +195,9 @@ def main():
     # we will load the histogram, and bootstrap later on
     cmd0 += " --bootstrap -H"
   else:
-    cmd0 += " --bootstrap"
+    # no need to bootstrap if only a random subsample is used
+    if radd >= 1:
+      cmd0 += " --bootstrap"
 
   cmd0 = cmd0.strip()
 

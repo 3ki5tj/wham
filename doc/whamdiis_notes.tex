@@ -781,6 +781,111 @@ q_i(\vy) d\vy
 
 
 
+In the main text,
+we listed a few approximate formulae,
+%
+\begin{equation}
+\Delta f_i
+\approx
+\overline{ \langle E \rangle }_i \, \Delta \beta_i,
+\tag{C1}
+\label{eq:df_eav}
+\end{equation}
+%
+and its higher order correction,
+%
+\begin{equation}
+\Delta f_i
+\approx
+\overline{ \langle E \rangle }_i \, \Delta \beta_i
++
+\Delta \langle \delta E^2 \rangle_i
+\frac{ \Delta \beta_i^2 }{ 12 },
+\tag{C2}
+\label{eq:df_eavb}
+\end{equation}
+%
+and the variant
+%
+\begin{align}
+\Delta f_i
+\approx
+\overline{ \langle E \rangle }_i \, \Delta \beta_i
+-
+\overline{ \langle \delta E^3 \rangle }_i
+\, \frac{ \Delta \beta_i^3 } { 12 }
++ \cdots.
+\tag{C3}
+\label{eq:df_eavc}
+\end{align}
+
+
+
+If the WHAM or BAR equation
+is applied to the two temperature,
+$\Delta f_i$ satisfies
+(assuming equal population)
+%
+\begin{equation*}
+\left\langle
+\frac{ 1 }
+{ 1 + e^{-\Delta \beta_i E + \Delta f_i} }
+\right\rangle_i
+=
+\left\langle
+\frac{ 1 }
+{ 1 + e^{\Delta \beta_i E - \Delta f_i} }
+\right\rangle_{i+1}.
+\end{equation*}
+%
+Expanding the solution
+in powers of $\Delta \beta_i$
+yields
+\begin{align}
+\Delta f_i
+&
+\approx
+\overline{ \langle E \rangle }_i \, \Delta \beta_i
+%
+-\overline{ \langle \delta E^3 \rangle }_i
+\, \frac{ \Delta \beta_i^3 } { 12 }
+%
+-\Delta \langle E \rangle_i
+\, \Delta \langle \delta E^2 \rangle_i
+\, \frac{ \Delta \beta_i^3 } { 16 }
+\notag \\
+&
+\phantom{\approx}
+%
+-\overline{ \langle \delta E^2 \rangle }_i
+\, \overline{ \langle \delta E^3 \rangle }_i
+\, \frac{ \Delta \beta_i^5 } { 48 }
+%
++\overline{ \langle \delta E^5 \rangle }_i
+\, \frac{ \Delta \beta_i^5 } { 120 }
++ \cdots.
+\notag
+%\label{eq:df_eavbar}
+\end{align}
+%
+The first two terms, up to $O(\Delta \beta_i^3)$,
+are the same as those in Eq. \eqref{eq:df_eavc},
+although higher-order terms differ.
+%
+
+
+
+
+
+%
+Below, we show show to obtain them from systematic expansions.
+
+
+
+
+
+
+
 \subsection{Bernoulli polynomials and numbers}
 
 
@@ -1240,9 +1345,12 @@ f(b) - f(a)
 where we have used
 Eqs. \eqref{eq:dBernoulli_polynomial} and \eqref{eq:Bernoulli1_even}.
 %
-In the main text,
-we set $b = \beta_{i + 1}$,
-$a = \beta_i$.
+This is the Euler-Maclaurin formula\cite{
+arfken, whittaker, wang_specfunc, abramowitz}.
+%
+%In the main text,
+%we set $b = \beta_{i + 1}$,
+%$a = \beta_i$.
 
 
 
@@ -1672,6 +1780,66 @@ In sum
 %
 Note that the terms involving $c$ or $\Delta \dots$
 belong to higher orders.
+
+
+
+
+\subsection{Use approximate formulae in simulated tempering}
+
+
+
+Finally, we give a cautionary comment
+on using Eq. \eqref{eq:df_eav}
+for the weight in simulated tempering\cite{park2007}.
+%
+Equation \eqref{eq:df_eavb} shows that
+the error of Eq. \eqref{eq:df_eav}
+is of order $N \, \Delta \beta_i^3$
+of a system of size $N$,
+since
+$\partial \langle \delta E^2 \rangle / \partial \beta
+= -\partial^2 \langle E \rangle / \partial \beta^2$
+is extensive.
+%
+Thus,
+if Eq. \eqref{eq:df_eav} is applied to
+an $O(1)$ temperature range
+with an average spacing $\Delta \beta$,
+the accumulative error of $f_i$
+is $O(N \, \Delta \beta^2)$.
+%
+If the simulation temperatures
+are arranged
+such that the energy distributions
+of neighboring temperatures
+barely overlap,
+%
+the average energy difference,
+$\Delta \langle E \rangle_i = \langle E \rangle_{i+1} - \langle E \rangle_i$,
+between neighboring temperatures
+is roughly a multiple of the width of
+the energy distribution
+$\sqrt{ \langle \delta E^2 \rangle_i } \propto O(\sqrt{N})$.
+%
+So $\Delta \beta_i$,
+given by $\Delta \langle E \rangle_i / |\partial E/\partial \beta|$,
+is $O(1/\sqrt{N})$,
+%
+and the accumulative error
+of $f_i$ is $O(1)$.
+%(as illustrated in Fig. \ref{fig:is2approx}).
+%
+Thus, if Eq. \eqref{eq:df_eav}
+is used for the weights
+in simulated tempering\cite{park2007},
+the resulting temperature distribution
+may deviate appreciably
+from the flat one.
+%
+One can fix this by choosing
+a finer temperature spacing or
+use Eq. \eqref{eq:df_eavb}
+instead.
 
 
 

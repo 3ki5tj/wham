@@ -513,19 +513,30 @@ bereau2009, kim2011, zhu2012}.
 
 
 
-An elegant non-iterative alternative, ST-WHAM,
-computes the logarithmic derivative of $g(E)$
-in Eq. \eqref{eq:gE_WHAM} as\cite{
-kim2011}
+An elegant non-iterative alternative is ST-WHAM\cite{
+kim2011}.
+%
+By taking the logarithmic derivative of
+the denominator of Eq. \eqref{eq:gE_WHAM}
+and using Eq. \eqref{eq:gnk},
+we have,
 %
 \begin{align}
-(\log g)'(E)
-\approx
 \frac{d}{dE}
-\log \left[
-  \sum_{k = 1}^K n_k(E)
-\right]
-+
+\log
+  \sum_{k = 1}^K d_k(E)
+%&=
+%-
+%\frac{
+%  \sum_{k = 1}^K d_k(E) \, \beta_k
+%}
+%{
+%  \sum_{k = 1}^K d_k(E)
+%}
+%%\notag\\
+%%&
+=
+-
 \frac{
   \sum_{k = 1}^K n_k(E) \, \beta_k
 }
@@ -536,37 +547,36 @@ kim2011}
 %\label{eq:beta_STWHAM}
 \end{align}
 %
-which involves no $f_k$,
-for $d_k(E)$ has been replaced by $n_k(E)$
-in the second term
-using Eq. \eqref{eq:gnk}.
+which is independent of $d_k(E)$, hence $f_k$.
 %
 So
 \begin{align}
 g(E)
-\approx
-\sum_{j = 1}^K n_j(E)
+=
+\left[
+  \sum_{k = 1}^K n_k(E)
+\right]
+\,
 \exp
 \left[
 \int^E
-\frac{
-  \sum_{k = 1}^K n_k(E') \, \beta_k
-}
-{
-  \sum_{k = 1}^K n_k(E')
-} dE'
+    \frac{ \sum_{k = 1}^K n_k(E') \, \beta_k }
+         { \sum_{k = 1}^K n_k(E') }
+  dE'
 \right].
-%\notag
-\label{eq:g_STWHAM}
+\notag
+%\label{eq:g_STWHAM}
 \end{align}
 %
 In evaluating the integral,
-the denominator of the integrand
-may vanish for some bin.
+we may encounter an empty bin,
+which leaves the integrand indeterminant.
 %
 In this case, we let integrand inherit
-the last valid value of smaller $E'$
-(setting it to zero would cause a larger error).
+the value from the last nonempty bin
+%
+[note, however, setting the integrand to zero
+would cause a larger error in $g(E)$].
 %
 ST-WHAM is most convenient in one dimension,
 and its result is slightly different from WHAM\cite{kim2011}.
@@ -699,7 +709,7 @@ would be most efficient.
 
 
 For an instructive special case,
-consider two vectors ($M = 2$)
+consider the two-vector case ($M = 2$)
 in the one-dimensional space ($K = 1$).
 %
 The above procedure
@@ -1025,19 +1035,13 @@ is used to update the basis as follows.
       ] {}
       edge[fRarrow2] (Sf2R2);
     %
-    \node (SfhatRhat) at ({\Sox - \Ssx/3}, {\Soy + 0.206*\Ssy})
-      [emptydot,
-        label={[label distance=0.1mm]
-               90:{$\vct {\hat R}$}}
-      ] {};
     \node (Sfhat) at ({\Sox - \Ssx/3}, {\Soy})
       [emptydot,
         label={[label distance=0.1mm]
                270:{$\vct {\hat f}$}}
-      ] {}
-      edge[fRarrowx] (SfhatRhat);
+      ] {};
     %
-    \draw [dashed, gray]
+    \draw [gray, dashed, thin]
       ({\Sox + 4*\Ssx/3}, {\Soy - 1.25*\Ssy}) -- ({\Sox - 4*\Ssx/3}, {\Soy + 0.75*\Ssy});
     %
     \node (Sorigin) at (\Sox, \Soy) [emptydot] {}
@@ -1078,6 +1082,7 @@ is used to update the basis as follows.
     for the next round of iteration.
     %
     (c) If the vectors are one-dimensional (i.e., scalars),
+    it is possible to find a vanishing $\vct{\hat R}$, and
     DIIS is reduced to the secant method.
   }
 \end{figure}
@@ -1239,18 +1244,17 @@ dramatically in these cases.
     %
     The results were averaged
     over independent samples
-    for the Ising model and LJ fluid,
-    or over bootstrap\cite{
+    for the Ising model and LJ fluid.
+    %
+    For the villin headpiece,
+    bootstrap\cite{
     newman, efron1979, hub2010}
-    samples
-    for the villin headpiece.
+    samples were used for WHAM,
+    and random subsamples of about 1\% of the trajectory frames
+    were used for MBAR.
     %
     Here, the error tolerance
-    $\epsilon$ is $10^{-8}$ for WHAM
-    or $10^{-7}$ for MBAR.
-    %
-    For MBAR, only about 1\% of the trajectory frames
-    were randomly selected to accelerate the calculation.
+    $\max \{ |R_i| \}$ is $10^{-8}$.
     %
     The lines are to guide the eyes.
   }
@@ -1389,7 +1393,7 @@ the right-hand side of Eq. \eqref{eq:f_WHAM}.
   }
   \caption{
     \label{fig:is2trace}
-    Convergence error, $\max_i \{ |R_i| \}$,
+    Convergence error, $\max \{ |R_i| \}$,
     versus the number of iterations
     in direct and DIIS WHAMs
     for the $64\times64$ two-dimensional Ising model.
@@ -1466,15 +1470,17 @@ while the results of BAR,
 which was applied to successive temperature pairs $(i, i+1)$,
 were closer to the WHAM or MBAR results.
 %
-Among the approximate formulae
+For the approximate formulae
 (cf. Appendix \ref{sec:approxf}),
+the accuracy of
 Eq. \eqref{eq:df_eav}
-was not quite accurate.
-%
-The higher order correction,
+appeared to be improved by
 Eq. \eqref{eq:df_eavb},
-but not Eq. \eqref{eq:df_eavc},
-appeared to made an improvement.
+but not by Eq. \eqref{eq:df_eavc}.
+%
+The failure of Eq. \eqref{eq:df_eavc}
+was due to the difficulty of estimate
+the third central moments.
 
 
 
@@ -1555,17 +1561,19 @@ The technique achieves a fast convergence
 by an optimal combination of the approximate
 solutions obtained during iteration.
 %
-The method is numerically stable
-and has only a small run time overhead.
+DIIS does not require computing the Hessian matrix
+and is numerically stable
+with minimal run time overhead.
 %
 Compared to more advanced optimization techniques\cite{
 shirts2008, zhu2012},
-DIIS is easier to implement.
+it is easier to implement.
 
 
 
 There are several alternatives to WHAM,
-although they are less general and/or accurate.
+although they may be less general and/or accurate
+in some aspect.
 %
 One-dimensional problems
 may benefit from the non-iterative ST-WHAM,
@@ -1617,14 +1625,14 @@ Probabilistic derivation of Eq. \eqref{eq:f_MBAR}}
 Here we show that
 Eq. \eqref{eq:f_MBAR}
 is a generalization of Eq. \eqref{eq:f_WHAM}
-from the energy space to the phase space.
+from the energy space to the configuration space.
 %
 We follow the probabilistic argument\cite{
 bartels1997, *gallicchio2005, *habeck2007, *habeck2012, zhu2012}
 for simplicity.
 %
 We assume that the system is subject to
-an unknown underlying phase-space field, $g(\vy)$,
+an unknown underlying configuration-space field, $g(\vy)$,
 such that the distribution of state $k$ is
 $g(\vy) \, q_k(\vy) / Z_k[g]$, with
 %the partition function being
@@ -1642,17 +1650,17 @@ We now seek the most probable $g(\vy)$
 from the observed trajectory.
 %
 Given a certain $g(\vy)$,
-the probability of observing the data set,
+the probability of observing the trajectories,
 $\{ \vx \}$,
 is given by
 %
 \begin{equation*}
 p\left( \{ \vx \} | g \right)
-=
+\propto
 \prod_{k = 1}^K
 \prod_{\vx}^{(k)}
 \frac{ g(\vx) \, q_k(\vx) }
-     { Z_k[g] },
+     { Z_k[g] }.
 %\label{eq:pg}
 \end{equation*}
 %
@@ -1660,7 +1668,7 @@ Assuming a uniform prior distribution,
 $p[g(\vy)]$, of the value of $g(\vy)$,
 at each phase-space point $\vy$,
 Bayes' theorem\cite{leonard} states that
-given the observed data, $\{\vx\}$,
+given the observed trajectories, $\{\vx\}$,
 the posterior distribution of $g$,
 $p\left( g | \{ \vx \} \right)$,
 is proportional to
@@ -1812,7 +1820,7 @@ Since
 \, \rho_1(E) \, dE = 1,
 \]
 Eq. \eqref{eq:delf_lin}
-is always convergent,
+is convergent,
 and a smaller $\gamma$ means
 a faster convergence.
 %
@@ -1840,7 +1848,8 @@ Approximate formulae}
 Since WHAM and related methods
 are relatively expensive,
 here we explore a few cheaper,
-albeit less accurate, alternatives.
+albeit less accurate, alternatives
+for on-the-fly estimations\cite{park2007}.
 %
 For a pair of temperatures,
 $\beta_i$ and $\beta_{i+1}$,
@@ -1861,7 +1870,10 @@ and
 $\langle\dots\rangle_i$
 denotes an average in trajectory $i$.
 %
-This formula can be improved as
+This formula can be improved
+by the Euler-Maclaurin formula\cite{
+arfken, *whittaker, *wang_specfunc, *abramowitz}
+as
 %
 \begin{equation}
 \Delta f_i
@@ -1882,66 +1894,67 @@ $\Delta \langle \delta E^m \rangle_i
 = \langle \delta E^m \rangle_{i + 1}
 - \langle \delta E^m \rangle_{i}$.
 %
-This equation follows from
-the Euler-Maclaurin formula\cite{
-arfken, whittaker, wang_specfunc, abramowitz}:
-%
-\begin{align*}
-\Delta f_i
-%&= \int_{\beta_i}^{\beta_{i+1}} f'(\beta) \, d\beta \\
-&\approx
-\frac{\Delta \beta_i}{2}
-\left[
-  f'(\beta_{i+1}) + f'(\beta_i)
-\right]
-\\
-&\phantom{=}
--
-\sum_{s = 1}^{S}
-  B_{2s}
-  \frac{ (\Delta \beta_i)^{2s} } { (2 s)! }
-  \left[
-    f^{(2s)}(\beta_{i+1})
-    -
-    f^{(2s)}(\beta_i)
-  \right],
-\end{align*}
-%
-where $B_{2s}$ are the Bernoulli numbers,
-$B_2 = 1/6$, $B_4 = -1/30$, \ldots,
-and $S = 1$.
-%
-An alternative expansion is
-%
-\begin{align*}
-\Delta f_i
-&\approx
--\sum_{s = 1}^{S'}
-  a_s
-  \frac{ (\Delta \beta_i)^{2s - 1} } { (2 s - 1)! }
-  \left[
-    f^{(2s-1)}(\beta_{i+1})
-    +
-    f^{(2s-1)}(\beta_i)
-  \right],
-\end{align*}
-where
-$a_s = (1 - 4^s) B_{2s} /s$,
-%
-and
-$a_1 = a_3 = -1/2$,
-$a_2 = 1/4$,
-\dots.
-%
-This variant can be similarly derived
-by repeated partial integrations
-(or by Darboux's formula\cite{
-whittaker, wang_specfunc})
-using Euler polynomials\cite{
-wang_specfunc, abramowitz}
-in place of Bernoulli ones.
-%
-Thus,
+%This equation follows from
+%the Euler-Maclaurin formula\cite{
+%arfken, whittaker, wang_specfunc, abramowitz}:
+%%
+%\begin{align*}
+%\Delta f_i
+%%&= \int_{\beta_i}^{\beta_{i+1}} f'(\beta) \, d\beta \\
+%&\approx
+%\frac{\Delta \beta_i}{2}
+%\left[
+%  f'(\beta_{i+1}) + f'(\beta_i)
+%\right]
+%\\
+%&\phantom{=}
+%-
+%\sum_{s = 1}^{S}
+%  B_{2s}
+%  \frac{ (\Delta \beta_i)^{2s} } { (2 s)! }
+%  \left[
+%    f^{(2s)}(\beta_{i+1})
+%    -
+%    f^{(2s)}(\beta_i)
+%  \right],
+%\end{align*}
+%%
+%where $B_{2s}$ are the Bernoulli numbers,
+%$B_2 = 1/6$, $B_4 = -1/30$, \ldots,
+%and $S = 1$.
+%%
+%An alternative expansion is
+%%
+%\begin{align*}
+%\Delta f_i
+%&\approx
+%-\sum_{s = 1}^{S'}
+%  a_s
+%  \frac{ (\Delta \beta_i)^{2s - 1} } { (2 s - 1)! }
+%  \left[
+%    f^{(2s-1)}(\beta_{i+1})
+%    +
+%    f^{(2s-1)}(\beta_i)
+%  \right],
+%\end{align*}
+%where
+%$a_s = (1 - 4^s) B_{2s} /s$,
+%%
+%and
+%$a_1 = a_3 = -1/2$,
+%$a_2 = 1/4$,
+%\dots.
+%%
+%This variant can be similarly derived
+%by repeated partial integrations
+%(or by Darboux's formula\cite{
+%whittaker, wang_specfunc})
+%using Euler polynomials\cite{
+%wang_specfunc, abramowitz}
+%in place of Bernoulli ones.
+%%
+%Thus,
+Alternatively,
 \begin{align}
 \Delta f_i
 \approx
@@ -1953,64 +1966,10 @@ Thus,
 \label{eq:df_eavc}
 \end{align}
 %
-
-
-
-If the WHAM or BAR equation
-is applied to the two temperature,
-$\Delta f_i$ satisfies
-%
-\begin{equation*}
-\left\langle
-\frac{ 1 }
-{ 1 + e^{-\Delta \beta_j E + \Delta f_j} }
-\right\rangle_j
-=
-\left\langle
-\frac{ 1 }
-{ 1 + e^{\Delta \beta_j E - \Delta f_j} }
-\right\rangle_{j+1}.
-\end{equation*}
-%
-Expanding the solution
-in powers of $\Delta \beta_j$
-yields
-\begin{align}
-\Delta f_i
-&
-\approx
-\overline{ \langle E \rangle }_i \, \Delta \beta_i
-%
--\overline{ \langle \delta E^3 \rangle }_i
-\, \frac{ \Delta \beta_i^3 } { 12 }
-%
--\Delta \langle E \rangle_i
-\, \Delta \langle \delta E^2 \rangle_i
-\, \frac{ \Delta \beta_i^3 } { 16 }
-\notag \\
-&
-\phantom{\approx}
-%
--\overline{ \langle \delta E^2 \rangle }_i
-\, \overline{ \langle \delta E^3 \rangle }_i
-\, \frac{ \Delta \beta_i^5 } { 48 }
-%
-+\overline{ \langle \delta E^5 \rangle }_i
-\, \frac{ \Delta \beta_i^5 } { 120 }
-+ \cdots.
-\notag
-%\label{eq:df_eavbar}
-\end{align}
-%
-The first two terms, up to $O(\Delta \beta_i^3)$,
-are the same as those in Eq. \eqref{eq:df_eavc},
-although higher-order terms differ.
-%
 For multiple temperatures, $f_i$
 can be computed as
 $f_1 + \sum_{j = 1}^{i - 1} \Delta f_j$.
 %
-
 
 
 We compared the above equations
@@ -2048,7 +2007,7 @@ were superior.
 %
 This suggests that with ample data,
 UIM should be replaced
-by a more accurate alternative, e.g., ST-WHAM.
+by a more accurate alternative, e.g., ST-WHAM or WHAM.
 
 
 
@@ -2074,61 +2033,6 @@ by a more accurate alternative, e.g., ST-WHAM.
   }
 \end{figure}
 
-\definecolor{darkgray}{rgb}{0.2,0.2,0.3}
-{\color{darkgray}
-Finally, we give a cautionary comment
-on using Eq. \eqref{eq:df_eav}
-for the weight in simulated tempering\cite{park2007}.
-%
-Equation \eqref{eq:df_eavb} shows that
-the error of Eq. \eqref{eq:df_eav}
-is of order $N \, \Delta \beta_i^3$
-of a system of size $N$,
-since
-$\partial \langle \delta E^2 \rangle / \partial \beta
-= -\partial^2 \langle E \rangle / \partial \beta^2$
-is extensive.
-%
-Thus,
-if Eq. \eqref{eq:df_eav} is applied to
-an $O(1)$ temperature range
-with an average spacing $\Delta \beta$,
-the accumulative error of $f_i$
-is $O(N \, \Delta \beta^2)$.
-%
-If the simulation temperatures
-are arranged
-such that the energy distributions
-of neighboring temperatures
-barely overlap,
-%
-the average energy difference,
-$\Delta \langle E \rangle_i = \langle E \rangle_{i+1} - \langle E \rangle_i$,
-between neighboring temperatures
-is roughly a multiple of the width of
-the energy distribution
-$\sqrt{ \langle \delta E^2 \rangle_i } \propto O(\sqrt{N})$.
-%
-So $\Delta \beta_i$,
-given by $\Delta \langle E \rangle_i / |\partial E/\partial \beta|$,
-is $O(1/\sqrt{N})$,
-%
-and the accumulative error
-of $f_i$ is $O(1)$
-(as illustrated in Fig. \ref{fig:is2approx}).
-%
-Thus, if Eq. \eqref{eq:df_eav}
-is used for the weights
-in simulated tempering\cite{park2007},
-the resulting temperature distribution
-may deviate appreciably
-from the flat one.
-%
-%One can fix this by choosing
-%a finer spacing or
-%use Eq. \eqref{eq:df_eavb}
-%instead.
-}
 
 
 \bibliography{simul}
