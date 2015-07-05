@@ -69,11 +69,11 @@ plot [300:420][1e-6:1] \
   "../../data/1VII/stwham_de1.out"    u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3)  : 1/0) w lp ls 11  t "ST-WHAM, {/Times-Italic h} = 1", \
   "../../data/1VII/stwham_de100.out"  u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3)  : 1/0) w lp ls 12  t "ST-WHAM, {/Times-Italic h} = 100", \
   "../../data/1VII/uiwham_de0.1.out"  u (1/BOLTZ/$2):(($1 > 0) ? abs($7-$3)  : 1/0) w lp ls 13  t "UIM", \
-  "../../data/1VII/est.out"           u (1/BOLTZ/$2):(($1 > 0) ? abs($12-$3) : 1/0) w lp ls 21  t "Eq. (C1)", \
-  "../../data/1VII/est.out"           u (1/BOLTZ/$2):(($1 > 0) ? abs($12-$4) : 1/0) w lp ls 22  t "Eq. (C2)", \
-  "../../data/1VII/est.out"           u (1/BOLTZ/$2):(($1 > 0) ? abs($12-$5) : 1/0) w lp ls 23  t "Eq. (C3)", \
+  "../../data/1VII/est.out"           u (1/BOLTZ/$2):(($1 > 0) ? abs($12-$3) : 1/0) w lp ls 21  t "Eq. (10)", \
+  "../../data/1VII/est.out"           u (1/BOLTZ/$2):(($1 > 0) ? abs($12-$4) : 1/0) w lp ls 22  t "Eq. (11)", \
 
 
+# "../../data/1VII/est.out"           u (1/BOLTZ/$2):(($1 > 0) ? abs($12-$5) : 1/0) w lp ls 23  t "Eq. (C3)", \
 #  "../../data/1VII/xvgbswham.dat"     u (1/BOLTZ/$2):(($1 > 0) ? abs($4)     : 1/0) w l  ls 9   t "Random error of WHAM",
 
 

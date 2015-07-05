@@ -101,8 +101,9 @@ as an extension
 of the Bennett acceptance ratio (BAR) method\cite{
 bennett1976}.
 %
-The form referred to as multistate BAR (MBAR) method\cite{
-shirts2008}
+This form,
+adopted by the multistate BAR (MBAR) method\cite{
+shirts2008},
 avoids the histogram dependency.
 
 
@@ -377,8 +378,10 @@ f_i
 where,
 $q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$.
 %
-In fact, Eq. \eqref{eq:f_MBAR}
-is applicable to a more general parameter dependence
+The $K = 2$ case is the BAR result\cite{
+bennett1976},
+and Eq. \eqref{eq:f_MBAR}
+is also applicable to a nonlinear parameter dependence
 (see Appendix \ref{sec:deriveMBAR}
 for a derivation).
 %
@@ -443,7 +446,7 @@ $\Ham_0(\vx) = \beta (\E_0 + \frac 1 2 A \, \xi^2)$,
 and
 $\W(\vx) = -\beta A \, \xi$.
 %
-The $\frac 1 2 A \, \lambda_i^2$ term
+The $\frac 1 2 \beta \, A \, \lambda_i^2$ term
 is independent of coordinates
 and thus can be added back after the analysis.
 
@@ -586,8 +589,7 @@ kastner2005, *kastner2009},
 further approximates
 the distribution $n_k(E)$ as a Gaussian.
 %
-This, however, may limit the long-term
-accuracy (cf. Appendix \ref{sec:approxf}).
+This, however, may limit the long-term accuracy.
 
 
 
@@ -710,7 +712,10 @@ would be most efficient.
 
 For an instructive special case,
 consider the two-vector case ($M = 2$)
-in the one-dimensional space ($K = 1$).
+in the one-dimensional space ($K = 1$)\footnote{
+This is the case for solving the BAR equation,
+because $f_i$ are determined up to a constant shift,
+the virtual dimension is 1.}.
 %
 The above procedure
 is then reduced to the secant method\cite{press},
@@ -1283,21 +1288,67 @@ the initial free energies were obtained from
 the single histogram method:
 %
 \begin{equation*}
-f_{i+1} - f_{i}
+\Delta f_i
 =
 \log
 \left\langle
-  \exp\left[
-    (\beta_{i+1} - \beta_i) \, E
-  \right]
-\right\rangle_{i+1}.
+  \exp\left(
+    \Delta \beta_i \, E
+  \right)
+\right\rangle_{i+1},
 \end{equation*}
+%
+where $\Delta A_i \equiv A_{i+1} - A_i$,
+for any quantity $A$,
+and
+$\langle\dots\rangle_{i + 1}$
+denotes an average over frames in trajectory $i + 1$.
+%
+Then, $f_i = f_1 + \sum_{j = 1}^{i - 1} \Delta f_j$.
+%
 %
 Iterations are continued
 until all $|R_i|$ are reduced
-below a certain tolerance level $\epsilon$.
+below a certain value.
 
 
+
+We also tested two approximate formulae.
+%
+First\cite{park2007}
+%
+\begin{equation}
+\Delta f_i
+\approx
+\overline{ \langle E \rangle }_i \, \Delta \beta_i,
+\label{eq:df_eav}
+\end{equation}
+where
+$\overline{ A }_i \equiv (A_{i+1} + A_i)/2$.
+%
+This formula can be improved
+by the Euler-Maclaurin formula\cite{
+arfken, *whittaker, *wang_specfunc}
+as
+%
+\begin{equation}
+\Delta f_i
+\approx
+\overline{ \langle E \rangle }_i \, \Delta \beta_i
++
+\left(
+  \langle \delta E^2 \rangle_{i+1}
+-
+  \langle \delta E^2 \rangle_i
+\right)
+\frac{ \Delta \beta_i^2 }{ 12 },
+\label{eq:df_eavb}
+\end{equation}
+%
+where
+$\langle \delta E^2 \rangle_k
+\equiv \langle (E - \langle E \rangle_k)^2 \rangle_k$
+for $k = i$ and $i + 1$.
 
 
 
@@ -1316,26 +1367,24 @@ swendsen1986, *geyer1991, *hukushima1996, *hansmann1997, *earl2005}
 Monte Carlo (MC)
 for
 eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$,
-with $10^7$ single-site MC steps on each temperature.
 
 
 
+To study the accuracy,
+we generated a sample with
+$10^9$ single-site MC steps on each temperature.
+%
 Figure \ref{fig:is2ref} shows that
 DIIS and direct WHAMs produced identical
 dimensionless free energies, which also
 agreed well with the exact results\cite{
 ferdinand1969}.
 %
-On the other hand,
-there were differences between
-the values from ST-WHAM and WHAM,
-which was likely due to
-the accumulative difference
-in the two statistical temperatures.
-%
-UIM behaved similarly to ST-WHAM,
-although the latter is expected to superior
-in the long run (cf. Appendix \ref{sec:approxf}).
+The differences between the ST-WHAM and WHAM results
+were subtle,
+whereas the approximate UIM 
+produced more different results,
+especially around the critical region.
 
 
 
@@ -1365,16 +1414,20 @@ in the long run (cf. Appendix \ref{sec:approxf}).
 
 
 
+To investigate the convergence rate,
+we generated independent samples with
+$10^7$ MC steps on each temperature.
+%
 Figure \ref{fig:is2trace}
 shows a faster exponential decay of error
 in DIIS WHAM
 than in direct WHAM.
 %
 Optimally, DIIS
-delivered a speedup of two orders of magnitude.
+delivered a speedup of two orders of magnitude,
+as shown in Fig. \ref{fig:nsnt}.
 %
-As shown in Fig. \ref{fig:nsnt},
-the real run time roughly matched
+The real run time roughly matched
 the number of iterations,
 suggesting negligible overhead of DIIS.
 %
@@ -1443,12 +1496,17 @@ for water molecules.
 
 We simulated the system under 12 temperatures
 $T$ = 300 K, 310 K, \dots, 410 K,
-each for about 200 ns,
+each for about 200 ns.
 %
-Energy frames were registered every 0.1 ps,
+The energy distributions were properly overlapped,
+as shown in Fig. \ref{fig:whamcmp}(b).
+%
+The energies of trajectory frames were registered every 0.1 ps,
 so that there were about 2 million frames
 in each temperature.
-%
+
+
+
 As shown in Fig. \ref{fig:nsnt},
 direct WHAM suffered from a slow convergence,
 while the DIIS version again
@@ -1456,31 +1514,29 @@ delivered a speedup of two orders of magnitude,
 in the number of iterations or real run time.
 %
 The MBAR case was similar.
+%
+%It also appeared to be counterproductive
+%to use more bases than the vector dimension,
+%which is 11. 
 
 
 
 We compared the errors of various methods,
-using the MBAR result as the reference.
+using the MBAR results as the reference.
 %
-As shown in Fig. \ref{fig:whamcmp},
+As shown in Fig. \ref{fig:whamcmp}(a),
 both WHAM and ST-WHAM were insensitive to the bin size.
 %
 ST-WHAM and UIM produced similar results,
-while the results of BAR,
+while BAR,
 which was applied to successive temperature pairs $(i, i+1)$,
-were closer to the WHAM or MBAR results.
+produced closer results to those of WHAM and MBAR.
 %
-For the approximate formulae
-(cf. Appendix \ref{sec:approxf}),
+For the approximate formulae,
 the accuracy of
 Eq. \eqref{eq:df_eav}
 appeared to be improved by
-Eq. \eqref{eq:df_eavb},
-but not by Eq. \eqref{eq:df_eavc}.
-%
-The failure of Eq. \eqref{eq:df_eavc}
-was due to the difficulty of estimate
-the third central moments.
+Eq. \eqref{eq:df_eavb}.
 
 
 
@@ -1544,6 +1600,11 @@ are $1.0$ and $2.0$, respectively.
 As shown in Fig. \ref{fig:nsnt},
 DIIS WHAM also effectively
 reduced the run time significantly.
+%
+In this case,
+gradient-based methods\cite{
+kim2011, kastner2005, *kastner2009}
+are less convenient.
 
 
 
@@ -1581,8 +1642,7 @@ or the more approximate cousin UIM.
 %
 Besides,
 rough estimates
-can be obtained from simpler formulae
-(Appendix \ref{sec:approxf}).
+can be obtained from simpler formulae.
 
 
 
@@ -1837,201 +1897,6 @@ a wide temperature, hence energy, range
 can lead to a slow convergence
 for direct WHAM or MBAR.
 
-
-
-
-\section{\label{sec:approxf}
-Approximate formulae}
-
-
-
-Since WHAM and related methods
-are relatively expensive,
-here we explore a few cheaper,
-albeit less accurate, alternatives
-for on-the-fly estimations\cite{park2007}.
-%
-For a pair of temperatures,
-$\beta_i$ and $\beta_{i+1}$,
-the free energy difference
-can be approximated as\cite{park2007}
-%
-\begin{equation}
-\Delta f_i
-\approx
-\overline{ \langle E \rangle }_i \, \Delta \beta_i,
-\label{eq:df_eav}
-\end{equation}
-where
-$\Delta A_i \equiv A_{i+1} - A_i$,
-$\overline{ A }_i \equiv (A_{i+1} + A_i)/2$
-for any quantity $A$,
-and
-$\langle\dots\rangle_i$
-denotes an average in trajectory $i$.
-%
-This formula can be improved
-by the Euler-Maclaurin formula\cite{
-arfken, *whittaker, *wang_specfunc, *abramowitz}
-as
-%
-\begin{equation}
-\Delta f_i
-\approx
-\overline{ \langle E \rangle }_i \, \Delta \beta_i
-+
-\Delta \langle \delta E^2 \rangle_i
-\frac{ \Delta \beta_i^2 }{ 12 },
-\label{eq:df_eavb}
-\end{equation}
-%
-where
-$\langle \delta E^m \rangle_k
-\equiv \langle (E - \langle E \rangle_k)^m \rangle_k$
-for $k = i$ and $i + 1$,
-and
-$\Delta \langle \delta E^m \rangle_i
-= \langle \delta E^m \rangle_{i + 1}
-- \langle \delta E^m \rangle_{i}$.
-%
-%This equation follows from
-%the Euler-Maclaurin formula\cite{
-%arfken, whittaker, wang_specfunc, abramowitz}:
-%%
-%\begin{align*}
-%\Delta f_i
-%%&= \int_{\beta_i}^{\beta_{i+1}} f'(\beta) \, d\beta \\
-%&\approx
-%\frac{\Delta \beta_i}{2}
-%\left[
-%  f'(\beta_{i+1}) + f'(\beta_i)
-%\right]
-%\\
-%&\phantom{=}
-%-
-%\sum_{s = 1}^{S}
-%  B_{2s}
-%  \frac{ (\Delta \beta_i)^{2s} } { (2 s)! }
-%  \left[
-%    f^{(2s)}(\beta_{i+1})
-%    -
-%    f^{(2s)}(\beta_i)
-%  \right],
-%\end{align*}
-%%
-%where $B_{2s}$ are the Bernoulli numbers,
-%$B_2 = 1/6$, $B_4 = -1/30$, \ldots,
-%and $S = 1$.
-%%
-%An alternative expansion is
-%%
-%\begin{align*}
-%\Delta f_i
-%&\approx
-%-\sum_{s = 1}^{S'}
-%  a_s
-%  \frac{ (\Delta \beta_i)^{2s - 1} } { (2 s - 1)! }
-%  \left[
-%    f^{(2s-1)}(\beta_{i+1})
-%    +
-%    f^{(2s-1)}(\beta_i)
-%  \right],
-%\end{align*}
-%where
-%$a_s = (1 - 4^s) B_{2s} /s$,
-%%
-%and
-%$a_1 = a_3 = -1/2$,
-%$a_2 = 1/4$,
-%\dots.
-%%
-%This variant can be similarly derived
-%by repeated partial integrations
-%(or by Darboux's formula\cite{
-%whittaker, wang_specfunc})
-%using Euler polynomials\cite{
-%wang_specfunc, abramowitz}
-%in place of Bernoulli ones.
-%%
-%Thus,
-Alternatively,
-\begin{align}
-\Delta f_i
-\approx
-\overline{ \langle E \rangle }_i \, \Delta \beta_i
--
-\overline{ \langle \delta E^3 \rangle }_i
-\, \frac{ \Delta \beta_i^3 } { 12 }
-+ \cdots.
-\label{eq:df_eavc}
-\end{align}
-%
-For multiple temperatures, $f_i$
-can be computed as
-$f_1 + \sum_{j = 1}^{i - 1} \Delta f_j$.
-%
-
-
-We compared the above equations
-%Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavb}, and \eqref{eq:df_eavc}
-with UIM\cite{kastner2005, *kastner2009}
-(which is also an approximate method)
-on the $32\times 32$ Ising model,
-%
-using the exact solution\cite{
-ferdinand1969}
-(since we wish to study
-the accuracy, not precision).
-%
-In Fig. \ref{fig:is2approx}(a),
-we show that
-Eqs. \eqref{eq:df_eavb},
-\eqref{eq:df_eavc},
-and UIM
-produced more accurate results than
-Eq. \eqref{eq:df_eav}.
-%
-With $\Delta T = 0.2$,
-the error of Eq. \eqref{eq:df_eav}
-was up to $O(1)$.
-%
-The error of
-Eqs. \eqref{eq:df_eavb} and \eqref{eq:df_eavc}
-increased with temperature spacing $\Delta T$,
-whereas
-UIM was less sensitive.
-%
-However, for a small spacing,
-Eqs. \eqref{eq:df_eavb} and \eqref{eq:df_eavc}
-were superior.
-%
-This suggests that with ample data,
-UIM should be replaced
-by a more accurate alternative, e.g., ST-WHAM or WHAM.
-
-
-
-\begin{figure}[h]
-  \makebox[\linewidth][c]{
-    \includegraphics[angle=0, width=1.0\linewidth]{fig/is2approx.pdf}
-  }
-  \caption{
-    \label{fig:is2approx}
-    (a) and (b) Errors of the dimensionless free energies, $f_i$,
-    from Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavb}, \eqref{eq:df_eavc},
-    and UIM for the $32\times 32$ Ising model,
-    $\Delta T = 0.05$ and $0.2$, respectively.
-    %
-    The temperatures $T_i$ are uniformly distributed
-    in the range $[1.5, 3.1]$.
-    %
-    (c) Energy histograms at $\Delta T = 0.2$.
-    %
-    $f_1$ at the lowest temperature $T = 1.5$ is fixed at zero.
-    %
-    Lines are to guide the eyes.
-  }
-\end{figure}
 
 
 

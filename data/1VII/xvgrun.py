@@ -190,7 +190,7 @@ def main():
 
   if not mbar:
     # run for the first time to save the histogram
-    zcom.runcmd(cmd0)
+    zcom.runcmd(cmd0 + " --wham=ST")
 
     # we will load the histogram, and bootstrap later on
     cmd0 += " --bootstrap -H"

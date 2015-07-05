@@ -57,7 +57,7 @@ set key at screen 0.0, 0.03 left bottom Left reverse width -6 maxrows 1 samplen 
 
 
 
-plot [1.5:3.1][-0.25:0.25] \
+plot [1.5:3.1][-0.14:0.02] \
   0 w l ls 9 notitle, \
   "../../data/is2/is2nb0.out"   u (1/$2):(-$3+$4) w p ls 1 notitle, \
   "../../data/is2/is2nb10.out"  u (1/$2):(-$3+$4) w p ls 2 notitle, \
@@ -78,12 +78,12 @@ set mxtics 5
 set format x "%g"
 
 set ylabel "{/Symbol-Oblique e} [log {/Times-Italic g}({/Times-Italic E})]" offset 1.5, 0.0
-set ytics 0.2 offset 0.5, 0
-set mytics 4
+set ytics 0.1 offset 0.5, 0
+set mytics 5
 
 set key at screen 0.61, 0.03 width +2
 
-plot [:-0.7][-0.35:0.35] \
+plot [:-0.7][-0.14:0.1] \
   0 w l ls 9 notitle, \
   "../../data/is2/lndosnb0.dat"   u ($1/n):($2-$3) w l ls 1 notitle, \
   "../../data/is2/lndosnb10.dat"  u ($1/n):($2-$3) w l ls 2 notitle, \
