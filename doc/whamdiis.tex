@@ -1500,7 +1500,7 @@ $T$ = 300 K, 310 K, \dots, 410 K,
 each for about 200 ns.
 %
 The energy distributions were properly overlapped,
-as shown in Fig. \ref{fig:whamcmp}(b).
+as shown in Fig. \ref{fig:whamcmp}(e).
 %
 The energies of trajectory frames were registered every 0.1 ps,
 so that there were about 2 million frames
@@ -1522,57 +1522,71 @@ The MBAR case was similar.
 
 
 
-We compared the errors of various methods,
-using the MBAR results as the reference.
+To test the errors of the methods,
+we prepared two types of samples of different sizes.
 %
-As shown in Fig. \ref{fig:whamcmp}(a),
-both WHAM and ST-WHAM were insensitive to the bin size.
+A larger sample randomly selects roughly $r = 1\%$
+of all trajectory frames from each temperature.
 %
-ST-WHAM and UIM produced similar results,
-while BAR,
-which was applied to successive temperature pairs $(i, i+1)$,
-produced closer results to those of WHAM and MBAR.
+In a smaller one, $r$ is reduced to $0.01\%$.
 %
-For the approximate formulae,
-the accuracy of
-Eq. \eqref{eq:df_eav}
-appeared to be improved by
-Eq. \eqref{eq:df_eavb}.
+The reference values of $f_i$
+were computed from all trajectory frames using MBAR.
+%
+In terms of accuracy
+[Figs. \ref{fig:whamcmp}(a) and \ref{fig:whamcmp}(c)],
+WHAM, MBAR and BAR were the best,
+followed by Eq. \eqref{eq:df_eavb},
+then by ST-WHAM and UIM,
+then by Eq. \eqref{eq:df_eav}.
+%
+In terms of precision
+[Figs. \ref{fig:whamcmp}(b) and \ref{fig:whamcmp}(d)],
+the differences were small.
+%
+Generally,
+WHAM and ST-WHAM were insensitive to the bin size,
+although, the precision of ST-WHAM was slightly affected
+by a small bin size for smaller samples.
 
 
 
 
-\begin{figure}[h]
+\begin{figure*}[t]
   \makebox[\linewidth][c]{
     \includegraphics[angle=0, width=1.0\linewidth]{fig/whamcmp.pdf}
   }
   \caption{
     \label{fig:whamcmp}
-    (a) Errors of
+    Accuracy [(a) and (c)] and precision [(b) and (d)] of
     the dimensionless free energies, $f_i$,
     from WHAM, BAR, ST-WHAM, UIM, and approximate formulae
     for the villin headpiece.
     %
-    $f_i$ at $T = 300$ K is fixed at zero.
+    Two types of samples were used.
     %
-    The results of MBAR, which is
-    the zero bin-size limit of WHAM,
+    A large sample [(a) and (b)]
+    and
+    a small sample [(c) and (d)]
+    contain roughly
+    $1\%$ and $0.01\%$ of all trajectory frames,
+    respectively.
+    %
+    The results were averaged over random samples.
+    %
+    The MBAR results computed from all trajectory frames
     were used as the reference.
+    %
+    $f_i$ at $T = 300$ K is fixed at zero.
     %
     The integration step of UIM was $h = 0.1$.
     %
-    %All trajectory frames were used in this test.
-    %
-    %The random error of WHAM (gray line)
-    %was estimated using bootstrapping
-    %from the $h = 1.0$ case.
-    %
     The lines are to guide the eyes.
     %
-    (b) Energy histograms collected
+    (e) Energy histograms collected
     with bin width $h = 1.0$.
   }
-\end{figure}
+\end{figure*}
 
 
 
