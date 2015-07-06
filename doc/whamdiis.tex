@@ -437,8 +437,8 @@ $\W(\vx) = \E(\vx)$,
 and $\lambda_i = \beta_i$.
 %
 Another common example
-is a quadratic potential
-$\E_i = \frac 1 2 A \, (\xi - \lambda_i)^2$
+is a system under a quadratic bias potential
+$\E_i = \E_0 + \frac 1 2 A \, (\xi - \lambda_i)^2$
 for some reaction coordinate $\xi \equiv \xi(\vx)$.
 %
 In this case,
@@ -575,8 +575,8 @@ In evaluating the integral,
 we may encounter an empty bin,
 which leaves the integrand indeterminant.
 %
-In this case, we let integrand inherit
-the value from the last nonempty bin
+An expedient fix is to let integrand borrow
+the value from the nearest nonempty bin
 %
 [note, however, setting the integrand to zero
 would cause a larger error in $g(E)$].
@@ -1376,9 +1376,7 @@ $10^9$ single-site MC steps on each temperature.
 %
 Figure \ref{fig:is2ref} shows that
 DIIS and direct WHAMs produced identical
-dimensionless free energies, which also
-agreed well with the exact results\cite{
-ferdinand1969}.
+dimensionless free energies.
 %
 The differences between the ST-WHAM and WHAM results
 were subtle,
@@ -1583,7 +1581,7 @@ LJ fluid}
 We tested the two-dimensional WHAM
 on the 256-particle LJ fluid.
 %
-The potential was cutoff at half box size.
+The potential was cutoff at half-box size.
 %
 We simulated the system in isothermal-isobaric ($NpT$) ensembles,
 both using parallel tempering MC.

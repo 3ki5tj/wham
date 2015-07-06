@@ -146,7 +146,7 @@ __inline static int model_select(const char *s, int n, const char **arr)
   int i;
 
   for ( i = 0; i < n; i++ ) {
-    if ( strcmpfuzzy(arr[i], s) == 0 ) {
+    if ( strncmpfuzzy(arr[i], s, strlen(arr[i])) == 0 ) {
       return i;
     }
   }
