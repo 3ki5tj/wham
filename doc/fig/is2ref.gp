@@ -38,10 +38,10 @@ color3  = "#006000"
 color4  = "#aa00aa"
 color9  = "#808080"
 
-set style line 1  lw 2.0 lt 1 lc rgb color1  pt 10  ps 2.0
-set style line 2  lw 2.0 lt 1 lc rgb color2  pt 8   ps 2.0
-set style line 3  lw 2.0 lt 1 lc rgb color3  pt 4   ps 1.6
-set style line 4  lw 2.0 lt 1 lc rgb color4  pt 6   ps 1.6
+set style line 1  lw 2.0 lt 1 lc rgb color1  pt 10  ps 1.6
+set style line 2  lw 2.0 lt 1 lc rgb color2  pt 8   ps 1.6
+set style line 3  lw 2.0 lt 1 lc rgb color3  pt 4   ps 1.2
+set style line 4  lw 2.0 lt 1 lc rgb color4  pt 6   ps 1.2
 
 set style line 9  lw 0.5 lt 4 lc rgb color9  pt 1   ps 1.0
 
@@ -89,10 +89,10 @@ plot [:-0.7][-0.14:0.1] \
   "../../data/is2/lndosnb10.dat"  u ($1/n):($2-$3) w l ls 2 notitle, \
   "../../data/is2/lndosst.dat"    u ($1/n):($2-$3) w l ls 3 notitle, \
   "../../data/is2/lndosui.dat"    u ($1/n):($2-$3) w l ls 4 notitle, \
-  "../../data/is2/lndosnb0.dat"   u ($1/n):($2-$3) every 50 w p ls 1 ps 3.0 notitle, \
-  "../../data/is2/lndosnb10.dat"  u ($1/n):($2-$3) every 50 w p ls 2 ps 3.0 notitle, \
-  "../../data/is2/lndosst.dat"    u ($1/n):($2-$3) every 50 w p ls 3 ps 2.3 notitle, \
-  "../../data/is2/lndosui.dat"    u ($1/n):($2-$3) every 50 w p ls 4 ps 2.3 notitle, \
+  "../../data/is2/lndosnb0.dat"   u ($1/n):($2-$3) every 50 w p ls 1 ps 2.0 notitle, \
+  "../../data/is2/lndosnb10.dat"  u ($1/n):($2-$3) every 50 w p ls 2 ps 2.0 notitle, \
+  "../../data/is2/lndosst.dat"    u ($1/n):($2-$3) every 50 w p ls 3 ps 1.6 notitle, \
+  "../../data/is2/lndosui.dat"    u ($1/n):($2-$3) every 50 w p ls 4 ps 1.6 notitle, \
   -10 w lp ls 3 ps 2.3 t "ST-WHAM", \
   -10 w lp ls 4 ps 2.3 t "UIM"
 

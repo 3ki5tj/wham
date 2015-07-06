@@ -133,8 +133,8 @@ static int mdiis_solve(mdiis_t *m)
   m->coef[nb] = -1;
 
   /* copy the matrix, for the content is to be destroyed */
-  for ( i = 0; i < nb1; i++ ) {
-    for ( j = 0; j < nb1; j++ ) {
+  for ( i = 0; i < nb; i++ ) {
+    for ( j = 0; j < nb; j++ ) {
       m->mat2[i*nb1 + j] = m->mat[i*mnb + j];
     }
   }

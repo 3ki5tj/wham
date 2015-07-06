@@ -82,8 +82,9 @@ def main(fn, fnref):
 
   # load the input data
   s = open(fn).readlines()
-  if len(s) != n:
-    print "number of lines mismatch %s(%s) vs %s " % (len(s), fn, n)
+  nn = len( [ln for ln in s if not ln.startswith("#")] )
+  if nn != n:
+    print "number of lines mismatch %s(%s) vs %s " % (nn, fn, n)
     raise Exception
   bet = [-0]*n
   arr = [-0]*n
@@ -91,8 +92,12 @@ def main(fn, fnref):
   maxcol = 6
   if fn.startswith("est"):
     maxcol = 11
+  ii = 0
   for i in range(n):
-    ln = s[i].rstrip()
+    # find the ith noncomment line
+    while s[ii].startswith("#"):
+      ii += 1
+    ln = s[ii].rstrip()
     arr = ln.split()
     if len(arr) > maxcol:
       # assuming every column beyond column `maxcol` is added
@@ -100,7 +105,8 @@ def main(fn, fnref):
       p = ln.rfind( arr[maxcol] )
       if p >= 0:
         ln = ln[:p].rstrip()
-    s[i] = ln + "\t" + arrref[i] + "\n"
+    s[ii] = ln + "\t" + arrref[i] + "\n"
+    ii += 1
 
   print "updating %s" % fn
   open(fn, "w").writelines(s)

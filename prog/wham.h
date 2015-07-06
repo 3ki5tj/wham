@@ -61,6 +61,7 @@ static wham_t *wham_open(const double *beta, const hist_t *hist)
   w->hist = hist;
   xnew(w->lntot, hist->rows);
   xnew(w->res, hist->rows);
+  xnew(w->htot, hist->n);
   xnew(w->lndos, hist->n);
   xnew(w->sum, hist->rows);
   xnew(w->ave, hist->rows);
