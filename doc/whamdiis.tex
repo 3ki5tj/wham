@@ -609,13 +609,11 @@ The technique is equally applicable to MBAR.
 
 
 
-DIIS is a method of solving a set of
-(nearly) linear equations\cite{
+DIIS is a method of solving equations\cite{
 pulay1980, *pulay1982, *hamilton1986,
-kovalenko1999, howard2011}.
-%
-Here, it is used
-to solve Eq. \eqref{eq:f_WHAM}.
+kovalenko1999, howard2011},
+and it is used
+to solve Eq. \eqref{eq:f_WHAM} here.
 %
 A schematic illustration
 is shown in Fig. \ref{fig:scheme}.
@@ -633,29 +631,57 @@ The target equations can be written as
   \label{eq:R_f}
 \end{equation}
 %
-whose left-hand side forms
-a residual or correction vector
-$\vct R = (R_1, \dots, R_K)$.
+which is
+$-\log \Z_i\left( \vct f \right) - f_i$
+in our case.
+%
+The left-hand side of Eq. \eqref{eq:R_f}
+also forms a $K$-dimensional vector,
+$\vct R = (R_1, \dots, R_K)$,
+which is referred to as the residual or correction vector.
 %
 The magnitude
 $\| \vct R \|$
-represents the error.
+represents the error,
 %
-The signs of $R_i$ are arranged such that
+and
 $\vct R(\vct f)$
-normally gives a direction
+should point to a direction
 of reducing the error of $\vct f$.
 %
-That is,
-for $\vct f' = \vct f + \alpha \, \vct R(\vct f)$
-with a sufficiently small $\alpha$,
-we expect
+%That is,
+%for $\vct f' = \vct f + \alpha \, \vct R(\vct f)$
+%with a sufficiently small $\alpha$,
+%we expect
+%%
+%$\| \vct R(\vct f') \| < \| \vct R(\vct f) \|$.
+
+
+
+If Eq. \eqref{eq:R_f} is solved
+by direct iteration,
+$\vct f$ is replaced by $\vct f + \vct R(\vct f)$
+in each time.
 %
-$\| \vct R(\vct f') \| < \| \vct R(\vct f) \|$.
+This can be a slow process
+because the residual vector $\vct R$
+does not always have
+the proper direction and/or magnitude
+to bring $\vct f$
+close to the true solution $\vct f^*$.
+%
+The magnitude of $\vct R$, however,
+can be used as a reliable measure
+of the error of $\vct f$.
+%
+Thus, DIIS tries to find a vector $\hat{\vct f}$
+with minimal error $\| \vct R(\hat{\vct f}) \|$,
+which would be more suitable
+for direct iteration.
 
 
 
-Suppose now we have a basis consisting of $M$ trial vectors
+Suppose now we have a basis of $M$ trial vectors
 $\vct f_1$, \dots $\vct f_M$
 (where $M$ can be much less than $K$),
 %
@@ -663,24 +689,27 @@ and the residual vectors are
 $\vct R_1$, \dots $\vct R_M$
 [where $\vct R_j \equiv \vct R(\vct f_j)$
 for $j = 1, \dots, M$],
+respectively.
 %
-we wish to construct a more accurate solution
-from the vectors.
+We wish to construct a vector $\hat{\vct f}$
+with minimal error
+from a linear combination of the trial vectors.
 
 
 
 To do so, we first find the combination of the residual vectors
 $\vct{\hat R} = \sum_i c_i \, \vct R_i$,
 that minimizes the error
-$\left\| \vct{\hat R} \right\|$
+$\| \vct{\hat R} \|$
 under the constraint
 \begin{equation}
   \sum_i c_i = 1.
   \label{eq:c_normalize}
 \end{equation}
 %
-That is,
-we find $c_i$ from Eq. \eqref{eq:c_normalize} and
+Mathematically,
+this means to find $c_i$
+from Eq. \eqref{eq:c_normalize} and
 %
 \begin{equation}
   \sum_j \left( \vct R_i \cdot \vct R_j \right) \, c_j = \lambda,
@@ -690,20 +719,35 @@ we find $c_i$ from Eq. \eqref{eq:c_normalize} and
 for all $i$,
 with $\lambda$ being the Lagrange multiplier.
 %
-If Eq. \eqref{eq:R_f} is nearly linear
-around the solutions,
+Now the corresponding combination
+of the trial vectors,
+$\vct{\hat f} = \sum_i c_i \, \vct f_i$,
+should roughly be the desired minimal-error vector.
 %
-$\vct{\hat R}$
-is roughly the residual vector of
-$\vct{\hat f} = \sum_i c_i \, \vct f_i$.
+This is because
+around the true solution $\vct f^*$,
+Eq. \eqref{eq:R_f} should be mostly linear;
+so the residual vector
 %
-This means,
-among all linear combinations of
-$\{ \vct f_i \}$,
-$\vct{\hat f}$
-is roughly the least erroneous
-and closest to the true solution,
-$\vct f^*$.
+\[
+\vct R(\vct{\hat f})
+=
+\vct R\left(
+  \sum_{i=1}^M c_i \, \vct f_i
+\right)
+\approx
+\sum_{i=1}^M c_i \, \vct R(\vct f_i)
+=\vct{\hat R},
+\]
+%
+has the minimal magnitude.
+%
+In other words,
+$\vct{\hat f}$,
+among all linear combinations of $\{ \vct f_i \}$,
+is the closest to the true solution,
+%$\vct f^*$,
+under the linear approximation.
 %
 Thus,
 an iteration based on
@@ -712,7 +756,15 @@ would be most efficient.
 
 
 
-An instructive special case is that of
+With $M = K + 1$ independent bases,
+one can show that
+it is possible to
+find a combination with zero $\vct{\hat R}$,
+which means that
+$\vct{\hat f}$ would be the true solution
+if the equations were linear.
+%
+A particularly instructive case is that of
 two vectors ($M = 2$)
 in one dimension ($K = 1$)\footnote{
 This is the case for solving the BAR equation,
@@ -722,20 +774,18 @@ the virtual dimension is 1.}.
 The above procedure
 is then reduced to the secant method\cite{press},
 as shown in Fig. \ref{fig:scheme}(c).
-
-
-
-The number of bases, $M$,
+%
+The number of bases, $M$, however,
 should not exceed $K + 1$
 (or, in our case, $K$
-because of the constant shift)
+because of the arbitrary shift constant)
 to keep Eqs. \eqref{eq:cj_DIIS}
-independent.
+independent,
 %
-Practically, however,
-this restriction may be relaxed
+although this restriction may be relaxed
 by using certain numerical techniques\cite{
 press}.
+
 
 
 
@@ -1087,7 +1137,7 @@ is used to update the basis as follows.
     DIIS seeks the combination
     $\vct {\hat R} = \sum_i c_i \, \vct R_i$
     that minimizes the magnitude
-    $\left\| \vct{\hat R} \right\|$
+    $\| \vct{\hat R} \|$
     under the constraint
     $\sum_i c_i = 1$ [panel (b)].
     %
@@ -1147,7 +1197,7 @@ we rebuild the basis
 from $\vct f_\mathrm{min}$.
 %
 Here, the error of a vector $\vct f$ is defined as
-$\left\| \vct R(\vct f) \right\|$,
+$\| \vct R(\vct f) \|$,
 and
 $K_r = 10.0$ as recommended\cite{
 kovalenko1999}.
