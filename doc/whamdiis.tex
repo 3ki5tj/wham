@@ -1602,9 +1602,17 @@ were computed from all trajectory frames using MBAR.
 In terms of accuracy
 [Figs. \ref{fig:whamcmp}(a) and \ref{fig:whamcmp}(c)],
 WHAM, MBAR and BAR were the best,
-followed by Eq. \eqref{eq:df_eavb},
-then by ST-WHAM and UIM,
+followed by Eq. \eqref{eq:df_eavb}, ST-WHAM and UIM,
 then by Eq. \eqref{eq:df_eav}.
+%
+The accuracy was largely independent of the sample size,
+and we suspect that the difference
+between ST-WHAM and WHAM
+might reflect some intrinsic sampling errors
+(e.g., the program was compiled with
+single-precision floating-point,
+and the leap-frog instead of velocity Verlet integrator
+was used).
 %
 In terms of precision
 [Figs. \ref{fig:whamcmp}(b) and \ref{fig:whamcmp}(d)],
@@ -1612,13 +1620,13 @@ the differences were small.
 %
 Generally,
 WHAM and ST-WHAM were insensitive to the bin size,
-although, the precision of ST-WHAM was slightly affected
+although the precision of ST-WHAM was slightly affected
 by a small bin size for smaller samples.
 
 
 
-
-\begin{figure*}[t]
+%\begin{figure*}[t]
+\begin{figure}[h]
   \makebox[\linewidth][c]{
     \includegraphics[angle=0, width=1.0\linewidth]{fig/whamcmp.pdf}
   }
@@ -1652,7 +1660,8 @@ by a small bin size for smaller samples.
     (e) Energy histograms collected
     with bin width $h = 1.0$.
   }
-\end{figure*}
+\end{figure}
+%\end{figure*}
 
 
 
@@ -1706,13 +1715,18 @@ DIIS does not require computing the Hessian matrix
 and is numerically stable
 with minimal run time overhead.
 %
-Compared to more advanced optimization techniques\cite{
+Compared to more advanced techniques\cite{
 shirts2008, zhu2012},
-it is easier to implement.
+DIIS is relatively simple and easy to implement,
+although better equation solvers may exist.
+%
+Other related free energy methods
+may also benefit from this technique\cite{
+shen1991, woolf1994, *crouzy1994, roux1995}.
 
 
 
-There are several alternatives to WHAM,
+There are some non-iterative alternatives to WHAM,
 although they may be less general and/or accurate
 in some aspect.
 %

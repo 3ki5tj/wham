@@ -4,7 +4,7 @@
 
 set encoding cp1250 # make the minus sign longer
 set terminal push
-set terminal postscript eps enhanced size 10, 7 font "Times, 24"
+set terminal postscript eps enhanced size 10, 8 font "Times, 32"
 set output "whamcmp.eps"
 
 set multiplot
@@ -12,19 +12,21 @@ set multiplot
 # height of the bottom panel
 ht0 = 0.2
 # height of the middle panels
-ht1 = 0.45
+ht1 = 0.473
 # height of the top panels
 ht2 = 1 - ht0 - ht1
 
-wd1 = 0.53
+# width of the left panel
+wd1 = 0.525
+# width of the right panel
 wd2 = 1 - wd1
 
 
-set label 1 "(a)" at screen 0.01, 1 - 0.02                font "Times, 32"
-set label 2 "(b)" at screen 0.01, ht1 + ht0 - 0.02        font "Times, 32"
-set label 3 "(c)" at screen wd1 - 0.02, 1 - 0.02          font "Times, 32"
-set label 4 "(d)" at screen wd1 - 0.02, ht1 + ht0 - 0.02  font "Times, 32"
-set label 5 "(e)" at screen 0.01, ht0 - 0.0               font "Times, 32"
+set label 1 "(a)" at screen 0.01, 1 - 0.02                font "Times, 36"
+set label 2 "(b)" at screen 0.01, ht1 + ht0 - 0.02        font "Times, 36"
+set label 3 "(c)" at screen wd1 - 0.025, 1 - 0.02         font "Times, 36"
+set label 4 "(d)" at screen wd1 - 0.025, ht1 + ht0 - 0.02 font "Times, 36"
+set label 5 "(e)" at screen 0.01, ht0 - 0.0               font "Times, 36"
 
 
 BOLTZ = 1.380658*6.0221367/1000
@@ -35,14 +37,14 @@ set origin 0.0, ht0 + ht1
 set lmargin 7
 set bmargin 0
 
-set xtics 50 font "Times,20" offset 0, 0.5
+set xtics 50 font "Times,28" offset 0, 0.5
 set mxtics 5
 set format x ""
 
 
 #set logscale y
 #set format y "10^{%T}"
-set ytics 0.1 font "Times,20" offset 0.5, 0
+set ytics 0.1 font "Times,28" offset 0.5, 0
 set mytics 10
 set ylabel "&{i}_{/Symbol*2.0 \341} {/Times-Italic f_i} - {/Times-Italic f_i}^{/*0.7 (ref)}&{i}_{/Symbol*2.0 \361}" offset 2.0, 0.0
 
@@ -56,22 +58,22 @@ color7  = "#228888"
 
 color9  = "#808080"
 
-set style line 1  lw 2.0 lt 4 lc rgb color1  pt 5   ps 1.6
-set style line 2  lw 2.0 lt 4 lc rgb color1  pt 13  ps 2.0
-set style line 3  lw 2.0 lt 4 lc rgb color1  pt 7   ps 1.8
-set style line 4  lw 4.0 lt 4 lc rgb color6  pt 3   ps 1.8
+set style line 1  lw 2.0 lt 4 lc rgb color1  pt 5   ps 2.0
+set style line 2  lw 2.0 lt 4 lc rgb color1  pt 13  ps 2.4
+set style line 3  lw 2.0 lt 4 lc rgb color1  pt 7   ps 2.2
+set style line 4  lw 4.0 lt 4 lc rgb color6  pt 3   ps 2.2
 
-set style line 11 lw 2.0 lt 4 lc rgb color2  pt 9   ps 2.0
-set style line 12 lw 2.0 lt 4 lc rgb color2  pt 11  ps 2.0
-set style line 13 lw 2.0 lt 4 lc rgb color4  pt 15  ps 1.8
-set style line 14 lw 2.0 lt 4 lc rgb color2  pt 13  ps 2.0
+set style line 11 lw 2.0 lt 4 lc rgb color2  pt 9   ps 2.4
+set style line 12 lw 2.0 lt 4 lc rgb color2  pt 11  ps 2.4
+set style line 13 lw 2.0 lt 4 lc rgb color4  pt 15  ps 2.0
+set style line 14 lw 2.0 lt 4 lc rgb color2  pt 13  ps 2.4
 
-set style line 21 lw 3.0 lt 4 lc rgb color3  pt 1   ps 1.6
-set style line 22 lw 3.0 lt 4 lc rgb color5  pt 2   ps 1.2
-set style line 23 lw 3.0 lt 4 lc rgb color7  pt 3   ps 1.2
-set style line 24 lw 3.0 lt 4 lc rgb color7  pt 15  ps 1.6
+set style line 21 lw 5.0 lt 4 lc rgb color3  pt 1   ps 2.0
+set style line 22 lw 3.0 lt 4 lc rgb color5  pt 2   ps 1.5
+set style line 23 lw 3.0 lt 4 lc rgb color7  pt 3   ps 1.5
+set style line 24 lw 3.0 lt 4 lc rgb color7  pt 15  ps 2.0
 
-set style line 9  lw 2.0 lt 1 lc rgb color9  pt 10  ps 1.5
+set style line 9  lw 2.0 lt 1 lc rgb color9  pt 10  ps 2.0
 
 set xrange [305:415]
 
@@ -131,13 +133,13 @@ set xlabel "{/Times-Italic T_i} (K)" offset 1, 1
 set format x "%g"
 
 set ylabel "&{i}_{/Symbol*2.0 \341} {/Symbol-Oblique d} {/Times-Italic f_i}^2&{i}_{/Symbol*2.0 \361}^{1/2}" offset 3.0, 0.0
-set ytics 0.05
-set mytics 5
+set ytics 0.02
+set mytics 2
 
-set key at 300, -0.020 left Left reverse font "Times,24" width -1 vertical maxrows 2 samplen 2.5 spacing 1.0
+set key at screen 0, ht0 + 0.04 left bottom Left reverse font "Times,28" width -4 vertical maxrows 2 samplen 2.0
 
 
-plot [:][0:0.1] \
+plot [:][0.01:0.09] \
   "../../data/1VII/whamcmpr0.01/xvgerrwham.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 1   t "WHAM, {/Times-Italic h} = 1", \
   "../../data/1VII/whamcmpr0.01/xvgerrde100wham.dat"     u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 2   t "WHAM, {/Times-Italic h} = 100", \
   "../../data/1VII/whamcmpr0.01/xvgerrmbar.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 3   t "MBAR", \
@@ -160,7 +162,7 @@ set ytics 0.5
 set mytics 5
 
 
-plot [:][0:1.0] \
+plot [:][0.1:1.0] \
   "../../data/1VII/whamcmpr0.0001/xvgerrwham.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 1   notitle, \
   "../../data/1VII/whamcmpr0.0001/xvgerrde100wham.dat"     u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 2   notitle, \
   "../../data/1VII/whamcmpr0.0001/xvgerrmbar.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 3   notitle, \
