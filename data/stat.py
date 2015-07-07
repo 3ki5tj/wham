@@ -112,8 +112,14 @@ def dostat(fninp):
           x = 0
       else:
         x = arr[j]
+        if x <= 0 and geom:
+          x = epsilon
       if geom:
-        x = log(x)
+        try:
+          x = log(x)
+        except:
+          print i, j, arr[j]
+          raise Exception
       sy[j] += x
       syy[j] += x * x
 

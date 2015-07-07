@@ -1,0 +1,11 @@
+#!/bin/bash
+rsync -avz --exclude="bak*" --exclude="*.py" --exclude="*.sh" \
+  --exclude=".*.swp" --exclude="#*" --exclude="*simul.o*" \
+  --exclude="is2wham" --exclude="*.dat" \
+  oo1@lonestar.tacc.utexas.edu:/scratch/02464/oo1/wham/data/is2/run* .
+
+rsync -avz --exclude="bak*" --exclude="*.py" --exclude="*.sh" \
+  --exclude=".*.swp" --exclude="#*" --exclude="*simul.o*" \
+  --exclude="is2wham" --exclude="*.dat" \
+  oo1@lonestar.tacc.utexas.edu:/scratch/02464/oo1/wham/data/is2/trace* .
+
