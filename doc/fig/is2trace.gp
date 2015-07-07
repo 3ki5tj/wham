@@ -34,10 +34,10 @@ set ylabel "max{/Time=36 \\{|}{/Times-Italic R_i}{/Time=36 |\\}}" offset 0.5, 0
 set key at 185, 5e-8 right bottom Left reverse spacing 1.5
 
 plot [:180][1e-8:3e-2] \
-  "../../data/is2/is2_nb0wham.dat"   u 1:2 w p ls 1 t "Direct WHAM", \
-  "../../data/is2/is2_nb5wham.dat"   u 1:2 w p ls 2 t "DIIS WHAM, {/Times-Italic M} = 5", \
-  "../../data/is2/is2_nb10wham.dat"  u 1:2 w p ls 3 t "DIIS WHAM, {/Times-Italic M} = 10", \
-  "../../data/is2/is2_nb15wham.dat"  u 1:2 w p ls 4 t "DIIS WHAM, {/Times-Italic M} = 15", \
+  "../../data/is2/trace/is2_nb0wham.dat"   u 1:2 w p ls 1 t "Direct WHAM", \
+  "../../data/is2/trace/is2_nb5wham.dat"   u 1:2 w p ls 2 t "DIIS WHAM, {/Times-Italic M} = 5", \
+  "../../data/is2/trace/is2_nb10wham.dat"  u 1:2 w p ls 3 t "DIIS WHAM, {/Times-Italic M} = 10", \
+  "../../data/is2/trace/is2_nb15wham.dat"  u 1:2 w p ls 4 t "DIIS WHAM, {/Times-Italic M} = 15", \
 
 
 

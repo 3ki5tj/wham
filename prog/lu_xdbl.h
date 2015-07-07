@@ -41,7 +41,12 @@ __inline static int lusolve(xdouble *a, xdouble *b, int n, xdouble tiny)
         x = a[ip*n + k], a[ip*n + k] = a[j*n + k], a[j*n + k] = x;
       x = b[ip], b[ip] = b[j], b[j] = x;
     }
-    if (fabs(a[j*n + j]) < tiny) a[j*n + j] = tiny;
+    if (fabs(a[j*n + j]) < tiny) {
+#ifdef LU_VERBOSE
+      fprintf(stderr, "j %d/%d, a(j,j) %g\n", j, n, a[j*n+j]);
+#endif
+      a[j*n + j] = tiny;
+    }
     /* divide by the pivot element, for the L matrix */
     if (j != n - 1)
       for (x = 1.0/a[j*n + j], i = j + 1; i < n; i++)

@@ -681,10 +681,12 @@ under the constraint
 %
 That is,
 we find $c_i$ from Eq. \eqref{eq:c_normalize} and
-\begin{equation*}
+%
+\begin{equation}
   \sum_j \left( \vct R_i \cdot \vct R_j \right) \, c_j = \lambda,
-  %\label{eq:cj_DIIS}
-\end{equation*}
+  \label{eq:cj_DIIS}
+\end{equation}
+%
 for all $i$,
 with $\lambda$ being the Lagrange multiplier.
 %
@@ -710,9 +712,9 @@ would be most efficient.
 
 
 
-For an instructive special case,
-consider the two-vector case ($M = 2$)
-in the one-dimensional space ($K = 1$)\footnote{
+An instructive special case is that of
+two vectors ($M = 2$)
+in one dimension ($K = 1$)\footnote{
 This is the case for solving the BAR equation,
 because $f_i$ are determined up to a constant shift,
 the virtual dimension is 1.}.
@@ -723,15 +725,29 @@ as shown in Fig. \ref{fig:scheme}(c).
 
 
 
+The number of bases, $M$,
+should not exceed $K + 1$
+(or, in our case, $K$
+because of the constant shift)
+to keep Eqs. \eqref{eq:cj_DIIS}
+independent.
+%
+Practically, however,
+this restriction may be relaxed
+by using certain numerical techniques\cite{
+press}.
+
+
+
 We now construct a new trial vector $\vct f^{(n)}$ as
 %
-\begin{equation}
+\begin{equation*}
 \vct f^{(n)}
 =
 \vct{\hat f}
 +
 \alpha \, \vct{\hat R}( \vct{\hat f} ),
-\end{equation}
+\end{equation*}
 %
 where the factor $\alpha$ is $1.0$ in this study
 (although a smaller value is recommended
@@ -1180,7 +1196,7 @@ to the direct iteration
 if $M = 1$,
 the method is effective
 only if multiple bases are used.
-
+%
 
 
 
@@ -1220,7 +1236,7 @@ dramatically in these cases.
 
 \begin{figure}[h]
   \makebox[\linewidth][c]{
-    \includegraphics[angle=0, width=1.0\linewidth]{fig/nsnt.pdf}
+    \includegraphics[angle=0, width=0.95\linewidth]{fig/nsnt.pdf}
   }
   \caption{
     \label{fig:nsnt}
@@ -1380,7 +1396,7 @@ dimensionless free energies.
 %
 The differences between the ST-WHAM and WHAM results
 were subtle,
-whereas the approximate UIM 
+whereas the approximate UIM
 produced more different results,
 especially around the critical region.
 %
@@ -1518,7 +1534,7 @@ The MBAR case was similar.
 %
 %It also appeared to be counterproductive
 %to use more bases than the vector dimension,
-%which is 11. 
+%which is 11.
 
 
 
@@ -1616,11 +1632,10 @@ As shown in Fig. \ref{fig:nsnt},
 DIIS WHAM also effectively
 reduced the run time significantly.
 %
-In this case,
-gradient-based methods\cite{
-kim2011, kastner2005, *kastner2009}
-are less convenient.
-
+It also shows that
+the efficiency of DIIS does not
+always increase with
+the number of bases, $M$.
 
 
 
