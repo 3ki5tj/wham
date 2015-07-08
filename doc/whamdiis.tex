@@ -24,7 +24,7 @@
 by direct inversion in the iterative subspace}
 
 \begin{abstract}
-The convergence of the weighted histogram analysis method for free energy calculation
+The convergence of the weighted histogram analysis method for free energy calculations
 can be improved by using the method of direct inversion in the iterative subspace.
 \end{abstract}
 
@@ -54,10 +54,10 @@ bartels1997, *gallicchio2005, *habeck2007, *habeck2012,
 souaille2001,
 chodera2007, shirts2008, bereau2009,
 hub2010, zhu2012},
-is such an efficient method.
+is such an example.
 %
 The statistical efficiency
-makes WHAM a popular trajectory analysis tool
+has made WHAM a popular trajectory analysis tool
 for enhanced-sampling simulations,
 such as umbrella sampling\cite{
 torrie1974, *laio2002},
@@ -96,7 +96,8 @@ and the density of states
 must determined self-consistently.
 %
 Interestingly,
-WHAM can be reformulated
+WHAM can be reformulated\cite{
+shirts2008}
 as an extension
 of the Bennett acceptance ratio (BAR) method\cite{
 bennett1976}.
@@ -115,7 +116,7 @@ can suffer from
 a slow convergence in late stages.
 %
 Several remedies were proposed\cite{
-shirts2008, bereau2009, kim2011}.
+shirts2008, bereau2009, kim2011, zhu2012}.
 %
 For example, one may use the Newton-Raphson method,
 which involves the Hessian matrix,
@@ -178,187 +179,118 @@ significantly in difficult cases.
 
 
 
+
 WHAM is a method of
-estimating the free energy differences
-among a few thermodynamic states
+estimating the free energies
+of multiple thermodynamic states
 with different parameters,
 such as temperatures, pressures, etc.
 %
-For definiteness,
-consider the special case of $K$ temperatures,
-labeled by the inverse temperature,
-$\beta = 1/(k_B T)$,
-as
-$\beta_1, \ldots, \beta_K$.
+Below,
+we shall derive it from the most general
+histogram-free form\cite{
+kumar1992, souaille2001, shirts2008},
+following the probabilistic approach\cite{
+bartels1997, *gallicchio2005, *habeck2007, *habeck2012, zhu2012}.
 %
-Suppose we have performed the respective
-canonical ($NVT$) ensemble simulations
-at the $K$ temperatures,
-we wish to estimate the free energies
-at the temperatures.
+Suppose we have run $K$ simulations
+under different conditions.
+%
+In the $k$th ($k = 1, \dots, K$) simulation,
+the configuration space distribution
+is $q_k(\vy) / Z_k$,
+with
+$q_k(\vy)$
+being a generalization of the Boltzmann factor,
+and
+$Z_k \equiv \int q_k(\vy) \, d\vy$
+being the partition function.
+%
+We wish to find the dimensionless free energy
+$f_k \equiv -\log Z_k$.
 
 
 
-In WHAM,
-we first estimate the density of states, $g(E)$, from
+We shall assume that the system is subject to
+an unknown underlying configuration-space field, $g(\vy)$,
+such that the distribution of state $k$ is
+$g(\vy) \, q_k(\vy) / Z_k[g]$, with
+%the partition function being
 %
 \begin{equation}
-g(E)
+Z_k[g]
+=
+\int g(\vy) \, q_k(\vy) \, d\vy.
+\label{eq:Zg}
+\end{equation}
+%
+In the end, we shall switch off the field
+by setting $g(\vy) \equiv 1$.
+%
+For now, however,
+we shall seek the most probable $g(\vy)$
+from the observed trajectories.
+
+
+
+Given a certain $g(\vy)$,
+the probability of observing
+a set of independent trajectory frames,
+$\{ \vx \}$,
+is given by
+%
+\begin{equation*}
+p\left( \{ \vx \} | g \right)
+\propto
+\prod_{k = 1}^K
+\prod_{\vx}^{(k)}
+\frac{ g(\vx) \, q_k(\vx) }
+     { Z_k[g] },
+%\label{eq:pg}
+\end{equation*}
+%
+where the inner product runs
+over all frames in trajectory $k$.
+%
+Assuming a uniform prior distribution,
+$p[g(\vy)]$, of the value of $g(\vy)$,
+at each configuration-space point $\vy$,
+Bayes' theorem\cite{leonard} states that
+given the observed trajectories, $\{\vx\}$,
+the posterior distribution of $g$,
+$p\left( g | \{ \vx \} \right)$,
+is proportional to
+$p\left( \{ \vx \} | g \right) \, p(g) \propto p\left( \{ \vx \} | g \right)$.
+%
+Thus,
+to find the most probable $g(\vy)$,
+we only need to maximize
+$\log p\left( g | \{ \vx \} \right)$
+by taking the functional derivative
+with respect to $g(\vy)$
+and setting it to zero,
+which yields
+%
+\begin{equation}
+g(\vy)
 =
 \frac{
-  \sum_{k = 1}^K n_k(E)
+  \sum_{j = 1}^K \sum_{\vx}^{(j)} \delta(\vx - \vy)
 }
 {
-  \sum_{k = 1}^K N_k \, \exp(-\beta_k E) / Z_k
+  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g]
 },
-\label{eq:gE_WHAM}
+\label{eq:gy}
 \end{equation}
 %
-where,
-$n_k(E)$,
-the unnormalized energy distribution
-observed from trajectory $k$,
-is usually estimated
-from the energy histogram as
-the number of independent trajectory frames
-whose energies fall in the interval
-$(E - h/2, E + h/2)$
-divided by $h$
-(we shall omit ``independent'' below for simplicity);
-%
-$N_k$
-is the total number of frames
-from simulation $k$;
-%
-$Z_k$
-is the partition function:
-%
-\begin{equation}
-Z_k
-=
-\exp( - f_k )
-=
-\int g(E) \, \exp(-\beta_k E) \, dE,
-\label{eq:Z}
-\end{equation}
+where we have used
+$\delta \log g(\vx) / \delta g(\vy) = \delta(\vx - \vy)/g(\vy)$,
 and
-$f_k$
-is the dimensionless free energy.
-
-
-
-To understand Eq. \eqref{eq:gE_WHAM},
-we first observe from definition,
+$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.
 %
-\begin{equation}
-g(E)
-=
-\frac{ n_k(E) }
-     { d_k(E) }
-\qquad
-\mbox{for $k = 1, \dots, K$},
-\label{eq:gnk}
-\end{equation}
-where $d_k(E) \equiv N_k \exp(-\beta_k E + f_k)$.
-%
-Then, Eq. \eqref{eq:gE_WHAM}
-can be regarded as
-a linear combination
-of the values from
-Eq. \eqref{eq:gnk}\cite{
-roux1995, souaille2001, frenkel}.
-%
-Now in an optimal combination,
-the relative weight is inversely
-proportional to the variance.
-%
-Assuming a Poisson distribution
-so that $\mathrm{var}(n_k) = n_k$,
-and $N_k \gg n_k$ so that
-the relative error of $d_k$ is negligible
-in comparison to that of $n_k$,
-we have
-$\mathrm{var}(n_k/d_k) \approx n_k / d_k^2 \propto 1/d_k$.
-%
-Averaging the values from Eq. \eqref{eq:gnk}
-using $(1/d_k)^{-1}$ as the relative weight yields
-Eq. \eqref{eq:gE_WHAM}.
-%
-Since, for a fixed $E$,
-$d_k(E)$ is proportional to $n_k(E)$,
-several variants of WHAM use $n_k(E)$
-as the relative weight for
-$g(E)$\cite{
-shen1991}
-or related quantities\cite{
-woolf1994, *crouzy1994, roux1995,
-kastner2005, *kastner2009, kim2011}.
-%
-
-
-
-
-From Eqs. \eqref{eq:gE_WHAM} and \eqref{eq:Z},
-we find that each $f_i$ satisfies
-%
-\begin{align}
-f_i
-&=
--\log
-  \int
-    \frac{
-      \sum_{k = 1}^K n_k(E) \, \exp(-\beta_i E)
-    }
-    {
-      \sum_{k = 1}^K N_k \, \exp(-\beta_k E + f_k)
-    }
-    dE
-\label{eq:f_WHAM}
-\\
-&\equiv
--\log \Z_i(\{ f_k \}),
-\notag
-\end{align}
-%
-where,
-$\Z_i$
-denotes the integral on the right-hand side.
-%
-Once all $f_i$ and $g(E)$ are determined,
-the free energy at a not simulated temperature, $\beta$,
-can be found from Eq. \eqref{eq:Z}
-by substituting $\beta$ for $\beta_k$.
-
-
-
-In the above,
-$n_k(E)$ is estimated from the energy histogram.
-%
-To avoid this dependency,
-we notice from definition that\cite{
-souaille2001}
-%
-\begin{equation}
-n_k(E)
-=
-\sum_{\vx}^{(k)} \delta(\E(\vx) - E),
-\label{eq:n_delta}
-\end{equation}
-%
-where,
-$\E(\vx)$
-is the energy function,
-and
-$\sum_{\vx}^{(k)}$
-denotes a sum over trajectory frames
-of simulation $k$.
-%
-%
-%
-Using Eq. \eqref{eq:n_delta}
-in Eq. \eqref{eq:f_WHAM} yields
-the MBAR result\cite{
-kumar1992, souaille2001, shirts2008}:
+Using Eq. \eqref{eq:gy}
+in Eq. \eqref{eq:Zg}
+yields
 %
 \begin{equation}
 f_i
@@ -375,38 +307,38 @@ f_i
 \label{eq:f_MBAR}
 \end{equation}
 %
-where,
-$q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$.
+where
+$N_k$ is the total number of trajectory frames
+from simulation $k$;
+and we have set $g$ to $1.0$,
+and used $Z_i[g] = \exp(-f_i)$.
 %
-The $K = 2$ case is the BAR result\cite{
-bennett1976},
-and Eq. \eqref{eq:f_MBAR}
-is also applicable to a nonlinear parameter dependence
-(see Appendix \ref{sec:deriveMBAR}
-for a derivation).
-%
-Since both Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR}
-are invariant under $f_i \rightarrow f_i + c$
-for all $i$ and an arbitrary $c$,
-$f_i$ are determined only up to a constant shift.
+This is also the MBAR result\cite{
+shirts2008},
+generalizing the BAR result\cite{
+bennett1976}($K = 2$).
 
 
 
-We briefly mention a few extensions.
+The histogram-based form
+can be recovered as follows.
 %
-First,
-for a general Hamiltonian
-with a linear bias
-\[
-\Ham_i(\vx) = \Ham_0(\vx) + \lambda_i \, \W(\vx),
-\]
-such that $q_i(\vx) = \exp\left[ -\Ham_i(\vx) \right]$,
+Let us write $q_i(\vx)$
+as $\exp[-\Ham(\vx; \lambda_i)]$,
+and assume that the reduced
+Hamiltonian $\Ham(\vx; \lambda_i)$
+depends on $\lambda_i$ linearly:
 %
-we can show,
-by inserting
-$\int \delta(\W(\vx) - W) \, dW$
+\begin{equation}
+\Ham(\vx; \lambda_i) = \Ham_0(\vx) + \lambda_i \, \W(\vx),
+\notag
+%\label{eq:hamlam}
+\end{equation}
+%
+Then, by inserting
+$1 = \int \delta(\W(\vx) - W) \, dW$
 into Eq. \eqref{eq:f_MBAR},
-that
+we get
 %
 \begin{align}
 f_i
@@ -419,26 +351,97 @@ f_i
     {
       \sum_{k = 1}^K N_k \, \exp(-\lambda_k W + f_k)
     }
-    d W,
+    d W
+\label{eq:f_WHAM}
+\\
+&=
+-\log \Z(\{f_k\}),
 \notag
-%\label{eq:fx_WHAM}
 \end{align}
 %
 where
-$n_k(W)$
-is understood as
-the unnormalized distribution of
-the bias $\W(\vx)$.
+$n_k(W) \equiv \sum^{(k)}_{\vx} \delta(\W(\vx) - W)$
+is the unnormalized distribution of
+$\W(\vx)$ from simulation $k$.
 %
+It can be estimated
+from the histogram of $W$ as
+the number of trajectory frames
+whose $\W(\vx)$ fall in the bin
+$(W - h/2, W + h/2)$
+divided by the bin size $h$.
+%
+Since both Eqs. \eqref{eq:f_MBAR} and \eqref{eq:f_WHAM}
+are invariant under $f_i \rightarrow f_i + c$
+for all $i$ and an arbitrary $c$,
+$f_i$ are determined only up to a constant shift.
+
+
+
 Equation \eqref{eq:f_WHAM}
-is the special case of
-$\Ham_0(\vx) = 0$,
-$\W(\vx) = \E(\vx)$,
-and $\lambda_i = \beta_i$.
+can be written as
+%a pair of coupled equations
 %
-Another common example
-is a system under a quadratic bias potential
-$\E_i = \E_0 + \frac 1 2 A \, (\xi - \lambda_i)^2$
+\begin{align*}
+f_i
+&=
+-\log
+  \int
+    g(W) \, \exp(-\lambda_i W)
+    \, d W,
+\end{align*}
+with
+the density of states,
+or the unbiased distribution,
+$g(W)$,
+defined as
+\begin{equation}
+g(W)
+\equiv
+\frac{
+  \sum_{k = 1}^K n_k(W)
+}
+{
+  \sum_{k = 1}^K d_k(W)
+}
+,
+\label{eq:g_WHAM}
+\end{equation}
+where
+$d_k(W) = N_k \exp(-\beta_k \, W + f_k)$.
+%
+Alternatively, Eq. \eqref{eq:g_WHAM}
+can be derived as the optimal combination\cite{
+roux1995, souaille2001, newman, frenkel} of
+%
+\begin{equation}
+g(W)
+=
+\frac{ n_k(W) }
+     { d_k(W) }
+\qquad
+\mbox{for $k = 1, \dots, K$},
+\label{eq:gnk}
+\end{equation}
+which follows from definition.
+
+
+
+In this study,
+we shall focus on the special case of
+multiple canonical ($NVT$) ensembles
+with different temperatures.
+%
+Here,
+$\Ham_0(\vx) = 0$,
+$\lambda_i =\beta_i = 1/(k_B \, T)$
+is the inverse temperature,
+and
+$\W(\vx) = \E(\vx)$ is the energy function.
+%
+Another common case
+is a system under a quadratic restraint,
+$\E_i = \E_0 + \frac 1 2 A \, (\xi - \lambda_i)^2$,
 for some reaction coordinate $\xi \equiv \xi(\vx)$.
 %
 In this case,
@@ -448,17 +451,28 @@ $\W(\vx) = -\beta A \, \xi$.
 %
 The $\frac 1 2 \beta \, A \, \lambda_i^2$ term
 is independent of coordinates
-and thus can be added back after the analysis.
+and thus can be added back to $f_i$ after the analysis.
 
 
 
-Further,
-$\lambda_i$ and $W$
+We briefly mention a few extensions.
+%
+First,
+WHAM
 can be generalized
-to vectors as
-$\bm{\lambda}_i$
-and
-$\vct W$, respectively.
+to the vector form
+for a few linear parameters
+$\bm{\lambda}_i = \{\lambda_i^{(1)}, \lambda_i^{(2)}, \dots\}$,
+and biases
+$\vct W = \{W^{(1)}, W^{(2)}, \dots\}$.
+%and Eq. \eqref{eq:hamlam} becomes
+%\[
+%\Ham(\vx; \bm{\lambda}_i)
+%=
+%\Ham_0(\vx)
+%+
+%\sum_a \lambda_i^{(a)} \, \W^{(a)}(\vx).
+%\]
 %
 For example,
 for simulations
@@ -474,31 +488,31 @@ $p_i$ and $V$
 being the pressure and volume,
 respectively.
 %
-If the Hamiltonian $\Ham_i(\vx)$
+However,
+if the number of parameters is large,
+or if the Hamiltonian $\Ham(\vx; \lambda_i)$
 depends nonlinearly on $\lambda_i$,
-one prefers the histogram-free MBAR form\cite{
+the histogram-free, Eq. \eqref{eq:f_MBAR},
+form is more convenient\cite{
 shirts2008}.
-%which is based directly on
-%Eq. \eqref{eq:f_MBAR},
-%instead of the histogram-based Eq. \eqref{eq:fx_WHAM}.
 %
 Besides,
+the factor $\exp(-\lambda_i \, W)$
+can be replaced by
 a non-Boltzmann
 (e.g., the multicanonical\cite{
 mezei1987, *berg1992, *lee1993},
 Tsallis\cite{tsallis1988},
 microcanonical\cite{
 yan2003, *martin-mayor2007, *zhang2013})
-weight
-can be used in place of the Boltzmann one
-for simulations in the corresponding ensembles.
-%
+one,
+for multiple simulations
+in non-canonical ensembles.
 
 
 
-To find $f_i$ in WHAM,
-one often treats Eq. \eqref{eq:f_WHAM}
-as an iterative equation,
+The WHAM equation \eqref{eq:f_WHAM}
+is often solved iteratively as
 %
 \begin{equation*}
 f_i^\mathrm{(new)}
@@ -508,104 +522,130 @@ f_i^\mathrm{(new)}
 \right).
 \end{equation*}
 %
-This approach, or direct WHAM below,
-can suffer from a slow convergence
+This approach, referred to as direct WHAM below,
+can be very slow
 (cf. Appendix \ref{sec:convwham}),
-resulting in thousands of iterations\cite{
+requiring thousands of iterations\cite{
 bereau2009, kim2011, zhu2012}.
+%
+In Sec. \ref{sec:DIIS} and \ref{sec:basis_updating},
+we shall describe
+a numerical technique
+that accelerates the solution
+of Eqs. \eqref{eq:f_MBAR} and \eqref{eq:f_WHAM}.
 
 
 
-An elegant non-iterative alternative is ST-WHAM\cite{
-kim2011}.
+
+\subsection{ST-WHAM and UIM}
+
+
+
+
+For comparison reasons,
+we briefly discuss
+an elegant non-iterative alternative, ST-WHAM\cite{
+kim2011}
+and some related methods\cite{
+kastner2005, *kastner2009,
+shen1991, woolf1994, *crouzy1994, roux1995}.
 %
 By taking the logarithmic derivative of
-the denominator of Eq. \eqref{eq:gE_WHAM}
+the denominator of Eq. \eqref{eq:g_WHAM}
 and using Eq. \eqref{eq:gnk},
 we have,
 %
 \begin{align}
-\frac{d}{dE}
+\frac{d}{dW}
 \log
-  \sum_{k = 1}^K d_k(E)
+  \sum_{k = 1}^K d_k(W)
 %&=
 %-
 %\frac{
-%  \sum_{k = 1}^K d_k(E) \, \beta_k
+%  \sum_{k = 1}^K d_k(W) \, \lambda_k
 %}
 %{
-%  \sum_{k = 1}^K d_k(E)
+%  \sum_{k = 1}^K d_k(W)
 %}
 %%\notag\\
 %%&
 =
 -
 \frac{
-  \sum_{k = 1}^K n_k(E) \, \beta_k
+  \sum_{k = 1}^K n_k(W) \, \lambda_k
 }
 {
-  \sum_{k = 1}^K n_k(E)
+  \sum_{k = 1}^K n_k(W)
 },
 \notag
-%\label{eq:beta_STWHAM}
+%\label{eq:ddenom_STWHAM}
 \end{align}
 %
 which is independent of $d_k(E)$, hence $f_k$.
 %
 So
 \begin{align}
-g(E)
+g(W)
 =
 \left[
-  \sum_{k = 1}^K n_k(E)
+  \sum_{k = 1}^K n_k(W)
 \right]
 \,
 \exp
 \left[
-\int^E
-    \frac{ \sum_{k = 1}^K n_k(E') \, \beta_k }
-         { \sum_{k = 1}^K n_k(E') }
-  dE'
+\int^W
+    \frac{ \sum_{k = 1}^K n_k(W') \, \beta_k }
+         { \sum_{k = 1}^K n_k(W') }
+  dW'
 \right].
 \notag
 %\label{eq:g_STWHAM}
 \end{align}
 %
+This is the ST-WHAM result.
+%
 In evaluating the integral,
 we may encounter an empty bin,
+with $\sum_{k = 1}^K n_k(W') = 0$,
 which leaves the integrand indeterminant.
 %
 An expedient fix is to let integrand borrow
 the value from the nearest nonempty bin
 %
 [note, however, setting the integrand to zero
-would cause a larger error in $g(E)$].
+would cause a larger error in $g(W)$].
 %
 ST-WHAM is most convenient in one dimension,
-and its result is slightly different from WHAM\cite{kim2011}.
+and its result differs only slightly from WHAM\cite{kim2011}.
 %
 A related method, UIM\cite{
 kastner2005, *kastner2009},
 further approximates
-the distribution $n_k(E)$ as a Gaussian.
+the distribution $n_k(W)$ as a Gaussian.
 %
-This, however, may limit the long-term accuracy.
-
-
-
-Because of the limitations of the alternatives,
-below we shall still focus on the original WHAM,
-and give a numerical technique
-that accelerates the solution
-of Eq. \eqref{eq:f_WHAM}.
+%This, however, may limit the long-term accuracy.
 %
-The technique is equally applicable to MBAR.
+The key of ST-WHAM
+is to replace the weight
+$d_j(W)/\sum_{k=1}^K d_k(W)$
+by
+$n_j(W)/\sum_{k=1}^K n_k(W)$.
+%
+Other methods used
+a similar weighting strategy
+but applied them to
+$g(W)$\cite{shen1991, roux1995}
+or
+$\log g(W)$\cite{woolf1994, *crouzy1994, roux1995}.
 
 
 
 
 
-\subsection{DIIS}
+
+
+\subsection{\label{sec:DIIS}
+DIIS}
 
 
 
@@ -708,7 +748,7 @@ under the constraint
 \end{equation}
 %
 Mathematically,
-this means to find $c_i$
+this means to solve $c_i$
 from Eq. \eqref{eq:c_normalize} and
 %
 \begin{equation}
@@ -771,8 +811,8 @@ This is the case for solving the BAR equation,
 because $f_i$ are determined up to a constant shift,
 the virtual dimension is 1.}.
 %
-The above procedure
-is then reduced to the secant method\cite{press},
+We then recover
+the secant method\cite{press},
 as shown in Fig. \ref{fig:scheme}(c).
 %
 The number of bases, $M$, however,
@@ -1161,7 +1201,8 @@ is used to update the basis as follows.
 
 
 
-\subsection{Basis updating}
+\subsection{\label{sec:basis_updating}
+Basis updating}
 
 
 
@@ -1340,6 +1381,11 @@ Set-up}
 
 
 
+We shall test the temperature WHAM,
+so $\lambda \rightarrow \beta$,
+and
+$W \rightarrow E$.
+%
 For simplicity,
 we assumed equal autocorrelation times
 from different temperatures (and pressures).
@@ -1379,7 +1425,9 @@ below a certain value.
 
 
 
-We also tested two approximate formulae.
+For comparison,
+we also computed the dimensionless free energies
+from two approximate formulae.
 %
 First\cite{park2007}
 %
@@ -1609,8 +1657,8 @@ The accuracy was largely independent of the sample size,
 and we suspect that the difference
 between ST-WHAM and WHAM
 might reflect some intrinsic sampling errors
-(e.g., the program was compiled with
-single-precision floating-point,
+(e.g., the MD program was based on
+single-precision floating-point numbers,
 and the leap-frog instead of velocity Verlet integrator
 was used).
 %
@@ -1652,8 +1700,6 @@ by a small bin size for smaller samples.
     were used as the reference.
     %
     $f_i$ at $T = 300$ K is fixed at zero.
-    %
-    The integration step of UIM was $h = 0.1$.
     %
     The lines are to guide the eyes.
     %
@@ -1771,97 +1817,6 @@ is gratefully acknowledged.
 
 
 
-\section{\label{sec:deriveMBAR}
-Probabilistic derivation of Eq. \eqref{eq:f_MBAR}}
-
-
-
-Here we show that
-Eq. \eqref{eq:f_MBAR}
-is a generalization of Eq. \eqref{eq:f_WHAM}
-from the energy space to the configuration space.
-%
-We follow the probabilistic argument\cite{
-bartels1997, *gallicchio2005, *habeck2007, *habeck2012, zhu2012}
-for simplicity.
-%
-We assume that the system is subject to
-an unknown underlying configuration-space field, $g(\vy)$,
-such that the distribution of state $k$ is
-$g(\vy) \, q_k(\vy) / Z_k[g]$, with
-%the partition function being
-%
-\begin{equation}
-Z_k[g]
-=
-\int g(\vy) \, q_k(\vy) \, d\vy.
-\label{eq:Zg}
-\end{equation}
-
-
-
-We now seek the most probable $g(\vy)$
-from the observed trajectory.
-%
-Given a certain $g(\vy)$,
-the probability of observing the trajectories,
-$\{ \vx \}$,
-is given by
-%
-\begin{equation*}
-p\left( \{ \vx \} | g \right)
-\propto
-\prod_{k = 1}^K
-\prod_{\vx}^{(k)}
-\frac{ g(\vx) \, q_k(\vx) }
-     { Z_k[g] }.
-%\label{eq:pg}
-\end{equation*}
-%
-Assuming a uniform prior distribution,
-$p[g(\vy)]$, of the value of $g(\vy)$,
-at each phase-space point $\vy$,
-Bayes' theorem\cite{leonard} states that
-given the observed trajectories, $\{\vx\}$,
-the posterior distribution of $g$,
-$p\left( g | \{ \vx \} \right)$,
-is proportional to
-$p\left( \{ \vx \} | g \right) \, p(g) \propto p\left( \{ \vx \} | g \right)$.
-%
-Thus,
-to find the most probable $g(\vy)$,
-we only need to maximize
-$\log p\left( g | \{ \vx \} \right)$
-by taking the functional derivative
-with respect to $g(\vy)$
-and setting it to zero,
-which yields
-%
-\begin{equation}
-g(\vy)
-=
-\frac{
-  \sum_{j = 1}^K \sum_{\vx}^{(j)} \delta(\vx - \vy)
-}
-{
-  \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g]
-},
-\label{eq:gy}
-\end{equation}
-%
-where we have used
-$\delta \log g(\vx) / \delta g(\vy) = \delta(\vx - \vy)/g(\vy)$,
-and
-$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.
-%
-Using Eq. \eqref{eq:gy}
-in Eq. \eqref{eq:Zg},
-and then setting $g$ to $1.0$
-yields Eq. \eqref{eq:f_MBAR}.
-
-
-
-
 \section{\label{sec:convwham}
 Model for the convergence of direct WHAM and MBAR}
 
@@ -1870,13 +1825,13 @@ Model for the convergence of direct WHAM and MBAR}
 Here, we use a simple analytic model
 to study the convergence of direct WHAM and MBAR.
 %
-Consider two temperatures,
-denoted by $\beta_1$ and $\beta_2$
-with distributions $\rho_1(E)$ and $\rho_2(E)$
+Consider the $K = 2$ case
+with parameters $\lambda_1$ and $\lambda_2$
+with distributions $\rho_1(W)$ and $\rho_2(W)$
 normalized as
 %
 \begin{equation}
-\int \rho_i(E) \, dE
+\int \rho_i(W) \, dW
 = 1
 \quad
 (i = 1, 2).
@@ -1884,15 +1839,15 @@ normalized as
 \end{equation}
 %
 We assume that the two distributions
-are symmetric with respect to some $\bar E$,
+are symmetric with respect to some $\bar W$,
 which is set to zero
 by a shift of the origin of energy.
 %
 Thus,
 \begin{equation}
-\rho_1(E)
+\rho_1(W)
 =
-\rho_2(-E).
+\rho_2(-W).
 \label{eq:rho_symm}
 \end{equation}
 
@@ -1900,16 +1855,16 @@ Thus,
 
 One can readily show that,
 in terms of $\Delta f = f_2 - f_1$,
-Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}
+Eq. \eqref{eq:f_MBAR} or \eqref{eq:f_WHAM}
 can be written as
 %
 \begin{align}
 \Delta f
 &=
 -\log \int
-\frac{ \rho_1(E) + \rho_2(E) }
-{ \exp(\Delta \beta \, E) + \exp \Delta f }
-dE
+\frac{ \rho_1(W) + \rho_2(W) }
+{ \exp(\Delta \lambda \, W) + \exp \Delta f }
+dW
 \notag \\
 &=
 \Delta f
@@ -1918,11 +1873,11 @@ dE
   \int
     \frac{ y + \exp \Delta f }
          { y + \cosh \Delta f }
-    \rho_1(E) \, dE,
+    \rho_1(W) \, dW,
 \label{eq:delf_WHAM}
 \end{align}
 %
-where $y \equiv \cosh(\Delta \beta \, E)$,
+where $y \equiv \cosh(\Delta \lambda \, W)$,
 and we have used
 Eqs. \eqref{eq:rho_symm} and
 \eqref{eq:rho_normalize}
@@ -1951,7 +1906,7 @@ we can linearize it as
 \left[
   \int
     \frac{ y } { 1 + y }
-    \rho_1(E) \, dE
+    \rho_1(W) \, dW
 \right] \,
 \Delta f^\mathrm{(old)}
 \notag\\
@@ -1971,7 +1926,7 @@ Since
 0 < \gamma < \int
 \frac{1 + y}
 {1 + y}
-\, \rho_1(E) \, dE = 1,
+\, \rho_1(W) \, dW = 1,
 \]
 Eq. \eqref{eq:delf_lin}
 is convergent,
@@ -1980,14 +1935,14 @@ a faster convergence.
 %
 However,
 if the distribution
-is dominated by a large $|E|$,
+is dominated by a large $|W|$,
 at which $y \gg 1$,
 %
 then $\gamma$
 can be very close 1.
 %
 This suggests that
-a wide temperature, hence energy, range
+a wide parameter range
 can lead to a slow convergence
 for direct WHAM or MBAR.
 
