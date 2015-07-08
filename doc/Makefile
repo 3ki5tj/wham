@@ -21,9 +21,10 @@ clean:
 	rstrip.py
 
 $(prj)doc.zip: $(prj).tex $(prj).pdf \
+  	       $(prj)_notes.tex $(prj)_notes.pdf \
   	       simul.bib \
 	       $(epsfigs) $(pdffigs) $(figgps) \
-	       README Makefile
+	       Makefile
 	zip -r $@ $^
 
 zip: $(prj)doc.zip

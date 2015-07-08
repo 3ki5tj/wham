@@ -24,7 +24,7 @@
 by direct inversion in the iterative subspace}
 
 \begin{abstract}
-The convergence of the weighted histogram analysis method for free energy calculation
+The convergence of the weighted histogram analysis method for free energy calculations
 can be improved by using the method of direct inversion in the iterative subspace.
 \end{abstract}
 
@@ -39,9 +39,9 @@ can be improved by using the method of direct inversion in the iterative subspac
 
 
 
-A central subject in computational physics and chemistry
-is to extract the best estimate of some quantity of interest
-from a given set of simulation data.
+An important problem in computational physics and chemistry
+is to obtain the best estimate of a quantity of interest
+from a given set of data.
 %
 For free energy calculations,
 the multiple histogram method\cite{
@@ -54,18 +54,24 @@ bartels1997, *gallicchio2005, *habeck2007, *habeck2012,
 souaille2001,
 chodera2007, shirts2008, bereau2009,
 hub2010, zhu2012},
-is such an efficient method.
+is an effective tool of
+addressing such a problem.
 %
-The statistical efficiency
-makes WHAM a popular trajectory analysis tool
+WHAM is statistically efficient in using the data
+acquired from molecular simulations,
+and it has become
+a standard trajectory analysis tool,
+particularly popular
 for enhanced-sampling simulations,
 such as umbrella sampling\cite{
 torrie1974, *laio2002},
-and tempering\cite{
-marinari1992, *lyubartsev1992,
-swendsen1986, *geyer1991, *hukushima1996, *hansmann1997, *earl2005},
-and even single-molecule experiments\cite{
-shirts2008}.
+and simulated\cite{
+marinari1992, *lyubartsev1992}
+and parallel\cite{
+swendsen1986, *geyer1991, *hukushima1996, *hansmann1997, *earl2005}
+tempering.
+%and even single-molecule experiments\cite{
+%shirts2008}.
 
 
 
@@ -79,8 +85,8 @@ The key is to seek an optimal estimate
 of the density of states,
 or the unbiased distribution,
 which allows
-the free energy to be evaluated
-as a weighted integral.
+the free energies to be evaluated
+as weighted integrals.
 %
 The optimal density of states
 is computed from a weighted average
@@ -93,10 +99,11 @@ depend on the free energies,
 so that
 the free energies
 and the density of states
-must determined self-consistently.
+must determined consistently.
 %
 Interestingly,
-WHAM can be reformulated
+WHAM can be reformulated\cite{
+shirts2008}
 as an extension
 of the Bennett acceptance ratio (BAR) method\cite{
 bennett1976}.
@@ -115,7 +122,7 @@ can suffer from
 a slow convergence in late stages.
 %
 Several remedies were proposed\cite{
-shirts2008, bereau2009, kim2011}.
+shirts2008, bereau2009, kim2011, zhu2012}.
 %
 For example, one may use the Newton-Raphson method,
 which involves the Hessian matrix,
@@ -179,8 +186,8 @@ significantly in difficult cases.
 
 
 WHAM is a method of
-estimating the free energy differences
-among a few thermodynamic states
+estimating the free energies
+of multiple thermodynamic states
 with different parameters,
 such as temperatures, pressures, etc.
 %
@@ -227,23 +234,28 @@ divided by $h$
 (we shall omit ``independent'' below for simplicity);
 %
 $N_k$
-is the total number of frames
+is the total number of trajectory frames
 from simulation $k$;
 %
-$Z_k$
-is the partition function:
+and finally
 %
 \begin{equation}
-Z_k
-=
 \exp( - f_k )
+=
+Z_k
 =
 \int g(E) \, \exp(-\beta_k E) \, dE,
 \label{eq:Z}
 \end{equation}
-and
+with
 $f_k$
-is the dimensionless free energy.
+and
+$Z_k$
+being
+the dimensionless free energy
+and
+the partition function,
+respectively.
 
 
 
@@ -266,7 +278,7 @@ can be regarded as
 a linear combination
 of the values from
 Eq. \eqref{eq:gnk}\cite{
-roux1995, souaille2001, frenkel}.
+roux1995, souaille2001, newman, frenkel}.
 %
 Now in an optimal combination,
 the relative weight is inversely
@@ -286,7 +298,9 @@ Eq. \eqref{eq:gE_WHAM}.
 %
 Since, for a fixed $E$,
 $d_k(E)$ is proportional to $n_k(E)$,
-several variants of WHAM use $n_k(E)$
+several variants of WHAM
+are derived
+by using $n_k(E)$ in place of $d_k(E)$
 as the relative weight for
 $g(E)$\cite{
 shen1991}
@@ -299,7 +313,7 @@ kastner2005, *kastner2009, kim2011}.
 
 
 From Eqs. \eqref{eq:gE_WHAM} and \eqref{eq:Z},
-we find that each $f_i$ satisfies
+we find that $f_i$ satisfies
 %
 \begin{align}
 f_i
@@ -381,7 +395,7 @@ $q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$.
 The $K = 2$ case is the BAR result\cite{
 bennett1976},
 and Eq. \eqref{eq:f_MBAR}
-is also applicable to a nonlinear parameter dependence
+also holds for a general parameter dependence
 (see Appendix \ref{sec:deriveMBAR}
 for a derivation).
 %
@@ -398,13 +412,13 @@ First,
 for a general Hamiltonian
 with a linear bias
 \[
-\Ham_i(\vx) = \Ham_0(\vx) + \lambda_i \, \W(\vx),
+\Ham(\vx; \lambda_i) = \Ham_0(\vx) + \lambda_i \, \W(\vx),
 \]
-such that $q_i(\vx) = \exp\left[ -\Ham_i(\vx) \right]$,
+such that $q_i(\vx) = \exp\left[ -\Ham(\vx; \lambda_i) \right]$,
 %
 we can show,
 by inserting
-$\int \delta(\W(\vx) - W) \, dW$
+$1 = \int \delta(\W(\vx) - W) \, dW$
 into Eq. \eqref{eq:f_MBAR},
 that
 %
@@ -437,7 +451,7 @@ $\W(\vx) = \E(\vx)$,
 and $\lambda_i = \beta_i$.
 %
 Another common example
-is a system under a quadratic bias potential
+is a system under a quadratic restraint
 $\E_i = \E_0 + \frac 1 2 A \, (\xi - \lambda_i)^2$
 for some reaction coordinate $\xi \equiv \xi(\vx)$.
 %
@@ -446,9 +460,9 @@ $\Ham_0(\vx) = \beta (\E_0 + \frac 1 2 A \, \xi^2)$,
 and
 $\W(\vx) = -\beta A \, \xi$.
 %
-The $\frac 1 2 \beta \, A \, \lambda_i^2$ term
-is independent of coordinates
-and thus can be added back after the analysis.
+The configuration independent term,
+$\frac 1 2 \beta \, A \, \lambda_i^2$,
+can be added back to $f_i$ after the analysis.
 
 
 
@@ -474,15 +488,18 @@ $p_i$ and $V$
 being the pressure and volume,
 respectively.
 %
-If the Hamiltonian $\Ham_i(\vx)$
+However, if the vector dimension is high,
+or if the Hamiltonian $\Ham(\vx; \lambda_i)$
 depends nonlinearly on $\lambda_i$,
-one prefers the histogram-free MBAR form\cite{
+the histogram-free form is more convenient\cite{
 shirts2008}.
 %which is based directly on
 %Eq. \eqref{eq:f_MBAR},
 %instead of the histogram-based Eq. \eqref{eq:fx_WHAM}.
 %
 Besides,
+the factor $\exp(-\beta_i \, E)$
+can be replaced by
 a non-Boltzmann
 (e.g., the multicanonical\cite{
 mezei1987, *berg1992, *lee1993},
@@ -490,14 +507,14 @@ Tsallis\cite{tsallis1988},
 microcanonical\cite{
 yan2003, *martin-mayor2007, *zhang2013})
 weight
-can be used in place of the Boltzmann one
-for simulations in the corresponding ensembles.
+for multiple non-canonical simulations\cite{
+kim2011}.
 %
 
 
 
-To find $f_i$ in WHAM,
-one often treats Eq. \eqref{eq:f_WHAM}
+Numerically,
+$f_i$ is often determined by treating Eq. \eqref{eq:f_WHAM}
 as an iterative equation,
 %
 \begin{equation*}
@@ -508,16 +525,30 @@ f_i^\mathrm{(new)}
 \right).
 \end{equation*}
 %
-This approach, or direct WHAM below,
-can suffer from a slow convergence
-(cf. Appendix \ref{sec:convwham}),
-resulting in thousands of iterations\cite{
-bereau2009, kim2011, zhu2012}.
+However, this approach, referred to as direct WHAM below,
+can take thousands of iterations to finish\cite{
+bereau2009, kim2011, zhu2012}
+(cf. Appendix \ref{sec:convwham}).
+%
+In Secs. \ref{sec:DIIS} and \ref{sec:basis_updating},
+we give a numerical technique to
+accelerate the solution
+of Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
 
 
 
-An elegant non-iterative alternative is ST-WHAM\cite{
-kim2011}.
+
+
+\subsection{ST-WHAM and UIM}
+
+
+
+For comparison reasons,
+we briefly discuss
+two elegant non-iterative alternatives, ST-WHAM\cite{
+kim2011}
+and UIM\cite{
+kastner2005, *kastner2009}.
 %
 By taking the logarithmic derivative of
 the denominator of Eq. \eqref{eq:gE_WHAM}
@@ -571,41 +602,33 @@ g(E)
 %\label{eq:g_STWHAM}
 \end{align}
 %
-In evaluating the integral,
-we may encounter an empty bin,
-which leaves the integrand indeterminant.
+This is the result of ST-WHAM.
 %
-An expedient fix is to let integrand borrow
+In evaluating the integral,
+we may encounter an empty bin
+with $\sum_{k = 1}^K n_k(E') = 0$,
+which leaves the integrand indeterminate.
+%
+An expedient fix is to let the integrand borrow
 the value from the nearest nonempty bin
 %
 [note, however, setting the integrand to zero
 would cause a larger error in $g(E)$].
 %
 ST-WHAM is most convenient in one dimension,
-and its result is slightly different from WHAM\cite{kim2011}.
+and its results usually differ only slightly from those of WHAM\cite{kim2011}.
 %
-A related method, UIM\cite{
+In UIM\cite{
 kastner2005, *kastner2009},
-further approximates
-the distribution $n_k(E)$ as a Gaussian.
+the distribution $n_k(E)$
+is further approximated as a Gaussian.
 %
-This, however, may limit the long-term accuracy.
-
-
-
-Because of the limitations of the alternatives,
-below we shall still focus on the original WHAM,
-and give a numerical technique
-that accelerates the solution
-of Eq. \eqref{eq:f_WHAM}.
-%
-The technique is equally applicable to MBAR.
+%This, however, may limit the long-term accuracy.
 
 
 
 
-
-\subsection{DIIS}
+\subsection{\label{sec:DIIS}DIIS}
 
 
 
@@ -674,7 +697,7 @@ The magnitude of $\vct R$, however,
 can be used as a reliable measure
 of the error of $\vct f$.
 %
-Thus, DIIS tries to find a vector $\hat{\vct f}$
+Thus, in DIIS, we try to find a vector $\hat{\vct f}$
 with minimal error $\| \vct R(\hat{\vct f}) \|$,
 which would be more suitable
 for direct iteration.
@@ -708,7 +731,7 @@ under the constraint
 \end{equation}
 %
 Mathematically,
-this means to find $c_i$
+this means to solve $c_i$
 from Eq. \eqref{eq:c_normalize} and
 %
 \begin{equation}
@@ -771,8 +794,8 @@ This is the case for solving the BAR equation,
 because $f_i$ are determined up to a constant shift,
 the virtual dimension is 1.}.
 %
-The above procedure
-is then reduced to the secant method\cite{press},
+We then recover
+the secant method\cite{press},
 as shown in Fig. \ref{fig:scheme}(c).
 %
 The number of bases, $M$, however,
@@ -1144,12 +1167,13 @@ is used to update the basis as follows.
     The corresponding combination
     of the trial vectors,
     $\vct {\hat f} = \sum_i c_i \, \vct f_i$,
-    is used to construct
-    the new trial vector as
-    $\vct f^{(n)} = \vct {\hat f} + \vct {\hat R}$.
+    is expected to be close to true solution, $\vct f^*$.
     %
-    Then, $\vct f^{(n)}$ is used to
-    update the basis
+    Then,
+    we construct
+    the new trial vector as
+    $\vct f^{(n)} = \vct {\hat f} + \vct {\hat R}$
+    and use it to update the basis
     for the next round of iteration.
     %
     (c) If the vectors are one-dimensional (i.e., scalars),
@@ -1161,7 +1185,7 @@ is used to update the basis as follows.
 
 
 
-\subsection{Basis updating}
+\subsection{\label{sec:basis_updating}Basis updating}
 
 
 
@@ -1179,8 +1203,8 @@ to maintain a maximal size of $M$.
 
 
 
-In a popular updating scheme\cite{kovalenko1999},
-the basis is treated as a queue:
+A simple updating scheme\cite{kovalenko1999}
+is to treat the basis as a queue:
 %
 we add $\vct f^{(n)}$ to the basis,
 if the latter contains fewer than $M$ vectors,
@@ -1199,7 +1223,7 @@ from $\vct f_\mathrm{min}$.
 Here, the error of a vector $\vct f$ is defined as
 $\| \vct R(\vct f) \|$,
 and
-$K_r = 10.0$ as recommended\cite{
+$K_r = 10.0$ is recommended\cite{
 kovalenko1999}.
 
 
@@ -1274,13 +1298,24 @@ We tuned the parameters
 such that direct WHAM and MBAR
 would take thousands of iterations
 to finish.
-%
+
+
+
 The main results
 are summarized
 in Fig. \ref{fig:nsnt},
 from which one can see that
 DIIS can speed up WHAM and MBAR
 dramatically in these cases.
+%
+The real run time roughly matched
+the number of iterations,
+suggesting negligible overhead of DIIS.
+%
+This is unsurprising,
+for it is often much more expensive to compute
+the right-hand side of
+Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
 
 
 
@@ -1296,12 +1331,12 @@ dramatically in these cases.
     in DIIS.
     %
     The four test cases are
-    (1) Ising model in the $NVT$ ensemble with WHAM,
-    (2) mini-protein villin headpiece in the $NVT$ ensemble with WHAM
+    (1) WHAM on the Ising model in the $NVT$ ensemble
+    (2) WHAM on the mini-protein villin headpiece in the $NVT$ ensemble
     (with the bin width of energy histograms being 1.0),
-    (3) the same protein system with MBAR,
+    (3) MBAR on the same protein system,
     and
-    (4) LJ fluid in the $NpT$ ensemble with WHAM.
+    (4) WHAM on the LJ fluid in the $NpT$ ensemble.
     %
     The $M = 0$ points represent direct WHAM.
     %
@@ -1318,11 +1353,12 @@ dramatically in these cases.
     for the Ising model and LJ fluid.
     %
     For the villin headpiece,
+    the results were averaged over
     bootstrap\cite{
     newman, efron1979, hub2010}
-    samples were used for WHAM,
-    and random subsamples of about 1\% of the trajectory frames
-    were used for MBAR.
+    samples for WHAM,
+    or over random subsamples with about 1\% of the trajectory frames
+    for MBAR.
     %
     Here, the error tolerance
     $\max \{ |R_i| \}$ is $10^{-8}$.
@@ -1349,7 +1385,7 @@ the general behavior of the methods.
 
 
 
-In testing direct and DIIS WHAM,
+In testing WHAM and MBAR,
 the initial free energies were obtained from
 the single histogram method:
 %
@@ -1379,7 +1415,8 @@ below a certain value.
 
 
 
-We also tested two approximate formulae.
+For comparison,
+we also computed the dimensionless free energies from two approximate formulae.
 %
 First\cite{park2007}
 %
@@ -1437,7 +1474,7 @@ eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$,
 
 
 To study the accuracy,
-we generated a sample with
+we generated a large sample with
 $10^9$ single-site MC steps on each temperature.
 %
 Figure \ref{fig:is2ref} shows that
@@ -1481,7 +1518,7 @@ the errors were on the same order of magnitude.
 
 
 
-To investigate the convergence rate,
+To study the convergence rate,
 we generated independent samples with
 $10^7$ MC steps on each temperature.
 %
@@ -1489,18 +1526,6 @@ Figure \ref{fig:is2trace}
 shows a faster exponential decay of error
 in DIIS WHAM
 than in direct WHAM.
-%
-Optimally, DIIS
-delivered a speedup of two orders of magnitude,
-as shown in Fig. \ref{fig:nsnt}.
-%
-The real run time roughly matched
-the number of iterations,
-suggesting negligible overhead of DIIS.
-%
-This is unsurprising,
-for it is often much more expensive to compute
-the right-hand side of Eq. \eqref{eq:f_WHAM}.
 
 
 
@@ -1592,7 +1617,7 @@ To test the errors of the methods,
 we prepared two types of samples of different sizes.
 %
 A larger sample randomly selects roughly $r = 1\%$
-of all trajectory frames from each temperature.
+of all trajectory frames from every temperature.
 %
 In a smaller one, $r$ is reduced to $0.01\%$.
 %
@@ -1609,10 +1634,9 @@ The accuracy was largely independent of the sample size,
 and we suspect that the difference
 between ST-WHAM and WHAM
 might reflect some intrinsic sampling errors
-(e.g., the program was compiled with
-single-precision floating-point,
-and the leap-frog instead of velocity Verlet integrator
-was used).
+(e.g., the MD program was based on
+single-precision floating-point numbers,
+and the leap-frog integrator was used).
 %
 In terms of precision
 [Figs. \ref{fig:whamcmp}(b) and \ref{fig:whamcmp}(d)],
@@ -1653,8 +1677,6 @@ by a small bin size for smaller samples.
     %
     $f_i$ at $T = 300$ K is fixed at zero.
     %
-    The integration step of UIM was $h = 0.1$.
-    %
     The lines are to guide the eyes.
     %
     (e) Energy histograms collected
@@ -1675,8 +1697,8 @@ on the 256-particle LJ fluid.
 %
 The potential was cutoff at half-box size.
 %
-We simulated the system in isothermal-isobaric ($NpT$) ensembles,
-both using parallel tempering MC.
+We simulated the system in isothermal-isobaric ($NpT$) ensembles
+using parallel tempering MC.
 %
 We simulated the system
 under $N_T \times N_p = 6\times 3$ conditions:
@@ -1720,9 +1742,9 @@ shirts2008, zhu2012},
 DIIS is relatively simple and easy to implement,
 although better equation solvers may exist.
 %
-Other related free energy methods
-may also benefit from this technique\cite{
-shen1991, woolf1994, *crouzy1994, roux1995}.
+Other related free energy methods\cite{
+shen1991, woolf1994, *crouzy1994, roux1995}
+may also benefit from this technique.
 
 
 
@@ -1732,7 +1754,7 @@ in some aspect.
 %
 One-dimensional problems
 may benefit from the non-iterative ST-WHAM,
-or the more approximate cousin UIM.
+or the more approximate cousin, UIM.
 %
 Besides,
 rough estimates
@@ -1820,7 +1842,7 @@ p\left( \{ \vx \} | g \right)
 %
 Assuming a uniform prior distribution,
 $p[g(\vy)]$, of the value of $g(\vy)$,
-at each phase-space point $\vy$,
+at each configuration-space point $\vy$,
 Bayes' theorem\cite{leonard} states that
 given the observed trajectories, $\{\vx\}$,
 the posterior distribution of $g$,
@@ -1907,8 +1929,8 @@ can be written as
 \Delta f
 &=
 -\log \int
-\frac{ \rho_1(E) + \rho_2(E) }
-{ \exp(\Delta \beta \, E) + \exp \Delta f }
+\frac{ [\rho_1(E) + \rho_2(E)] \, \exp(-\Delta \beta \, E) }
+{ 1 + \exp(-\Delta \beta \, E + \Delta f) }
 dE
 \notag \\
 &=
