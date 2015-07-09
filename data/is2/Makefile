@@ -7,10 +7,10 @@ mkrundat:
 	cd runkth && ../stat.py && cd ..
 
 mktracedat:
-	cd trace    && ../stat.py && cd ..	
-	cd tracehp  && ../stat.py && cd ..	
-	cd tracehpl && ../stat.py && cd ..	
-	cd tracekth && ../stat.py && cd ..	
+	cd trace    && ../stat.py && cd ..
+	cd tracehp  && ../stat.py && cd ..
+	cd tracehpl && ../stat.py && cd ..
+	cd tracekth && ../stat.py && cd ..
 
 lonestar:
 	make -C .. lonestar
