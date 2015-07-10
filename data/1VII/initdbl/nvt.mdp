@@ -1,0 +1,37 @@
+Pcoupl = no
+Tcoupl = v-rescale
+constraints = h-bonds
+coulombtype = PME
+cutoff-scheme = verlet
+dt = 0.002
+energygrps = System
+ewald_rtol = 1e-07
+fourierspacing = 0.12
+gen_seed = 432506713
+gen_temp = 300
+gen_vel = yes
+integrator = md-vv
+ns_type = grid
+nstcomm = 50
+nstcalcenergy = 50
+nstenergy = 50
+nsteps = 10000
+nstfout = 0
+nstlist = 10
+nstlog = 10000
+nstvout = 0
+nstxout = 0
+nstxtcout = 10000
+pme_order = 4
+; with cutoff-scheme = verlet, rcoulomb = rvdw
+rcoulomb = 1.2
+ref_t = 300
+; set to be 0.1 - 0.3 nm greater than rvdw
+rlist = 1.5
+rvdw = 1.2
+rvdw_switch = 0.8
+taut = 0.1
+tc-grps = System
+vdwtype = shift
+xtc_grps = System
+DispCorr = EnerPres      ; account for cut-off vdW scheme

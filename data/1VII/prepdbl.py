@@ -4,7 +4,9 @@
 
 
 ''' prepare a system for MD simulation
-    for NVT and NPT ensembles '''
+    for NVT and NPT ensembles
+    for precise setting
+'''
 
 
 import sys, os, subprocess, getopt, shutil, re, random, glob, math
@@ -21,7 +23,7 @@ nthreads = 0
 
 verbose = 0
 srcroot = "$HOME/work/gmx/gromacs5.0"
-buildroot = srcroot + "/buildicc"
+buildroot = srcroot + "/buildiccdbl"
 gmxtopdir = srcroot + "/share/top"
 
 
@@ -85,7 +87,7 @@ def doargs():
   ret, out, err = zcom.runcmd("uname -a", capture = True)
   if out.find("host.utmb.edu") >= 0:
     srcroot = "$HOME/lwork/gmx/gromacs5.0"
-    buildroot = srcroot + "/buildgcc"
+    buildroot = srcroot + "/buildgccdbl"
     gmxtopdir = srcroot + "/share/top"
 
 
@@ -127,7 +129,7 @@ def mklonestarpbs(simulname):
       this script is provided for convenience '''
 
   global srcroot, buildroot, gmxtopdir
-  mdrun = buildroot + "/bin/gmx mdrun"
+  mdrun = buildroot + "/bin/gmx_d mdrun"
 
   d = {
       "simulname" : simulname,
@@ -167,19 +169,19 @@ def main():
   # make a working directory
   if not pres:
     prjname = "nvt"
-    prjdir = "T%g" % temp
+    prjdir = "T%gdbl" % temp
     egrps = "11 0"
     fnxvg = "e.xvg"
   else:
     prjname = "npt"
-    prjdir = "T%gP%g" % (temp, pres)
+    prjdir = "T%gP%gdbl" % (temp, pres)
     egrps = "11 21 0"
     fnxvg = "ev.xvg"
   if not os.path.isdir(prjdir):
     os.mkdir(prjdir)
 
-  initdir = "init"
-  proggmx = "gmx"
+  initdir = "initdbl"
+  proggmx = "gmx_d"
 
   # copy files
   os.system("rm -f %s/*" % prjdir)

@@ -273,6 +273,10 @@ g(E)
 \end{equation}
 where $d_k(E) \equiv N_k \exp(-\beta_k E + f_k)$.
 %
+That is,
+the observed distribution, $n_k(E)/N_k$
+should match the ideal one, $g(E) \, \exp(-\beta_k E)/Z_k$.
+%
 Then, Eq. \eqref{eq:gE_WHAM}
 can be regarded as
 a linear combination
@@ -551,24 +555,23 @@ and UIM\cite{
 kastner2005, *kastner2009}.
 %
 By taking the logarithmic derivative of
-the denominator of Eq. \eqref{eq:gE_WHAM}
-and using Eq. \eqref{eq:gnk},
+the denominator of Eq. \eqref{eq:gE_WHAM},
 we have,
 %
 \begin{align}
 \frac{d}{dE}
 \log
   \sum_{k = 1}^K d_k(E)
-%&=
-%-
-%\frac{
-%  \sum_{k = 1}^K d_k(E) \, \beta_k
-%}
-%{
-%  \sum_{k = 1}^K d_k(E)
-%}
-%%\notag\\
-%%&
+&=
+-
+\frac{
+  \sum_{k = 1}^K d_k(E) \, \beta_k
+}
+{
+  \sum_{k = 1}^K d_k(E)
+}
+%\notag\\
+%&
 =
 -
 \frac{
@@ -581,7 +584,10 @@ we have,
 %\label{eq:beta_STWHAM}
 \end{align}
 %
-which is independent of $d_k(E)$, hence $f_k$.
+where
+we have used Eq. \eqref{eq:gnk}
+to make the final expression
+independent of $d_k(E)$, hence $f_k$.
 %
 So
 \begin{align}
