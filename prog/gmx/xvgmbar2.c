@@ -23,7 +23,7 @@ static xvg_t **mkxvg(const char *fnls,
   xvg_t **xvg = NULL;
 
   /* scramble the random number seed */
-  mtscramble( time(NULL) );
+  mtscramble( time(NULL) + clock() );
 
   if ( (fns = getls(fnls, nbp, beta, bpres)) == NULL ) {
     return NULL;

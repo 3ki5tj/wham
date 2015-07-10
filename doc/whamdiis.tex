@@ -222,22 +222,26 @@ g(E)
 \end{equation}
 %
 where,
-$n_k(E)$,
+$n_k(E)$
+is
 the unnormalized energy distribution
 observed from trajectory $k$,
-is usually estimated
+%
+which can be estimated
 from the energy histogram as
 the number of independent trajectory frames
 whose energies fall in the interval
 $(E - h/2, E + h/2)$
 divided by $h$
-(we shall omit ``independent'' below for simplicity);
+(we shall omit ``independent'' below for simplicity).
 %
-$N_k$
-is the total number of trajectory frames
-from simulation $k$;
+Thus, $n_k(E)/N_k$
+is the normalized distribution
+with $N_k$ being
+the total number of trajectory frames
+from simulation $k$.
 %
-and finally
+Finally,
 %
 \begin{equation}
 \exp( - f_k )
@@ -275,16 +279,17 @@ where $d_k(E) \equiv N_k \exp(-\beta_k E + f_k)$.
 %
 That is,
 the observed distribution, $n_k(E)/N_k$
-should match the ideal one, $g(E) \, \exp(-\beta_k E)/Z_k$.
+should match the exact one, $g(E) \, \exp(-\beta_k E)/Z_k$.
 %
-Then, Eq. \eqref{eq:gE_WHAM}
-can be regarded as
-a linear combination
-of the values from
-Eq. \eqref{eq:gnk}\cite{
+Since Eq. \eqref{eq:gnk} is exact,
+the values from different $k$
+can be combined to improve precision,
+and Eq. \eqref{eq:gE_WHAM}
+is the optiomal combination\cite{
 roux1995, souaille2001, newman, frenkel}.
 %
-Now in an optimal combination,
+To see this,
+recall that in an optimal combination,
 the relative weight is inversely
 proportional to the variance.
 %
@@ -299,6 +304,22 @@ $\mathrm{var}(n_k/d_k) \approx n_k / d_k^2 \propto 1/d_k$.
 Averaging the values from Eq. \eqref{eq:gnk}
 using $(1/d_k)^{-1}$ as the relative weight yields
 Eq. \eqref{eq:gE_WHAM}.
+%
+%
+%
+%Another way to see Eq. \eqref{eq:gE_WHAM}
+%is to consider the special case of
+%$\beta_1 = \dots = \beta_K$,
+%which allows
+%the $K$ unnormalized distributions
+%to be aggregated as
+%$\sum_{k=1}^K n_k(E)$.
+%%
+%Using Eq. \eqref{eq:gnk}
+%on the aggregated distribution
+%yields Eq. \eqref{eq:gE_WHAM}.
+%
+%
 %
 Since, for a fixed $E$,
 $d_k(E)$ is proportional to $n_k(E)$,

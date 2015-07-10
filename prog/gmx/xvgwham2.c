@@ -29,7 +29,7 @@ static hist2_t *mkhist2(const char *fnls,
   double evmin1[EVCNT], evmax1[EVCNT];
 
   /* scramble the random number seed */
-  mtscramble( time(NULL) );
+  mtscramble( time(NULL) + clock() );
 
   if ( (fns = getls(fnls, &nbp, beta, bpres)) == NULL ) {
     return NULL;

@@ -15,9 +15,9 @@ fi
 
 export GMXLIB=$gmxdir/gromacs5.0/src/top
 
-if [ -f $gmxdir/gromacs5.0/buildiccdbl/bin/gmx ]; then
+if [ -f $gmxdir/gromacs5.0/buildiccdbl/bin/gmx_d ]; then
   export gmx=$gmxdir/gromacs5.0/buildiccdbl/bin/gmx_d
-elif [ -f $gmxdir/gromacs5.0/buildgccdbl/bin/gmx ]; then
+elif [ -f $gmxdir/gromacs5.0/buildgccdbl/bin/gmx_d ]; then
   export gmx=$gmxdir/gromacs5.0/buildgccdbl/bin/gmx_d
 else
   export gmx=$gmxdir/gromacs5.0/buildgccdbl32/bin/gmx_d

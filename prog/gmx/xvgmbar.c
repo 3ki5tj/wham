@@ -22,7 +22,7 @@ static xvg_t **mkxvg(const char *fnls,
   xvg_t **xvg = NULL;
 
   /* scramble the random number seed */
-  mtscramble( time(NULL) );
+  mtscramble( time(NULL) + clock() );
 
   if ( (fns = getls(fnls, nbeta, beta)) == NULL ) {
     return NULL;
@@ -244,7 +244,7 @@ int main(int argc, char **argv)
     xvg_t *xvg0;
 
     /* scramble the random number seed */
-    mtscramble( time(NULL) );
+    mtscramble( time(NULL) + clock() );
     /* bootstrapping */
     for ( i = 0; i < nbeta; i++ ) {
       xvg0 = xvg[i];

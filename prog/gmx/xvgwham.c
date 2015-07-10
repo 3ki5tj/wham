@@ -25,7 +25,7 @@ static hist_t *mkhist(const char *fnls,
   double xmin[2], xmax[2], emin = 1e30, emax = -1e30;
 
   /* scramble the random number seed */
-  mtscramble( time(NULL) );
+  mtscramble( time(NULL) + clock() );
 
   if ( (fns = getls(fnls, &nbeta, beta)) == NULL ) {
     return NULL;
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
     hist_t *hs0 = hs;
 
     /* scramble the random number seed */
-    mtscramble( time(NULL) );
+    mtscramble( time(NULL) + clock() );
     /* bootstrapping */
     hs = hist_bootstrap(hs0);
     hist_close(hs0);
