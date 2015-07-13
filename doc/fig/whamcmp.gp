@@ -4,7 +4,7 @@
 
 set encoding cp1250 # make the minus sign longer
 set terminal push
-set terminal postscript eps enhanced size 10, 8 font "Times, 32"
+set terminal postscript eps enhanced size 10, 8 font "Times, 40"
 set output "whamcmp.eps"
 
 set multiplot
@@ -22,11 +22,11 @@ wd1 = 0.525
 wd2 = 1 - wd1
 
 
-set label 1 "(a)" at screen 0.01, 1 - 0.02                font "Times, 36"
-set label 2 "(b)" at screen 0.01, ht1 + ht0 - 0.02        font "Times, 36"
-set label 3 "(c)" at screen wd1 - 0.025, 1 - 0.02         font "Times, 36"
-set label 4 "(d)" at screen wd1 - 0.025, ht1 + ht0 - 0.02 font "Times, 36"
-set label 5 "(e)" at screen 0.01, ht0 - 0.0               font "Times, 36"
+set label 1 "(a)" at screen 0.01, 1 - 0.02
+set label 2 "(b)" at screen 0.01, ht1 + ht0 - 0.02
+set label 3 "(c)" at screen wd1 - 0.025, 1 - 0.02
+set label 4 "(d)" at screen wd1 - 0.025, ht1 + ht0 - 0.02
+set label 5 "(e)" at screen 0.01, ht0 - 0.0
 
 
 BOLTZ = 1.380658*6.0221367/1000
@@ -34,19 +34,19 @@ BOLTZ = 1.380658*6.0221367/1000
 set size wd1, ht2
 set origin 0.0, ht0 + ht1
 
-set lmargin 7
+set lmargin 8
 set bmargin 0
 
-set xtics 50 font "Times,28" offset 0, 0.5
+set xtics 50 offset 0, 0.5
 set mxtics 5
 set format x ""
 
 
 #set logscale y
 #set format y "10^{%T}"
-set ytics 0.1 font "Times,28" offset 0.5, 0
+set ytics 0.1 offset 0.5, 0
 set mytics 10
-set ylabel "&{i}_{/Symbol*2.0 \341} {/Times-Italic f_i} - {/Times-Italic f_i}^{/*0.7 (ref)}&{i}_{/Symbol*2.0 \361}" offset 2.0, 0.0
+set ylabel "&{i}_{/Symbol*2.0 \341} {/Times-Italic f_i} - {/Times-Italic f_i}^{/*0.7 (ref)}&{i}_{/Symbol*2.0 \361}" offset 1.0, 0.0
 
 color1  = "#224488"
 color2  = "#aa2222"
@@ -127,16 +127,16 @@ set origin 0, ht0
 
 set tmargin 0.5
 set bmargin 6
-set lmargin 7
+set lmargin 8
 
 set xlabel "{/Times-Italic T_i} (K)" offset 1, 1
 set format x "%g"
 
-set ylabel "&{i}_{/Symbol*2.0 \341} {/Symbol-Oblique d} {/Times-Italic f_i}^2&{i}_{/Symbol*2.0 \361}^{1/2}" offset 3.0, 0.0
+set ylabel "&{i}_{/Symbol*2.0 \341} {/Symbol-Oblique d} {/Times-Italic f_i}^2&{i}_{/Symbol*2.0 \361}^{1/2}" offset 2.0, 0.0
 set ytics 0.02
 set mytics 2
 
-set key at screen 0, ht0 + 0.04 left bottom Left reverse font "Times,28" width -4 vertical maxrows 2 samplen 2.0
+set key at screen 0, ht0 + 0.04 left bottom Left reverse font "Times,32" width -8 vertical maxrows 2 samplen 2.0
 
 
 plot [:][0.01:0.09] \
@@ -146,9 +146,9 @@ plot [:][0.01:0.09] \
   "../../data/1VII/whamcmpr0.01/xvgerrbarmbar.dat"       u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 4   t "BAR, ({/Times-Italic i}, {/Times-Italic i} + 1)", \
   "../../data/1VII/whamcmpr0.01/xvgerrstwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 11  t "ST-WHAM, {/Times-Italic h} = 1", \
   "../../data/1VII/whamcmpr0.01/xvgerrde100stwham.dat"   u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 12  t "ST-WHAM, {/Times-Italic h} = 100", \
-  "../../data/1VII/whamcmpr0.01/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 13  t "UIM, {/Times-Italic h} = 1", \
-  "../../data/1VII/whamcmpr0.01/xvgerraveambar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 21  t "Eq. (10)", \
-  "../../data/1VII/whamcmpr0.01/xvgerravebmbar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 22  t "Eq. (11)", \
+  "../../data/1VII/whamcmpr0.01/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 13  notitle, \
+  "../../data/1VII/whamcmpr0.01/xvgerraveambar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 21  notitle, \
+  "../../data/1VII/whamcmpr0.01/xvgerravebmbar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 22  notitle, \
 
 
 set size wd2, ht1
@@ -161,6 +161,7 @@ unset ylabel
 set ytics 0.5
 set mytics 5
 
+set key at screen wd1 + 0.15, ht0 + 0.04 width -4
 
 plot [:][0.1:1.0] \
   "../../data/1VII/whamcmpr0.0001/xvgerrwham.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 1   notitle, \
@@ -169,9 +170,9 @@ plot [:][0.1:1.0] \
   "../../data/1VII/whamcmpr0.0001/xvgerrbarmbar.dat"       u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 4   notitle, \
   "../../data/1VII/whamcmpr0.0001/xvgerrstwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 11  notitle, \
   "../../data/1VII/whamcmpr0.0001/xvgerrde100stwham.dat"   u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 12  notitle, \
-  "../../data/1VII/whamcmpr0.0001/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 13  notitle, \
-  "../../data/1VII/whamcmpr0.0001/xvgerraveambar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 21  notitle, \
-  "../../data/1VII/whamcmpr0.0001/xvgerravebmbar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 22  notitle, \
+  "../../data/1VII/whamcmpr0.0001/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 13  t "UIM, {/Times-Italic h} = 1", \
+  "../../data/1VII/whamcmpr0.0001/xvgerraveambar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 21  t "Eq. (10)", \
+  "../../data/1VII/whamcmpr0.0001/xvgerravebmbar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 22  t "Eq. (11)" \
 
 
 
@@ -189,13 +190,13 @@ set size 1.0, ht0
 set origin 0, 0
 
 set tmargin 0
-set lmargin 7
+set lmargin 8
 
-set xlabel "{/Times-Italic E}" offset -1, 0.5
-set xtics 5000
+set xlabel "{/Times-Italic E}" offset -1, 0.8
+set xtics 5000 offset 0, 0.3
 set mxtics 5
 
-set ylabel "Energy\nhistograms,\n{/Times-Italic H}({/Times-Italic E})" offset 0, -0.5
+set ylabel "Energy\nhistograms,\n{/Times-Italic H}({/Times-Italic E})" offset 0, 0
 unset ytics
 
 plot [-82000:-70000][] "../../data/1VII/histde1.dat" u 1:2 w l notitle

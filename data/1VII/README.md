@@ -1,3 +1,31 @@
+Overview
+=========
+
+
+## Data collection for nsnt.gp
+
+To collect data lonestar
+```
+./syncin
+make
+```
+
+## Data collection for whamcmp.gp
+
+For the old whamcmp.gp for all data points
+```
+./mkwhamcmp.sh
+```
+
+For the new whamcmp.gp for subsamples
+```
+./mkwhamcmp.sh
+cd whamcmpr0.01   && ./gen.sh && make && cd ..
+cd whamcmpr0.0001 && ./gen.sh && make && cd ..
+```
+
+
+
 
 Files
 =====
@@ -5,7 +33,7 @@ Files
 
 File            | Description
 ----------------+--------------------------------------------------------------------
-mkwhamcmp.sh    | script to generate files for the GNUplot script doc/fig/whamcmp.gp
+mkwhamcmp.sh    | script to generate files for the GNUplot script doc/fig/whamcmp.gp. This is sufficient only the old whacmp.gp, which applies to the entire data set. For the new version, which is compute for subsamples, check the subdirectories, whamcmpr0.01 and whamcmpr0.0001.  However, mbar.out is still needed, which can be generated either by mkwhamcmp.sh or manually.
 xvgrun.py       | running script to measure the number of iterations and run time, output used for doc/fig/nsnt.gp, the output is .log
 xvgtrace.py     | running script to measure the decay of error, not used, the output is .tr
 xvgerr.py       | running script to estimate of error, output used for doc/fig/whamcmp.gp, the output is .log

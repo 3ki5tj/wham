@@ -964,7 +964,7 @@ although higher-order terms differ.
 
 
 %
-Below, we show show to obtain them from systematic expansions.
+Below, we show how to obtain them from systematic expansions.
 
 
 
@@ -1000,7 +1000,7 @@ $B_3 = B_5 = B_7 = \dots = 0$.
 
 
 
-\subsubsection{First few Bernoulli polynomials}
+\subsubsection{Bernoulli polynomials}
 
 
 
@@ -1190,7 +1190,7 @@ and
 \end{equation}
 
 
-The numbers can also be derived from the Bernoulli numbers
+The numbers can also be derived from the Bernoulli numbers.
 %
 Expanding both sides of
 \[
@@ -1484,13 +1484,17 @@ the BAR or WHAM equation reads
 %
 \begin{equation*}
 \int
-  \frac{ \rho_j(E) + \rho_{j+1}(E) }
-  { 1 + \exp( -\Delta \beta_j \, E + \Delta f_j ) }
+  \frac{ \rho_0(E) + \rho_1(E) }
+  { 1 + \exp( -\Delta \beta \, E + \Delta f ) }
   \, d E
 = 1,
 \end{equation*}
 %
-or
+where $\Delta \beta = \beta_1 - \beta_0$,
+and
+$\Delta f = f_1 - f_0$.
+%
+It can be rewritten as
 %
 \begin{equation*}
 \int
