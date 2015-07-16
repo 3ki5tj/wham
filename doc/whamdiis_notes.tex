@@ -50,10 +50,21 @@ g(E)
 }
 {
   \sum_{k = 1}^K N_k \, \exp(-\beta_k E) / Z_k
-}.
+}
+=
+\frac{
+  \sum_{k = 1}^K n_k(E)
+}
+{
+  \sum_{k = 1}^K d_k(E)
+},
 \label{eq:gE_WHAM}
 \end{equation}
 %
+where
+$d_k(E) \equiv N_k \exp(-\beta_k E) / Z_k$.
+
+
 
 In ensemble $k$,
 the normalized energy distribution,
@@ -67,6 +78,9 @@ g(E) \,
 \frac{ \exp(-\beta_k E) } { Z_k }.
 \end{equation}
 %
+Here, the right-hand side
+is the exact distribution.
+%
 Thus,
 we have
 %
@@ -74,13 +88,25 @@ we have
 g(E)
 =
 \frac{ n_k(E) }
-     { d_k(E) },
-\label{eq:gE_single}
+     { d_k(E) }.
+\label{eq:gnk}
 \end{equation}
-where
-$d_k(E) \equiv N_k \exp(-\beta_k E) / Z_k$.
 %
-Averaging the numerators and denominators of different $k$'s
+Separately averaging the numerators and denominators of different $k$'s
+yields Eq. \eqref{eq:gE_WHAM}.
+
+
+
+Another way to remember Eq. \eqref{eq:gE_WHAM}
+is to consider the special case of
+$\beta_1 = \dots = \beta_K$,
+which allows
+the $K$ unnormalized distributions
+to be aggregated as
+$\sum_{k=1}^K n_k(E)$.
+%
+Using Eq. \eqref{eq:gnk}
+on the aggregated distribution
 yields Eq. \eqref{eq:gE_WHAM}.
 
 
@@ -269,7 +295,7 @@ we get
 \label{eq:beta0_STWHAM}
 \end{equation}
 %
-By Eq. \eqref{eq:gE_single},
+By Eq. \eqref{eq:gnk},
 we have
 $n_k(E) = d_k(E) \, g(E)$,
 which shows that
@@ -292,9 +318,79 @@ where
   \label{eq:ck}
 \end{align}
 %
-This is the main result of ST-WHAM.
+This is the main result of ST-WHAM
+from the original paper\cite{
+kim2011}.
 
 
+It is possible to get rid of
+the derivative $(\log n_k)'(E)$.
+%
+To do so, we only need to apply the differentiation
+to the logarithm of the denominator of Eq. \eqref{eq:gE_WHAM}.
+%
+\begin{align}
+\frac{d}{dE}
+\log
+  \sum_{k = 1}^K d_k(E)
+&=
+-
+\frac{
+  \sum_{k = 1}^K d_k(E) \, \beta_k
+}
+{
+  \sum_{k = 1}^K d_k(E)
+}
+%\notag\\
+%&
+=
+-
+\frac{
+  \sum_{k = 1}^K n_k(E) \, \beta_k
+}
+{
+  \sum_{k = 1}^K n_k(E)
+}.
+%\notag
+\label{eq:ddenom_STWHAM}
+\end{align}
+%
+Then,
+%
+\begin{align}
+\log \sum_{k = 1}^K d_k(E)
+&=
+-
+\int^E
+\frac{
+  \sum_{k = 1}^K n_k(E') \, \beta_k
+}
+{
+  \sum_{k = 1}^K n_k(E')
+} dE'.
+%\notag
+\label{eq:denom_STWHAM}
+\end{align}
+%
+Using Eq. \eqref{eq:denom_STWHAM} in Eq. \eqref{eq:gE_WHAM} yields
+%
+\begin{align}
+g(E)
+=
+\left[
+  \sum_{k = 1}^K n_k(E)
+\right]
+\,
+\exp
+\left[
+\int^E
+    \frac{ \sum_{k = 1}^K n_k(E') \, \beta_k }
+         { \sum_{k = 1}^K n_k(E') }
+  dE'
+\right].
+%\notag
+\label{eq:g_STWHAM}
+\end{align}
 
 
 
@@ -772,6 +868,189 @@ q_i(\vy) d\vy
   \sum_{k = 1}^K N_k \, q_k(\vct x) / Z_k[g]
 }.
 \end{align}
+
+
+
+
+\section{Appendix B: Model for the convergence}
+
+
+We shall use the normalization
+\begin{equation}
+\int \rho_i(E) \, dE
+= 1
+\quad
+(i = 1, 2),
+\tag{B1}
+\label{eq:rho_normalize}
+\end{equation}
+and the symmetry
+\begin{equation}
+\rho_1(E)
+=
+\rho_2(-E).
+\tag{B2}
+\label{eq:rho_symm}
+\end{equation}
+
+
+\subsection{Derivation of Eq. (B3)}
+
+
+
+This goes like this
+%
+\begin{align}
+\Delta f
+&=
+-\log \int
+\frac{ [\rho_1(E) + \rho_2(E)] \, \exp(-\Delta \beta \, E) }
+{ 1 + \exp(-\Delta \beta \, E + \Delta f) }
+dE
+\notag \\
+&=
+-\log \int
+\frac{ \rho_1(E) + \rho_2(E) }
+{ \exp(\Delta \beta E) + \exp(\Delta f) }
+dE
+\notag \\
+&=
+-\log
+\left(
+\int
+\frac{ \rho_1(E) }
+{ \exp(\Delta \beta E) + \exp(\Delta f) }
+dE
++
+\int
+\frac{ \rho_2(-E) }
+{ \exp(-\Delta \beta E) + \exp(\Delta f) }
+dE
+\right)
+\notag \\
+&=
+-\log
+\left(
+\int
+\frac{ \rho_1(E) }
+{ \exp(\Delta \beta E) + \exp(\Delta f) }
+dE
++
+\int
+\frac{ \rho_1(E) }
+{ \exp(-\Delta \beta E) + \exp(\Delta f) }
+dE
+\right)
+\notag \\
+&=
+-\log
+\int
+\frac{ 2 \cosh(\Delta \beta E) + 2 \exp(\Delta f) }
+{
+  1 +  2 \cosh(\Delta \beta E) \, \exp(\Delta f)
+  + \exp(2 \Delta f)
+}
+\rho_1(E) \, dE
+\notag \\
+&=
+-\log
+\int
+\frac{ \cosh(\Delta \beta E) + \exp(\Delta f) }
+{
+  \cosh(\Delta \beta E) + \cosh(\Delta f)
+}
+\rho_1(E) \, \exp(-\Delta f) \, dE
+\notag \\
+&=
+\Delta f
+-
+\log
+  \int
+    \frac{ y + \exp \Delta f }
+         { y + \cosh \Delta f }
+    \rho_1(E) \, dE,
+\tag{B3}
+\label{eq:delf_WHAM}
+\end{align}
+where we have used Eq. \eqref{eq:rho_symm}.
+
+
+
+\subsection{Derivation of Eq. (B4)}
+
+
+From Eq. \eqref{eq:delf_WHAM},
+\begin{align}
+\mathrm{r.h.s.}
+&=
+\Delta f
+-
+\log
+  \int
+    \frac{ y + \exp \Delta f }
+         { y + \cosh \Delta f }
+    \rho_1(E) \, dE,
+\tag{B3}
+\notag \\
+&=
+\Delta f
+-
+\log
+  \int
+  \left(1
+    + \frac{ \sinh \Delta f }
+         { y + \cosh \Delta f }
+  \right)
+    \rho_1(E) \, dE
+\notag \\
+&=
+\Delta f
+-
+\log
+\left[
+  1 +
+  \int
+    \frac{ \sinh \Delta f }
+         { y + \cosh \Delta f }
+    \rho_1(E) \, dE
+\right]
+\notag \\
+&\approx
+\Delta f
+-
+\log
+\left[
+  1 +
+  \int
+    \frac{ \Delta f }
+         { y + 1 }
+    \rho_1(E) \, dE
+\right]
+\notag \\
+&\approx
+\left(
+  \int
+  \rho_1(E) \, dE
+\right)
+\Delta f
+-\int
+    \frac{ \Delta f }
+         { y + 1 }
+    \rho_1(E) \, dE
+\notag \\
+&\approx
+\left( \int
+    \frac{ y }
+         { y + 1 }
+    \rho_1(E) \, dE
+\right)
+\, \Delta f,
+\tag{B4}
+\label{eq:delf_lin}
+\end{align}
+%
+where
+we have used Eq. \eqref{eq:rho_normalize}.
 
 
 

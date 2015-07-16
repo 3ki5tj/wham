@@ -2,8 +2,8 @@
 %\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
 \usepackage{amsmath}
 \usepackage{bm}
+\usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{tikz}
-\usepackage{color}
 \begin{document}
 
 
@@ -17,6 +17,10 @@
 \newcommand{\Ham}{\mathcal{H}}
 \newcommand{\W}{\mathcal{W}}
 
+\newcommand{\repl}[2]{{\color{gray} [#1] }{\color{blue} #2}}
+\newcommand{\add}[1]{{\color{blue} #1}}
+\newcommand{\del}[1]{{\color{gray} [#1]}}
+\newcommand{\note}[1]{{\color{OliveGreen}\small [\textbf{Comment.} #1]}}
 
 
 
@@ -24,8 +28,61 @@
 by direct inversion in the iterative subspace}
 
 \begin{abstract}
-The convergence of the weighted histogram analysis method for free energy calculations
-can be improved by using the method of direct inversion in the iterative subspace.
+The weighted histogram analysis method (WHAM)
+for free energy calculations
+is a valuable tool to produce
+free energy differences with the minimal \repl{bias}{error}.
+\note{WHAM is supposed to be ``unbiased'';
+maybe ``error'' or ``uncertainty'' is a better word?}
+%
+\repl{
+If we have two (or more) simulations,
+we want the best statistical estimator
+of the overlap of the density of states.
+}
+{
+Given multiple simulations,
+WHAM obtains
+from the distribution overlaps
+the optimal statistical estimator
+of the density of states,
+from which the free energy differences
+can be computed.
+}
+%
+\note{
+We may be introducing too many new things in this sentence,
+and it also feels a bit detached from the previous sentence.
+The phrase ``overlap of the density of states'' is somewhat vague.
+But the changed version is still not quite accurate,
+because
+distributions do not have to overlap for WHAM to work,
+as discussed in Appendix \ref{sec:convwham}.
+}
+%
+\repl{This is most often found}{The WHAM equations are often solved}
+by an iterative procedure.
+%
+In this work,
+we use a well-known linear algebra algorithm
+which allows for
+\repl{a}{more}
+rapid convergence to the \repl{optimum}{solution}.
+%
+\note{
+We haven't related WHAM to an optimization problem,
+so the word ``optimum'' may be a bit confusing.
+}
+%
+We find \add{that} the computational complexity of
+the iterative solution to WHAM
+can be improved by using the method of
+direct inversion in the iterative subspace.
+%
+We give examples from
+\add{lattice models,}
+simple liquids
+and aqueous protein solutions.
 \end{abstract}
 
 \maketitle
@@ -41,7 +98,8 @@ can be improved by using the method of direct inversion in the iterative subspac
 
 An important problem in computational physics and chemistry
 is to obtain the best estimate of a quantity of interest
-from a given set of data.
+from a given set of data\cite{
+shirts2008}.
 %
 For free energy calculations,
 the multiple histogram method\cite{
@@ -54,13 +112,13 @@ bartels1997, *gallicchio2005, *habeck2007, *habeck2012,
 souaille2001,
 chodera2007, shirts2008, bereau2009,
 hub2010, zhu2012},
-is an effective tool of
+is an effective tool for
 addressing such a problem.
 %
 WHAM is statistically efficient in using the data
 acquired from molecular simulations,
 and it has become
-a standard trajectory analysis tool,
+a standard free energy analysis tool,
 particularly popular
 for enhanced-sampling simulations,
 such as umbrella sampling\cite{
@@ -76,15 +134,17 @@ tempering.
 
 
 
-Given several trajectories collected
-for different thermodynamic states,
-WHAM is able to draw the optimal estimate
+Given several distributions collected
+at different thermodynamic states,
+WHAM obtains the optimal estimate
 of the free energies of the states.
 %
-The key is to seek an optimal estimate
+This problem arises in the calculation of potentials of mean force and a variety of free energy difference methods.
+%
+The central idea is to find an optimal estimate
 of the density of states,
 or the unbiased distribution,
-which allows
+which then allows
 the free energies to be evaluated
 as weighted integrals.
 %
@@ -92,18 +152,17 @@ The optimal density of states
 is computed from a weighted average
 of the reweighted energy histograms
 (hence the name of the method)
-from different trajectories.
+from different distribution realizations or trajectories.
 %
 The weights, however,
 depend on the free energies,
 so that
 the free energies
 and the density of states
-must determined consistently.
+must determined self-consistently.
 %
-Interestingly,
-WHAM can be reformulated\cite{
-shirts2008}
+WHAM can be reformulated in the limit of continuous functions (bins of zero width)\cite{
+souaille2001, shirts2008}
 as an extension
 of the Bennett acceptance ratio (BAR) method\cite{
 bennett1976}.
@@ -119,22 +178,22 @@ The straightforward implementation of WHAM or MBAR,
 in which the equations regarding the free energies
 are solved by direct iteration,
 can suffer from
-a slow convergence in late stages.
+slow convergence in the later stages.
 %
-Several remedies were proposed\cite{
+Several remedies have been proposed\cite{
 shirts2008, bereau2009, kim2011, zhu2012}.
 %
 For example, one may use the Newton-Raphson method,
-which involves the Hessian matrix,
+which involves a Hessian matrix,
 although the approach sometimes can be unstable\cite{
 shirts2008}.
 %
 Other more advanced techniques include
-the trust region and BFGS methods\cite{zhu2012}.
+the trust region and Broyden-Fletcher-Goldfarb-Shanno (BFGS) methods\cite{zhu2012}.
 
 
 
-An ingenious non-iterative alternative is
+An elegant non-iterative alternative is
 the statistical-temperature WHAM (ST-WHAM)\cite{
 kim2011}, which
 determines the density of states
@@ -142,7 +201,7 @@ through its logarithmic derivative,
 or the statistical temperature.
 %
 In this way,
-it manages to estimate
+the method estimates
 the density of states non-iteratively
 with minimal approximation.
 %by averaging the values
@@ -164,6 +223,8 @@ the implementation of WHAM using
 the method of direct inversion in the iterative subspace (DIIS)\cite{
 pulay1980, *pulay1982, *hamilton1986,
 kovalenko1999, howard2011}.
+%
+DIIS shares characteristics with other optimization techniques which use a limited (non-spanning) basis of vectors which produce the most gain towards the optimum.
 %
 Although still iterative in nature,
 this implementation
@@ -191,8 +252,7 @@ of multiple thermodynamic states
 with different parameters,
 such as temperatures, pressures, etc.
 %
-For definiteness,
-consider the special case of $K$ temperatures,
+Consider the particular case of $K$ temperatures,
 labeled by the inverse temperature,
 $\beta = 1/(k_B T)$,
 as
@@ -200,9 +260,9 @@ $\beta_1, \ldots, \beta_K$.
 %
 Suppose we have performed the respective
 canonical ($NVT$) ensemble simulations
-at the $K$ temperatures,
+at the $K$ temperatures, and
 we wish to estimate the free energies
-at the temperatures.
+at those temperatures.
 
 
 
@@ -226,22 +286,28 @@ $n_k(E)$
 is
 the unnormalized energy distribution
 observed from trajectory $k$,
-%
-which can be estimated
+which
+is usually estimated
 from the energy histogram as
 the number of independent trajectory frames
 whose energies fall in the interval
 $(E - h/2, E + h/2)$
 divided by $h$
-(we shall omit ``independent'' below for simplicity).
+(we shall omit ``independent'' below for simplicity);
 %
-Thus, $n_k(E)/N_k$
+\repl{
+$N_k$
+is the total number of trajectory frames
+}
+{
+thus, $n_k(E)/N_k$
 is the normalized distribution
 with $N_k$ being
 the total number of trajectory frames
-from simulation $k$.
+from simulation $k$;
+}
 %
-Finally,
+and finally,
 %
 \begin{equation}
 \exp( - f_k )
@@ -258,13 +324,13 @@ $Z_k$
 being
 the dimensionless free energy
 and
-the partition function,
+partition function,
 respectively.
 
 
 
 To understand Eq. \eqref{eq:gE_WHAM},
-we first observe from definition,
+we first observe from the definition,
 %
 \begin{equation}
 g(E)
@@ -277,19 +343,33 @@ g(E)
 \end{equation}
 where $d_k(E) \equiv N_k \exp(-\beta_k E + f_k)$.
 %
+\repl{
+Then, Eq. \eqref{eq:gE_WHAM}
+can be regarded as
+a linear combination
+of the values from
+Eq. \eqref{eq:gnk}\cite{
+roux1995, souaille2001, newman, frenkel}.
+}
+{
 That is,
 the observed distribution, $n_k(E)/N_k$
 should match the exact one, $g(E) \, \exp(-\beta_k E)/Z_k$.
 %
-Since Eq. \eqref{eq:gnk} is exact,
-the values from different $k$
+The values of Eq. \eqref{eq:gnk} from different $k$
 can be combined to improve precision,
 and Eq. \eqref{eq:gE_WHAM}
 is the optiomal combination\cite{
 roux1995, souaille2001, newman, frenkel}.
+}
 %
+\repl{
+Now in an optimal combination,
+}
+{
 To see this,
 recall that in an optimal combination,
+}
 the relative weight is inversely
 proportional to the variance.
 %
@@ -305,26 +385,10 @@ Averaging the values from Eq. \eqref{eq:gnk}
 using $(1/d_k)^{-1}$ as the relative weight yields
 Eq. \eqref{eq:gE_WHAM}.
 %
-%
-%
-%Another way to see Eq. \eqref{eq:gE_WHAM}
-%is to consider the special case of
-%$\beta_1 = \dots = \beta_K$,
-%which allows
-%the $K$ unnormalized distributions
-%to be aggregated as
-%$\sum_{k=1}^K n_k(E)$.
-%%
-%Using Eq. \eqref{eq:gnk}
-%on the aggregated distribution
-%yields Eq. \eqref{eq:gE_WHAM}.
-%
-%
-%
 Since, for a fixed $E$,
 $d_k(E)$ is proportional to $n_k(E)$,
 several variants of WHAM
-are derived
+may be derived
 by using $n_k(E)$ in place of $d_k(E)$
 as the relative weight for
 $g(E)$\cite{
@@ -364,7 +428,7 @@ $\Z_i$
 denotes the integral on the right-hand side.
 %
 Once all $f_i$ and $g(E)$ are determined,
-the free energy at a not simulated temperature, $\beta$,
+the free energy at a temperature not simulated, $\beta$,
 can be found from Eq. \eqref{eq:Z}
 by substituting $\beta$ for $\beta_k$.
 
@@ -465,7 +529,7 @@ f_i
 %
 where
 $n_k(W)$
-is understood as
+is understood to be
 the unnormalized distribution of
 the bias $\W(\vx)$.
 %
@@ -476,7 +540,7 @@ $\W(\vx) = \E(\vx)$,
 and $\lambda_i = \beta_i$.
 %
 Another common example
-is a system under a quadratic restraint
+is a system under a quadratic restraint (umbrella)
 $\E_i = \E_0 + \frac 1 2 A \, (\xi - \lambda_i)^2$
 for some reaction coordinate $\xi \equiv \xi(\vx)$.
 %
@@ -538,8 +602,8 @@ kim2011}.
 
 
 
-Numerically,
-$f_i$ is often determined by treating Eq. \eqref{eq:f_WHAM}
+Numerically, the
+$f_i$ are most often determined by treating Eq. \eqref{eq:f_WHAM}
 as an iterative equation,
 %
 \begin{equation*}
@@ -568,15 +632,18 @@ of Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
 
 
 
-For comparison reasons,
+For comparison,
 we briefly discuss
-two elegant non-iterative alternatives, ST-WHAM\cite{
+two non-iterative alternatives, ST-WHAM\cite{
 kim2011}
 and UIM\cite{
 kastner2005, *kastner2009}.
 %
 By taking the logarithmic derivative of
 the denominator of Eq. \eqref{eq:gE_WHAM},
+\del{
+and using Eq. \eqref{eq:gnk}
+}
 we have,
 %
 \begin{align}
@@ -605,10 +672,15 @@ we have,
 %\label{eq:beta_STWHAM}
 \end{align}
 %
+\repl{
+which is independent of $d_k(E)$, hence $f_k$.
+}
+{
 where
 we have used Eq. \eqref{eq:gnk}
 to make the final expression
 independent of $d_k(E)$, hence $f_k$.
+}
 %
 So
 \begin{align}
@@ -629,7 +701,7 @@ g(E)
 %\label{eq:g_STWHAM}
 \end{align}
 %
-This is the result of ST-WHAM.
+This is the ST-WHAM result.
 %
 In evaluating the integral,
 we may encounter an empty bin
@@ -650,6 +722,12 @@ kastner2005, *kastner2009},
 the distribution $n_k(E)$
 is further approximated as a Gaussian.
 %
+We note that ST-WHAM is difficult when we have more
+thermodynamic variables in the ensemble of interest.
+%
+Below we show the DIIS method can
+\add{readily} handle such a case
+for the Lennard-Jones (LJ) fluid\del{, readily}.
 %This, however, may limit the long-term accuracy.
 
 
@@ -659,10 +737,10 @@ is further approximated as a Gaussian.
 
 
 
-DIIS is a method of solving equations\cite{
+DIIS is a technique useful for solving equations\cite{
 pulay1980, *pulay1982, *hamilton1986,
 kovalenko1999, howard2011},
-and it is used
+and we use it
 to solve Eq. \eqref{eq:f_WHAM} here.
 %
 A schematic illustration
@@ -696,8 +774,8 @@ represents the error,
 %
 and
 $\vct R(\vct f)$
-should point to a direction
-of reducing the error of $\vct f$.
+should optimally point in a direction
+\repl{reducing}{that reduces} the error of $\vct f$.
 %
 %That is,
 %for $\vct f' = \vct f + \alpha \, \vct R(\vct f)$
@@ -758,7 +836,7 @@ under the constraint
 \end{equation}
 %
 Mathematically,
-this means to solve $c_i$
+this means \add{that} we solve for the $c_i$ simultaneously
 from Eq. \eqref{eq:c_normalize} and
 %
 \begin{equation}
@@ -772,11 +850,11 @@ with $\lambda$ being the Lagrange multiplier.
 Now the corresponding combination
 of the trial vectors,
 $\vct{\hat f} = \sum_i c_i \, \vct f_i$,
-should roughly be the desired minimal-error vector.
+should be close to the desired minimal-error vector.
 %
 This is because
 around the true solution $\vct f^*$,
-Eq. \eqref{eq:R_f} should be mostly linear;
+Eq. \eqref{eq:R_f} should be nearly linear;
 so the residual vector
 %
 \[
@@ -802,7 +880,7 @@ under the linear approximation.
 Thus,
 an iteration based on
 $\vct{\hat f}$
-would be most efficient.
+should be efficient.
 
 
 
@@ -854,7 +932,7 @@ where the factor $\alpha$ is $1.0$ in this study
 for other applications\cite{kovalenko1999, howard2011}).
 %
 The new vector $\vct f^{(n)}$
-is used to update the basis as follows.
+is used to update the basis as shown next.
 
 
 
@@ -1205,7 +1283,7 @@ is used to update the basis as follows.
     %
     (c) If the vectors are one-dimensional (i.e., scalars),
     it is possible to find a vanishing $\vct{\hat R}$, and
-    DIIS is reduced to the secant method.
+    DIIS is equivalent to the secant method.
   }
 \end{figure}
 
@@ -1224,9 +1302,9 @@ from the above step.
 Initially,
 the basis contains a single vector.
 %
-As we add more vectors into the basis,
-some old vectors are removed
-to maintain a maximal size of $M$.
+As we add more vectors into the basis, in subsequent iterations,
+some old vectors may be removed
+to maintain a convenient and efficient maximal size of $M$.
 
 
 
@@ -1296,7 +1374,7 @@ Since the DIIS process is reduced
 to the direct iteration
 if $M = 1$,
 the method is effective
-only if multiple bases are used.
+only if multiple basis vectors are used.
 %
 
 
@@ -1309,15 +1387,11 @@ only if multiple bases are used.
 
 
 We tested DIIS WHAM and MBAR on three systems:
-Ising model,
-villin headpiece,
-and
-Lennard-Jones (LJ) fluid
+Ising model, LJ fluid,
+and the villin headpiece, a small protein in aqueous solution
 (see Secs.
-\ref{sec:results_Ising},
+\ref{sec:results_Ising}, \ref{sec:results_LJ}, and
 \ref{sec:results_villin},
-and
-\ref{sec:results_LJ},
 respectively,
 for details).
 %
@@ -1337,7 +1411,7 @@ dramatically in these cases.
 %
 The real run time roughly matched
 the number of iterations,
-suggesting negligible overhead of DIIS.
+suggesting a negligible overhead for using DIIS.
 %
 This is unsurprising,
 for it is often much more expensive to compute
@@ -1358,12 +1432,11 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     in DIIS.
     %
     The four test cases are
-    (1) WHAM on the Ising model in the $NVT$ ensemble
-    (2) WHAM on the mini-protein villin headpiece in the $NVT$ ensemble
-    (with the bin width of energy histograms being 1.0),
-    (3) MBAR on the same protein system,
-    and
-    (4) WHAM on the LJ fluid in the $NpT$ ensemble.
+    (1) WHAM on the Ising model in the $NVT$ ensemble,
+    (2) WHAM on the LJ fluid in the $NpT$ ensemble,
+    (3) WHAM on the mini-protein villin headpiece in the $NVT$ ensemble
+    (with the bin width of energy histograms being 1.0), and
+    (4) MBAR on the same protein system.
     %
     The $M = 0$ points represent direct WHAM.
     %
@@ -1371,8 +1444,8 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     by a factor $\tau$
     for better comparison.
     %
-    The scaling factors $\tau$ are
-    {\color{red} $12.54$, $14.91$, $252.2$, and $1866$} seconds,
+    The scaling factors $\tau$ for cases 1-4 are
+    $12.54$, $1866$, $14.91$, and $252.2$ seconds,
     respectively.
     %
     The results were averaged
@@ -1390,7 +1463,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     Here, the error tolerance
     $\max \{ |R_i| \}$ is $10^{-8}$.
     %
-    The lines are to guide the eyes.
+    The lines are a guide for the eyes.
   }
 \end{figure}
 
@@ -1457,7 +1530,7 @@ where
 $\overline{ A }_i \equiv (A_{i+1} + A_i)/2$.
 %
 This formula can be improved
-by the Euler-Maclaurin formula\cite{
+by an Euler-Maclaurin expansion\cite{
 arfken, *whittaker, *wang_specfunc}
 as
 %
@@ -1490,7 +1563,7 @@ Ising model}
 
 
 The first system is
-the two-dimensional $64\times64$ Ising model.
+a $64\times64$ Ising model.
 %
 We used parallel tempering\cite{
 swendsen1986, *geyer1991, *hukushima1996, *hansmann1997, *earl2005}
@@ -1502,7 +1575,7 @@ eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$,
 
 To study the accuracy,
 we generated a large sample with
-$10^9$ single-site MC steps on each temperature.
+$10^9$ single-site MC steps for each temperature.
 %
 Figure \ref{fig:is2ref} shows that
 DIIS and direct WHAMs produced identical
@@ -1511,11 +1584,11 @@ dimensionless free energies.
 The differences between the ST-WHAM and WHAM results
 were subtle,
 whereas the approximate UIM
-produced more different results,
+produced more deviation in the results,
 especially around the critical region.
 %
 Nonetheless,
-the errors were on the same order of magnitude.
+the errors were of the same order of magnitude.
 
 
 
@@ -1547,10 +1620,10 @@ the errors were on the same order of magnitude.
 
 To study the convergence rate,
 we generated independent samples with
-$10^7$ MC steps on each temperature.
+$10^7$ MC steps at each temperature.
 %
 Figure \ref{fig:is2trace}
-shows a faster exponential decay of error
+shows a faster decay of the error
 in DIIS WHAM
 than in direct WHAM.
 
@@ -1577,15 +1650,51 @@ than in direct WHAM.
 
 
 
+\subsection{\label{sec:results_LJ}
+LJ fluid}
+
+
+We tested the DIIS method
+on the 256-particle LJ fluid in the isothermal-isobaric ($NpT$) ensemble.
+%
+This is a \add{case for }the two-dimensional (\repl{p \& T}{$p$ and $T$}) WHAM,
+which is difficult for some implementations.
+%
+The potential interaction between particles was cutoff at half the box size.
+%
+We simulated the system \del{in $NpT$ ensembles}
+using parallel tempering MC.
+%
+We considered the system
+at $N_T \times N_p = 6\times 3$ conditions:
+the temperatures were $T = 1.2, 1.3, \dots, 1.7$,
+the pressures were $p = 0.1, 0.15, 0.2$.
+%
+The bin sizes for energy and volume
+were $1.0$ and $2.0$, respectively.
+
+
+
+As shown in Fig. \ref{fig:nsnt},
+DIIS WHAM effectively
+reduced the run time significantly.
+%
+This demonstration also shows that
+the efficiency of DIIS does not
+always increase with
+the number of basis set members, $M$.
+
+
+
 
 \subsection{\label{sec:results_villin}
 Villin headpiece}
 
 
 
-We tested the methods on a mini-protein:
-villin headpiece\cite{duan1998}
-(PDB ID: 1VII).
+We tested the methods on a small protein in aqueous solution,
+the villin headpiece
+(PDB ID: 1VII), which is a well-known test system\cite{duan1998}.
 %
 The protein was immersed in
 a dodecahedron box with 1898 TIP3P water molecules and two chloride ions.
@@ -1613,24 +1722,24 @@ for water molecules.
 
 
 
-We simulated the system under 12 temperatures
+We simulated the system at 12 temperatures
 $T$ = 300 K, 310 K, \dots, 410 K,
-each for about 200 ns.
+each for approximately 200 ns.
 %
 The energy distributions were properly overlapped,
 as shown in Fig. \ref{fig:whamcmp}(e).
 %
-The energies of trajectory frames were registered every 0.1 ps,
-so that there were about 2 million frames
-in each temperature.
+The energies of individual trajectory frames were saved every 0.1 ps,
+so that there were about 2 million frames for analysis
+at each temperature.
 
 
 
 As shown in Fig. \ref{fig:nsnt},
-direct WHAM suffered from a slow convergence,
-while the DIIS version again
+direct WHAM suffered from slow convergence,
+while the DIIS methodology again
 delivered a speedup of two orders of magnitude,
-in the number of iterations or real run time.
+in the number of iterations or in real time.
 %
 The MBAR case was similar.
 %
@@ -1643,10 +1752,10 @@ The MBAR case was similar.
 To test the errors of the methods,
 we prepared two types of samples of different sizes.
 %
-A larger sample randomly selects roughly $r = 1\%$
+A larger sample was randomly selected from roughly $r = 1\%$
 of all trajectory frames from every temperature.
 %
-In a smaller one, $r$ is reduced to $0.01\%$.
+In a smaller one, $r$ was reduced to $0.01\%$.
 %
 The reference values of $f_i$
 were computed from all trajectory frames using MBAR.
@@ -1660,7 +1769,7 @@ then by Eq. \eqref{eq:df_eav}.
 The accuracy was largely independent of the sample size,
 and we suspect that the difference
 between ST-WHAM and WHAM
-might reflect sampling errors.
+might reflect some intrinsic sampling errors.
 %
 In terms of precision
 [Figs. \ref{fig:whamcmp}(b) and \ref{fig:whamcmp}(d)],
@@ -1683,7 +1792,7 @@ by a small bin size for smaller samples.
     Accuracy [(a) and (c)] and precision [(b) and (d)] of
     the dimensionless free energies, $f_i$,
     from WHAM, BAR, ST-WHAM, UIM, and approximate formulae
-    for the villin headpiece.
+    for the villin headpiece in solution.
     %
     Two types of samples were used.
     %
@@ -1701,7 +1810,7 @@ by a small bin size for smaller samples.
     %
     $f_i$ at $T = 300$ K is fixed at zero.
     %
-    The lines are to guide the eyes.
+    The lines are a guide for the eyes.
     %
     (e) Energy histograms collected
     with bin width $h = 1.0$.
@@ -1712,48 +1821,15 @@ by a small bin size for smaller samples.
 
 
 
-\subsection{\label{sec:results_LJ}
-LJ fluid}
-
-
-We tested the two-dimensional WHAM
-on the 256-particle LJ fluid.
-%
-The potential was cutoff at half-box size.
-%
-We simulated the system in isothermal-isobaric ($NpT$) ensembles
-using parallel tempering MC.
-%
-We simulated the system
-under $N_T \times N_p = 6\times 3$ conditions:
-the temperatures were $T = 1.2, 1.3, \dots, 1.7$,
-the pressures were $p = 0.1, 0.15, 0.2$.
-%
-The bin sizes for energy and volume
-are $1.0$ and $2.0$, respectively.
-
-
-As shown in Fig. \ref{fig:nsnt},
-DIIS WHAM also effectively
-reduced the run time significantly.
-%
-It also shows that
-the efficiency of DIIS does not
-always increase with
-the number of bases, $M$.
-
-
-
-
 \section{Conclusions}
 
 
 
-We showed that the DIIS technique
+In this work, we showed that the DIIS technique
 can often significantly accelerate
-the free energy methods WHAM and MBAR.
+the WHAM and MBAR methods to produce free energy difference.
 %
-The technique achieves a fast convergence
+The technique achieves rapid convergence
 by an optimal combination of the approximate
 solutions obtained during iteration.
 %
@@ -1761,14 +1837,15 @@ DIIS does not require computing the Hessian matrix
 and is numerically stable
 with minimal run time overhead.
 %
-Compared to more advanced techniques\cite{
+Compared to other advanced techniques\cite{
 shirts2008, zhu2012},
-DIIS is relatively simple and easy to implement,
-although better equation solvers may exist.
+DIIS is relatively simple and easy to implement.
+%although better equation solvers may exist.
 %
 Other related free energy methods\cite{
 shen1991, woolf1994, *crouzy1994, roux1995}
 may also benefit from this technique.
+%
 
 
 
@@ -1776,13 +1853,17 @@ There are some non-iterative alternatives to WHAM,
 although they may be less general and/or accurate
 in some aspect.
 %
-One-dimensional problems
-may benefit from the non-iterative ST-WHAM,
-or the more approximate cousin, UIM.
+The use of DIIS makes scanning more than one thermodynamic state variable
+computationally convenient.
 %
-Besides,
-rough estimates
-can be obtained from simpler formulae.
+This was demonstrated here in the $NpT$ LJ flluid case.
+%
+Problems with only one thermodynamic variable to scan, such as temperature,
+are amenable to the non-iterative ST-WHAM,
+or the more approximate UIM.
+%
+%Besides, rough estimates
+%can be obtained from simpler formulae.
 
 
 
@@ -1794,14 +1875,15 @@ can be obtained from simpler formulae.
 
 
 It is a pleasure to thank
-Dr. Y. Zhao, Dr. M. R. Shirts, J. A. Drake and Dr. G. C. Lynch
+Dr. Y. Zhao, Dr. M. R. Shirts, Dr. J. Perkyns, Dr. G. Lynch and J. A. Drake
 for helpful discussions.
 %
-The authors gratefully acknowledge
-the financial support of
-the National Science Foundation (No. CHE-1152876)
+The authors acknowledge
+partial financial support from
+the National Science Foundation (CHE-1152876),
+the National Institutes of Health (GM037657),
 and
-the Robert A. Welch Foundation (No. H-0037).
+the Robert A. Welch Foundation (H-0037).
 %
 Computer time on the Lonestar supercomputer
 at the Texas Advanced Computing Center
