@@ -1,5 +1,5 @@
-\documentclass[reprint,aip,jcp,superscriptaddress]{revtex4-1}
-%\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
+%\documentclass[reprint,aip,jcp,superscriptaddress]{revtex4-1}
+\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
 \usepackage{amsmath}
 \usepackage{bm}
 \usepackage[usenames,dvipsnames]{xcolor}
@@ -160,17 +160,35 @@ so that
 the free energies
 and the density of states
 must determined self-consistently.
-%
-WHAM can be reformulated in the limit of continuous functions (bins of zero width)\cite{
+
+
+
+WHAM can be reformulated in the limit of
+\repl{continuous functions (bins of zero width)\cite{
 souaille2001, shirts2008}
+}
+{
+zero histogram bin width\cite{
+shirts2008}
+}
 as an extension
 of the Bennett acceptance ratio (BAR) method\cite{
 bennett1976}.
 %
+\note{
+While Kumar's\cite{kumar1992} and Souaille's\cite{souaille2001} papers
+definitely contain the key formula, Eq. \eqref{eq:f_MBAR},
+Shirts's paper appears to be the one (if I'm not mistaken)
+that manages to cast it as an extension of BAR in the case of more than one temperature.
+In this sense, only Shirts's paper should be cited here.
+The citations of the other two papers are added at the end of the paragraph.
+}
+%
 This form,
 adopted by the multistate BAR (MBAR) method\cite{
 shirts2008},
-avoids the histogram dependency.
+avoids the histogram dependency\cite{
+kumar1992, souaille2001, shirts2008}.
 
 
 
@@ -354,7 +372,7 @@ roux1995, souaille2001, newman, frenkel}.
 {
 That is,
 the observed distribution, $n_k(E)/N_k$
-should match the exact one, $g(E) \, \exp(-\beta_k E)/Z_k$.
+should match the exact one, $g(E) \, \exp(-\beta_k E + f_k)$.
 %
 The values of Eq. \eqref{eq:gnk} from different $k$
 can be combined to improve precision,
@@ -419,7 +437,7 @@ f_i
 \label{eq:f_WHAM}
 \\
 &\equiv
--\log \Z_i(\{ f_k \}),
+-\log \Z_i[( f_k )],
 \notag
 \end{align}
 %
@@ -434,12 +452,21 @@ by substituting $\beta$ for $\beta_k$.
 
 
 
+\repl{
 In the above,
 $n_k(E)$ is estimated from the energy histogram.
 %
 To avoid this dependency,
 we notice from definition that\cite{
 souaille2001}
+}
+{
+The histogram dependency of WHAM
+[in using $n_k(E)$]
+can be avoided
+by noticing from definition that\cite{
+souaille2001}
+}
 %
 \begin{equation}
 n_k(E)
@@ -580,7 +607,7 @@ respectively.
 However, if the vector dimension is high,
 or if the Hamiltonian $\Ham(\vx; \lambda_i)$
 depends nonlinearly on $\lambda_i$,
-the histogram-free form is more convenient\cite{
+the histogram-free form\add{, Eq. \eqref{eq:f_MBAR},} is more convenient\cite{
 shirts2008}.
 %which is based directly on
 %Eq. \eqref{eq:f_MBAR},
@@ -609,9 +636,11 @@ as an iterative equation,
 \begin{equation*}
 f_i^\mathrm{(new)}
 =
--\log \Z_i\left(
-  \{ f_k^\mathrm{(old)} \}
-\right).
+-\log \Z_i\left[
+  \left(
+    f_k^\mathrm{(old)}
+  \right)
+\right].
 \end{equation*}
 %
 However, this approach, referred to as direct WHAM below,
@@ -1841,6 +1870,9 @@ Compared to other advanced techniques\cite{
 shirts2008, zhu2012},
 DIIS is relatively simple and easy to implement.
 %although better equation solvers may exist.
+\add{However, methods based on Hessian matrices
+may further accelerate the solution process
+for final stages.}
 %
 Other related free energy methods\cite{
 shen1991, woolf1994, *crouzy1994, roux1995}
@@ -1854,9 +1886,10 @@ although they may be less general and/or accurate
 in some aspect.
 %
 The use of DIIS makes scanning more than one thermodynamic state variable
+\add{or a nonlinear variable}
 computationally convenient.
 %
-This was demonstrated here in the $NpT$ LJ flluid case.
+This was demonstrated here in the $NpT$ LJ fluid case.
 %
 Problems with only one thermodynamic variable to scan, such as temperature,
 are amenable to the non-iterative ST-WHAM,
@@ -1875,7 +1908,8 @@ or the more approximate UIM.
 
 
 It is a pleasure to thank
-Dr. Y. Zhao, Dr. M. R. Shirts, Dr. J. Perkyns, Dr. G. Lynch and J. A. Drake
+Dr. Y. Zhao, Dr. M. W. Deem, Dr. M. R. Shirts,
+Dr. J. Perkyns, Dr. G. Lynch and J. A. Drake
 for helpful discussions.
 %
 The authors acknowledge
