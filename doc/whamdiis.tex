@@ -54,10 +54,6 @@ can be computed.
 We may be introducing too many new things in this sentence,
 and it also feels a bit detached from the previous sentence.
 The phrase ``overlap of the density of states'' is somewhat vague.
-But the changed version is still not quite accurate,
-because
-distributions do not have to overlap for WHAM to work,
-as discussed in Appendix \ref{sec:convwham}.
 }
 %
 \repl{This is most often found}{The WHAM equations are often solved}
@@ -437,13 +433,14 @@ f_i
 \label{eq:f_WHAM}
 \\
 &\equiv
--\log \Z_i(f_1, \dots, f_K),
+-\log \Z_i(\vct f),
 \notag
 \end{align}
 %
 where,
-$\Z_i$
-denotes the integral on the right-hand side.
+$\Z_i(\vct f)$
+denotes the integral on the right-hand side,
+as a function of $\vct f = (f_1, \dots, f_K)$.
 %
 Once all $f_i$ and $g(E)$ are determined,
 the free energy at a temperature not simulated, $\beta$,
@@ -636,12 +633,7 @@ as an iterative equation,
 \begin{equation*}
 f_i^\mathrm{(new)}
 =
--\log \Z_i
-  \left(
-    f_1^\mathrm{(old)},
-    \dots,
-    f_K^\mathrm{(old)}
-  \right).
+-\log \Z_i( \vct f^\mathrm{(old)} ).
 \end{equation*}
 %
 However, this approach, referred to as direct WHAM below,
@@ -2026,23 +2018,33 @@ yields Eq. \eqref{eq:f_MBAR}.
 
 
 \section{\label{sec:convwham}
-Model for the convergence of direct WHAM and MBAR}
+Models for the convergence of direct WHAM}
 
 
 
-Here, we use several simple models
-to study the convergence of direct WHAM and MBAR.
+\note{
+This Appendix has been rewritten and expanded.
+}
+
+Here, we use simple models
+to study the convergence of direct WHAM.
+%
+We shall show that
+the convergence is slowed down when the methods
+are applied to a wide temperature range.
 
 
 
-\subsection{Linearized WHAM/MBAR equation}
+
+\subsection{Linearized WHAM equation}
 
 
 
-Consider $K$ distributions
-that differ by the temperatures,
-$\beta_i$, ($i = 1, \dots, K$),
-normalized as
+Consider $K$ distributions, $\rho_i(E)$,
+at different temperatures,
+$\beta_i$ ($i = 1, \dots, K$),
+%
+each of which is normalized as
 %
 %\begin{equation}
 $
@@ -2054,8 +2056,12 @@ $
 %
 %
 %
-The WHAM or MBAR equation,
-Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR},
+For simplicity,
+we assume equal number of visits
+to all temperatures.
+%
+Then, the WHAM equation,
+Eq. \eqref{eq:f_WHAM},
 can be written
 in the iterative form as
 %
@@ -2070,9 +2076,9 @@ f_i^\mathrm{(new)}
 }
 {
   \sum_{k=1}^K
-  \exp\left(
+  \exp(
     -\beta_k \, E + f_k^\mathrm{(old)}
-  \right)
+  )
 }
 dE.
 %\notag
@@ -2080,7 +2086,7 @@ dE.
 \end{align}
 %
 Around the true solution,
-$(f_1^*, \dots, f_K^*)$,
+$\vct f^* = (f_1^*, \dots, f_K^*)$,
 the equation can be linearized as
 %
 \begin{align}
@@ -2095,7 +2101,7 @@ A_{ij} \,
 where
 %
 $\delta f_i^\mathrm{(new/old)}
-= f_i^\mathrm{(new/old)} - f_i^*$,
+\equiv f_i^\mathrm{(new/old)} - f_i^*$,
 %
 and
 \begin{align}
@@ -2112,7 +2118,7 @@ and
     %\right]
 }
 {
-  D^2(E; f_1^*, \dots, f_K^*)
+  D^2(E; \vct f^*)
 }
 dE.
 %\notag
@@ -2122,7 +2128,7 @@ dE.
 with
 %\begin{align*}
 $
-D(E; f_1^*, \dots; f_K^*)
+D(E; \vct f^*)
 =
 \sum_{k = 1}^K
   e^{
@@ -2170,33 +2176,52 @@ The latter can be seen from
 Eq. \eqref{eq:f_WHAM1}
 with
 $f_i^\mathrm{(new/old)} \rightarrow f_i^*$.
-%
+
+
+
 Thus,
 $\vct A$
-can be regarded as a transition matrix.
+can be regarded as a transition matrix\cite{
+newman}.
 %
-The largest eigenvalue is $1.0$,
-and the left eigenvector is $(1, \dots, 1)$,
-which corresponds to a uniform shift of all
-$\delta f_i$:
+Each left eigenvector
+$\vct c = (c_1, \dots, c_K)$
+of $\vct A$
+is associated to a mode of $\delta \vct f$
+and the eigenvalue $\lambda$
+gives the rate of error reduction
+during iterations.
 %
+That is,
+$\sum_{i = 1}^K c_i \, \delta f_i$
+decays as $\lambda^n$
+asymptotically
+with the number of iterations, $n$.
+
+
+
+
+The largest eigenvalue is $\lambda_0 = 1.0$,
+and its eigenvector
+$\vct c = (1, \dots, 1)$
+corresponds to a uniform shift of all
+$\delta f_i$,
+which is unaffected by the iteration,
+%
+i.e.,
 $
 \sum_{i=1}^K \delta f_i^\mathrm{(new)}
 =
-\sum_{i=1}^K \delta f_i^\mathrm{(old)}.
+\sum_{i=1}^K \delta f_i^\mathrm{(old)},
 $
+as a consequence of
+Eq. \eqref{eq:Aij_normalization}.
 %
-
-
-
 The next largest eigenvalue,
 $\lambda_1$,
-determines the rate of approaching the true solution,
-as the slowest mode error reduction
-is given by $\lambda_1^n$,
-with $n$ being the number of iterations.
+determines the slowest mode of error reduction,
 %
-A smaller $\lambda_1$
+and a smaller $\lambda_1$
 indicates faster convergence.
 %
 Below,
@@ -2249,7 +2274,7 @@ A_{ij}
   g(E) \, e^{ -(\beta_i + \beta_j) \, E + f_i^* + f_j^*}
 }
 {
-  D(E; f_1^*, \dots, f_K^*)
+  D(E; \vct f^*)
 }
 dE.
 \label{eq:Aij_EDA}
@@ -2265,9 +2290,8 @@ dE.
 Further, we can approximate, $g(E)$,
 as a Gaussian.
 %
-With a proper choice of the origin of
-energy, $E$, and entropy, $\log g(E)$,
-we can write,
+With a proper choice of the shift constant of
+$\log g(E)$, we can write,
 %
 \begin{equation}
 g(E)
@@ -2275,7 +2299,7 @@ g(E)
 \sqrt{
   \frac{ a } { 2 \, \pi }
 }
-\exp\left( -\frac 1 2 a E^2 \right).
+\exp\left[ -\frac 1 2 a (E - E_c)^2 \right].
 \label{eq:gE_Gaussian}
 \end{equation}
 %
@@ -2288,30 +2312,36 @@ f_i
 \int
 g(E) \, \exp(-\beta_i \, E) \, dE
 =
--\frac{ \beta_i^2 }{ 2 \, a },
+\beta_i \, E_c - \frac{ \beta_i^2 }{ 2 \, a },
 \label{eq:f_Gaussian}
 \end{align}
 %
-and
-\begin{align}
-\rho_i
-=
-\sqrt{ \frac a { 2 \, \pi} }
-\exp\left[
-  -\frac 1 2
-  a \, \left(
-    E + \frac { \beta_i } { a }
-  \right)^2
-\right],
-\notag
-%\label{eq:rho_Gaussian}
-\end{align}
+%and
+%\begin{align}
+%\rho_i
+%=
+%\sqrt{ \frac a { 2 \, \pi} }
+%\exp\left[
+%  -\frac 1 2
+%  a \left(
+%    E - E_c + \frac { \beta_i } { a }
+%  \right)^2
+%\right].
+%\notag
+%%\label{eq:rho_Gaussian}
+%\end{align}
 %
-which shows
-the distribution at any temperature
-is a Gaussian with width
+It is readily shown that
+the distribution at any temperature,
+$\beta_i$,
+is a Gaussian
+centered at $E_c - \beta_i/a$,
+with the same width
 $\sigma_E = 1/\sqrt{a}$.
-
+%
+Since the origin of the energy is arbitrary,
+$E_c$ can be set to any value
+that facilitates calculations.
 
 
 
@@ -2319,8 +2349,11 @@ $\sigma_E = 1/\sqrt{a}$.
 
 
 
-With only two temperature,
+For the two-temperature case,
 the matrix $\vct A$ has only one free variable
+because of Eqs. \eqref{eq:Aij_symmetry}
+and \eqref{eq:Aij_normalization},
+and it can be written as
 %
 \begin{align*}
 \vct A
@@ -2330,11 +2363,9 @@ the matrix $\vct A$ has only one free variable
   1 - A_{12} & A_{12} \\
   A_{12}     & 1 - A_{12}
 \end{array}
-\right)
+\right).
 \end{align*}
 %
-because of Eqs. \eqref{eq:Aij_symmetry}
-and \eqref{eq:Aij_normalization}.
 
 
 
@@ -2374,7 +2405,7 @@ achieved at $\Delta \beta = 0$.
 
 
 
-\begin{figure}
+\begin{figure}[h]
   \newcommand{\xmax}{4.0}
   \newcommand{\ymax}{2.5}
   \begin{tikzpicture}[scale=1.0]
@@ -2415,7 +2446,7 @@ achieved at $\Delta \beta = 0$.
 
 
 
-Assuming the Gaussian model,
+By further assuming Gaussian distributions,
 we have, from
 Eqs. \eqref{eq:Aij_EDA},
 \eqref{eq:gE_Gaussian}
@@ -2427,7 +2458,13 @@ A_{12}
 &=
 \sqrt \frac{ a } { 8 \, \pi }
 \int
-\frac{ \exp\left[ -\frac{1}{2} a \, E^2 - \frac{ \Delta \beta^2 }{ 8 \, a } \right] }
+\frac
+{
+  \exp\left[
+    -a \, E^2/2
+    -\Delta \beta^2 / (8 \, a)
+  \right]
+}
 { \cosh( \Delta \beta \, E / 2 ) }
 \, dE
 \\
@@ -2443,18 +2480,29 @@ A_{12}
 \end{align*}
 %
 where
-$z = \Delta \beta / (2 \, \sqrt a)$,
-and
-we have used $1/\cosh x \approx \exp(-x^2/2)(1 + x^4/12)$.
+$z \equiv \Delta \beta / \sqrt{ 4 \, a }$,
+%
+and we have set
+$E_c = (\beta_1 + \beta_2)/(2 \, a)$,
+and used
+$1/\cosh x \approx \exp(-x^2/2)(1 + x^4/12)$.
 
 
 
 The second largest eigenvalue is then given by
 %
 \begin{align}
-\lambda_1 = 1 - 2 \, A_{12}
+\lambda_1
 =
-1 - \frac{5}{4} \frac{ \exp(-\sigma_\beta^2 \, \sigma_E^2/2) } { \sigma_\beta \sigma_E }.
+1 - 2 \, A_{12}
+\xrightarrow{\sigma_\beta \, \sigma_E \gg 1}
+1 - \frac{5}{4}
+\frac{
+  \exp(-\sigma_\beta^2 \, \sigma_E^2/2)
+}
+{
+  \sigma_\beta \, \sigma_E
+}.
 \label{eq:lambda1_twoT}
 \end{align}
 %
@@ -2468,7 +2516,7 @@ with a larger temperature separation,
 $\lambda_1$
 quickly approaches 1.0,
 leading to slow convergence
-of direct WHAM and MBAR.
+of direct WHAM.
 
 
 
@@ -2495,9 +2543,32 @@ $
 %\notag
 %\end{equation}
 
+The eigenvalue $\lambda_l$
+and eigenvector $c_l(\beta)$
+are now determined from the integral equation
+%
+\begin{equation}
+K \int w(\beta') \, c_l(\beta') \, A(\beta, \beta') \, d\beta'
+= \lambda_l \, c_l(\beta),
+\notag
+\label{eq:eig_continuous}
+\end{equation}
+%
+where
+$A(\beta, \beta')$
+is $A_{ij}$
+with $\beta_i$ and $\beta_j$
+replaced by $\beta$ and $\beta'$, respectively.
 
 
-Below, we assume a Gaussian $\beta$ distribution:
+
+Equation \eqref{eq:eig_continuous}
+can be solved in a special case, in which
+we assume EDA, Eq. \eqref{eq:Aij_EDA},
+a Gaussian density of states,
+Eq. \eqref{eq:gE_Gaussian},
+and
+a Gaussian $\beta$ distribution:
 %
 \begin{align}
 w(\beta)
@@ -2512,70 +2583,9 @@ w(\beta)
 %
 with width $\sigma_\beta = \sqrt{a'}$.
 %
-By further assuming EDA, Eq. \eqref{eq:Aij_EDA},
-and the Gaussian approximation,
-Eq. \eqref{eq:f_Gaussian},
-we get
-%
-\begin{align*}
-D(E; f_1^*, \dots, f_K^*)
-=
-K \int d\beta \, w(\beta)
-\exp\left[
-  -\beta E -\frac{ \beta^2 }{ 2 \, a}
-\right]
-\\
-=
-K \sqrt{\frac{a}{a+a'}}
-\exp\left[
-\frac{
-  a a' E^2 - 2 a \beta_c E - \beta_c^2
-}
-{
-  2 (a + a')
-}
-\right].
-\end{align*}
 %
 %
-%
-The $A_{ij}$ from Eq. \eqref{eq:Aij_EDA} becomes,
-%
-%
-%
-\begin{align*}
-&A(\beta, \beta')
-=
-\frac{ a + a' } { K \sqrt{a ( a + 2 a') } }
-\\
-&\times \exp\left\{
-  \frac{
-    -a' [\Delta \beta^2 + \Delta {\beta'}^2]
-    +2(a+a') \Delta \beta \, \Delta \beta'
-  }
-  {
-    2 a (a + 2 a')
-  }
-\right\},
-\end{align*}
-where
-$\Delta \beta = \beta - \beta_c$,
-and
-$\Delta \beta' = \beta' - \beta_c$.
-
-
-
-The eigenvalue $\lambda_l$
-and eigenvector $c_l(\beta)$
-are determined from the solution of
-%
-\begin{equation}
-K \int c_l(\beta') \, w(\beta') \, A(\beta, \beta') \, d\beta'
-= \lambda_l \, c_l(\beta),
-\notag
-\end{equation}
-%
-whose solution is
+The physical solution is
 %
 \begin{align}
 \lambda_l
@@ -2599,7 +2609,7 @@ $H_l(x)$
 is the Hermite polynomial\cite{
 arfken, *abramowitz, *wang_specfunc},
 generated as
-$e^{-t^2 + 2x t} = \sum_{l = 0}^\infty H_l(x) t^l/l!$.
+$e^{-t^2 + 2x t} = \sum_{l = 0}^\infty H_l(x) \, t^l/l!$.
 %
 The second largest eigenvector can be written as
 %
@@ -2609,19 +2619,22 @@ The second largest eigenvector can be written as
 1 -
 \frac{1}
 { 1 + \sigma_\beta^2 \, \sigma_E^2}.
-\notag
+\label{eq:lambda1_cont}
 \end{equation}
 %
 It also approaches $1.0$
-with increasing temperature range, $\sigma_\beta$,
-leading to slow convergence.
+with increasing temperature range,
+$\sigma_\beta$,
+albeit more slowly than
+the two-temperature value
+given by Eq. \eqref{eq:lambda1_twoT}
+for a large range.
 %
-However,
-the rate of increase
-is smaller compared to that
-of the two-temperature case, Eq. \eqref{eq:lambda1_twoT},
-for a large temperature range.
-
+Thus,
+Eq. \eqref{eq:lambda1_cont}
+only gives a lower bound,
+and nonzero spacing between temperatures
+can further slow down the convergence.
 
 
 

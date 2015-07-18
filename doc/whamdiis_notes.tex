@@ -878,179 +878,740 @@ q_i(\vy) d\vy
 We shall use the normalization
 \begin{equation}
 \int \rho_i(E) \, dE
-= 1
-\quad
-(i = 1, 2),
-\tag{B1}
+= 1.
 \label{eq:rho_normalize}
 \end{equation}
-and the symmetry
-\begin{equation}
-\rho_1(E)
-=
-\rho_2(-E).
+
+
+
+
+\subsection{Derivation of the linearized equation, Eq. (B2)}
+
+
+
+The WHAM equation is
+%
+\begin{align}
+f_i^\mathrm{(new)}
+&=
+-\log
+\int
+\frac
+{
+  \sum_{k=1}^K \rho_k(E) \, \exp(-\beta_i \, E)
+}
+{
+  \sum_{k=1}^K
+  \exp(
+    -\beta_k \, E + f_k^\mathrm{(old)}
+  )
+}
+dE
+\notag \\
+&=
+-\log
+\int
+\frac
+{
+  \sum_{k=1}^K \rho_k(E) \, \exp(-\beta_i \, E)
+}
+{
+  D(E; \vct f^\mathrm{(old)})
+}
+dE
+\tag{B1}
+\label{eq:f_WHAM1}
+\end{align}
+
+
+
+The linearized equation is
+\begin{align}
+\delta f_i^\mathrm{(new)}
+&=
+\left.
+  \int
+  \frac
+  {
+    \sum_{k=1}^K \rho_k(E) \, e^{-\beta_i \, E}
+  }
+  {
+    D(E; \vct f^*)^2
+  }
+  \delta D(E; \vct f^\mathrm{(old)}) \,
+  dE
+\middle/
+  \int
+  \frac
+  {
+    \sum_{k=1}^K \rho_k(E) \, e^{-\beta_i \, E}
+  }
+  {
+    D(E; \vct f^*)
+  }
+  dE
+\right.
+%
+\notag \\
+&=
+\sum_{j = 1}^K
+\left(
+\int
+\frac
+{
+  \sum_{k=1}^K \rho_k(E) \, e^{-\beta_i \, E + f_i^*}
+}
+{
+  D(E; \vct f^*)^2
+}
+e^{-\beta_j \, E + f_j^*}
+dE
+\right)
+\, \delta f_j^\mathrm{(old)}
+\notag \\
+&=
+\sum_{j = 1}^K
+A_{ij} \, \delta f_j^\mathrm{(old)}
 \tag{B2}
-\label{eq:rho_symm}
+\label{eq:f_lin}
+\end{align}
+where we have used
+Eq. \eqref{eq:f_WHAM1}
+in the second step
+for the denominator.
+
+
+
+
+
+\subsection{Derivation of the normalization of $A_{ij}$, Eq. (B4)}
+
+
+
+For the normalization, we have
+\begin{align}
+\sum_{i = 1}^K
+A_{ij}
+&=
+\int
+\frac
+{
+  \sum_{k=1}^K \rho_k(E) \,
+  \sum_{i = 1}^K e^{-\beta_i \, E + f_i^*}
+}
+{
+  D(E; \vct f^*)^2
+}
+e^{-\beta_j \, E + f_j^*}
+dE
+\notag \\
+&=
+\int
+\frac
+{
+  \sum_{k=1}^K \rho_k(E)
+}
+{
+  D(E; \vct f^*)
+}
+e^{-\beta_j \, E + f_j^*}
+dE
+=
+e^{-f_j^* + f_j^*} = 1.
+\tag{B4}
+\label{eq:Aij_normalization}
+\end{align}
+%
+where,
+we have used Eq. \eqref{eq:f_WHAM1}
+in the last step
+(with
+$f_i^\mathrm{(old)} \rightarrow f_i^*$
+and
+$f_i^\mathrm{(new)} \rightarrow f_i^*$
+).
+
+
+
+
+\subsection{$A_{12}$ of the two-temperature case}
+
+
+For convenience,
+we set
+\begin{align}
+  E_c = (\beta_1 + \beta_2)/(2a).
+  \label{eq:Ec_twoT}
+\end{align}
+%
+Then the density of states is
+%
+\begin{align}
+g(E)
+&=
+\sqrt{ \frac a { 2 \, \pi } }
+\exp
+\left[
+  -\frac 1 2 a
+  (E - E_c)^2
+\right]
+\notag \\
+&=
+\sqrt{ \frac a { 2 \, \pi } }
+\exp
+\left[
+  -\frac 1 2 a \, E^2
+  + \frac{
+    (\beta_1 + \beta_2) \, E
+  }{2}
+  - \frac{
+    (\beta_1 + \beta_2)^2
+  }{ 8 \, a }
+\right].
+\end{align}
+
+
+The dimensionless free energy is
+%
+\begin{align}
+f_1
+&=
+\beta_1 \, E_c
+- \frac{ \beta_1^2 } { 2 \, a }
+=
+\frac{\beta_1 \, \beta_2 } { 2 \, a }
+= f_2.
+\end{align}
+
+
+
+Now for $A_{12}$
+\begin{align}
+A_{12}
+&=
+\int
+\frac
+{
+  g(E) \, e^{ -(\beta_1 + \beta_2) \, E + f_1^* + f_2^*}
+}
+{
+  D(E; \vct f^*)
+}
+dE
+\notag \\
+&=
+\sqrt{ \frac a { 2 \, \pi } }
+\int
+\frac
+{
+  \exp\left[
+    -\frac 1 2 a E^2
+    - \frac 1 2 (\beta_1 + \beta_2) \, E
+    - \frac{
+      (\beta_1 + \beta_2)^2
+    }{ 8 \, a }
+    +
+    \frac{ \beta_1 \, \beta_2 } { a }
+  \right]
+}
+{
+  \exp\left(
+    -\beta_1 \, E
+    + \frac{\beta_1 \, \beta_2}{2 \, a}
+  \right)
+  +
+  \exp\left(
+    -\beta_2 \, E
+    + \frac{\beta_1 \, \beta_2}{2 \, a}
+  \right)
+}
+dE
+\notag \\
+&=
+\sqrt{ \frac a { 2 \, \pi } }
+\int
+\frac
+{
+  \exp\left[
+    -\frac 1 2 a E^2
+    - \frac{
+      (\beta_1 - \beta_2)^2
+    }{ 8 \, a }
+  \right]
+}
+{
+  \exp\left(
+    \frac{ \beta_2 - \beta_1 } {2 } \, E
+  \right)
+  +
+  \exp\left(
+    \frac{ \beta_1 - \beta_2 } {2 } \, E
+  \right)
+}
+dE
+\notag \\
+&=
+\frac 1 2
+\sqrt{ \frac a { 2 \, \pi } }
+\int
+\frac
+{
+  \exp\left[
+    -\frac 1 2 a E^2
+    - \frac{
+      \Delta \beta^2
+    }{ 8 \, a }
+  \right]
+}
+{
+  \cosh\left(
+    \Delta \beta \, E / 2
+  \right)
+}
+dE.
+\label{eq:A12}
+\end{align}
+
+
+
+To evaluate the integral,
+we use the expansion
+\begin{equation}
+1/\cosh(x)
+=
+\exp(-x^2/2) \,
+(1 + x^4/12 + \dots),
+\label{eq:invcoshexp}
+\end{equation}
+%
+Better results are obtained
+when Eq. \eqref{eq:invcoshexp}
+is truncated at an even number of terms,
+as is done here.
+%
+Thus,
+\begin{align}
+A_{12}
+&=
+\frac 1 2
+\sqrt{ \frac a { 2 \, \pi } }
+\int
+  \exp\left[
+    -\frac 1 2
+      \left(
+          a + \frac{\Delta \beta^2}{4}
+      \right) E^2
+    - \frac{
+      \Delta \beta^2
+    }{ 8 \, a }
+  \right]
+  \left(
+    1 + \frac{ (\Delta \beta \, E)^4 } { 12 \cdot 16 }
+  \right)
+dE
+\notag \\
+&=
+\frac 1 2
+\sqrt{
+  \frac{ a  }
+  { a +  \Delta \beta^2/4 }
+}
+\exp\left(
+  - \frac{
+    \Delta \beta^2
+  }{ 8 \, a }
+\right)
+\left(
+  1 + \frac{ \Delta \beta^4 \langle E^4 \rangle}
+  { 12 \cdot 16 }
+\right)
+\notag \\
+&=
+\frac 1 2
+\frac
+{
+  \exp\left[
+    - \Delta \beta^2 / (8 \, a)
+  \right]
+}
+{
+  \sqrt{1 +  \Delta \beta^2/(4 \, a) }
+}
+\left(
+  1 + \frac{ \Delta \beta^4 / 16 }
+  { 4 \, (a + \Delta \beta^2 / 4)^2}
+\right).
+\end{align}
+
+
+
+
+\subsection{Continuous-temperature characteristic equation}
+
+
+
+The characteristic equation
+in the continuous case is
+%
+\begin{equation}
+\sum_{j = 1}^K
+  c_j \, A_{ij}
+= \lambda_i \, c_i.
+\end{equation}
+%
+Using the recipe of
+\[
+\sum_{k = 1}^K
+\rightarrow
+K \int d\beta \, w(\beta),
+\]
+we get
+\begin{equation}
+K \int w(\beta') \, c_l(\beta') \, A(\beta, \beta') \, d\beta'
+= \lambda_l \, c_l(\beta),
+\tag{B9}
+\label{eq:eig_continuous}
 \end{equation}
 
 
-\subsection{Derivation of Eq. (B3)}
+
+\subsection{Continuous Gaussian temperature distribution}
 
 
 
-This goes like this
+For the Gaussian distribution
+\begin{align}
+w(\beta)
+=
+\frac{1}{\sqrt{2 \, \pi \, a'}}
+\exp\left[
+  -\frac{ (\beta - \beta_c)^2 }{ 2 \, a' }
+\right],
+\notag
+%\label{eq:wbeta_Gaussian}
+\end{align}
+%
+we have
+%
+\begin{align*}
+D(E; \vct f^*)
+&=
+K \int d\beta \, w(\beta)
+\exp\left[
+  -\beta \Delta E -\frac{ \beta^2 }{ 2 \, a}
+\right]
+\\
+&=
+K \sqrt{\frac{a}{a+a'}}
+\exp\left[
+\frac{
+  a \, a' \, \Delta E^2
+  - 2 \, a \, \beta_c \, \Delta E
+  - \beta_c^2
+}
+{
+  2 (a + a')
+}
+\right],
+\end{align*}
+where $\Delta E = E - E_c$.
+%
+In the same spirit of Eq. \eqref{eq:Ec_twoT},
+let us set
+\begin{align}
+E_c = \beta_c / a,
+\label{eq:Ec_cont}
+\end{align}
+%
+Then,
+\begin{align*}
+D(E; \vct f^*)
+&=
+K \sqrt{\frac{a}{a+a'}}
+\exp\left[
+\frac{
+  a \, a' \, E^2
+}
+{
+  2 (a + a')
+}
+-\beta_c \, E
++
+\frac{\beta_c^2}{2 \, a}
+\right],
+\end{align*}
+
+
+The $A_{ij}$ becomes,
+%
+%
+%
+\begin{align*}
+A(\beta, \beta')
+&=
+\frac 1 K
+\int
+\sqrt \frac { a + a' } { 2 \, \pi }
+\exp\left[
+-\frac{ a \, \Delta E^2 } { 2 }
+-(\beta + \beta') \, \Delta E
+-
+\frac{
+  \beta^2 + \beta'^2
+} { 2 \, a}
+-
+\frac{
+  a \, a' \, E^2
+}
+{
+  2 (a + a')
+}
++\beta_c \, E
+-
+\frac{\beta_c^2}{2 \, a}
+\right]
+\, dE
+\notag \\
+%
+%
+%
+&=
+\frac 1 K
+\int
+\sqrt \frac { a + a' } { 2 \, \pi }
+\exp\left[
+-\frac{
+  a \, E^2
+}
+{
+  2
+}
+-(\beta + \beta') \, \Delta E
+-
+\frac{
+  \beta^2 + \beta'^2
+} { 2 \, a}
+-
+\frac{
+  a \, a' \, E^2
+}
+{
+  2 (a + a')
+}
++2\beta_c \, E
+-
+\frac{\beta_c^2}{a}
+\right]
+\, dE
+\notag \\
+%
+%
+%
+&=
+\frac 1 K
+\int
+\sqrt \frac { a + a' } { 2 \, \pi }
+\exp\left[
+-\frac{
+  a \, (a + 2a') \, E^2
+}
+{
+  2 (a + a')
+}
+-(\Delta \beta + \Delta \beta') \, E
+-
+\frac{
+  \Delta \beta^2 + \Delta \beta'^2
+} { 2 \, a}
+\right]
+\, dE
+\notag \\
+%
+%
+%
+&=
+\frac{ a + a' } { K \, \sqrt{ a \, (a + 2 a')} }
+\exp\left[
+  \frac{
+    (a+a') (\Delta \beta + \Delta \beta')^2
+  }
+  {
+    2 a (a + 2 a')
+  }
+  -
+  \frac{
+    \Delta \beta^2 + \Delta \beta'^2
+  } { 2 \, a}
+\right]
+\notag\\
+%
+%
+%
+&=
+\frac{ a + a' } { K \, \sqrt{a \, ( a + 2 a') } }
+\exp\left[
+  \frac{
+    -a' (\Delta \beta^2 + \Delta {\beta'}^2)
+    +2(a+a') \Delta \beta \, \Delta \beta'
+  }
+  {
+    2 a (a + 2 a')
+  }
+\right],
+\end{align*}
+where
+$\Delta \beta = \beta - \beta_c$,
+and
+$\Delta \beta' = \beta' - \beta_c$.
+
+
+
+Now characteristic equation,
+Eq. \eqref{eq:eig_continuous},
+can be written as
 %
 \begin{align}
-\Delta f
+\lambda_l \, c_l(\beta)
 &=
--\log \int
-\frac{ [\rho_1(E) + \rho_2(E)] \, \exp(-\Delta \beta \, E) }
-{ 1 + \exp(-\Delta \beta \, E + \Delta f) }
-dE
-\notag \\
-&=
--\log \int
-\frac{ \rho_1(E) + \rho_2(E) }
-{ \exp(\Delta \beta E) + \exp(\Delta f) }
-dE
-\notag \\
-&=
--\log
-\left(
+\frac{ a + a' } { \sqrt{2 \, \pi \, a \, a' \, (a + 2 a')} }
 \int
-\frac{ \rho_1(E) }
-{ \exp(\Delta \beta E) + \exp(\Delta f) }
-dE
-+
-\int
-\frac{ \rho_2(-E) }
-{ \exp(-\Delta \beta E) + \exp(\Delta f) }
-dE
-\right)
-\notag \\
+\exp\left[
+  \frac{
+    -a' (\Delta \beta^2 + \Delta \beta'^2)
+    +2(a+a') \Delta \beta \, \Delta \beta'
+  }
+  {
+    2 a (a + 2 a')
+  }
+  -\frac{
+    \Delta \beta'^2
+  } { 2 a'}
+\right]
+c_l(\beta') \, d\beta'
+\notag
+\\
 &=
--\log
-\left(
+\frac{ a + a' } { \sqrt{2 \, \pi \, a \, a' \, (a + 2 a')} }
 \int
-\frac{ \rho_1(E) }
-{ \exp(\Delta \beta E) + \exp(\Delta f) }
-dE
-+
-\int
-\frac{ \rho_1(E) }
-{ \exp(-\Delta \beta E) + \exp(\Delta f) }
-dE
-\right)
-\notag \\
-&=
--\log
-\int
-\frac{ 2 \cosh(\Delta \beta E) + 2 \exp(\Delta f) }
-{
-  1 +  2 \cosh(\Delta \beta E) \, \exp(\Delta f)
-  + \exp(2 \Delta f)
-}
-\rho_1(E) \, dE
-\notag \\
-&=
--\log
-\int
-\frac{ \cosh(\Delta \beta E) + \exp(\Delta f) }
-{
-  \cosh(\Delta \beta E) + \cosh(\Delta f)
-}
-\rho_1(E) \, \exp(-\Delta f) \, dE
-\notag \\
-&=
-\Delta f
--
-\log
-  \int
-    \frac{ y + \exp \Delta f }
-         { y + \cosh \Delta f }
-    \rho_1(E) \, dE,
-\tag{B3}
-\label{eq:delf_WHAM}
+\exp\left\{
+  \frac{
+    -[(a + a') \Delta \beta' - a' \Delta \beta]^2
+  }
+  {
+    2 a \, a' (a + 2 a')
+  }
+\right\}
+c_l(\beta') \, d\beta'.
+%\notag
+\label{eq:eig_Gaussian1}
 \end{align}
-where we have used Eq. \eqref{eq:rho_symm}.
+%
 
 
-
-\subsection{Derivation of Eq. (B4)}
-
-
-From Eq. \eqref{eq:delf_WHAM},
+We wish to show
+\begin{equation}
+c_l(\beta) = H_l(\Delta\beta/\sqrt{2\,a'})
+\label{eq:cl_solution}
+\end{equation}
+is a solution.
+%
+To do this,
+we sum over
+Eq. \eqref{eq:eig_Gaussian1}
+with $[(a+a')t/\sqrt{2a'}]^l/l!$.
+%
+The right-hand side becomes
+%
 \begin{align}
-\mathrm{r.h.s.}
-&=
-\Delta f
--
-\log
-  \int
-    \frac{ y + \exp \Delta f }
-         { y + \cosh \Delta f }
-    \rho_1(E) \, dE,
-\tag{B3}
+&
+\frac{ a + a' } { \sqrt{2 \, \pi \, a \, a' \, (a + 2 a')} }
+\int
+\exp\left\{
+  \frac{
+    -[(a + a') \Delta \beta' - a' \Delta \beta]^2
+  }
+  {
+    2 a \, a' (a + 2 a')
+  }
+  +
+  \frac{ -(a+a')^2 t^2 + 2 \, (a + a') \, t \, \Delta \beta'}
+  { 2 \, a' }
+\right\}
+d\Delta \beta'
 \notag \\
 &=
-\Delta f
--
-\log
-  \int
-  \left(1
-    + \frac{ \sinh \Delta f }
-         { y + \cosh \Delta f }
-  \right)
-    \rho_1(E) \, dE
+\frac{ 1 } { \sqrt{2 \, \pi \, a \, a' \, (a + 2 a')} }
+\int
+\exp\left\{
+  \frac{
+    -(x - a' \Delta \beta)^2
+  }
+  {
+    2 a \, a' (a + 2 a')
+  }
+  +
+  \frac{ -(a+a')^2 t^2 + 2 \, t \, x}
+  { 2 \, a' }
+\right\}
+dx
 \notag \\
 &=
-\Delta f
--
-\log
-\left[
-  1 +
-  \int
-    \frac{ \sinh \Delta f }
-         { y + \cosh \Delta f }
-    \rho_1(E) \, dE
+\exp\left[
+  \frac{
+    -a (a + 2a') a'^2 t^2
+    +
+    2 a a' (a + 2a') \Delta \beta t
+  }
+  {
+    2 a \, a' (a + 2 a')
+  }
 \right]
 \notag \\
-&\approx
-\Delta f
--
-\log
-\left[
-  1 +
-  \int
-    \frac{ \Delta f }
-         { y + 1 }
-    \rho_1(E) \, dE
-\right]
-\notag \\
-&\approx
-\left(
-  \int
-  \rho_1(E) \, dE
+&=
+\exp\left(
+  -a' t^2/2
+  +
+  2 \sqrt{ a' / 2 } \, t
+  \frac{
+    \Delta \beta
+  }
+  {
+    \sqrt{2 \, a'}
+  }
 \right)
-\Delta f
--\int
-    \frac{ \Delta f }
-         { y + 1 }
-    \rho_1(E) \, dE
 \notag \\
-&\approx
-\left( \int
-    \frac{ y }
-         { y + 1 }
-    \rho_1(E) \, dE
+&=
+\sum_{l = 0}^\infty
+H_l\left(
+  \frac{ \Delta \beta }
+  { \sqrt{ 2 \, a'} }
 \right)
-\, \Delta f,
-\tag{B4}
-\label{eq:delf_lin}
+\frac{ (\sqrt{ a'/2 } \,  t)^l }
+{ l!}
+\notag \\
+&=
+\sum_{l = 0}^\infty
+c_l(\beta)
+\left( \frac{ a' }{ a + a' } \right)^l
+\frac{ [(a + a') \, t / \sqrt{2 a'} ]^l }
+{ l!}.
+\notag
+\label{eq:eig_Gaussian_gf}
 \end{align}
 %
 where
-we have used Eq. \eqref{eq:rho_normalize}.
+$x = (a + a') \, \Delta \beta'$.
+%
+This shows that
+Eq. \eqref{eq:cl_solution}
+is indeed an solution,
+and eigenvalue is
+\begin{equation}
+\lambda_l
+=
+\left( \frac{ a' }{ a + a' } \right)^l.
+\end{equation}
+
 
 
 
