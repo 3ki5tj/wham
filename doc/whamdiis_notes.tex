@@ -875,12 +875,13 @@ q_i(\vy) d\vy
 \section{Appendix B: Model for the convergence}
 
 
-We shall use the normalization
-\begin{equation}
-\int \rho_i(E) \, dE
-= 1.
-\label{eq:rho_normalize}
-\end{equation}
+
+%We shall use the normalization
+%\begin{equation}
+%\int \rho_i(E) \, dE
+%= 1.
+%\label{eq:rho_normalize}
+%\end{equation}
 
 
 
@@ -1508,110 +1509,253 @@ c_l(\beta') \, d\beta'.
 %
 
 
-We wish to show
+
+\subsection{Solution of the characteristic equation}
+
+
+
+We wish to show the solution of
+Eq. \eqref{eq:eig_Gaussian1}
+is
 \begin{equation}
-c_l(\beta) = H_l(\Delta\beta/\sqrt{2\,a'})
+c_l(\beta) = H_l(\Delta\beta/\sqrt{2\,a'}).
 \label{eq:cl_solution}
 \end{equation}
-is a solution.
 %
-To do this,
-we sum over
-Eq. \eqref{eq:eig_Gaussian1}
-with $[(a+a')t/\sqrt{2a'}]^l/l!$.
-%
-The right-hand side becomes
+We need the following result.
 %
 \begin{align}
-&
-\frac{ a + a' } { \sqrt{2 \, \pi \, a \, a' \, (a + 2 a')} }
 \int
-\exp\left\{
-  \frac{
-    -[(a + a') \Delta \beta' - a' \Delta \beta]^2
-  }
-  {
-    2 a \, a' (a + 2 a')
-  }
-  +
-  \frac{ -(a+a')^2 t^2 + 2 \, (a + a') \, t \, \Delta \beta'}
-  { 2 \, a' }
-\right\}
-d\Delta \beta'
-\notag \\
+e^{
+  -(A x - B y)^2
+}
+e^{
+  -(A t)^2 + 2 (C x) (A t)
+}
+d x
+=
+\frac{ \sqrt \pi } { A }
+e^{
+  -(B t)^2 + 2 (C y) (B t)
+},
+\label{eq:convint1}
+\end{align}
+where,
+$C = \pm\sqrt{A^2 - B^2}$.
+%
+To show this,
+%
+\begin{align*}
+\mathrm{l.h.s.}
 &=
-\frac{ 1 } { \sqrt{2 \, \pi \, a \, a' \, (a + 2 a')} }
 \int
-\exp\left\{
-  \frac{
-    -(x - a' \Delta \beta)^2
-  }
-  {
-    2 a \, a' (a + 2 a')
-  }
-  +
-  \frac{ -(a+a')^2 t^2 + 2 \, t \, x}
-  { 2 \, a' }
-\right\}
-dx
-\notag \\
-&=
 \exp\left[
-  \frac{
-    -a (a + 2a') a'^2 t^2
-    +
-    2 a a' (a + 2a') \Delta \beta t
-  }
-  {
-    2 a \, a' (a + 2 a')
-  }
+  -(A x)^2 + 2 (A x) (B y + C t)
+  -(B y)^2 -(A t)^2
+\right]
+d x
+\notag \\
+&=
+\frac{ \sqrt \pi } { A }
+\exp\left[
+  (B y + C t)^2 - (B y)^2 - (A t)^2
 \right]
 \notag \\
 &=
-\exp\left(
-  -a' t^2/2
-  +
-  2 \sqrt{ a' / 2 } \, t
-  \frac{
-    \Delta \beta
-  }
-  {
-    \sqrt{2 \, a'}
-  }
-\right)
-\notag \\
-&=
-\sum_{l = 0}^\infty
-H_l\left(
-  \frac{ \Delta \beta }
-  { \sqrt{ 2 \, a'} }
-\right)
-\frac{ (\sqrt{ a'/2 } \,  t)^l }
-{ l!}
-\notag \\
-&=
-\sum_{l = 0}^\infty
-c_l(\beta)
-\left( \frac{ a' }{ a + a' } \right)^l
-\frac{ [(a + a') \, t / \sqrt{2 a'} ]^l }
-{ l!}.
-\notag
-\label{eq:eig_Gaussian_gf}
-\end{align}
+\frac{ \sqrt \pi }{ A }
+\exp\left[
+  2 B \, y \, C \, t - (B t)^2
+\right]
+=
+\mathrm{r.h.s.}
+.
+\end{align*}
+
+
+
+Now expand both sides of Eq. \eqref{eq:convint1}
+as Hermite polynomials:
 %
-where
-$x = (a + a') \, \Delta \beta'$.
+\begin{align*}
+\exp\left[
+  -(A t)^2 + 2 (C x) (A t)
+\right]
+&=
+\sum_{l = 0}^\infty
+  H_l(C x) \frac{ (A t)^l }{ l! }.
+\\
+\exp\left[
+  -(B t)^2 + 2 (C y) (B t)
+\right]
+&=
+\sum_{l = 0}^\infty
+  H_l(C y) \frac{ (B t)^l }{ l! }.
+\end{align*}
+%
+Thus
+%
+\begin{align}
+\int
+e^{
+  -(A x - B y)^2
+}
+H_l(C x) \, d x
+=
+\frac{ \sqrt \pi } { A }
+\left(
+  \frac B A
+\right)^l
+H_l(C y),
+\label{eq:convint1_Hermite}
+\end{align}
+
+
+
+In our case,
+$A = (a + a')/\sqrt{2 a a' (a + 2 a')}$,
+$B = a'/\sqrt{2 a a' (a + 2 a')}$,
+$C = 1/\sqrt{2 a'}$,
+$x = \beta$,
+$y = \beta'$.
 %
 This shows that
 Eq. \eqref{eq:cl_solution}
 is indeed an solution,
-and eigenvalue is
+and the eigenvalue is
 \begin{equation}
 \lambda_l
+=
+\left( \frac{ B }{ A } \right)^l
 =
 \left( \frac{ a' }{ a + a' } \right)^l.
 \end{equation}
 
+
+
+
+
+\subsection{Alternative solution of the characteristic equation}
+
+
+
+There is at least another solution of
+Eq. \eqref{eq:eig_Gaussian1}
+is
+\begin{equation}
+c_l(\beta) =
+H_l(i \, \Delta\beta/\sqrt{2\,a'})
+\exp[
+  \Delta \beta^2 / (2 \, a')
+].
+\label{eq:cl_solution2}
+\end{equation}
+%
+We need the following result.
+%
+\begin{align}
+\int
+e^{
+  -(A x - B y)^2
+}
+e^{
+  (B t)^2 - 2 (C x) (B t) + (C x)^2
+}
+d x
+=
+\frac{ \sqrt \pi } { B }
+e^{
+  (A t)^2 - 2 (C y) (A t) + (C y)^2
+},
+\label{eq:convint2}
+\end{align}
+where,
+$C = \pm\sqrt{A^2 - B^2}$.
+%
+To show this,
+%
+\begin{align*}
+\mathrm{l.h.s.}
+&=
+\int
+\exp\left[
+  -(B x)^2 + 2 (B x) (A y + C t)
+  -(B y)^2 + (B t)^2
+\right]
+d x
+\notag \\
+&=
+\frac{ \sqrt \pi } { B }
+\exp\left[
+  (A y + C t)^2 - (B y)^2 + (B t)^2
+\right]
+\notag \\
+&=
+\frac{ \sqrt \pi }{ B }
+\exp\left[
+  (C y)^2 + 2 A \, y \, C \, t + (A t)^2
+\right]
+=
+\mathrm{r.h.s.}
+.
+\end{align*}
+
+
+
+Now expand both sides of Eq. \eqref{eq:convint1}
+as Hermite polynomials:
+%
+\begin{align*}
+\exp\left[
+  (B t)^2 - 2 (C x) (B t)
+\right]
+&=
+\sum_{l = 0}^\infty
+  H_l(i \, C x) \frac{ (i B t)^l }{ l! }.
+\\
+\exp\left[
+  (A t)^2 - 2 (C y) (A t)
+\right]
+&=
+\sum_{l = 0}^\infty
+  H_l(i \, C y) \frac{ (i A t)^l }{ l! }.
+\end{align*}
+%
+Thus
+%
+\begin{align}
+\int
+e^{
+  -(A x - B y)^2
+}
+H_l(i \, C x) \,
+\exp[ (C x)^2 ] \, d x
+=
+\frac{ \sqrt \pi } { A }
+\left(
+  \frac A B
+\right)^{l + 1}
+H_l(C y) \,
+\exp[ (C y)^2 ] \, d y,
+\label{eq:convint2_Hermite}
+\end{align}
+
+
+
+This shows that
+Eq. \eqref{eq:cl_solution2}
+is also an solution,
+and the eigenvalue is
+\begin{equation}
+\lambda_l
+=
+\left( \frac{ A }{ B } \right)^{l + 1}
+=
+\left( \frac{ a + a' }{ a' } \right)^{l + 1}.
+\end{equation}
+%
+However,
+since the eigenvalue is greater than $1.0$,
+it is unlikely a physical solution.
 
 
 

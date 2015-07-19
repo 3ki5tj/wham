@@ -155,7 +155,7 @@ depend on the free energies,
 so that
 the free energies
 and the density of states
-must determined self-consistently.
+must be determined self-consistently.
 
 
 
@@ -2407,13 +2407,13 @@ achieved at $\Delta \beta = 0$.
 
 \begin{figure}[h]
   \newcommand{\xmax}{4.0}
-  \newcommand{\ymax}{2.5}
+  \newcommand{\ymax}{2.0}
   \begin{tikzpicture}[scale=1.0]
   %
   %
   %
-  \draw[] (0, 0) -- (0, \ymax + 0.3);
-  \node at (0, \ymax + 0.5) {$y$};
+  \draw[] (0, 0) -- (0, \ymax + 0.4);
+  \node at (0, \ymax + 0.6) {$y$};
   %
   % A_12
   %
@@ -2433,14 +2433,15 @@ achieved at $\Delta \beta = 0$.
   %
   \node at (0, 0.5) {$A_{12}$};
   \node at (\xmax + 0.3, 0) {$x$};
+  \node at ( 0.8, \ymax + 0.21) {$\rho_1(E)$};
+  \node at (-0.7, \ymax + 0.18) {$\rho_2(E)$};
   \end{tikzpicture}
   %
   %
   %
   %
   \caption{\label{fig:A12}
-    Matrix element $A_{12}$
-    as a measure of overlap of distributions 1 and 2.
+    $A_{12}$ as a measure of overlap of distributions 1 and 2.
   }
 \end{figure}
 
@@ -2599,7 +2600,7 @@ c_l(\beta)
 &=
 H_l\left(
   \frac{ \beta - \beta_c }
-  { \sqrt{ 2 a' } }
+  { \sqrt{ 2 \, a' } }
 \right),
 \notag
 \end{align}
