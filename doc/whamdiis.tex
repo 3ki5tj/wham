@@ -16,6 +16,7 @@
 \newcommand{\E}{\mathcal{E}}
 \newcommand{\Ham}{\mathcal{H}}
 \newcommand{\W}{\mathcal{W}}
+\newcommand{\A}{\mathcal{A}}
 
 \newcommand{\repl}[2]{{\color{gray} [#1] }{\color{blue} #2}}
 \newcommand{\add}[1]{{\color{blue} #1}}
@@ -295,7 +296,7 @@ g(E)
 \label{eq:gE_WHAM}
 \end{equation}
 %
-where,
+where
 $n_k(E)$
 is
 the unnormalized energy distribution
@@ -502,7 +503,7 @@ f_i
 \label{eq:f_MBAR}
 \end{equation}
 %
-where,
+where
 $q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$.
 %
 The $K = 2$ case is the BAR result\cite{
@@ -1901,7 +1902,10 @@ or the more approximate UIM.
 
 
 It is a pleasure to thank
-Dr. Y. Zhao, Dr. M. W. Deem, Dr. M. R. Shirts,
+Dr. Y. Zhao,
+Dr. M. R. Shirts,
+Dr. M. W. Deem,
+Dr. J. Ma,
 Dr. J. Perkyns, Dr. G. Lynch and J. A. Drake
 for helpful discussions.
 %
@@ -2030,8 +2034,10 @@ Here, we use simple models
 to study the convergence of direct WHAM.
 %
 We shall show that
-the convergence is slowed down when the methods
-are applied to a wide temperature range.
+slow convergence is
+associated to a wide temperature range,
+especially with a large spacing.
+
 
 
 
@@ -2044,7 +2050,7 @@ Consider $K$ distributions, $\rho_i(E)$,
 at different temperatures,
 $\beta_i$ ($i = 1, \dots, K$),
 %
-each of which is normalized as
+normalized as
 %
 %\begin{equation}
 $
@@ -2057,10 +2063,9 @@ $
 %
 %
 For simplicity,
-we assume equal number of visits
-to all temperatures.
+we assume equal sample sizes, $N_i$.
 %
-Then, the WHAM equation,
+Then,
 Eq. \eqref{eq:f_WHAM},
 can be written
 in the iterative form as
@@ -2219,10 +2224,12 @@ Eq. \eqref{eq:Aij_normalization}.
 %
 The next largest eigenvalue,
 $\lambda_1$,
-determines the slowest mode of error reduction,
+determines the rate of convergence
+of the slowest mode,
 %
-and a smaller $\lambda_1$
-indicates faster convergence.
+and a larger value of
+$1 - \lambda_1$
+means faster convergence.
 %
 Below,
 we determine $\lambda_1$
@@ -2248,22 +2255,22 @@ Thus, for any $k$, we have
 =
 g(E) \,
 e^{-\beta_k \, E + f_k^*},
-\notag
-%\label{eq:rho_EDA}
+\label{eq:rho_EDA}
 \end{equation}
 %
-with $g(E)$ being the density of states, and
+with $g(E)$ being the density of states.
 %
-\begin{align}
-\sum_{k = 1}^K
-\rho_k(E)
-=
-g(E) \,
-D(E; f_1^*, \dots, f_K^*).
-\notag
-\end{align}
+%\begin{align}
+%\sum_{k = 1}^K
+%\rho_k(E)
+%=
+%g(E) \,
+%D(E; f_1^*, \dots, f_K^*).
+%\notag
+%\end{align}
+%%
 %
-Using this in Eq. \eqref{eq:Aij}, we get
+This simplifies Eq. \eqref{eq:f_WHAM1} as
 %
 \begin{align}
 A_{ij}
@@ -2283,15 +2290,15 @@ dE.
 
 
 
-\subsection{Gaussian distributions}
+\subsection{Gaussian density of states}
 
 
 
-Further, we can approximate, $g(E)$,
+Further, we approximate $g(E)$
 as a Gaussian.
 %
 With a proper choice of the shift constant of
-$\log g(E)$, we can write,
+$\log g(E)$, we have,
 %
 \begin{equation}
 g(E)
@@ -2366,82 +2373,98 @@ and it can be written as
 \right).
 \end{align*}
 %
+Thus,
+the second largest eigenvalue is
+$\lambda_1 = 1 - 2 \, A_{12}$.
 
 
 
-Assuming EDA, Eq. \eqref{eq:Aij_EDA},
-we have
+Under EDA,
+we have, from
+Eqs. \eqref{eq:rho_EDA} and \eqref{eq:Aij_EDA},
 %
 \begin{align}
 A_{12}
-=
+&=
 \int
-\frac{ \rho_1(E) \, dE }
-{ 1 + e^{\Delta \beta \, E - \Delta f^*} }
-=
+\frac{ \rho_1(E) \, \rho_2(E) }
+{ \rho_1(E) + \rho_2(E) }
+dE
+\notag \\
+&\le
 \int
-\frac{ \rho_2(E) \, dE }
-{ 1 + e^{-\Delta \beta \, E + \Delta f^*} },
+\frac{ \rho_1(E) + \rho_2(E) }
+{ 4 }
+\, dE
+= \frac 1 2,
 \notag
 \end{align}
 where
-$\Delta \beta = \beta_2 - \beta_1$,
-and
-$\Delta f^* = f_2^* - f_1^*$.
+the equality is achieved
+only for identical distributions.
 %
 Geometrically,
 $A_{12}$
 represents the degree of overlap
 of the distributions,
-as shown in Fig. \ref{fig:A12}.
+as shown in Fig. \ref{fig:gausconv}(a),
 %
-Thus,
-$A_{12}$
-decreases
+and it decreases
 with the separation
 of the two distributions,
 from the maximal value, $1/2$,
-achieved at $\Delta \beta = 0$.
+achieved at $\beta_1 = \beta_2$.
 
 
 
 \begin{figure}[h]
-  \newcommand{\xmax}{4.0}
-  \newcommand{\ymax}{2.0}
-  \begin{tikzpicture}[scale=1.0]
+  %\newcommand{\xmax}{4.0}
+  %\newcommand{\ymax}{2.0}
+  %\begin{tikzpicture}[scale=1.0]
+  %%
+  %%
+  %%
+  %\draw[] (0, 0) -- (0, \ymax + 0.4);
+  %\node at (0, \ymax + 0.6) {$y$};
+  %%
+  %% A_12
+  %%
+  %\draw[fill=gray!50!white, fill opacity=0.9]
+  %  plot[smooth,samples=100,domain=-\xmax:\xmax] (\x,{\ymax*exp(-\x*\x/2-1/8)/(2*cosh(\x/2)) }) --
+  %  plot[smooth,samples=100,domain=-\xmax:\xmax] (\x,{0});
+  %%
+  %% distribution 1
+  %%
+  %\draw[]
+  %  plot[smooth,samples=100,domain=-\xmax:\xmax] (\x,{\ymax*exp(-(\x-0.5)*(\x-0.5)/2)});
+  %%
+  %% distribution 2
+  %%
+  %\draw[]
+  %  plot[smooth,samples=100,domain=-\xmax:\xmax] (\x,{\ymax*exp(-(\x+0.5)*(\x+0.5)/2)});
+  %%
+  %\node at (0, 0.5) {$A_{12}$};
+  %\node at (\xmax + 0.3, 0) {$x$};
+  %\node at ( 0.8, \ymax + 0.21) {$\rho_1(E)$};
+  %\node at (-0.7, \ymax + 0.18) {$\rho_2(E)$};
+  %\end{tikzpicture}
   %
   %
+  \makebox[\linewidth][c]{
+    \includegraphics[angle=0, width=0.95\linewidth]{fig/gausconv.pdf}
+  }
   %
-  \draw[] (0, 0) -- (0, \ymax + 0.4);
-  \node at (0, \ymax + 0.6) {$y$};
-  %
-  % A_12
-  %
-  \draw[fill=gray!50!white, fill opacity=0.9]
-    plot[smooth,samples=100,domain=-\xmax:\xmax] (\x,{\ymax*exp(-\x*\x/2-1/8)/(2*cosh(\x/2)) }) --
-    plot[smooth,samples=100,domain=-\xmax:\xmax] (\x,{0});
-  %
-  % distribution 1
-  %
-  \draw[]
-    plot[smooth,samples=100,domain=-\xmax:\xmax] (\x,{\ymax*exp(-(\x-0.5)*(\x-0.5)/2)});
-  %
-  % distribution 2
-  %
-  \draw[]
-    plot[smooth,samples=100,domain=-\xmax:\xmax] (\x,{\ymax*exp(-(\x+0.5)*(\x+0.5)/2)});
-  %
-  \node at (0, 0.5) {$A_{12}$};
-  \node at (\xmax + 0.3, 0) {$x$};
-  \node at ( 0.8, \ymax + 0.21) {$\rho_1(E)$};
-  \node at (-0.7, \ymax + 0.18) {$\rho_2(E)$};
-  \end{tikzpicture}
-  %
-  %
-  %
-  %
-  \caption{\label{fig:A12}
-    $A_{12}$ as a measure of overlap of distributions 1 and 2.
+  \caption{\label{fig:gausconv}
+    (a) $A_{12}$ as a measure of overlap
+    of distributions 1 and 2.
+    (b) Comparison of the rates of convergence
+    in the two-, three-,
+    and continuous-temperature cases,
+    Eqs. \eqref{eq:lambda1_twoT},
+    \eqref{eq:lambda1_threeT},
+    and
+    \eqref{eq:lambda1_continuous},
+    respectively.
   }
 \end{figure}
 
@@ -2454,75 +2477,96 @@ Eqs. \eqref{eq:Aij_EDA},
 and \eqref{eq:f_Gaussian},
 that
 %
-\begin{align*}
-A_{12}
-&=
+\begin{align}
+1 - \lambda_1
+&= 2 \, A_{12}
+=
 \sqrt \frac{ a } { 8 \, \pi }
 \int
 \frac
 {
   \exp\left[
     -a \, E^2/2
-    -\Delta \beta^2 / (8 \, a)
+    -\sigma_\beta^2 / (2 \, a)
   \right]
 }
-{ \cosh( \Delta \beta \, E / 2 ) }
+{ \cosh( \sigma_\beta \, E ) }
 \, dE
-\\
-&\approx
-\frac{ e^{-z^2/2} }
-{ 2 \sqrt{ 1 + z^2 } }
+\notag \\
+&\approx\frac{ e^{-\sigma_\beta^2 \, \sigma_E^2/2} }
+{ 2 \sqrt{ 1 + \sigma_\beta^2 \, \sigma_E^2 } }
 \left[
-1 + \frac{z^4}{4\,(1+z^2)^2 }
-\right]
-\xrightarrow{z \gg 1}
-\frac{5}{8} \frac{ e^{-z^2/2} }
-{ z },
-\end{align*}
-%
-where
-$z \equiv \Delta \beta / \sqrt{ 4 \, a }$,
-%
-and we have set
-$E_c = (\beta_1 + \beta_2)/(2 \, a)$,
-and used
-$1/\cosh x \approx \exp(-x^2/2)(1 + x^4/12)$.
-
-
-
-The second largest eigenvalue is then given by
-%
-\begin{align}
-\lambda_1
-=
-1 - 2 \, A_{12}
-\xrightarrow{\sigma_\beta \, \sigma_E \gg 1}
-1 - \frac{5}{4}
-\frac{
-  \exp(-\sigma_\beta^2 \, \sigma_E^2/2)
-}
-{
-  \sigma_\beta \, \sigma_E
-}.
+  1 + \frac{ \sigma_\beta^4 \, \sigma_E^4 }
+  {4\,(1 + \sigma_\beta^2 \, \sigma_E^2)^2 }
+\right],
 \label{eq:lambda1_twoT}
+%\\
+%&\xrightarrow{\sigma_\beta \, \sigma_E \gg 1}
+%\frac{5}{8}
+%\frac{ e^{-\sigma_\beta^2 \sigma_E^2/2} }
+%{ \sigma_\beta \, \sigma_E },
+%\notag
 \end{align}
 %
-where,
-$\sigma_\beta = \Delta \beta/2$
+where
+$\sigma_\beta = (\beta_2 - \beta_1)/2$
 and
 $\sigma_E = 1/\sqrt{a}$.
 %
-This suggests that
-with a larger temperature separation,
-$\lambda_1$
-quickly approaches 1.0,
-leading to slow convergence
-of direct WHAM.
+We have set
+$E_c = (\beta_1 + \beta_2)/(2 \, a)$,
+and used
+$1/\cosh x \approx \exp(-x^2/2)(1 + x^4/12)$.
+%
+This model shows
+a rapid decrease in
+the convergence of direct WHAM
+with the temperature separation.
+
+
+
+\subsection{Three-temperature case}
+
+
+
+Similarly,
+for three temperatures
+with an even spacing of
+$\Delta \beta = \sqrt{\frac 3 2} \sigma_\beta$,
+we have
+%
+\begin{align}
+1 - \lambda_1
+&= A_{12} + 2 A_{13}
+\notag \\
+&\approx
+\A(\sqrt{\tfrac 3 8} \, \sigma_\beta \sigma_E, -\tfrac 5 2)
++
+2 \, \A(\sqrt{\tfrac 3 2} \, \sigma_\beta \sigma_E, \tfrac 1 2),
+\label{eq:lambda1_threeT}
+\end{align}
+where
+\begin{align*}
+\A(b, t)
+=
+\frac{
+  e^{-b^2/2} / (1 + \frac{1}{2}e^{tb^2})
+}
+{
+  2 \sqrt{1 + b^2/(1 + \frac{1}{2} e^{tb^2})}
+}
+\left[
+  1
+  +
+  \frac{b^4 (2 - \frac{1}{2} e^{tb^2}) }
+  { 8 \, (1 + b^2 + \frac{1}{2} e^{tb^2})^2 }
+\right].
+\end{align*}
 
 
 
 
-\subsection{Multiple-temperature case}
+\subsection{Continuous-temperature case}
 
 
 
@@ -2551,7 +2595,6 @@ are now determined from the integral equation
 \begin{equation}
 K \int w(\beta') \, c_l(\beta') \, A(\beta, \beta') \, d\beta'
 = \lambda_l \, c_l(\beta),
-\notag
 \label{eq:eig_continuous}
 \end{equation}
 %
@@ -2612,28 +2655,27 @@ arfken, *abramowitz, *wang_specfunc},
 generated as
 $e^{-t^2 + 2x t} = \sum_{l = 0}^\infty H_l(x) \, t^l/l!$.
 %
-The second largest eigenvector can be written as
+Thus, for the second largest eigenvector,
+we have
 %
 \begin{equation}
-\lambda_1
+1 - \lambda_1
 =
-1 -
 \frac{1}
-{ 1 + \sigma_\beta^2 \, \sigma_E^2}.
-\label{eq:lambda1_cont}
+{ 1 + \sigma_\beta^2 \, \sigma_E^2},
+\label{eq:lambda1_continuous}
 \end{equation}
 %
-It also approaches $1.0$
+which decreases
 with increasing temperature range,
 $\sigma_\beta$,
 albeit more slowly than
-the two-temperature value
-given by Eq. \eqref{eq:lambda1_twoT}
-for a large range.
+the two- and three-temperature values,
+as shown in Fig. \ref{fig:gausconv}(b).
 %
 Thus,
-Eq. \eqref{eq:lambda1_cont}
-only gives a lower bound,
+Eq. \eqref{eq:lambda1_continuous}
+only gives a upper bound,
 and nonzero spacing between temperatures
 can further slow down the convergence.
 
