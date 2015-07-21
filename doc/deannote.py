@@ -2,7 +2,20 @@
 
 
 
-''' remove annotations in the tex file '''
+r''' remove annotations in the tex file
+
+The applicable macros are the following
+
+\usepackage[usenames,dvipsnames]{xcolor}
+
+...
+
+\newcommand{\repl}[2]{{\color{gray} [#1] }{\color{blue} #2}}
+\newcommand{\add}[1]{{\color{blue} #1}}
+\newcommand{\del}[1]{{\color{gray} [#1]}}
+\newcommand{\note}[1]{{\color{OliveGreen}\small [\textbf{Comment.} #1]}}
+
+'''
 
 
 

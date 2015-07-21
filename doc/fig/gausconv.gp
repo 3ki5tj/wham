@@ -111,7 +111,7 @@ rr(b, t) = exp(-b*b/2)/(1+0.5*exp(t*b*b))/2/sqrt(1 + b*b/(1+0.5*exp(t*b*b)))*(1 
 plot [0:5][1e-6:] \
   exp(-x*x/2)/sqrt(1+x*x)*(1+x**4/4/(1+x*x)**2) ls 3 t "Two-temperature", \
   rr(sqrt(3.0/8)*x,-2.5) + 2*rr(sqrt(1.5)*x,0.5) ls 2 t "Three-temperature", \
-  1/(1 + x * x) ls 1 t "Contiuous-temperature"
+  1/(1 + x * x) ls 1 t "Continuous-temperature"
 
 
 unset multiplot

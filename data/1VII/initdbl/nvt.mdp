@@ -1,9 +1,9 @@
 Pcoupl = no
 Tcoupl = v-rescale
-constraints = h-bonds
+constraints = none
 coulombtype = PME
 cutoff-scheme = verlet
-dt = 0.002
+dt = 0.001
 energygrps = System
 ewald_rtol = 1e-07
 fourierspacing = 0.12

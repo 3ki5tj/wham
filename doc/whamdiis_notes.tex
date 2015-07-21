@@ -111,6 +111,53 @@ yields Eq. \eqref{eq:gE_WHAM}.
 
 
 
+\subsection{Optimal combination of independent data}
+
+
+In the main text,
+we mentioned the result that
+in an optimal combination,
+the weight is inversely proportional to the variance.
+%
+To show this,
+consider $K$ independent quantities,
+$x_k$.
+%
+The combination is
+$X = c_1 \, x_1 + \cdots + c_K \, x_K$,
+with
+\begin{equation}
+  c_1 + \cdots + c_K = 1,
+  \label{eq:constraint_normalization}
+\end{equation}
+%
+The variance of $X$ is
+%
+\begin{align*}
+  \mathrm{var}(X)
+=
+\sum_{k = 1}^K c_k^2 \mathrm{var}(x_k)
+\end{align*}
+%
+To minimize $\mathrm{var}(X)$,
+we seek the minimum
+under the Lagrange multiplier,
+$\lambda$ of Eq. \eqref{eq:constraint_normalization}.
+%
+This yields,
+%
+\begin{align*}
+  2 c_k \, \mathrm{var}(x_k) - \lambda = 0
+\end{align*}
+%
+which shows that
+$c_k \propto 1/\mathrm{var}(x_k)$,
+in other words,
+the optimal weight
+is inversely proportional to the variance.
+
+
+
 \subsection{Derivation of Eq. (6) from Eqs. (4) and (5)}
 
 
@@ -1038,6 +1085,7 @@ $f_i^\mathrm{(new)} \rightarrow f_i^*$
 \subsection{$A_{12}$ of the two-temperature case}
 
 
+
 For convenience,
 we set
 \begin{align}
@@ -1243,6 +1291,517 @@ dE
   { 4 \, (a + \Delta \beta^2 / 4)^2}
 \right).
 \end{align}
+
+
+
+
+\subsection{Three-temperature case}
+
+
+
+For the Gaussian model,
+the origin of the inverse temperature, $\beta$,
+is arbitrary,
+because the center of
+energy distribution is shifted linearly with $\beta$.
+%
+For the three-temperature case,
+we can assume that the three temperatures are
+$\beta_1 = -\beta$,
+$\beta_2 = 0$,
+and
+$\beta_3 = \beta$.
+
+
+
+\subsection{$A_{12}$ of the three-temperature case}
+
+
+
+For $A_{12}$,
+we first transform
+\begin{align}
+D(E)
+&=
+\exp\left(
+  \beta E - \tfrac{ \beta^2 }{ 2 \, a }
+\right)
++
+1
++
+\exp\left(
+  -\beta E - \tfrac{ \beta^2 }{ 2 \, a }
+\right)
+\notag \\
+&=
+\exp\left(
+  \beta \Delta E
+\right)
++
+1
++
+\exp\left(
+  -\beta \Delta E - \tfrac{ \beta^2 }{ a }
+\right)
+\notag \\
+&=
+\exp\left(
+  \tfrac 1 2 \beta \Delta E
+\right)
+\left[
+\exp\left(
+  \tfrac 1 2 \beta \Delta E
+\right)
++
+\exp\left(
+  -\tfrac 1 2 \beta \Delta E
+\right)
++
+\exp\left(
+  -\tfrac 3 2 \beta \Delta E
+  - \tfrac{ \beta^2 }{ a }
+\right)
+\right]
+\notag \\
+&=
+\exp\left(
+  \tfrac 1 2 \beta \Delta E
+\right)
+\left[
+2 \cosh\left(
+  \tfrac 1 2 \beta \Delta E
+\right)
++
+\exp\left(
+  -\tfrac 3 2 \beta \Delta E
+  - \tfrac{ \beta^2 }{ a }
+\right)
+\right]
+\notag \\
+&=
+\exp\left(
+  b x
+\right)
+\left[
+2 \cosh\left(
+  b x
+\right)
++
+\exp\left(
+  -3 \, b \, x
+  -4 \, b^2
+\right)
+\right],
+\label{eq:DE_threeT_exact}
+\end{align}
+%
+where $\Delta E = E - \beta/(2 \, a)$.
+%
+On the next line,
+we have introduced
+the dimensionless quantities
+$x = \sqrt{a} \, \Delta E$,
+and
+$b = \beta / \sqrt{4 \, a}$.
+
+
+We now make an approximation
+\begin{align}
+D(E)
+&\approx
+\exp\left(
+  b \, x
+\right)
+\left[
+2 \cosh\left(
+  b \, x
+\right)
++
+\exp\left(
+  - u \, b^2
+\right)
+\right]
+\label{eq:DE_threeT_approx1}
+\\
+&=
+2 \exp\left(
+  b \, x
+\right)
+\left[
+\cosh\left(
+  b \, x
+\right)
++
+\theta - 1
+\right]
+\notag \\
+&\approx
+2 \, \theta
+\left.
+  \exp\left(
+    b \, x
+    +
+    \frac{ b^2 \, x^2 }
+    {2 \, \theta}
+  \right)
+\middle/
+\left[
+  1
+  +
+  \frac{ (3 - \theta) \, b^4 x^4 }
+  { 24 \, \theta^2 }
+\right]
+\right.
+,
+\label{eq:DE_threeT_approx}
+\end{align}
+%
+where
+$\theta \equiv 1 + e^{-u \, b^2}/2$,
+%
+and
+$u$ is a parameter to be determined.
+
+
+
+$A_{12}$ is computed as follows
+%
+\begin{align}
+  A_{12}
+&=
+\sqrt{ \frac a {2 \, \pi} }
+\int
+  \frac{ \exp[-\frac 1 2 a E^2 + \beta E - \beta^2/(2a) ] }
+  { D(E) } \, dE
+\notag \\
+&\approx
+\sqrt{ \frac 1 {2 \, \pi} }
+\int
+  \frac{ \exp[-\frac 1 2 x^2 + b \, x - b^2 / 2 ] }
+  { 2 \, \theta \,
+    \exp\left(
+      b \, x
+      +
+      \frac{ b^2 \, x^2 }
+      { 2 \, \theta }
+    \right)
+  }
+  \left[
+    1
+    +
+    \frac{ (3 - \theta) \, b^4 x^4 }
+    { 24 \, \theta^2 }
+  \right]
+ \, d x
+\notag \\
+&=
+\frac { \exp(-b^2/2) }
+{ 2 \, \theta \, \sqrt{2 \, \pi} }
+\int
+  \exp\left[
+    -\frac 1 2
+    \left(
+      1 + \frac{ b^2 } { \theta }
+    \right)
+    x^2
+  \right]
+  \left[
+    1
+    +
+    \frac{ (3 - \theta) \, b^4 x^4 }
+    { 24 \, \theta^2 }
+  \right]
+ \, d x
+\notag \\
+&=
+\frac { \exp(-b^2/2) }
+{ 2 \, \theta \, \sqrt{1 + b^2/\theta} }
+  \left[
+    1
+    +
+    \frac{ (3 - \theta) \, b^4 }
+    { 8 \, (\theta + b^2)^2}
+  \right]
+ \, d x.
+\end{align}
+
+
+
+To determine $u$,
+we compare the small $b$ expansions.
+%
+For Eq. \eqref{eq:DE_threeT_exact},
+we have
+%
+\begin{align*}
+\frac{ 3 \exp(b \, x) }
+{ D(E) }
+&\approx
+\left[
+  1 -
+  x \, b
+  +
+  \left(
+    \frac{ 11 x^2 } 6
+    - \frac 4 3
+  \right)
+  b^2
+\right]^{-1}
+\notag \\
+&\approx
+  1 +
+  x \, b
+  +
+  \left(
+    \frac 4 3
+    - \frac{ 5 \, x^2 } 6
+  \right)
+  b^2
+\end{align*}
+%
+For Eq. \eqref{eq:DE_threeT_approx},
+we have
+%
+\begin{align*}
+\frac{ 3 \exp(b \, x) }
+{ D(E) }
+&\approx
+\left(
+  1 +
+  \frac{ x^2 - u } { 3 }
+  b^2
+\right)^{-1}
+\notag \\
+&\approx
+  1 +
+  \frac{ u - x^2 } { 3 }
+  b^2
+\end{align*}
+%
+This quantity is to be integrated with
+a distribution-like quantity:
+$\exp(-\frac1 2 x^2)/\sqrt{2 \pi}$,
+and $x$ and $x^2$ can be replaced by their
+averages, $0$ and $1$, respectively.
+%
+Thus,
+to get the consistent small $b$ behavior,
+we have
+$4/3 - 5/6 = (u - 1)/3$,
+and $u = 5/2$.
+
+
+
+
+\subsection{$A_{13}$ of the three-temperature case}
+
+
+
+For $A_{13}$,
+we transform
+\begin{align}
+D(E)
+&=
+\exp\left(
+  \beta E - \tfrac{ \beta^2 }{ 2 \, a }
+\right)
++
+1
++
+\exp\left(
+  -\beta E - \tfrac{ \beta^2 }{ 2 \, a }
+\right)
+\notag \\
+&=
+\exp\left(
+  -\tfrac{ \beta^2 } { 2 \, a }
+\right)
+\left[
+2 \cosh\left(
+  \beta E
+\right)
++
+\exp\left(
+  \tfrac{ \beta^2 } { 2 \, a }
+\right)
+\right]
+\notag \\
+&=
+\exp\left(
+  -\tfrac{ B^2 } { 2 }
+\right)
+\left[
+2 \cosh\left(
+  B x
+\right)
++
+\exp\left(
+  \tfrac{ B^2 } { 2 }
+\right)
+\right]
+\notag \\
+&=
+2 \, \exp\left(
+  -\tfrac{ B^2 } { 2 }
+\right)
+\left[
+\cosh\left(
+  B x
+\right)
+-1
++
+\Theta
+\right]
+\notag \\
+&=
+\left.
+2 \, \Theta \, \exp\left(
+  -\frac{ B^2 } { 2 }
+  +\frac{ B^2 x^2 } { 2 \, \Theta }
+\right)
+\middle/
+\left[
+  1 +
+  \frac{(3 - \Theta) \, B^4 x^4 }
+  { 24 \, \Theta^2 }
+\right]
+\right.,
+\label{eq:DE_threeT_exact13}
+\end{align}
+%
+where,
+we have introduced
+the dimensionless quantities
+$x = \sqrt{a} \, E$,
+and
+$B = \beta / \sqrt{a}$.
+And
+$\Theta \equiv 1 + \frac{1}{2} \exp(B^2/2)$.
+
+
+
+We now see that
+Eq. \eqref{eq:DE_threeT_exact13}
+is very similar to
+Eq. \eqref{eq:DE_threeT_approx}.
+%
+$A_{13}$ is computed as follows
+%
+\begin{align}
+A_{13}
+&=
+\sqrt{ \frac a {2 \, \pi} }
+\int
+  \frac{ \exp[-\frac 1 2 a E^2 - \beta^2/a ] }
+  { D(E) } \, dE
+\notag \\
+&\approx
+\frac {1 }{ \sqrt{2 \, \pi} }
+\int
+  \frac{ \exp[-\frac 1 2 x^2 - B^2 ] }
+  {
+    2 \, \Theta \, \exp\left(
+      -\frac{ B^2 } { 2 }
+      +\frac{ B^2 x^2 } { 2 \, \Theta }
+    \right)
+  }
+  \left[
+    1
+    +
+    \frac{ (3 - \Theta) \, B^4 x^4 }
+    { 24 \, \Theta^2 }
+  \right]
+ \, d x
+\notag \\
+&=
+\frac { \exp(-B^2/2) }
+{ 2 \Theta \, \sqrt{2 \, \pi} }
+\int
+  \exp\left[
+    -\frac 1 2
+    \left(
+      1 + \frac{ B^2 } { \Theta }
+    \right)
+    x^2
+  \right]
+  \left[
+    1
+    +
+    \frac{ (3 - \Theta) \, B^4 x^4 }
+    { 24 \, \Theta^2 }
+  \right]
+ \, d x
+\notag \\
+&=
+\frac { \exp(-B^2/2) }
+{ 2 \, \Theta \, \sqrt{1 + B^2/\Theta} }
+  \left[
+    1
+    +
+    \frac{ (3 - \Theta) \, B^4 }
+    { 8 \, (\Theta + B^2)^2}
+  \right].
+\end{align}
+
+
+
+\subsection{Eigenvalues of the $3\times 3$ matrix}
+
+
+The transition matrix $\vct A$
+for three temperatures is
+\begin{align*}
+\vct A
+=
+\left(
+  \begin{array}{ccc}
+    1 - A_{12} - A_{13}   &     A_{12}    &  A_{13}             \\
+    A_{12}                &  1 - 2 A_{12} &  A_{12}             \\
+    A_{13}                &     A_{12}    &  1 - A_{12} - A_{13}
+  \end{array}
+\right).
+\end{align*}
+%
+There are three eigenvalues.
+%
+The first is $\lambda_0 = 1$,
+with the eigenvector being $\vct c_0 = (1, 1, 1)$.
+%
+The second is $\lambda_1 = 1 - A_{12} - 2 \, A_{13}$,
+and
+\begin{align*}
+\vct A - \lambda_1 \vct I
+=
+\left(
+  \begin{array}{ccc}
+    A_{13}   &     A_{12}           &  A_{13} \\
+    A_{12}   &  2 A_{13} - A_{12}   &  A_{12} \\
+    A_{13}   &     A_{12}           &  A_{13}
+  \end{array}
+\right).
+\end{align*}
+%
+So, the eigenvector $\vct c_1 = (1, 0, -1)$.
+%
+The third is $\lambda_2 = 1 - 3 \, A_{12}$,
+%
+\begin{align*}
+\vct A - \lambda_1 \vct I
+=
+\left(
+  \begin{array}{ccc}
+    2 \, A_{12} - A_{13}   &     A_{12}         &  A_{13} \\
+    A_{12}                 &  A_{13} + A_{12}   &  A_{12} \\
+    A_{13}                 &     A_{12}         &  2 \, A_{12} - A_{13}
+  \end{array}
+\right).
+\end{align*}
+%
+So the eigenvector $\vct c_2 = (1, -2, 1)$.
+%
+Usually,
+$A_{12} > A_{13}$,
+so $\lambda_1 > \lambda_2$.
 
 
 

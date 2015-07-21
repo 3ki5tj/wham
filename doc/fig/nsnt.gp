@@ -75,11 +75,11 @@ plot [0:20][] \
   "../../data/1VII/xvgtmmbar.dat"     u 1:(($1 > -1 && $1 <= 12) ? ($2/vlmscl) : 1/0) axes x1y2 w lp ls 13 t "MBAR, villin, {/Times-Italic NVT}, {/Times-Italic t}_{/=16 rel}", \
   "../../data/1VII/xvgtmwham.dat"     u 1:(($1 > -1 && $1 <= 12) ? ($2/vlwscl) : 1/0) axes x1y2 w lp ls 12 t "WHAM, villin, {/Times-Italic NVT}, {/Times-Italic t}_{/=16 rel}", \
   "../../data/lj/lj2tmwham.dat"       u 1:(($1 > -1) ? ($2/lj2scl) : 1/0) axes x1y2 w lp ls 14 t "WHAM, LJ, {/Times-Italic NpT}, {/Times-Italic t}_{/=16 rel}", \
-  "../../data/is2/run/is2tmwham.dat"  u 1:(($1 > -1) ? ($2/is2scl) : 1/0) axes x1y2 w lp ls 11 t "WHAM, Ising, {/Times-Italic NVT}, {/Times-Italic t}_{/=16 rel}", \
+  "../../data/is2/run/is2tmwham.dat"  u 1:(($1 > -1) ? ($2/is2scl) : 1/0) axes x1y2 w lp ls 11 t "WHAM, Ising, {/Times-Italic t}_{/=16 rel}", \
   "../../data/1VII/xvgmbar.dat"       u 1:(($1 > -1 && $1 <= 12) ? ($2) : 1/0) w lp ls 3 t "MBAR, villin, {/Times-Italic NVT}, {/Times-Italic N}@_{/=16 iter}   ", \
   "../../data/1VII/xvgwham.dat"       u 1:(($1 > -1 && $1 <= 12) ? ($2) : 1/0) w lp ls 2 t "WHAM, villin, {/Times-Italic NVT}, {/Times-Italic N}@_{/=16 iter}   ", \
   "../../data/lj/lj2wham.dat"         u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 4 t "WHAM, LJ, {/Times-Italic NpT}, {/Times-Italic N}@_{/=16 iter}   ", \
-  "../../data/is2/run/is2wham.dat"    u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 1 t "WHAM, Ising, {/Times-Italic NVT}, {/Times-Italic N}@_{/=16 iter}   ", \
+  "../../data/is2/run/is2wham.dat"    u 1:(($1 > -1) ? ($2) : 1/0) w lp ls 1 t "WHAM, Ising, {/Times-Italic N}@_{/=16 iter}   ", \
 
 
 

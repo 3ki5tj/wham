@@ -32,7 +32,7 @@ by direct inversion in the iterative subspace}
 The weighted histogram analysis method (WHAM)
 for free energy calculations
 is a valuable tool to produce
-free energy differences with the minimal \repl{bias}{error}.
+free energy differences with the minimal \repl{bias}{errors}.
 \note{
 WHAM is supposed to be ``unbiased'';
 maybe ``error'' or ``uncertainty'' is a better word?
@@ -140,7 +140,7 @@ of the free energies of the states.
 %
 This problem arises in the calculation of potentials of mean force and a variety of free energy difference methods.
 %
-The central idea is to find an optimal estimate
+The central idea \add{of WHAM} is to find an optimal estimate
 of the density of states,
 or the unbiased distribution,
 which then allows
@@ -162,13 +162,15 @@ must be determined self-consistently.
 
 
 
-WHAM can be reformulated in the limit of
-\repl{continuous functions (bins of zero width)\cite{
+WHAM can be
+\repl{reformulated in the limit of
+continuous functions (bins of zero width)\cite{
 souaille2001, shirts2008}
 }
 {
-zero histogram bin width\cite{
+reformulated\cite{
 shirts2008}
+in the limit of zero histogram bin width
 }
 as an extension
 of the Bennett acceptance ratio (BAR) method\cite{
@@ -178,9 +180,12 @@ bennett1976}.
 While Kumar's\cite{kumar1992} and Souaille's\cite{souaille2001} papers
 definitely contain the key formula, Eq. \eqref{eq:f_MBAR},
 Shirts's paper appears to be the one (if I'm not mistaken)
-that manages to cast it as an extension of BAR in the case of more than one temperature.
+that manages to cast it as an extension of BAR
+in the case of more than one temperature.
 In this sense, only Shirts's paper should be cited here.
-The citations of the other two papers are added at the end of the paragraph.
+The citation anchor point is adjusted to reflect this.
+The citations of the other two papers
+are moved to the end of the paragraph.
 }
 %
 This form,
@@ -374,7 +379,7 @@ the observed distribution, $n_k(E)/N_k$
 should match the exact one, $g(E) \, \exp(-\beta_k E + f_k)$.
 %
 The values of Eq. \eqref{eq:gnk} from different $k$
-can be combined to improve precision,
+can be combined to improve the precision,
 and Eq. \eqref{eq:gE_WHAM}
 is the optiomal combination\cite{
 roux1995, souaille2001, newman, frenkel}.
@@ -511,7 +516,7 @@ $q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$.
 The $K = 2$ case is the BAR result\cite{
 bennett1976},
 and Eq. \eqref{eq:f_MBAR}
-also holds for a general parameter dependence
+also holds for a general \add{setting, which permits, e.g., a nonlinear} parameter dependence
 (see Appendix \ref{sec:deriveMBAR}
 for a derivation).
 %
@@ -669,7 +674,7 @@ the denominator of Eq. \eqref{eq:gE_WHAM},
 \del{
 and using Eq. \eqref{eq:gnk}
 }
-we have,
+we \repl{have}{get},
 %
 \begin{align}
 \frac{d}{dE}
@@ -750,9 +755,9 @@ is further approximated as a Gaussian.
 We note that ST-WHAM is difficult when we have more
 thermodynamic variables in the ensemble of interest.
 %
-Below we show the DIIS method can
-\add{readily} handle such a case
-for the Lennard-Jones (LJ) fluid\del{, readily}.
+Below we show \add{that WHAM with} the DIIS method can
+handle such a case
+for the Lennard-Jones (LJ) fluid, readily.
 %This, however, may limit the long-term accuracy.
 
 
@@ -970,7 +975,7 @@ is used to update the basis as shown next.
 \tikzstyle{fRarr}=[->, thin]
 \tikzstyle{fRlabel}=[inner sep=0pt, text=black!80!white]
 
-\begin{figure}
+\begin{figure}[h]
   \begin{tikzpicture}
     %
     %
@@ -1327,7 +1332,7 @@ from the above step.
 Initially,
 the basis contains a single vector.
 %
-As we add more vectors into the basis, in subsequent iterations,
+As we add more vectors into the basis in subsequent iterations,
 some old vectors may be removed
 to maintain a convenient and efficient maximal size of $M$.
 
@@ -1456,8 +1461,14 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     versus the number of bases, $M$,
     in DIIS.
     %
+    \note{In the Ising model, the label $NVT$ is removed,
+      because the volume, $V$, is ill-defined.
+      %
+      There are people who insist $V$ as the magnetization
+      and say it is actually an $NpT$ ensemble.}%
+    %
     The four test cases are
-    (1) WHAM on the Ising model in the $NVT$ ensemble,
+    (1) WHAM on the Ising model,
     (2) WHAM on the LJ fluid in the $NpT$ ensemble,
     (3) WHAM on the mini-protein villin headpiece in the $NVT$ ensemble
     (with the bin width of energy histograms being 1.0), and
@@ -1506,7 +1517,7 @@ we assumed equal autocorrelation times
 from different temperatures (and pressures).
 %
 The approximation should not affect
-the general behavior of the methods.
+the \repl{general}{convergence} behavior of the methods.
 
 
 
@@ -1541,9 +1552,9 @@ below a certain value.
 
 
 For comparison,
-we also computed the dimensionless free energies from two approximate formulae.
+we also computed \repl{the dimensionless free energies}{$f_i$} from two approximate formulae.
 %
-First\cite{park2007}
+\repl{First}{The first is}\cite{park2007}
 %
 \begin{equation}
 \Delta f_i
@@ -1554,10 +1565,10 @@ First\cite{park2007}
 where
 $\overline{ A }_i \equiv (A_{i+1} + A_i)/2$.
 %
-This formula can be improved
+\repl{This formula can be improved}{The second is the improvement}
 by an Euler-Maclaurin expansion\cite{
-arfken, *abramowitz, *wang_specfunc, whittaker}
-as
+arfken, *abramowitz, *wang_specfunc, whittaker}:
+\del{as}
 %
 \begin{equation}
 \Delta f_i
@@ -1774,7 +1785,7 @@ The MBAR case was similar.
 
 
 
-To test the errors of the methods,
+To \repl{test}{compare} the errors of the methods,
 we prepared two types of samples of different sizes.
 %
 A larger sample was randomly selected from roughly $r = 1\%$
@@ -2159,17 +2170,11 @@ $
 
 
 
-The matrix $\vct A$ is symmetric:
+The elements of matrix $\vct A$
+are positive, i.e.,
 %
-\begin{align}
-  A_{ij} = A_{ji},
-\label{eq:Aij_symmetry}
-\end{align}
-%
-for any $i$ and $j$.
-%
-Besides, we have
-$A_{ij} > 0$, and
+$A_{ij} > 0$,
+and normalized, i.e.,
 %
 \begin{align}
 %A_{ij} &> 0,
@@ -2183,6 +2188,15 @@ The latter can be seen from
 Eq. \eqref{eq:f_WHAM1}
 with
 $f_i^\mathrm{(new/old)} \rightarrow f_i^*$.
+%
+Besides,
+$\vct A$ is symmetric:
+%
+\begin{align}
+  A_{ij} = A_{ji}.
+\label{eq:Aij_symmetry}
+\end{align}
+%
 
 
 
@@ -2197,7 +2211,7 @@ of $\vct A$
 is associated to a mode of $\delta \vct f$
 and the eigenvalue $\lambda$
 gives the rate of error reduction
-during iterations.
+during iteration.
 %
 That is,
 $\sum_{i = 1}^K c_i \, \delta f_i$
@@ -2360,8 +2374,8 @@ that facilitates calculations.
 
 For the two-temperature case,
 the matrix $\vct A$ has only one free variable
-because of Eqs. \eqref{eq:Aij_symmetry}
-and \eqref{eq:Aij_normalization},
+because of Eqs. \eqref{eq:Aij_normalization}
+and \eqref{eq:Aij_symmetry},
 and it can be written as
 %
 \begin{align*}
@@ -2457,8 +2471,12 @@ achieved at $\beta_1 = \beta_2$.
   }
   %
   \caption{\label{fig:gausconv}
-    (a) $A_{12}$ as a measure of overlap
-    of distributions 1 and 2.
+    (a) $A_{12}$,
+    which determines the rate of convergence
+    in the two-temperature case,
+    as a measure of overlap
+    of the two energy distributions.
+    %
     (b) Comparison of the rates of convergence
     in the two-, three-,
     and continuous-temperature cases,
@@ -2467,6 +2485,18 @@ achieved at $\beta_1 = \beta_2$.
     and
     \eqref{eq:lambda1_continuous},
     respectively.
+    %under the assumption
+    %of exact Gaussian energy distributions.
+    %
+    Here,
+    $\sigma_\beta$
+    is the standard deviation of the $\beta$ distribution;
+    $\sigma_E$
+    is that of the energy distribution
+    at any temperature.
+    %
+    A larger value of $1 - \lambda_1$
+    means faster convergence.
   }
 \end{figure}
 
@@ -2535,7 +2565,55 @@ Similarly,
 for three temperatures
 with an even spacing of
 $\Delta \beta = \sqrt{\frac 3 2} \sigma_\beta$,
-we have
+we have\footnote{
+%
+For $A_{12}$, the key steps are
+\begin{align*}
+D(E; \vct f^*)
+&\propto
+2 \cosh\left(
+  \tfrac{1}{2} \Delta \beta \Delta E
+\right)
++
+\exp\left(
+  -\tfrac{3}{2} \Delta \beta \Delta E
+  -\tfrac{1}{2} \Delta \beta^2
+\right)
+\\
+&\approx
+2 \cosh\left(
+  \tfrac{1}{2} \Delta \beta \Delta E
+\right)
++
+\exp\left(
+  -\tfrac{ u \Delta \beta^2 }{ a }
+\right)
+\\
+&\approx
+2 \, \theta
+\left.
+  \exp\left(
+    \tfrac{\Delta \beta^2 \Delta E^2} { 8 \, \theta }
+  \right)
+\middle/
+  \left[
+    1
+    +
+    \tfrac{ (3 - \theta) \Delta \beta^4 \Delta E^4 }
+    { 24 \cdot 2^4 \theta^2 }
+  \right]
+\right.,
+\end{align*}
+where
+$\Delta E = E + \frac{\beta_1 + \beta_2}{2 \, a}$
+and
+$\theta = 1 + \frac 1 2 \exp\left(-\frac 1 4 u \Delta \beta^2 \, \Delta E^2\right)$.
+%
+The parameter $u$ should be $5/2$
+to match the small $\Delta \beta$ behavior,
+although the value $u \approx 2.11$
+gives better results in overall accuracy.
+}
 %
 \begin{align}
 1 - \lambda_1
@@ -2560,8 +2638,8 @@ where
 \left[
   1
   +
-  \frac{b^4 (2 - \frac{1}{2} e^{tb^2}) }
-  { 8 \, (1 + b^2 + \frac{1}{2} e^{tb^2})^2 }
+  \frac{(2 - \frac{1}{2} e^{tb^2}) \, b^4/8}
+  { (1 + b^2 + \frac{1}{2} e^{tb^2})^2 }
 \right].
 \end{align*}
 
@@ -2572,9 +2650,9 @@ where
 
 
 
-We now study another limit,
-in which a very large number $K$ of temperatures exist
-such that they can be approximated
+If there are a large number $K$ of temperatures
+in a finite range,
+they can be approximated
 by a continuous distribution, $w(\beta)$.
 %
 In this case,
