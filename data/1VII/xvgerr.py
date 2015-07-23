@@ -195,14 +195,15 @@ def main():
       arr[0] + "avec_mbar" + arr[1],
       arr[0] + "expa_mbar" + arr[1],
       arr[0] + "expb_mbar" + arr[1],
-      arr[0] + "bar_mbar" + arr[1]  ]
+      arr[0] + "bar_mbar" + arr[1],
+      arr[0] + "gp_mbar" + arr[1] ]
   else:
     fnlogs = [ fnlog ]
 
   for i in range(nsamp):
     print "running sample %d/%d..." % (i, nsamp)
 
-    # use the direct WHAM
+    # run WHAM
     ret, out, err = zcom.runcmd(cmd0.strip(), capture = True)
     if i == 0:
       bet = getcol(out, 1)

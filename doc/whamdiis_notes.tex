@@ -4,6 +4,14 @@
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{color}
+
+\hypersetup{
+    colorlinks,
+    linkcolor={red!30!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
 \begin{document}
 
 
@@ -932,8 +940,10 @@ q_i(\vy) d\vy
 
 
 
+\subsection{Linearized WHAM equation}
 
-\subsection{Derivation of the linearized equation, Eq. (B2)}
+
+\subsubsection{Derivation of the linearized equation, Eq. (B2)}
 
 
 
@@ -1032,7 +1042,7 @@ for the denominator.
 
 
 
-\subsection{Derivation of the normalization of $A_{ij}$, Eq. (B4)}
+\subsubsection{Derivation of the normalization of $A_{ij}$, Eq. (B4)}
 
 
 
@@ -1082,7 +1092,9 @@ $f_i^\mathrm{(new)} \rightarrow f_i^*$
 
 
 
-\subsection{$A_{12}$ of the two-temperature case}
+\subsection{Two-temperature case}
+
+\subsubsection{Evaluation of $A_{12}$}
 
 
 
@@ -1299,6 +1311,70 @@ dE
 
 
 
+\subsubsection{Eigenvalues of the $3\times 3$ matrix}
+
+
+The transition matrix $\vct A$
+for three temperatures is
+\begin{align*}
+\vct A
+=
+\left(
+  \begin{array}{ccc}
+    1 - A_{12} - A_{13}   &     A_{12}    &  A_{13}             \\
+    A_{12}                &  1 - 2 A_{12} &  A_{12}             \\
+    A_{13}                &     A_{12}    &  1 - A_{12} - A_{13}
+  \end{array}
+\right).
+\end{align*}
+%
+There are three eigenvalues.
+%
+The first is $\lambda_0 = 1$,
+with the eigenvector being $\vct c_0 = (1, 1, 1)$.
+%
+The second is $\lambda_1 = 1 - A_{12} - 2 \, A_{13}$,
+and
+\begin{align*}
+\vct A - \lambda_1 \vct I
+=
+\left(
+  \begin{array}{ccc}
+    A_{13}   &     A_{12}           &  A_{13} \\
+    A_{12}   &  2 A_{13} - A_{12}   &  A_{12} \\
+    A_{13}   &     A_{12}           &  A_{13}
+  \end{array}
+\right).
+\end{align*}
+%
+So, the eigenvector $\vct c_1 = (1, 0, -1)$.
+%
+The third is $\lambda_2 = 1 - 3 \, A_{12}$,
+%
+\begin{align*}
+\vct A - \lambda_1 \vct I
+=
+\left(
+  \begin{array}{ccc}
+    2 \, A_{12} - A_{13}   &     A_{12}         &  A_{13} \\
+    A_{12}                 &  A_{13} + A_{12}   &  A_{12} \\
+    A_{13}                 &     A_{12}         &  2 \, A_{12} - A_{13}
+  \end{array}
+\right).
+\end{align*}
+%
+So the eigenvector $\vct c_2 = (1, -2, 1)$.
+%
+Usually,
+$A_{12} > A_{13}$,
+so $\lambda_1 > \lambda_2$.
+
+
+
+\subsubsection{Temperature set-up}
+
+
+
 For the Gaussian model,
 the origin of the inverse temperature, $\beta$,
 is arbitrary,
@@ -1314,7 +1390,7 @@ $\beta_3 = \beta$.
 
 
 
-\subsection{$A_{12}$ of the three-temperature case}
+\subsubsection{Evaluation of $A_{12}$}
 
 
 
@@ -1593,7 +1669,27 @@ and $u = 5/2$.
 
 
 
-\subsection{$A_{13}$ of the three-temperature case}
+\subsubsection{Improving the accuracy of $A_{12}$}
+
+
+
+The accuracy may be improved
+by a more complex function form, e.g.
+%
+\begin{align*}
+u = \frac 5 2
+\times
+\frac{1+5.8 \, b^2}{1 + 7 \, b^2}.
+\end{align*}
+%
+This formula gives more consistent
+small $b$ behavior with the exact result.
+
+
+
+
+
+\subsubsection{Evaluation of $A_{13}$}
 
 
 
@@ -1745,69 +1841,9 @@ A_{13}
 
 
 
-\subsection{Eigenvalues of the $3\times 3$ matrix}
+\subsection{Continuous-temperature case}
 
-
-The transition matrix $\vct A$
-for three temperatures is
-\begin{align*}
-\vct A
-=
-\left(
-  \begin{array}{ccc}
-    1 - A_{12} - A_{13}   &     A_{12}    &  A_{13}             \\
-    A_{12}                &  1 - 2 A_{12} &  A_{12}             \\
-    A_{13}                &     A_{12}    &  1 - A_{12} - A_{13}
-  \end{array}
-\right).
-\end{align*}
-%
-There are three eigenvalues.
-%
-The first is $\lambda_0 = 1$,
-with the eigenvector being $\vct c_0 = (1, 1, 1)$.
-%
-The second is $\lambda_1 = 1 - A_{12} - 2 \, A_{13}$,
-and
-\begin{align*}
-\vct A - \lambda_1 \vct I
-=
-\left(
-  \begin{array}{ccc}
-    A_{13}   &     A_{12}           &  A_{13} \\
-    A_{12}   &  2 A_{13} - A_{12}   &  A_{12} \\
-    A_{13}   &     A_{12}           &  A_{13}
-  \end{array}
-\right).
-\end{align*}
-%
-So, the eigenvector $\vct c_1 = (1, 0, -1)$.
-%
-The third is $\lambda_2 = 1 - 3 \, A_{12}$,
-%
-\begin{align*}
-\vct A - \lambda_1 \vct I
-=
-\left(
-  \begin{array}{ccc}
-    2 \, A_{12} - A_{13}   &     A_{12}         &  A_{13} \\
-    A_{12}                 &  A_{13} + A_{12}   &  A_{12} \\
-    A_{13}                 &     A_{12}         &  2 \, A_{12} - A_{13}
-  \end{array}
-\right).
-\end{align*}
-%
-So the eigenvector $\vct c_2 = (1, -2, 1)$.
-%
-Usually,
-$A_{12} > A_{13}$,
-so $\lambda_1 > \lambda_2$.
-
-
-
-
-\subsection{Continuous-temperature characteristic equation}
-
+\subsubsection{Characteristic equation}
 
 
 The characteristic equation
@@ -1835,7 +1871,7 @@ K \int w(\beta') \, c_l(\beta') \, A(\beta, \beta') \, d\beta'
 
 
 
-\subsection{Continuous Gaussian temperature distribution}
+\subsubsection{Continuous Gaussian temperature distribution}
 
 
 
@@ -2069,7 +2105,7 @@ c_l(\beta') \, d\beta'.
 
 
 
-\subsection{Solution of the characteristic equation}
+\subsubsection{Solution of the characteristic equation}
 
 
 
@@ -2193,7 +2229,7 @@ and the eigenvalue is
 
 
 
-\subsection{Alternative solution of the characteristic equation}
+\subsubsection{Alternative solution of the characteristic equation}
 
 
 
@@ -2322,6 +2358,8 @@ it is unlikely a physical solution.
 \section{Appendix C: Approximate formulae}
 
 
+\subsection{Summary of approximate formulae}
+
 Here, we listed a few approximate formulae.
 %
 Since WHAM and related methods
@@ -2329,7 +2367,13 @@ are relatively expensive,
 here we explore a few cheaper,
 albeit less accurate, alternatives
 for on-the-fly estimations\cite{park2007}.
-%
+
+
+
+\subsubsection{Two-point average}
+
+
+
 For a pair of temperatures,
 $\beta_i$ and $\beta_{i+1}$,
 the free energy difference
@@ -2351,7 +2395,13 @@ and
 $\langle\dots\rangle_i$
 denotes an average in trajectory $i$.
 %
-This formula can be improved
+
+
+\subsubsection{Euler-Maclaurin formula}
+
+
+
+Equation \eqref{eq:df_eav} can be improved
 by the Euler-Maclaurin formula\cite{
 arfken, *whittaker, *wang_specfunc}
 as
@@ -2404,6 +2454,10 @@ and $S = 1$.
 
 
 
+\subsubsection{A variant of the Euler-Maclaurin formula}
+
+
+
 An alternative expansion is
 %
 \begin{align}
@@ -2447,6 +2501,61 @@ using Euler polynomials\cite{
 wang_specfunc, abramowitz}
 in place of Bernoulli ones.
 
+
+
+\subsubsection{Gaussian partition}
+
+
+Another possible approach is seek the point, $\hat E$,
+where the two distribution heights are the same:
+%
+\begin{align*}
+\rho_i(\hat E)
+=
+\rho_{i+1}(\hat E),
+\end{align*}
+%
+or
+\begin{align*}
+g(\hat E) \, \exp(-\beta_i \, \hat E + f_i)
+=
+g(\hat E) \, \exp(-\beta_{i+1} \, \hat E + f_{i+1}).
+\end{align*}
+%
+Then,
+we have
+\begin{align}
+  \Delta f_i = \Delta \beta_i \, \hat E.
+  \label{eq:df_gpart}
+\end{align}
+%
+So far,
+this result is exact.
+%
+If $\rho_i(E)$ and $\rho_{i+1}(E)$
+are approximated as Gaussian distributions,
+we get the following quadratic equation:
+\begin{align}
+  \frac{ (\hat E - \langle E \rangle_i)^2 }
+  { 2 \, \langle \delta E^2 \rangle_i }
+  +\frac 1 2
+  \log
+  \langle \delta E^2 \rangle_i
+=
+  \frac{ (\hat E - \langle E \rangle_{i+1})^2 }
+  { 2 \, \langle \delta E^2 \rangle_{i+1} }
+  +\frac 1 2
+  \log
+  \langle \delta E^2 \rangle_{i+1} .
+\end{align}
+%
+We refer to this result
+as the Gaussian partition.
+
+
+
+
+\subsubsection{Explicit solution of WHAM/BAR equation}
 
 
 

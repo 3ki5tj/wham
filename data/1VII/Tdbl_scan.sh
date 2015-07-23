@@ -7,10 +7,10 @@
 
 
 
-if [ -d $HOME/work/gmx ]; then
-  export gmxdir=$HOME/work/gmx
-else
+if [ -d $HOME/lwork/gmx ]; then
   export gmxdir=$HOME/lwork/gmx
+else
+  export gmxdir=$HOME/work/gmx
 fi
 
 export GMXLIB=$gmxdir/gromacs5.0/src/top

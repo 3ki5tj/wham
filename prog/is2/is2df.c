@@ -5,6 +5,24 @@
 
 
 
+/* seek the position where the energy distributions at two temperatures are the same */
+static double getdfgp(double beta1, double eav1, double var1,
+    double beta2, double eav2, double var2)
+{
+  double a1 = 1/var1, a2 = 1/var2;
+  double A, B, C, D, num;
+
+  A = a2 - a1;
+  B = a2 * eav2 - a1 * eav1;
+  C = a2 * eav2 * eav2 - a1 * eav1 * eav1 + log(a1/a2);
+  D = sqrt(B*B - A*C);
+  if ( eav1 > eav2 ) num = B + D;
+  else num = B - D;
+  return num/A * (beta1 - beta2);
+}
+
+
+
 static double getdfui(double beta1, double eav1, double var1,
     double beta2, double eav2, double var2)
 {
@@ -66,7 +84,7 @@ int main(int argc, char **argv)
 {
   double T1 = 2.0, beta1, lnz1, eav1, var1;
   double beta2, lnz2, eav2, var2;
-  double db, c, x, y, ich2, df, df0, dfser, dfui;
+  double db, c, x, y, ich2, df, df0, dfser, dfgp, dfui;
   int l = 64, i;
 
   if ( argc >= 2 ) {
@@ -93,9 +111,10 @@ int main(int argc, char **argv)
     df = -(lnz2 - lnz1);
     df0 = (eav2 + eav1) / 2 * db;
     dfser = df0 + (var2 - var1) * db * db / 12;
+    dfgp = getdfgp(beta1, eav1, var1, beta2, eav2, var2);
     dfui = getdfui(beta1, eav1, var1, beta2, eav2, var2);
-    printf("%5.3f %12.7f %12.7f %12.7f %12.7f %g\n",
-        db, df, df0, dfser, dfui, x*2);
+    printf("%5.3f %12.7f %12.7f %12.7f %12.7f %12.7f %g\n",
+        db, df, df0, dfser, dfgp, dfui, x*2);
   }
 
   return 0;

@@ -50,6 +50,24 @@ static double is2_exactx(int lx, int ly, double beta,
 
 
 
+/* seek the position where the energy distributions at two temperatures are the same */
+static double getdlnzgp(double beta1, double eav1, double var1,
+    double beta2, double eav2, double var2)
+{
+  double a1 = 1/var1, a2 = 1/var2;
+  double A, B, C, D, num;
+
+  A = a2 - a1;
+  B = a2 * eav2 - a1 * eav1;
+  C = a2 * eav2 * eav2 - a1 * eav1 * eav1 + log(a1/a2);
+  D = sqrt(B*B - A*C);
+  if ( eav1 > eav2 ) num = B + D;
+  else num = B - D;
+  return num/A * (beta1 - beta2);
+}
+
+
+
 /* compute lnz from umbrella integration */
 static double getlnzui(int m, double *lnz,
     double *beta, double *eav, double *var)
@@ -137,8 +155,8 @@ int main(int argc, char **argv)
 {
   model_t m[1];
   double *beta, *eav, *var, *skw, *lnz;
-  double *lnza, *lnzb, *lnzc, *lnzuip, *lnzui;
-  double db, dlnza, dlnzb, dlnzc, dlnzuip;
+  double *lnza, *lnzb, *lnzc, *lnzuip, *lnzui, *lnzgp;
+  double db, dlnza, dlnzb, dlnzc, dlnzuip, dlnzgp;
   int iT, jT;
 
   model_default_is2(m);
@@ -154,6 +172,7 @@ int main(int argc, char **argv)
   xnew(lnzc, m->nT);
   xnew(lnzuip, m->nT);
   xnew(lnzui, m->nT);
+  xnew(lnzgp, m->nT);
 
   /* set up the temperatures */
   for ( iT = 0; iT < m->nT; iT++ ) {
@@ -178,13 +197,15 @@ int main(int argc, char **argv)
     lnzc[iT] = lnzc[jT] + dlnzc;
     dlnzuip = getlnzui(2, lnzui, beta + jT, eav + jT, var + jT);
     lnzuip[iT] = lnzuip[jT] + dlnzuip;
+    dlnzgp = getdlnzgp(beta[jT], eav[jT], var[jT], beta[iT], eav[iT], var[iT]);
+    lnzgp[iT] = lnzgp[jT] + dlnzgp;
   }
 
   getlnzui(m->nT, lnzui, beta, eav, var);
   for ( iT = 0; iT < m->nT; iT++ ) {
-    printf("%5.3f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f\n",
+    printf("%5.3f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f\n",
         1/beta[iT], lnz[iT], lnza[iT], lnzb[iT], lnzc[iT],
-        lnzuip[iT], lnzui[iT]);
+        lnzuip[iT], lnzui[iT], lnzgp[iT]);
   }
 
   free(beta);
@@ -197,6 +218,7 @@ int main(int argc, char **argv)
   free(lnzc);
   free(lnzuip);
   free(lnzui);
+  free(lnzgp);
 
   return 0;
 }

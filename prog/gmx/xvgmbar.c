@@ -109,13 +109,32 @@ xdouble getdlnzbar(xvg_t *xvg0, xvg_t *xvg1, xdouble db,
 
 
 
+/* Gaussian partition: seek the position
+ * where the energy distributions at two temperatures are the same */
+static double getdlnzgp(double beta1, double eav1, double var1,
+    double beta2, double eav2, double var2)
+{
+  double a1 = 1/var1, a2 = 1/var2;
+  double A, B, C, D, num;
+
+  A = a2 - a1;
+  B = a2 * eav2 - a1 * eav1;
+  C = a2 * eav2 * eav2 - a1 * eav1 * eav1 + log(a1/a2);
+  D = sqrt(B*B - A*C);
+  if ( eav1 > eav2 ) num = B + D;
+  else num = B - D;
+  return num/A * (beta1 - beta2);
+}
+
+
+
 /* estimate free energies */
 static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
     xdouble tol, int itmax, int verbose)
 {
   xdouble *eav, *var, *skw;
-  xdouble *lnza, *lnzb, *lnzc, *lnzxpa, *lnzxpb, *lnzbar;
-  xdouble dlnza, dlnzb, dlnzc, dlnzxpa, dlnzxpb, dlnzbar;
+  xdouble *lnza, *lnzb, *lnzc, *lnzxpa, *lnzxpb, *lnzbar, *lnzgp;
+  xdouble dlnza, dlnzb, dlnzc, dlnzxpa, dlnzxpb, dlnzbar, dlnzgp;
   xdouble emin, e, db;
   int i, j, n;
 
@@ -160,6 +179,7 @@ static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
   xnew(lnzxpa, nbeta);
   xnew(lnzxpb, nbeta);
   xnew(lnzbar, nbeta);
+  xnew(lnzgp, nbeta);
   lnza[0] = lnzb[0] = lnzc[0] = 0;
   for ( j = 0; j < nbeta - 1; j++ ) {
     db = beta[j+1] - beta[j];
@@ -193,13 +213,18 @@ static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
     dlnzbar = getdlnzbar(xvg[j], xvg[j+1], db, dlnzb,
         tol, itmax, verbose);
     lnzbar[j+1] = lnzbar[j] + dlnzbar;
+
+    dlnzgp = getdlnzgp(beta[j], eav[j], var[j],
+        beta[j+1], eav[j+1], var[j+1]);
+    lnzgp[j+1] = lnzgp[j] + dlnzgp;
   }
 
   for ( j = 0; j < nbeta; j++ ) {
-    printf("%3d %10.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %15.7f %14.7f %8d\n",
+    printf("%3d %10.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %15.7f %14.7f %8d\n",
         j, (double) beta[j],
         (double) lnza[j], (double) lnzb[j], (double) lnzc[j],
         (double) lnzxpa[j], (double) lnzxpb[j], (double) lnzbar[j],
+        (double) lnzgp[j],
         (double) eav[j], (double) SQRT(var[j]), xvg[j]->n);
   }
 
@@ -212,6 +237,7 @@ static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
   free(lnzxpa);
   free(lnzxpb);
   free(lnzbar);
+  free(lnzgp);
   return 0;
 }
 

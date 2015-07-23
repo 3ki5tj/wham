@@ -2339,32 +2339,35 @@ g(E) \, \exp(-\beta_i \, E) \, dE
 \label{eq:f_Gaussian}
 \end{align}
 %
-%and
-%\begin{align}
-%\rho_i
-%=
-%\sqrt{ \frac a { 2 \, \pi} }
-%\exp\left[
-%  -\frac 1 2
-%  a \left(
-%    E - E_c + \frac { \beta_i } { a }
-%  \right)^2
-%\right].
-%\notag
-%%\label{eq:rho_Gaussian}
-%\end{align}
+and
+\begin{align}
+\rho_i
+=
+\sqrt{ \frac a { 2 \, \pi} }
+\exp\left[
+  -\frac 1 2
+  a \left(
+    E - E_c + \frac { \beta_i } { a }
+  \right)^2
+\right].
+\notag
+%\label{eq:rho_Gaussian}
+\end{align}
 %
-It is readily shown that
-the distribution at any temperature,
-$\beta_i$,
-is a Gaussian
-centered at $E_c - \beta_i/a$,
-with the same width
+Thus,
+the distribution at any temperature
+is a Gaussian of the same width
 $\sigma_E = 1/\sqrt{a}$.
 %
-Since the origin of the energy is arbitrary,
-$E_c$ can be set to any value
-that facilitates calculations.
+The inverse temperature $\beta_i$
+affects the energy distributions
+only as a linear shift
+to the distribution center.
+%
+It follows that both the origin of $\beta$
+and $E_c$ can be set to any value
+that facilitates calculations,
+without affecting the value of $A_{ij}$.
 
 
 
@@ -2502,12 +2505,17 @@ achieved at $\beta_1 = \beta_2$.
 
 
 
-By further assuming Gaussian distributions,
-we have, from
+By further assuming Gaussian density of states,
+we can set, without loss of generality,
+$\beta_1 = -\sigma_\beta$,
+$\beta_2 = \sigma_\beta$,
+and $E_c = 0$.
+%
+Then, from
 Eqs. \eqref{eq:Aij_EDA},
 \eqref{eq:gE_Gaussian}
 and \eqref{eq:f_Gaussian},
-that
+we have
 %
 \begin{align}
 1 - \lambda_1
@@ -2541,13 +2549,9 @@ that
 \end{align}
 %
 where
-$\sigma_\beta = (\beta_2 - \beta_1)/2$
-and
-$\sigma_E = 1/\sqrt{a}$.
+$\sigma_E = 1/\sqrt{a}$,
 %
-We have set
-$E_c = (\beta_1 + \beta_2)/(2 \, a)$,
-and used
+and we have used
 $1/\cosh x \approx \exp(-x^2/2)(1 + x^4/12)$.
 %
 This model shows
@@ -2563,26 +2567,35 @@ with the temperature separation.
 
 Similarly,
 for three temperatures
-with an even spacing of
-$\Delta \beta = \sqrt{\frac 3 2} \sigma_\beta$,
-we have\footnote{
+with an even spacing,
+we can set, without loss of generality,
+$\beta_1 = -\Delta \beta$,
+$\beta_2 = 0$,
+and
+$\beta_3 = \Delta \beta$,
+with
+$\Delta \beta = \sqrt{\frac 3 2} \sigma_\beta$.
 %
-For $A_{12}$, the key steps are
+Then,\footnote{
+%
+For $A_{12}$,
+we set $E_c = -\Delta \beta/(2 \, a)$,
+and
 \begin{align*}
 D(E; \vct f^*)
 &\propto
 2 \cosh\left(
-  \tfrac{1}{2} \Delta \beta \Delta E
+  \tfrac{1}{2} \Delta \beta E
 \right)
 +
 \exp\left(
-  -\tfrac{3}{2} \Delta \beta \Delta E
+  -\tfrac{3}{2} \Delta \beta E
   -\tfrac{1}{2} \Delta \beta^2
 \right)
 \\
 &\approx
 2 \cosh\left(
-  \tfrac{1}{2} \Delta \beta \Delta E
+  \tfrac{1}{2} \Delta \beta E
 \right)
 +
 \exp\left(
@@ -2593,26 +2606,24 @@ D(E; \vct f^*)
 2 \, \theta
 \left.
   \exp\left(
-    \tfrac{\Delta \beta^2 \Delta E^2} { 8 \, \theta }
+    \tfrac{\Delta \beta^2 E^2} { 8 \, \theta }
   \right)
 \middle/
   \left[
     1
     +
-    \tfrac{ (3 - \theta) \Delta \beta^4 \Delta E^4 }
-    { 24 \cdot 2^4 \theta^2 }
+    \tfrac{ (3 - \theta) \Delta \beta^4 E^4 }
+    { 24 \cdot 2^4 \cdot \theta^2 }
   \right]
 \right.,
 \end{align*}
 where
-$\Delta E = E + \frac{\beta_1 + \beta_2}{2 \, a}$
-and
-$\theta = 1 + \frac 1 2 \exp\left(-\frac 1 4 u \Delta \beta^2 \, \Delta E^2\right)$.
+$\theta = 1 + \frac 1 2 \exp\left(-u \Delta \beta^2 E^2\right/4)$.
 %
 The parameter $u$ should be $5/2$
 to match the small $\Delta \beta$ behavior,
-although the value $u \approx 2.11$
-gives better results in overall accuracy.
+although the overall accuracy can be improved
+by a value of $u \approx 2.11$.
 }
 %
 \begin{align}
