@@ -50,7 +50,9 @@ static double is2_exactx(int lx, int ly, double beta,
 
 
 
-/* seek the position where the energy distributions at two temperatures are the same */
+/* Gaussian partition method (not very successful)
+ * seek the position where the energy distributions
+ * at two temperatures are the same */
 static double getdlnzgp(double beta1, double eav1, double var1,
     double beta2, double eav2, double var2)
 {
@@ -59,11 +61,33 @@ static double getdlnzgp(double beta1, double eav1, double var1,
 
   A = a2 - a1;
   B = a2 * eav2 - a1 * eav1;
-  C = a2 * eav2 * eav2 - a1 * eav1 * eav1 + log(a1/a2);
+  /* the term log(a1/a2) is better dropped
+   * for thermodyanmic consistency */
+  C = a2 * eav2 * eav2 - a1 * eav1 * eav1; /* + log(a1/a2); */
   D = sqrt(B*B - A*C);
   if ( eav1 > eav2 ) num = B + D;
   else num = B - D;
   return num/A * (beta1 - beta2);
+}
+
+
+
+/* Tilted Gaussian density of states */
+static double getdlnztg(double beta1, double eav1, double var1,
+    double beta2, double eav2, double var2)
+{
+  double de = eav2 - eav1, db = beta2 - beta1;
+  return -(eav1 + eav2) / 2 * db + (1/var2 - 1/var1) * de * de / 12;
+}
+
+
+
+/* ln var approximation */
+static double getdlnzlnv(double beta1, double eav1, double var1,
+    double beta2, double eav2, double var2)
+{
+  double de = eav2 - eav1, db = beta2 - beta1;
+  return -(eav1 + eav2) / 2 * db + log(var2 / var1) * de * db / 12;
 }
 
 
@@ -155,8 +179,8 @@ int main(int argc, char **argv)
 {
   model_t m[1];
   double *beta, *eav, *var, *skw, *lnz;
-  double *lnza, *lnzb, *lnzc, *lnzuip, *lnzui, *lnzgp;
-  double db, dlnza, dlnzb, dlnzc, dlnzuip, dlnzgp;
+  double *lnza, *lnzb, *lnzc, *lnzuip, *lnzui, *lnzgp, *lnztg, *lnzlnv;
+  double db, dlnza, dlnzb, dlnzc, dlnzuip, dlnzgp, dlnztg, dlnzlnv;
   int iT, jT;
 
   model_default_is2(m);
@@ -173,6 +197,8 @@ int main(int argc, char **argv)
   xnew(lnzuip, m->nT);
   xnew(lnzui, m->nT);
   xnew(lnzgp, m->nT);
+  xnew(lnztg, m->nT);
+  xnew(lnzlnv, m->nT);
 
   /* set up the temperatures */
   for ( iT = 0; iT < m->nT; iT++ ) {
@@ -185,7 +211,8 @@ int main(int argc, char **argv)
   }
 
   /* compute pairwise estimates values */
-  lnza[0] = lnzb[0] = lnzc[0] = lnzuip[0];
+  lnza[0] = lnzb[0] = lnzc[0] = lnzuip[0] = 0;
+  lnzgp[0] = lnztg[0] = lnzlnv[0] = 0;
   for ( iT = 1; iT < m->nT; iT++ ) {
     jT = iT - 1;
     db = beta[iT] - beta[jT];
@@ -199,13 +226,17 @@ int main(int argc, char **argv)
     lnzuip[iT] = lnzuip[jT] + dlnzuip;
     dlnzgp = getdlnzgp(beta[jT], eav[jT], var[jT], beta[iT], eav[iT], var[iT]);
     lnzgp[iT] = lnzgp[jT] + dlnzgp;
+    dlnztg = getdlnztg(beta[jT], eav[jT], var[jT], beta[iT], eav[iT], var[iT]);
+    lnztg[iT] = lnztg[jT] + dlnztg;
+    dlnzlnv = getdlnzlnv(beta[jT], eav[jT], var[jT], beta[iT], eav[iT], var[iT]);
+    lnzlnv[iT] = lnzlnv[jT] + dlnzlnv;
   }
 
   getlnzui(m->nT, lnzui, beta, eav, var);
   for ( iT = 0; iT < m->nT; iT++ ) {
-    printf("%5.3f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f\n",
+    printf("%5.3f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f\n",
         1/beta[iT], lnz[iT], lnza[iT], lnzb[iT], lnzc[iT],
-        lnzuip[iT], lnzui[iT], lnzgp[iT]);
+        lnzuip[iT], lnzui[iT], lnzgp[iT], lnztg[iT], lnzlnv[iT]);
   }
 
   free(beta);
@@ -219,6 +250,8 @@ int main(int argc, char **argv)
   free(lnzuip);
   free(lnzui);
   free(lnzgp);
+  free(lnztg);
+  free(lnzlnv);
 
   return 0;
 }

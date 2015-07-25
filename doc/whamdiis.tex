@@ -1508,7 +1508,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
 
 
 \subsection{\label{sec:results_setup}
-Set-up}
+\repl{Set-up}{Setup}}
 
 
 
@@ -1552,7 +1552,8 @@ below a certain value.
 
 
 For comparison,
-we also computed \repl{the dimensionless free energies}{$f_i$} from two approximate formulae.
+we also computed \repl{the dimensionless free energies}{$f_i$}
+from \repl{two}{three} approximate formulae.
 %
 \repl{First}{The first is}\cite{park2007}
 %
@@ -1588,7 +1589,29 @@ where
 $\langle \delta E^2 \rangle_k
 \equiv \langle (E - \langle E \rangle_k)^2 \rangle_k$
 for $k = i$ and $i + 1$.
-
+%
+\add{%
+The third formula is derived from the series expansion
+of the density of states:
+\begin{equation}
+\Delta f_i
+\approx
+\overline{ \langle E \rangle }_i \, \Delta \beta_i
+-
+\left(
+  \langle \delta E^2 \rangle_{i+1}^{-1}
+-
+  \langle \delta E^2 \rangle_i^{-1}
+\right)
+\frac{ \left( \Delta \langle E \rangle_i \right)^2 }{ 12 }.
+\label{eq:df_tg}
+\end{equation}
+}
+\note{
+Eq. \eqref{eq:df_tg}
+is referred to as the ``tilted Gaussian''
+method in the Notes.
+}
 
 
 \subsection{\label{sec:results_Ising}
@@ -1799,7 +1822,8 @@ were computed from all trajectory frames using MBAR.
 In terms of accuracy
 [Figs. \ref{fig:whamcmp}(a) and \ref{fig:whamcmp}(c)],
 WHAM, MBAR and BAR were the best,
-followed by Eq. \eqref{eq:df_eavb}, ST-WHAM and UIM,
+followed by \repl{Eq.}{Eqs.} \eqref{eq:df_eavb}\repl{,}{ and \eqref{eq:df_tg}},
+\add{then by} ST-WHAM and UIM,
 then by Eq. \eqref{eq:df_eav}.
 %
 The accuracy was largely independent of the sample size,
@@ -1807,9 +1831,23 @@ and we suspect that the difference
 between ST-WHAM and WHAM
 might reflect some intrinsic sampling errors.
 %
+\note{
+We still don't know what caused the difference.
+However, we know that
+it was not because of the precision (single or double),
+integrator (leapfrog or velocity Verlet),
+or the constraint algorithm of the proteins.
+}
+%
 In terms of precision
 [Figs. \ref{fig:whamcmp}(b) and \ref{fig:whamcmp}(d)],
 the differences were small.
+%
+\add{
+With a denser temperature setup, however,
+multiple-temperature-based methods
+may further gain advantage.
+}
 %
 Generally,
 WHAM and ST-WHAM were insensitive to the bin size,

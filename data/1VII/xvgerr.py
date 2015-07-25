@@ -196,7 +196,10 @@ def main():
       arr[0] + "expa_mbar" + arr[1],
       arr[0] + "expb_mbar" + arr[1],
       arr[0] + "bar_mbar" + arr[1],
-      arr[0] + "gp_mbar" + arr[1] ]
+      arr[0] + "gp_mbar" + arr[1],
+      arr[0] + "tg_mbar" + arr[1],
+      arr[0] + "lnv_mbar" + arr[1],
+      ]
   else:
     fnlogs = [ fnlog ]
 

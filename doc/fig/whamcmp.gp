@@ -58,14 +58,18 @@ color7  = "#228888"
 
 color9  = "#808080"
 
-set style line 1  lw 2.0 lt 4 lc rgb color1  pt 5   ps 2.0
-set style line 2  lw 2.0 lt 4 lc rgb color1  pt 13  ps 2.4
-set style line 3  lw 2.0 lt 4 lc rgb color1  pt 7   ps 2.2
-set style line 4  lw 4.0 lt 4 lc rgb color6  pt 3   ps 2.2
+color11 = "#6688aa"
+color12 = "#ff6666"
+color14 = "#cc44cc"
 
-set style line 11 lw 2.0 lt 4 lc rgb color2  pt 9   ps 2.4
-set style line 12 lw 2.0 lt 4 lc rgb color2  pt 11  ps 2.4
-set style line 13 lw 2.0 lt 4 lc rgb color4  pt 15  ps 2.0
+set style line 1  lw 2.0 lt 4 lc rgb color11 pt 5   ps 2.0
+set style line 2  lw 3.0 lt 4 lc rgb color1  pt 4   ps 1.8
+set style line 3  lw 2.0 lt 4 lc rgb color1  pt 7   ps 2.2
+set style line 4  lw 4.0 lt 4 lc rgb color6  pt 13  ps 2.4
+
+set style line 11 lw 2.0 lt 4 lc rgb color12 pt 9   ps 2.4
+set style line 12 lw 3.0 lt 4 lc rgb color2  pt 8   ps 2.2
+set style line 13 lw 2.0 lt 4 lc rgb color14 pt 11  ps 2.4
 set style line 14 lw 2.0 lt 4 lc rgb color2  pt 13  ps 2.4
 
 set style line 21 lw 5.0 lt 4 lc rgb color3  pt 1   ps 2.0
@@ -87,6 +91,7 @@ plot [:][-0.15:0.3] \
   "../../data/1VII/whamcmpr0.01/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 13  notitle, \
   "../../data/1VII/whamcmpr0.01/xvgerraveambar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 21  notitle, \
   "../../data/1VII/whamcmpr0.01/xvgerravebmbar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 22  notitle, \
+  "../../data/1VII/whamcmpr0.01/xvgerrtgmbar.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 23  notitle, \
 
 
 
@@ -108,6 +113,7 @@ plot [:][-0.15:0.3] \
   "../../data/1VII/whamcmpr0.0001/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 13  notitle, \
   "../../data/1VII/whamcmpr0.0001/xvgerraveambar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 21  notitle, \
   "../../data/1VII/whamcmpr0.0001/xvgerravebmbar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 22  notitle, \
+  "../../data/1VII/whamcmpr0.0001/xvgerrtgmbar.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 23  notitle, \
 
 
 
@@ -136,7 +142,7 @@ set ylabel "&{i}_{/Symbol*2.0 \341} {/Symbol-Oblique d} {/Times-Italic f_i}^2&{i
 set ytics 0.02
 set mytics 2
 
-set key at screen 0, ht0 + 0.04 left bottom Left reverse font "Times,32" width -8 vertical maxrows 2 samplen 2.0
+set key at screen 0, ht0 + 0.04 left bottom Left reverse font "Times,32" width -7.5 vertical maxrows 2 samplen 2.0
 
 
 plot [:][0.01:0.09] \
@@ -149,6 +155,7 @@ plot [:][0.01:0.09] \
   "../../data/1VII/whamcmpr0.01/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 13  notitle, \
   "../../data/1VII/whamcmpr0.01/xvgerraveambar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 21  notitle, \
   "../../data/1VII/whamcmpr0.01/xvgerravebmbar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 22  notitle, \
+  "../../data/1VII/whamcmpr0.01/xvgerrtgmbar.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 23  notitle, \
 
 
 set size wd2, ht1
@@ -161,7 +168,7 @@ unset ylabel
 set ytics 0.5
 set mytics 5
 
-set key at screen wd1 + 0.15, ht0 + 0.04 width -4
+set key at screen wd1 + 0.16, ht0 + 0.04 width -4.3
 
 plot [:][0.1:1.0] \
   "../../data/1VII/whamcmpr0.0001/xvgerrwham.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 1   notitle, \
@@ -172,7 +179,8 @@ plot [:][0.1:1.0] \
   "../../data/1VII/whamcmpr0.0001/xvgerrde100stwham.dat"   u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 12  notitle, \
   "../../data/1VII/whamcmpr0.0001/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 13  t "UIM, {/Times-Italic h} = 1", \
   "../../data/1VII/whamcmpr0.0001/xvgerraveambar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 21  t "Eq. (10)", \
-  "../../data/1VII/whamcmpr0.0001/xvgerravebmbar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 22  t "Eq. (11)" \
+  "../../data/1VII/whamcmpr0.0001/xvgerravebmbar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 22  t "Eq. (11)", \
+  "../../data/1VII/whamcmpr0.0001/xvgerrtgmbar.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 23  t "Eq. (12)" \
 
 
 

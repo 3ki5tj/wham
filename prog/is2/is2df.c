@@ -5,7 +5,9 @@
 
 
 
-/* seek the position where the energy distributions at two temperatures are the same */
+/* Gaussian partition method (not very successful)
+ * seek the position where the energy distributions
+ * at two temperatures are the same */
 static double getdfgp(double beta1, double eav1, double var1,
     double beta2, double eav2, double var2)
 {
@@ -14,11 +16,21 @@ static double getdfgp(double beta1, double eav1, double var1,
 
   A = a2 - a1;
   B = a2 * eav2 - a1 * eav1;
-  C = a2 * eav2 * eav2 - a1 * eav1 * eav1 + log(a1/a2);
+  C = a2 * eav2 * eav2 - a1 * eav1 * eav1; // + log(a1/a2);
   D = sqrt(B*B - A*C);
   if ( eav1 > eav2 ) num = B + D;
   else num = B - D;
   return num/A * (beta1 - beta2);
+}
+
+
+
+/* Tilted Gaussian density of states */
+static double getdftg(double beta1, double eav1, double var1,
+    double beta2, double eav2, double var2)
+{
+  double de = eav2 - eav1, db = beta2 - beta1;
+  return (eav1 + eav2) / 2 * db - (1/var2 - 1/var1) * de * de / 12;
 }
 
 
@@ -84,7 +96,7 @@ int main(int argc, char **argv)
 {
   double T1 = 2.0, beta1, lnz1, eav1, var1;
   double beta2, lnz2, eav2, var2;
-  double db, c, x, y, ich2, df, df0, dfser, dfgp, dfui;
+  double db, c, x, y, ich2, df, df0, dfser, dfgp, dftg, dfui;
   int l = 64, i;
 
   if ( argc >= 2 ) {
@@ -112,9 +124,10 @@ int main(int argc, char **argv)
     df0 = (eav2 + eav1) / 2 * db;
     dfser = df0 + (var2 - var1) * db * db / 12;
     dfgp = getdfgp(beta1, eav1, var1, beta2, eav2, var2);
+    dftg = getdftg(beta1, eav1, var1, beta2, eav2, var2);
     dfui = getdfui(beta1, eav1, var1, beta2, eav2, var2);
-    printf("%5.3f %12.7f %12.7f %12.7f %12.7f %12.7f %g\n",
-        db, df, df0, dfser, dfgp, dfui, x*2);
+    printf("%5.3f %12.7f %12.7f %12.7f %12.7f %12.7f %12.7f %g\n",
+        db, df, df0, dfser, dfgp, dftg, dfui, x*2);
   }
 
   return 0;

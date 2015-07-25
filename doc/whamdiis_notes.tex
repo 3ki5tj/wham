@@ -2370,7 +2370,7 @@ for on-the-fly estimations\cite{park2007}.
 
 
 
-\subsubsection{Two-point average}
+\subsubsection{Two-point average (TPA)}
 
 
 
@@ -2397,7 +2397,7 @@ denotes an average in trajectory $i$.
 %
 
 
-\subsubsection{Euler-Maclaurin formula}
+\subsubsection{Euler-Maclaurin (EM) formula}
 
 
 
@@ -2454,7 +2454,7 @@ and $S = 1$.
 
 
 
-\subsubsection{A variant of the Euler-Maclaurin formula}
+\subsubsection{A variant of the Euler-Maclaurin (VEM) formula}
 
 
 
@@ -2503,7 +2503,7 @@ in place of Bernoulli ones.
 
 
 
-\subsubsection{Gaussian partition}
+\subsubsection{Gaussian partition (GP)}
 
 
 Another possible approach is seek the point, $\hat E$,
@@ -2552,6 +2552,199 @@ we get the following quadratic equation:
 We refer to this result
 as the Gaussian partition.
 
+
+
+
+\subsubsection{Tilted Gaussian (TG)}
+
+
+
+A variant of Eq. \eqref{eq:df_eavb} is
+\begin{equation}
+\Delta f_i
+\approx
+\overline{ \langle E \rangle }_i \, \Delta \beta_i
+-
+\left(
+  \frac 1 { \langle \delta E^2 \rangle }_{i+1}
+  -
+  \frac 1 { \langle \delta E^2 \rangle }_{i}
+\right)
+\frac{ \left( \Delta \langle E \rangle_i \right)^2 }{ 12 },
+%\tag{C2}
+\label{eq:df_tgaus}
+\end{equation}
+
+
+
+To show this,
+we assume that at temperature $\beta_0$,
+the distribution can be written as
+%
+\begin{equation}
+\log \rho_0
+=
+\mathrm{const.}
+-\frac{1}{2} a_2 (E - E_0)^2
+-\frac{1}{3} a_3 (E - E_0)^3
+-\frac{1}{4} a_4 (E - E_0)^4
+-\cdots
+\end{equation}
+%
+We also assume that
+$a_3$ and $a_4$ are small,
+so that the center of the distribution is still $E_0$.
+
+
+
+Now at another temperature $\beta$,
+the distribution
+$\rho \propto \rho_0 \, \exp[-(\beta - \beta_0) \, E]$.
+%
+We can thus write,
+in terms of $\Delta \beta = \beta - \beta_0$,
+$\Delta E = E - E_0$ that (dropping the constant term)
+%
+\begin{align*}
+\log \rho
+&=
+-\Delta \beta \, E
+-\frac{1}{2} a_2 \, \Delta E^2
+-\frac{1}{3} a_3 \, \Delta E^3
+-\frac{1}{4} a_3 \, \Delta E^4
+\end{align*}
+%
+The center of the energy distribution
+satisfies the condition
+$\partial \log \rho/\partial E = 0$.
+%
+\begin{equation}
+  \Delta \beta
++a_2 \, \Delta E
++a_3 \, \Delta E^2
++a_4 \, \Delta E^3
+= 0
+\label{eq:TG_betaE}
+\end{equation}
+
+
+
+Consider the free energy difference of two temperatures,
+%
+\begin{align}
+\Delta f_{21}
+&=
+\int_{ \beta_1 }^{ \beta_2 } E \, d \Delta \beta
+\notag \\
+&=
+\left.
+  E \, \Delta \beta
+\right|_{\beta_1}^{\beta_2}
+-
+\int_{E_1}^{E_2}
+  \Delta \beta \, dE
+\notag \\
+&=
+\left.
+  E \, \Delta \beta
+\right|_{\beta_1}^{\beta_2}
++
+\int_{\Delta E_1}^{\Delta E_2}
+  (a_2 \, \Delta E + a_3 \, \Delta E^2 + a_4 \, \Delta E^3) \, d\Delta E
+\notag \\
+&=
+\left.
+\left(
+  E \, \Delta \beta
+  +
+  a_2 \, \Delta E^2/2 + a_3 \, \Delta E^3/3 + a_4 \, \Delta E^4/4
+\right)
+\right|_{\beta_1}^{\beta_2}
+\notag \\
+&=
+\left.
+\left(
+  E \, \Delta \beta
+  + a_2 \, \Delta E^2/2 + a_3 \, \Delta E^3/3 + a_4 \, \Delta E^4/4
+\right)
+\right|_{\beta_1}^{\beta_2}
+\notag \\
+&=
+E_2 \, \Delta \beta_2 - E_1 \, \Delta \beta_1
++
+(E_2 - E_1) \,
+\big[
+  a_2 \, ( \Delta E_2 + \Delta E_1) / 2
+\notag\\
+&\phantom{=}
+  + a_3 \, ( \Delta E_2^2 + \Delta E_2 \Delta E_1 + \Delta E_1^2 )/3
+\notag \\
+&\phantom{=}
+  + a_4 \, ( \Delta E_2^3 + \Delta E_2^2 \Delta E_1 + \Delta E_2 \Delta E_1^2 + \Delta E_1^3 ) / 4
+\big].
+\label{eq:TG_dfstep1}
+\end{align}
+
+
+
+Now using Eq. \eqref{eq:TG_betaE} for $\beta_1$ and $\beta_2$,
+in the above equation we can eliminate $a_2$ and get
+%
+\begin{align*}
+\Delta f_{21}
+&=
+\frac { (E_2 + E_1) }{ 2 } \, (\beta_2 - \beta_1)
+-
+\frac{ 1 } { 12 }
+(E_2 - E_1)^3 \,
+\left[
+  2 \, a_3
+  +3 \, a_4 \, ( \Delta E_2 + \Delta E_1 )
+\right].
+\end{align*}
+
+
+
+The width of the distribution is the inverse
+of the following
+%
+\begin{align*}
+\langle \delta E^2 \rangle^{-1}
+&=
+\frac{ \partial^2 \log \rho } { d E^2 }
+\\
+&=
+a_2 + 2 a_3 \Delta E + 3 a_4 \Delta E^2.
+\end{align*}
+%
+Using this formula for $\beta_1$ and $\beta_2$,
+and computing the difference yields
+%
+\begin{align*}
+\langle \delta E^2 \rangle_2^{-1}
+-
+\langle \delta E^2 \rangle_1^{-1}
+&=
+(E_2 - E_1) [ 2 a_3  + 3 a_4 (\Delta E_1 + \Delta E_2) ].
+\end{align*}
+
+
+
+Using this result in Eq. \eqref{eq:TG_dfstep1} yields,
+\begin{equation*}
+\Delta f_{21}
+=
+\frac{ E_2 + E_1 } { 2 } (\beta_2 - \beta_1)
+-
+\left(
+  \langle \delta E^2 \rangle_2^{-1}
+  -
+  \langle \delta E^2 \rangle_1^{-1}
+\right)
+\frac{ (E_2 - E_1)^2 }{ 12 }.
+\end{equation*}
+%
+This is Eq. \eqref{eq:df_tgaus}.
 
 
 
@@ -3551,14 +3744,14 @@ With $\Delta T = 0.2$,
 the error of Eq. \eqref{eq:df_eav}
 was up to $O(1)$.
 %
-The error of
-Eqs. \eqref{eq:df_eavb} and \eqref{eq:df_eavc}
-increased with temperature spacing $\Delta T$,
+The accuracy of
+Eqs. \eqref{eq:df_eavb}, \eqref{eq:df_eavc} and \eqref{eq:df_tgaus}
+increased with decreasing temperature spacing $\Delta T$,
 whereas
-UIM was less sensitive.
+UIM failed to improve.
 %
 However, for a small spacing,
-Eqs. \eqref{eq:df_eavb} and \eqref{eq:df_eavc}
+Eqs. \eqref{eq:df_eavb}, \eqref{eq:df_eavc} and \eqref{eq:df_tgaus}
 were superior.
 %
 This suggests that with ample data,
@@ -3575,6 +3768,7 @@ by a more accurate alternative, e.g., ST-WHAM or WHAM.
     \label{fig:is2approx}
     (a) and (b) Errors of the dimensionless free energies, $f_i$,
     from Eqs. \eqref{eq:df_eav}, \eqref{eq:df_eavb}, \eqref{eq:df_eavc},
+    \eqref{eq:df_tgaus},
     and UIM for the $32\times 32$ Ising model,
     $\Delta T = 0.05$ and $0.2$, respectively.
     %

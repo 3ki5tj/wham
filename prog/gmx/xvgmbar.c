@@ -119,11 +119,33 @@ static double getdlnzgp(double beta1, double eav1, double var1,
 
   A = a2 - a1;
   B = a2 * eav2 - a1 * eav1;
-  C = a2 * eav2 * eav2 - a1 * eav1 * eav1 + log(a1/a2);
+  /* the term log(a1/a2) is better dropped
+   * for thermodynamic consistency */
+  C = a2 * eav2 * eav2 - a1 * eav1 * eav1; /* + log(a1/a2); */
   D = sqrt(B*B - A*C);
   if ( eav1 > eav2 ) num = B + D;
   else num = B - D;
   return num/A * (beta1 - beta2);
+}
+
+
+
+/* Tilted Gaussian density of states */
+static double getdlnztg(double beta1, double eav1, double var1,
+    double beta2, double eav2, double var2)
+{
+  double de = eav2 - eav1, db = beta2 - beta1;
+  return -(eav1 + eav2) / 2 * db + (1/var2 - 1/var1) * de * de / 12;
+}
+
+
+
+/* log variance */
+static double getdlnzlnv(double beta1, double eav1, double var1,
+    double beta2, double eav2, double var2)
+{
+  double de = eav2 - eav1, db = beta2 - beta1;
+  return -(eav1 + eav2) / 2 * db + log(var2 / var1) * de * db / 12;
 }
 
 
@@ -133,8 +155,8 @@ static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
     xdouble tol, int itmax, int verbose)
 {
   xdouble *eav, *var, *skw;
-  xdouble *lnza, *lnzb, *lnzc, *lnzxpa, *lnzxpb, *lnzbar, *lnzgp;
-  xdouble dlnza, dlnzb, dlnzc, dlnzxpa, dlnzxpb, dlnzbar, dlnzgp;
+  xdouble *lnza, *lnzb, *lnzc, *lnzxpa, *lnzxpb, *lnzbar, *lnzgp, *lnztg, *lnzlnv;
+  xdouble dlnza, dlnzb, dlnzc, dlnzxpa, dlnzxpb, dlnzbar, dlnzgp, dlnztg, dlnzlnv;
   xdouble emin, e, db;
   int i, j, n;
 
@@ -180,7 +202,11 @@ static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
   xnew(lnzxpb, nbeta);
   xnew(lnzbar, nbeta);
   xnew(lnzgp, nbeta);
+  xnew(lnztg, nbeta);
+  xnew(lnzlnv, nbeta);
+
   lnza[0] = lnzb[0] = lnzc[0] = 0;
+  lnzbar[0] = lnzgp[0] = lnztg[0] = lnzlnv[0] = 0;
   for ( j = 0; j < nbeta - 1; j++ ) {
     db = beta[j+1] - beta[j];
     dlnza = -(eav[j+1] + eav[j]) / 2 * db;
@@ -217,14 +243,22 @@ static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
     dlnzgp = getdlnzgp(beta[j], eav[j], var[j],
         beta[j+1], eav[j+1], var[j+1]);
     lnzgp[j+1] = lnzgp[j] + dlnzgp;
+
+    dlnztg = getdlnztg(beta[j], eav[j], var[j],
+        beta[j+1], eav[j+1], var[j+1]);
+    lnztg[j+1] = lnztg[j] + dlnztg;
+
+    dlnzlnv = getdlnzlnv(beta[j], eav[j], var[j],
+        beta[j+1], eav[j+1], var[j+1]);
+    lnzlnv[j+1] = lnzlnv[j] + dlnzlnv;
   }
 
   for ( j = 0; j < nbeta; j++ ) {
-    printf("%3d %10.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %15.7f %14.7f %8d\n",
+    printf("%3d %10.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %15.7f %14.7f %8d\n",
         j, (double) beta[j],
         (double) lnza[j], (double) lnzb[j], (double) lnzc[j],
         (double) lnzxpa[j], (double) lnzxpb[j], (double) lnzbar[j],
-        (double) lnzgp[j],
+        (double) lnzgp[j], (double) lnztg[j], (double) lnzlnv[j],
         (double) eav[j], (double) SQRT(var[j]), xvg[j]->n);
   }
 
@@ -238,6 +272,8 @@ static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
   free(lnzxpb);
   free(lnzbar);
   free(lnzgp);
+  free(lnztg);
+  free(lnzlnv);
   return 0;
 }
 

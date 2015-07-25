@@ -41,6 +41,7 @@ color1  = "#882222"
 color2  = "#224488"
 color3  = "#8822aa"
 color4  = "#006000"
+color5  = "#008888"
 
 color11 = "#ffaaaa"
 color12 = "#aaaaff"
@@ -53,8 +54,9 @@ set style line 1  lw 1.0 lt 4 lc rgb color1  pt 5  ps 2.3
 set style line 2  lw 1.0 lt 4 lc rgb color2  pt 9  ps 3.0
 set style line 3  lw 1.0 lt 4 lc rgb color3  pt 11 ps 3.0
 set style line 4  lw 1.0 lt 4 lc rgb color4  pt 7  ps 2.5
+set style line 5  lw 1.0 lt 4 lc rgb color5  pt 13 ps 3.0
 
-set key at screen 0, ht2 + 0.02 left bottom Left reverse invert samplen 4 width -1 spacing 1.3 maxrows 1
+set key at screen 0, ht2 + 0.02 left bottom Left reverse invert samplen 4 width 0.5 maxrows 1
 
 set label 1 "(a) {/Symbol-Oblique D}{/Times-Italic T} = 0.05" at 1.55, 8.0
 
@@ -62,10 +64,12 @@ plot \
   "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$3) : 1/0) w lp ls 1 notitle, \
   "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$4) : 1/0) w lp ls 2 notitle, \
   "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$5) : 1/0) w lp ls 3 notitle, \
+  "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$9) : 1/0) w lp ls 5 notitle, \
   "../../data/is2/is2approx0.05.out" u 1:($1 > 1.501 ? abs($2-$7) : 1/0) w lp ls 4 notitle, \
-  1e10 w lp ls 1 ps 3.2 t "Eq. (C1)", \
-  1e10 w lp ls 2 ps 4.0 t "Eq. (C2)", \
-  1e10 w lp ls 3 ps 4.0 t "Eq. (C3)", \
+  1e10 w lp ls 1 ps 3.2 t "TPA", \
+  1e10 w lp ls 2 ps 4.0 t "EM", \
+  1e10 w lp ls 3 ps 4.0 t "VEM", \
+  1e10 w lp ls 5 ps 4.0 t "TG", \
   1e10 w lp ls 4 ps 3.2 t "UIM"
 
 
@@ -85,6 +89,7 @@ plot \
   "../../data/is2/is2approx0.2.out" u 1:($1 > 1.501 ? abs($2-$3) : 1/0) w lp ls 1 ps 3.2 notitle, \
   "../../data/is2/is2approx0.2.out" u 1:($1 > 1.501 ? abs($2-$4) : 1/0) w lp ls 2 ps 4.0 notitle, \
   "../../data/is2/is2approx0.2.out" u 1:($1 > 1.501 ? abs($2-$5) : 1/0) w lp ls 3 ps 4.0 notitle, \
+  "../../data/is2/is2approx0.2.out" u 1:($1 > 1.501 ? abs($2-$9) : 1/0) w lp ls 5 ps 4.0 notitle, \
   "../../data/is2/is2approx0.2.out" u 1:($1 > 1.501 ? abs($2-$7) : 1/0) w lp ls 4 ps 3.2 notitle, \
 
 
