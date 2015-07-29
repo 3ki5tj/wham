@@ -1,9 +1,9 @@
 %\documentclass[reprint,superscriptaddress]{revtex4-1}
 \documentclass[aip,jcp,preprint,notitlepage, superscriptaddress]{revtex4-1}
-\usepackage{hyperref}
 \usepackage{amsmath}
+\usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{tikz}
-\usepackage{color}
+\usepackage{hyperref}
 
 \hypersetup{
     colorlinks,
@@ -26,6 +26,13 @@
 \newcommand{\E}{\mathcal{E}}
 \newcommand{\Ham}{\mathcal{H}}
 \newcommand{\W}{\mathcal{W}}
+\newcommand{\A}{\mathcal{A}}
+
+% annotation macros
+\newcommand{\repl}[2]{{\color{gray} [#1] }{\color{blue} #2}}
+\newcommand{\add}[1]{{\color{blue} #1}}
+\newcommand{\del}[1]{{\color{gray} [#1]}}
+\newcommand{\note}[1]{{\color{OliveGreen}\small [\textbf{Comment.} #1]}}
 
 
 
@@ -1371,7 +1378,7 @@ so $\lambda_1 > \lambda_2$.
 
 
 
-\subsubsection{Temperature set-up}
+\subsubsection{Temperature setup}
 
 
 
@@ -2367,6 +2374,14 @@ are relatively expensive,
 here we explore a few cheaper,
 albeit less accurate, alternatives
 for on-the-fly estimations\cite{park2007}.
+%
+Below is a summary of the results,
+and detailed derivations are given in latter sections.
+
+
+
+
+
 
 
 
@@ -2503,38 +2518,36 @@ in place of Bernoulli ones.
 
 
 
+\subsubsection{Euler-Maclaurin expansion in energy}
+
+
+A variant of Eq. \eqref{eq:df_eavb},
+using an expansion in energy $E$
+instead of inverse temperature $\beta$,
+is
+\begin{equation}
+\Delta f_i
+\approx
+\overline{ \langle E \rangle }_i \, \Delta \beta_i
+-
+\left(
+  \frac 1 { \langle \delta E^2 \rangle }_{i+1}
+  -
+  \frac 1 { \langle \delta E^2 \rangle }_{i}
+\right)
+\frac{ \left( \Delta \langle E \rangle_i \right)^2 }{ 12 }.
+%\tag{C2}
+\label{eq:df_tgaus}
+\end{equation}
+
+
+
 \subsubsection{Gaussian partition (GP)}
 
 
-Another possible approach is seek the point, $\hat E$,
-where the two distribution heights are the same:
-%
-\begin{align*}
-\rho_i(\hat E)
-=
-\rho_{i+1}(\hat E),
-\end{align*}
-%
-or
-\begin{align*}
-g(\hat E) \, \exp(-\beta_i \, \hat E + f_i)
-=
-g(\hat E) \, \exp(-\beta_{i+1} \, \hat E + f_{i+1}).
-\end{align*}
-%
-Then,
-we have
-\begin{align}
-  \Delta f_i = \Delta \beta_i \, \hat E.
-  \label{eq:df_gpart}
-\end{align}
-%
-So far,
-this result is exact.
-%
-If $\rho_i(E)$ and $\rho_{i+1}(E)$
-are approximated as Gaussian distributions,
-we get the following quadratic equation:
+
+In this method,
+we first seek $\hat E$ such that
 \begin{align}
   \frac{ (\hat E - \langle E \rangle_i)^2 }
   { 2 \, \langle \delta E^2 \rangle_i }
@@ -2546,35 +2559,675 @@ we get the following quadratic equation:
   { 2 \, \langle \delta E^2 \rangle_{i+1} }
   +\frac 1 2
   \log
-  \langle \delta E^2 \rangle_{i+1} .
+  \langle \delta E^2 \rangle_{i+1}.
+  \label{eq:Ehat_gpart}
 \end{align}
 %
-We refer to this result
-as the Gaussian partition.
+The free energy difference is given by
+\begin{align}
+  \Delta f_i = \Delta \beta_i \, \hat E.
+  \label{eq:df_gpart}
+\end{align}
+%
 
 
 
-
-\subsubsection{Tilted Gaussian (TG)}
-
+\subsubsection{Explicit solution of WHAM/BAR equation}
 
 
-A variant of Eq. \eqref{eq:df_eavb} is
-\begin{equation}
+
+If the WHAM or BAR equation
+is applied to the two temperature,
+$\Delta f_i$ satisfies
+(assuming equal population)
+%
+\begin{equation*}
+\left\langle
+\frac{ 1 }
+{ 1 + e^{-\Delta \beta_i E + \Delta f_i} }
+\right\rangle_i
+=
+\left\langle
+\frac{ 1 }
+{ 1 + e^{\Delta \beta_i E - \Delta f_i} }
+\right\rangle_{i+1}.
+\end{equation*}
+%
+Expanding the solution
+in powers of $\Delta \beta_i$
+yields
+\begin{align}
 \Delta f_i
+&
 \approx
 \overline{ \langle E \rangle }_i \, \Delta \beta_i
--
-\left(
-  \frac 1 { \langle \delta E^2 \rangle }_{i+1}
-  -
-  \frac 1 { \langle \delta E^2 \rangle }_{i}
-\right)
-\frac{ \left( \Delta \langle E \rangle_i \right)^2 }{ 12 },
-%\tag{C2}
-\label{eq:df_tgaus}
+%
+-\overline{ \langle \delta E^3 \rangle }_i
+\, \frac{ \Delta \beta_i^3 } { 12 }
+%
+-\Delta \langle E \rangle_i
+\, \Delta \langle \delta E^2 \rangle_i
+\, \frac{ \Delta \beta_i^3 } { 16 }
+\notag \\
+&
+\phantom{\approx}
+%
+-\overline{ \langle \delta E^2 \rangle }_i
+\, \overline{ \langle \delta E^3 \rangle }_i
+\, \frac{ \Delta \beta_i^5 } { 48 }
+%
++\overline{ \langle \delta E^5 \rangle }_i
+\, \frac{ \Delta \beta_i^5 } { 120 }
++ \cdots.
+\notag
+%\label{eq:df_eavbar}
+\end{align}
+%
+The first two terms, up to $O(\Delta \beta_i^3)$,
+are the same as those in Eq. \eqref{eq:df_eavc},
+although higher-order terms differ.
+%
+
+
+
+
+
+\subsection{Euler-Maclaurin-like expansions}
+
+
+
+\subsubsection{Bernoulli polynomials and numbers}
+
+
+
+The Bernoulli numbers are defined as
+%
+\begin{equation}
+  \frac{ t }
+  {e^t - 1}
+=
+\sum_{n = 0}^\infty
+  B_n \frac{ t^n } { n! }.
+\label{eq:Bernoulli_number}
+\end{equation}
+%
+The first few $B_n$ are\cite{
+  whittaker, arfken, abramowitz, wang_specfunc}
+$B_0 = 1$,
+$B_1 = -1/2$,
+$B_2 = 1/6$,
+$B_4 = -1/30$,
+$B_6 = 1/42$,
+$B_8 = -1/30$,
+\dots,
+$B_3 = B_5 = B_7 = \dots = 0$.
+
+
+
+\paragraph{Bernoulli polynomials}
+
+
+
+The Bernoulli polynomials are defined as
+%
+\begin{equation}
+  \frac{ t \, e^{x t} }
+  {e^t - 1}
+=
+\sum_{n = 0}^\infty
+  B_n(x) \frac{ t^n } { n! }.
+\label{eq:Bernoulli_polynomial}
+\end{equation}
+%
+The $x = 0$ case
+recovers the Bernoulli numbers,
+$B_n \equiv B_n(0)$.
+%
+The first few polynomials are\cite{
+  whittaker, arfken, abramowitz, wang_specfunc}
+\begin{align*}
+B_0(x) &= 1, \\
+B_1(x) &= x - \frac 1 2, \\
+B_2(x) &= x^2 - x + \frac 1 6, \\
+B_3(x) &= x^3 - \frac 3 2 x^2 + \frac 1 2 x, \\
+B_4(x) &= x^4 - 2 \, x^3 + x^2 - \frac{1}{30}, \\
+B_5(x) &= x^5 - \frac 5 2 x^4 + \frac 5 3 x^3 - \frac{1}{6} x, \\
+B_6(x) &= x^6 - 3 \, x^5 + \frac 5 2 x^4 - \frac 1 2 x^2 + \frac{1}{42}, \\
+B_7(x) &= x^7 - \frac 7 2 x^6 + \frac 7 2 \, x^5 - \frac 7 6 x^3 + \frac 1 6 x, \\
+B_8(x) &= x^8 - 4 \, x^7 + \frac{14} 3 x^6 - \frac 7 3 \, x^4 + \frac 2 3 x^2 - \frac{1}{30}. \\
+\end{align*}
+
+
+
+
+\paragraph{Symmetry}
+
+
+
+Bernoulli polynomials have the following symmetry.
+%
+\begin{equation*}
+\sum_{n = 0}^\infty
+B_n(1 - x) \, t^n/n!
+=
+\frac{ 2 \, t \, e^{(1 - x) \, t} }
+{ e^t - 1 }
+=
+\frac{ 2 \, (-t) \, e^{ x \, (-t)} }
+{ e^{-t} - 1 }
+=
+\sum_{n = 0}^\infty
+B_n(x) (-t)^n / n!.
+\end{equation*}
+%
+This shows
+\[
+B_n(1 - x) = (-)^n \, B_n(x).
+\]
+Particularly,
+\[
+B_n(1) = (-)^n \, B_n(0).
+\]
+and $B_1(1) = -B_1(0) = 1/2$, and
+\begin{align}
+B_{2s}(1) = B_{2s}(0).
+\label{eq:Bernoulli1_even}
+\end{align}
+
+
+
+\paragraph{Derivative}
+
+
+
+
+Differentiating Eq. \eqref{eq:Euler_polynomial}
+with respect to $x$ yields
+\[
+\sum_{n = 0}^\infty \frac{ B'_n(x) \, t^{n} } { n! }.
+=
+\frac{ t^2 \, e^{x t} }
+{ e^t - 1 }
+=
+\sum_{n = 0}^\infty \frac{ B_n(x) \, t^{n + 1} } { n! }.
+\]
+Comparing the coefficients of $t^n$ yields
+\[
+B'_n(x)
+=
+n \, B_{n-1}(x).
+\]
+and
+\begin{equation}
+  B^{(p)}_n(x)
+=
+\frac{n!}{(n-p)!} \, B_{n-p}(x).
+\label{eq:dBernoulli_polynomial}
+\end{equation}
+Particularly,
+$B^{(n)}_n(x) = n!$.
+
+
+
+\subsubsection{Euler polynomials}
+
+
+
+The Euler polynomials are similarly defined
+%
+\begin{equation}
+  \frac{ 2 \, e^{x t} }
+  {e^t + 1}
+=
+\sum_{n = 0}^\infty
+  E_n(x) \frac{ t^n } { n! }.
+\label{eq:Euler_polynomial}
+\end{equation}
+%
+Again, we shall first study the $x = 0$ case.
+%
+\begin{equation}
+  \frac{ 2 }
+  {e^t + 1}
+=
+\sum_{n = 0}^\infty
+  E_n(0) \frac{ t^n } { n! }.
+\label{eq:Euler0}
 \end{equation}
 
+
+
+\paragraph{Evaluate $E_n(0)$}
+
+
+
+Since
+\[
+\frac{ 2 } {e^t + 1} - 1
+=
+-\frac{ e^t - 1 } {e^t + 1}
+=
+-\tanh \frac t 2,
+\]
+is an odd function,
+$E_{n}(0) = 0$
+for $n = 2, 4, 6, \dots$.
+
+
+
+To evaluate $E_n(0)$,
+we multiply Eq. \eqref{eq:Euler0}
+by
+\[
+e^t + 1
+=
+\sum_{m = 0}^\infty
+  (1 + \delta_{m0}) \frac{ t^m }{ m! }.
+\]
+This yields
+\[
+E_n(0)
+=
+-\frac{1}{2}
+\sum_{k = 0}^{n - 1}
+{n \choose k} E_k(0).
+\]
+The first values are
+$E_0(0) = 1$,
+$E_1(0) = -1/2$,
+$E_3(0) = 1/4$,
+$E_5(0) = -1/2$,
+$E_7(0) = 17/8$,
+\dots,
+%
+and
+%
+\begin{equation}
+\frac 2 {e^t + 1}
+=
+1 - \frac 1 2 t
++ \frac 1 4 \frac{ t^3 }{ 3! }
+- \frac 1 2 \frac{ t^5 }{ 5! }
++ \frac{ 17 }{ 8 } \frac{ t^7 }{ 7! }
+- \dots.
+\label{eq:Euler0_first}
+\end{equation}
+
+
+The numbers can also be derived from the Bernoulli numbers.
+%
+Expanding both sides of
+\[
+t \times \frac{ 2 }{ e^t + 1}
+=
+2 \times \left(
+  \frac{ t }{ e^t - 1 }
+  -
+  \frac{ 2 \, t } { e^{2 \, t} - 1 }
+\right)
+\]
+as series of $t$ yields
+\[
+E_n(0)
+=
+\frac{ 2 \, B_{n + 1} } { n + 1 }
+\left( 1 - 2^{n + 1} \right).
+\]
+%
+For $n = 2 s - 1$,
+\[
+E_{2 s - 1}(0)
+=
+\frac{ B_{2 s} } { s }
+\left( 1 - 4^s \right).
+\]
+
+
+
+\paragraph{First few Euler polynomials}
+
+
+
+
+Multiplying Eq. \eqref{eq:Euler0_first}
+by $e^{x t} = \sum_{m = 0}^\infty x^m \, t^m/m!$ yields
+the first few Euler polynomials\cite{
+abramowitz, wang_specfunc}
+\begin{align*}
+  E_0(x) &= 1, \\
+  E_1(x) &= x -\frac 1 2, \\
+  E_2(x) &= x^2 - x, \\
+  E_3(x) &= x^3 - \frac 3 2 x^2 + \frac 1 4, \\
+  E_4(x) &= x^4 - 2 \, x^3  + x, \\
+  E_5(x) &= x^5 - \frac 5 2 x^4 + \frac 5 2 x^2 -\frac 1 2, \\
+  E_6(x) &= x^6 - 3 \, x^5 + 5 \, x^3 - 3 \, x, \\
+  E_7(x) &= x^7 - \frac 7 2 x^6 + \frac{35}{4} x^4 - \frac{21}{2} x^2 + \frac{ 17 } 8, \\
+  E_8(x) &= x^8 - 4 \, x^7 + 14 \, x^5 - 28 \, x^3 + 17 \, x.
+\end{align*}
+
+
+
+\paragraph{Symmetry}
+
+
+
+Euler polynomials have the following symmetry.
+%
+\begin{equation*}
+\sum_{n = 0}^\infty
+E_n(1 - x) \, t^n/n!
+=
+\frac{ 2 \, e^{(1 - x) \, t} }
+{ e^t + 1 }
+=
+\frac{ 2 \, e^{ x \, (-t)} }
+{ e^{-t} + 1 }
+=
+\sum_{n = 0}^\infty
+E_n(x) (-t)^n / n!.
+\end{equation*}
+%
+This shows
+\[
+E_n(1 - x) = (-)^n \, E_n(x).
+\]
+Particularly,
+\[
+E_n(1) = (-)^n \, E_n(0).
+\]
+and
+\begin{equation}
+E_{2s - 1}(1) = - \, E_{2s - 1}(0).
+\label{eq:Euler1_odd}
+\end{equation}
+
+
+
+\paragraph{Derivative}
+
+
+
+
+Differentiating Eq. \eqref{eq:Euler_polynomial}
+with respect to $x$ yields
+\[
+\sum_{n = 0}^\infty \frac{ E'_n(x) \, t^{n} } { n! }.
+=
+\frac{ 2 \, t \, e^{x t} }
+{ e^t + 1 }
+=
+\sum_{n = 0}^\infty \frac{ E_n(x) \, t^{n + 1} } { n! }.
+\]
+Comparing the coefficients of $t^n$ yields
+\[
+E'_n(x)
+=
+n \, E_{n-1}(x).
+\]
+and
+\begin{equation}
+  E^{(p)}_n(x)
+=
+\frac{n!}{(n-p)!} \, E_{n-p}(x).
+\label{eq:dEuler_polynomial}
+\end{equation}
+Particularly,
+$E^{(n)}_n(x) = n!$.
+
+
+
+
+\subsubsection{Darboux's formula}
+
+
+
+The Darboux's formula\cite{
+whittaker, wang_specfunc}
+is
+%
+\begin{align}
+\psi^{(2n)}(0) [f(b) - f(a)]
+&=
+\sum_{m = 1}^{2n}
+  (-)^{m - 1} h^m
+  \left[
+    \psi^{(2n - m)}(1) \, f^{(m)}(b)
+    -
+    \psi^{(2n - m)}(0) \, f^{(m)}(a)
+  \right]
+\notag \\
+&
++h^{2m + 1}
+\int_0^1
+  \psi(t) \, f^{(2n+1)}(a + t \, h) \, dt,
+\label{eq:Darboux}
+\end{align}
+where
+$\psi(x)$ is a polynomial of $2n$ degrees,
+and $h = b - a$.
+
+
+
+To show Eq. \eqref{eq:Darboux},
+we start from
+%
+\begin{align*}
+&\frac{ d } { dt }
+\left[
+  (-)^{m - 1} h^m \,
+  \psi^{(2 n - m)}(t) \, f^{(m)}(a + t \, h)
+\right]
+\\
+&=
+(-)^{m-1} h^m \,
+  \psi^{(2 n - m + 1)}(t) \, f^{(m)}(a + t \, h)
+-
+(-)^m h^{m + 1} \,
+  \psi^{(2 n - m)}(t) \, f^{(m + 1)}(a + t \, h).
+\end{align*}
+%
+Summing $m$ from $1$ to $2 n$ yields
+%
+\begin{align*}
+&\sum_{m = 1}^{2 n}
+\frac{ d } { dt }
+  \left[
+    (-)^{m - 1} h^m \,
+    \psi^{(2 n - m)}(t) \, f^{(m)}(a + t \, h)
+  \right]
+\\
+&=
+h \,
+  \psi^{(2 n)}(t) \, f^{(1)}(a + t \, h)
+-
+h^{2 n + 1} \,
+  \psi^{(0)}(t) \, f^{(2 n + 1)}(a + t \, h)
+\\
+&=
+h \,
+  \psi^{(2 n)}(0) \, f'(a + t \, h)
+-
+h^{2 n + 1} \,
+  \psi(t) \, f^{(2 n + 1)}(a + t \, h),
+\end{align*}
+%
+where
+we have used the fact that
+$\psi(x)$ is a polynomial of degree $2n$,
+so that
+$\psi^{(2 n)}(t) = \psi^{(2 n)}(0)$.
+%
+Integrating $t$ from $0$ to $1$
+yields Eq. \eqref{eq:Darboux}.
+
+
+
+\paragraph{Using Bernoulli polynomials}
+
+
+
+Using $\psi(t) = B_{2n}(t)/(2n)!$ in Eq. \eqref{eq:Darboux},
+we get
+\begin{align}
+f(b) - f(a)
+&=
+\sum_{m = 1}^{2n}
+  (-)^{m - 1} h^m
+  \left[
+    \frac{ B_m(1) } {m!} \, f^{(m)}(b)
+    -
+    \frac{ B_m(0) } {m!} \, f^{(m)}(a)
+  \right]
+\notag \\
+&=
+\frac{ h \, \left[
+    f'(b) + f'(a)
+  \right]
+} {2 }
+-
+\sum_{s = 1}^{n}
+\, h^{2 s}
+\frac{ B_{2 s} }{ (2 s)! }
+    \, \left[f^{(2 s)}(b) - f^{(2 s)}(a)\right]
+  + \dots,
+\label{eq:Darboux_Bernoulli}
+\end{align}
+where we have used
+Eqs. \eqref{eq:dBernoulli_polynomial} and \eqref{eq:Bernoulli1_even}.
+%
+This is the Euler-Maclaurin formula\cite{
+arfken, whittaker, wang_specfunc, abramowitz}.
+%
+%In the main text,
+%we set $b = \beta_{i + 1}$,
+%$a = \beta_i$.
+
+
+
+\paragraph{Using Euler polynomials}
+
+
+
+Using $\psi(t) = E_{2n}(t)/(2n)!$ in Eq. \eqref{eq:Darboux},
+we get
+\begin{align}
+f(b) - f(a)
+&=
+\sum_{m = 1}^{2n}
+  (-)^{m - 1} h^m
+  \left[
+    \frac{ E_m(1) } {m!} \, f^{(m)}(b)
+    -
+    \frac{ E_m(0) } {m!} \, f^{(m)}(a)
+  \right]
+\notag \\
+&=
+-\sum_{s = 1}^{n}
+h^{2 s - 1}
+\frac{ E_{2 s - 1}(0) }{ (2 s - 1)! }
+    \, \left[f^{(2 s - 1)}(b) + f^{(2 s - 1)}(a)\right]
+  + \dots,
+\label{eq:Darboux_Euler}
+\end{align}
+where we have used
+Eqs. \eqref{eq:dEuler_polynomial} and \eqref{eq:Euler1_odd}.
+%
+%In the main text,
+%we set $b = \beta_{i + 1}$,
+%$a = \beta_i$,
+%and $E_{2s - 1} \rightarrow a_s$.
+
+
+
+\subsection{Euler-Maclaurin expansion in energy}
+
+
+
+The Euler-Maclaurin expansion can be applied to
+the independent variable $E$.
+%
+First, by partial integration, we have
+%
+\begin{align}
+\Delta f_{21}
+=
+\int_{\beta_1}^{\beta_2} E \, d\beta
+=
+E \, \beta \Big|_1^2
+-
+\int_{E_1}^{E_2} \beta \, dE
+\label{eq:EEM1}
+\end{align}
+%
+Now applying
+Eq. \eqref{eq:Darboux_Bernoulli}
+to the second term
+yields
+\begin{align}
+\int_{E_1}^{E_2}
+  \beta \, dE
+&=
+\frac{ \Delta E \, \left[
+    \beta_1 + \beta_2
+  \right]
+} {2 }
+-
+\sum_{s = 1}^{n}
+\, {\Delta E}^{2 s}
+\frac{ B_{2 s} }{ (2 s)! }
+\, \left[\beta^{(2 s - 1)}(E_2) - \beta^{(2 s)}(E_1)\right]
+  + \dots.
+\end{align}
+%
+Substitute this in Eq. \eqref{eq:EEM1}
+yields
+\begin{align}
+\Delta f_{21}
+=
+\frac{
+    E_1 + E_2
+} {2 }
+\Delta \beta
++
+\sum_{s = 1}^{n}
+\, {\Delta E}^{2 s}
+\frac{ B_{2 s} }{ (2 s)! }
+\, \left[\beta^{(2 s - 1)}(E_2) - \beta^{(2 s)}(E_1)\right]
+  + \dots.
+\end{align}
+%
+For the first term in the sum,
+$s = 1$, $B_{2s} = 1/6$,
+and $\beta'(E) = -\langle \delta E^2 \rangle^{-1}$.
+%
+\begin{align}
+\Delta f_{21}
+=
+\frac{
+    E_1 + E_2
+} {2 }
+\Delta \beta
+-
+\frac{ {\Delta E}^{2} }{ 12 }
+\left[
+  \langle \delta E^2 \rangle_2^{-1}
+-
+  \langle \delta E^2 \rangle_1^{-1}
+\right]
++ \dots.
+\notag
+\end{align}
+which is Eq. \eqref{eq:df_tgaus}.
+
+
+
+
+\subsubsection{Derivation from density of states}
+
+
+
+Below is an old derivation from
+the perspective of density of states.
 
 
 To show this,
@@ -2748,575 +3401,35 @@ This is Eq. \eqref{eq:df_tgaus}.
 
 
 
-\subsubsection{Explicit solution of WHAM/BAR equation}
+\subsubsection{Gaussian partition (GP)}
 
 
 
-If the WHAM or BAR equation
-is applied to the two temperature,
-$\Delta f_i$ satisfies
-(assuming equal population)
-%
-\begin{equation*}
-\left\langle
-\frac{ 1 }
-{ 1 + e^{-\Delta \beta_i E + \Delta f_i} }
-\right\rangle_i
-=
-\left\langle
-\frac{ 1 }
-{ 1 + e^{\Delta \beta_i E - \Delta f_i} }
-\right\rangle_{i+1}.
-\end{equation*}
-%
-Expanding the solution
-in powers of $\Delta \beta_i$
-yields
-\begin{align}
-\Delta f_i
-&
-\approx
-\overline{ \langle E \rangle }_i \, \Delta \beta_i
-%
--\overline{ \langle \delta E^3 \rangle }_i
-\, \frac{ \Delta \beta_i^3 } { 12 }
-%
--\Delta \langle E \rangle_i
-\, \Delta \langle \delta E^2 \rangle_i
-\, \frac{ \Delta \beta_i^3 } { 16 }
-\notag \\
-&
-\phantom{\approx}
-%
--\overline{ \langle \delta E^2 \rangle }_i
-\, \overline{ \langle \delta E^3 \rangle }_i
-\, \frac{ \Delta \beta_i^5 } { 48 }
-%
-+\overline{ \langle \delta E^5 \rangle }_i
-\, \frac{ \Delta \beta_i^5 } { 120 }
-+ \cdots.
-\notag
-%\label{eq:df_eavbar}
-\end{align}
-%
-The first two terms, up to $O(\Delta \beta_i^3)$,
-are the same as those in Eq. \eqref{eq:df_eavc},
-although higher-order terms differ.
-%
-
-
-
-
-
-%
-Below, we show how to obtain them from systematic expansions.
-
-
-
-
-
-
-
-\subsection{Bernoulli polynomials and numbers}
-
-
-
-The Bernoulli numbers are defined as
-%
-\begin{equation}
-  \frac{ t }
-  {e^t - 1}
-=
-\sum_{n = 0}^\infty
-  B_n \frac{ t^n } { n! }.
-\label{eq:Bernoulli_number}
-\end{equation}
-%
-The first few $B_n$ are\cite{
-  whittaker, arfken, abramowitz, wang_specfunc}
-$B_0 = 1$,
-$B_1 = -1/2$,
-$B_2 = 1/6$,
-$B_4 = -1/30$,
-$B_6 = 1/42$,
-$B_8 = -1/30$,
-\dots,
-$B_3 = B_5 = B_7 = \dots = 0$.
-
-
-
-\subsubsection{Bernoulli polynomials}
-
-
-
-The Bernoulli polynomials are defined as
-%
-\begin{equation}
-  \frac{ t \, e^{x t} }
-  {e^t - 1}
-=
-\sum_{n = 0}^\infty
-  B_n(x) \frac{ t^n } { n! }.
-\label{eq:Bernoulli_polynomial}
-\end{equation}
-%
-The $x = 0$ case
-recovers the Bernoulli numbers,
-$B_n \equiv B_n(0)$.
-%
-The first few polynomials are\cite{
-  whittaker, arfken, abramowitz, wang_specfunc}
-\begin{align*}
-B_0(x) &= 1, \\
-B_1(x) &= x - \frac 1 2, \\
-B_2(x) &= x^2 - x + \frac 1 6, \\
-B_3(x) &= x^3 - \frac 3 2 x^2 + \frac 1 2 x, \\
-B_4(x) &= x^4 - 2 \, x^3 + x^2 - \frac{1}{30}, \\
-B_5(x) &= x^5 - \frac 5 2 x^4 + \frac 5 3 x^3 - \frac{1}{6} x, \\
-B_6(x) &= x^6 - 3 \, x^5 + \frac 5 2 x^4 - \frac 1 2 x^2 + \frac{1}{42}, \\
-B_7(x) &= x^7 - \frac 7 2 x^6 + \frac 7 2 \, x^5 - \frac 7 6 x^3 + \frac 1 6 x, \\
-B_8(x) &= x^8 - 4 \, x^7 + \frac{14} 3 x^6 - \frac 7 3 \, x^4 + \frac 2 3 x^2 - \frac{1}{30}. \\
-\end{align*}
-
-
-
-
-\subsubsection{Symmetry}
-
-
-
-Bernoulli polynomials have the following symmetry.
-%
-\begin{equation*}
-\sum_{n = 0}^\infty
-B_n(1 - x) \, t^n/n!
-=
-\frac{ 2 \, t \, e^{(1 - x) \, t} }
-{ e^t - 1 }
-=
-\frac{ 2 \, (-t) \, e^{ x \, (-t)} }
-{ e^{-t} - 1 }
-=
-\sum_{n = 0}^\infty
-B_n(x) (-t)^n / n!.
-\end{equation*}
-%
-This shows
-\[
-B_n(1 - x) = (-)^n \, B_n(x).
-\]
-Particularly,
-\[
-B_n(1) = (-)^n \, B_n(0).
-\]
-and $B_1(1) = -B_1(0) = 1/2$, and
-\begin{align}
-B_{2s}(1) = B_{2s}(0).
-\label{eq:Bernoulli1_even}
-\end{align}
-
-
-
-\subsubsection{Derivative}
-
-
-
-
-Differentiating Eq. \eqref{eq:Euler_polynomial}
-with respect to $x$ yields
-\[
-\sum_{n = 0}^\infty \frac{ B'_n(x) \, t^{n} } { n! }.
-=
-\frac{ t^2 \, e^{x t} }
-{ e^t - 1 }
-=
-\sum_{n = 0}^\infty \frac{ B_n(x) \, t^{n + 1} } { n! }.
-\]
-Comparing the coefficients of $t^n$ yields
-\[
-B'_n(x)
-=
-n \, B_{n-1}(x).
-\]
-and
-\begin{equation}
-  B^{(p)}_n(x)
-=
-\frac{n!}{(n-p)!} \, B_{n-p}(x).
-\label{eq:dBernoulli_polynomial}
-\end{equation}
-Particularly,
-$B^{(n)}_n(x) = n!$.
-
-
-
-\subsection{Euler polynomials}
-
-
-
-The Euler polynomials are similarly defined
-%
-\begin{equation}
-  \frac{ 2 \, e^{x t} }
-  {e^t + 1}
-=
-\sum_{n = 0}^\infty
-  E_n(x) \frac{ t^n } { n! }.
-\label{eq:Euler_polynomial}
-\end{equation}
-%
-Again, we shall first study the $x = 0$ case.
-%
-\begin{equation}
-  \frac{ 2 }
-  {e^t + 1}
-=
-\sum_{n = 0}^\infty
-  E_n(0) \frac{ t^n } { n! }.
-\label{eq:Euler0}
-\end{equation}
-
-
-
-\subsubsection{Evaluate $E_n(0)$}
-
-
-
-Since
-\[
-\frac{ 2 } {e^t + 1} - 1
-=
--\frac{ e^t - 1 } {e^t + 1}
-=
--\tanh \frac t 2,
-\]
-is an odd function,
-$E_{n}(0) = 0$
-for $n = 2, 4, 6, \dots$.
-
-
-
-To evaluate $E_n(0)$,
-we multiply Eq. \eqref{eq:Euler0}
-by
-\[
-e^t + 1
-=
-\sum_{m = 0}^\infty
-  (1 + \delta_{m0}) \frac{ t^m }{ m! }.
-\]
-This yields
-\[
-E_n(0)
-=
--\frac{1}{2}
-\sum_{k = 0}^{n - 1}
-{n \choose k} E_k(0).
-\]
-The first values are
-$E_0(0) = 1$,
-$E_1(0) = -1/2$,
-$E_3(0) = 1/4$,
-$E_5(0) = -1/2$,
-$E_7(0) = 17/8$,
-\dots,
-%
-and
-%
-\begin{equation}
-\frac 2 {e^t + 1}
-=
-1 - \frac 1 2 t
-+ \frac 1 4 \frac{ t^3 }{ 3! }
-- \frac 1 2 \frac{ t^5 }{ 5! }
-+ \frac{ 17 }{ 8 } \frac{ t^7 }{ 7! }
-- \dots.
-\label{eq:Euler0_first}
-\end{equation}
-
-
-The numbers can also be derived from the Bernoulli numbers.
-%
-Expanding both sides of
-\[
-t \times \frac{ 2 }{ e^t + 1}
-=
-2 \times \left(
-  \frac{ t }{ e^t - 1 }
-  -
-  \frac{ 2 \, t } { e^{2 \, t} - 1 }
-\right)
-\]
-as series of $t$ yields
-\[
-E_n(0)
-=
-\frac{ 2 \, B_{n + 1} } { n + 1 }
-\left( 1 - 2^{n + 1} \right).
-\]
-%
-For $n = 2 s - 1$,
-\[
-E_{2 s - 1}(0)
-=
-\frac{ B_{2 s} } { s }
-\left( 1 - 4^s \right).
-\]
-
-
-
-\subsubsection{First few Euler polynomials}
-
-
-
-
-Multiplying Eq. \eqref{eq:Euler0_first}
-by $e^{x t} = \sum_{m = 0}^\infty x^m \, t^m/m!$ yields
-the first few Euler polynomials\cite{
-abramowitz, wang_specfunc}
-\begin{align*}
-  E_0(x) &= 1, \\
-  E_1(x) &= x -\frac 1 2, \\
-  E_2(x) &= x^2 - x, \\
-  E_3(x) &= x^3 - \frac 3 2 x^2 + \frac 1 4, \\
-  E_4(x) &= x^4 - 2 \, x^3  + x, \\
-  E_5(x) &= x^5 - \frac 5 2 x^4 + \frac 5 2 x^2 -\frac 1 2, \\
-  E_6(x) &= x^6 - 3 \, x^5 + 5 \, x^3 - 3 \, x, \\
-  E_7(x) &= x^7 - \frac 7 2 x^6 + \frac{35}{4} x^4 - \frac{21}{2} x^2 + \frac{ 17 } 8, \\
-  E_8(x) &= x^8 - 4 \, x^7 + 14 \, x^5 - 28 \, x^3 + 17 \, x.
-\end{align*}
-
-
-
-\subsubsection{Symmetry}
-
-
-
-Euler polynomials have the following symmetry.
-%
-\begin{equation*}
-\sum_{n = 0}^\infty
-E_n(1 - x) \, t^n/n!
-=
-\frac{ 2 \, e^{(1 - x) \, t} }
-{ e^t + 1 }
-=
-\frac{ 2 \, e^{ x \, (-t)} }
-{ e^{-t} + 1 }
-=
-\sum_{n = 0}^\infty
-E_n(x) (-t)^n / n!.
-\end{equation*}
-%
-This shows
-\[
-E_n(1 - x) = (-)^n \, E_n(x).
-\]
-Particularly,
-\[
-E_n(1) = (-)^n \, E_n(0).
-\]
-and
-\begin{equation}
-E_{2s - 1}(1) = - \, E_{2s - 1}(0).
-\label{eq:Euler1_odd}
-\end{equation}
-
-
-
-\subsubsection{Derivative}
-
-
-
-
-Differentiating Eq. \eqref{eq:Euler_polynomial}
-with respect to $x$ yields
-\[
-\sum_{n = 0}^\infty \frac{ E'_n(x) \, t^{n} } { n! }.
-=
-\frac{ 2 \, t \, e^{x t} }
-{ e^t + 1 }
-=
-\sum_{n = 0}^\infty \frac{ E_n(x) \, t^{n + 1} } { n! }.
-\]
-Comparing the coefficients of $t^n$ yields
-\[
-E'_n(x)
-=
-n \, E_{n-1}(x).
-\]
-and
-\begin{equation}
-  E^{(p)}_n(x)
-=
-\frac{n!}{(n-p)!} \, E_{n-p}(x).
-\label{eq:dEuler_polynomial}
-\end{equation}
-Particularly,
-$E^{(n)}_n(x) = n!$.
-
-
-
-
-\subsection{Darboux's formula}
-
-
-
-The Darboux's formula\cite{
-whittaker, wang_specfunc}
-is
-%
-\begin{align}
-\psi^{(2n)}(0) [f(b) - f(a)]
-&=
-\sum_{m = 1}^{2n}
-  (-)^{m - 1} h^m
-  \left[
-    \psi^{(2n - m)}(1) \, f^{(m)}(b)
-    -
-    \psi^{(2n - m)}(0) \, f^{(m)}(a)
-  \right]
-\notag \\
-&
-+h^{2m + 1}
-\int_0^1
-  \psi(t) \, f^{(2n+1)}(a + t \, h) \, dt,
-\label{eq:Darboux}
-\end{align}
-where
-$\psi(x)$ is a polynomial of $2n$ degrees,
-and $h = b - a$.
-
-
-
-To show Eq. \eqref{eq:Darboux},
-we start from
+Another possible approach is seek the point, $\hat E$,
+where the two distribution heights are the same:
 %
 \begin{align*}
-&\frac{ d } { dt }
-\left[
-  (-)^{m - 1} h^m \,
-  \psi^{(2 n - m)}(t) \, f^{(m)}(a + t \, h)
-\right]
-\\
-&=
-(-)^{m-1} h^m \,
-  \psi^{(2 n - m + 1)}(t) \, f^{(m)}(a + t \, h)
--
-(-)^m h^{m + 1} \,
-  \psi^{(2 n - m)}(t) \, f^{(m + 1)}(a + t \, h).
+\rho_i(\hat E)
+=
+\rho_{i+1}(\hat E),
 \end{align*}
 %
-Summing $m$ from $1$ to $2 n$ yields
-%
+or
 \begin{align*}
-&\sum_{m = 1}^{2 n}
-\frac{ d } { dt }
-  \left[
-    (-)^{m - 1} h^m \,
-    \psi^{(2 n - m)}(t) \, f^{(m)}(a + t \, h)
-  \right]
-\\
-&=
-h \,
-  \psi^{(2 n)}(t) \, f^{(1)}(a + t \, h)
--
-h^{2 n + 1} \,
-  \psi^{(0)}(t) \, f^{(2 n + 1)}(a + t \, h)
-\\
-&=
-h \,
-  \psi^{(2 n)}(0) \, f'(a + t \, h)
--
-h^{2 n + 1} \,
-  \psi(t) \, f^{(2 n + 1)}(a + t \, h),
+g(\hat E) \, \exp(-\beta_i \, \hat E + f_i)
+=
+g(\hat E) \, \exp(-\beta_{i+1} \, \hat E + f_{i+1}).
 \end{align*}
 %
-where
-we have used the fact that
-$\psi(x)$ is a polynomial of degree $2n$,
-so that
-$\psi^{(2 n)}(t) = \psi^{(2 n)}(0)$.
+Then, we have Eq. \eqref{eq:df_gpart}.
 %
-Integrating $t$ from $0$ to $1$
-yields Eq. \eqref{eq:Darboux}.
-
-
-
-\subsubsection{Using Bernoulli polynomials}
-
-
-
-Using $\psi(t) = B_{2n}(t)/(2n)!$ in Eq. \eqref{eq:Darboux},
-we get
-\begin{align}
-f(b) - f(a)
-&=
-\sum_{m = 1}^{2n}
-  (-)^{m - 1} h^m
-  \left[
-    \frac{ B_m(1) } {m!} \, f^{(m)}(b)
-    -
-    \frac{ B_m(0) } {m!} \, f^{(m)}(a)
-  \right]
-\notag \\
-&=
-\frac{ h \, \left[
-    f'(b) + f'(a)
-  \right]
-} {2 }
--
-\sum_{s = 1}^{n}
-\, h^{2 s}
-\frac{ B_{2 s} }{ (2 s)! }
-    \, \left[f^{(2 s)}(b) - f^{(2 s)}(a)\right]
-  + \dots,
-\label{eq:Darboux_Bernoulli}
-\end{align}
-where we have used
-Eqs. \eqref{eq:dBernoulli_polynomial} and \eqref{eq:Bernoulli1_even}.
+So far,
+this result is exact.
 %
-This is the Euler-Maclaurin formula\cite{
-arfken, whittaker, wang_specfunc, abramowitz}.
-%
-%In the main text,
-%we set $b = \beta_{i + 1}$,
-%$a = \beta_i$.
+If $\rho_i(E)$ and $\rho_{i+1}(E)$
+are approximated as Gaussian distributions,
+we get Eq. \eqref{eq:Ehat_gpart}.
 
-
-
-\subsubsection{Using Euler polynomials}
-
-
-
-Using $\psi(t) = E_{2n}(t)/(2n)!$ in Eq. \eqref{eq:Darboux},
-we get
-\begin{align}
-f(b) - f(a)
-&=
-\sum_{m = 1}^{2n}
-  (-)^{m - 1} h^m
-  \left[
-    \frac{ E_m(1) } {m!} \, f^{(m)}(b)
-    -
-    \frac{ E_m(0) } {m!} \, f^{(m)}(a)
-  \right]
-\notag \\
-&=
--\sum_{s = 1}^{n}
-h^{2 s - 1}
-\frac{ E_{2 s - 1}(0) }{ (2 s - 1)! }
-    \, \left[f^{(2 s - 1)}(b) + f^{(2 s - 1)}(a)\right]
-  + \dots,
-\label{eq:Darboux_Euler}
-\end{align}
-where we have used
-Eqs. \eqref{eq:dEuler_polynomial} and \eqref{eq:Euler1_odd}.
-%
-%In the main text,
-%we set $b = \beta_{i + 1}$,
-%$a = \beta_i$,
-%and $E_{2s - 1} \rightarrow a_s$.
 
 
 

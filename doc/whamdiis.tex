@@ -18,6 +18,7 @@
 \newcommand{\W}{\mathcal{W}}
 \newcommand{\A}{\mathcal{A}}
 
+% annotation macros
 \newcommand{\repl}[2]{{\color{gray} [#1] }{\color{blue} #2}}
 \newcommand{\add}[1]{{\color{blue} #1}}
 \newcommand{\del}[1]{{\color{gray} [#1]}}
@@ -27,6 +28,18 @@
 
 \title{Accelerating the weighted histogram analysis method
 by direct inversion in the iterative subspace}
+
+
+\author{Cheng Zhang}
+\author{Chun-Liang Lai}
+\author{B. Montgomery Pettitt}
+\email{bmpettitt@utmb.edu}
+\affiliation{
+Sealy Center for Structural Biology and Molecular Biophysics,
+The University of Texas Medical Branch,
+Galveston, Texas 77555-0304, USA}
+
+
 
 \begin{abstract}
 The weighted histogram analysis method (WHAM)
@@ -206,9 +219,16 @@ Several remedies have been proposed\cite{
 shirts2008, bereau2009, kim2011, zhu2012}.
 %
 For example, one may use the Newton-Raphson method,
-which involves a Hessian matrix,
+which involves a \repl{Hessian}{Jacobian} matrix,
 although the approach sometimes can be unstable\cite{
 shirts2008}.
+%
+\note{
+The term ``Hessian'' from optimization problems
+seems to be imply the matrix is symmetric.
+%
+So maybe ``Jacobian'' is a better word?
+}
 %
 Other more advanced techniques include
 the trust region and Broyden-Fletcher-Goldfarb-Shanno (BFGS) methods\cite{zhu2012}.
@@ -274,8 +294,22 @@ of multiple thermodynamic states
 with different parameters,
 such as temperatures, pressures, etc.
 %
-Consider the particular case of $K$ temperatures,
-labeled by the inverse temperature,
+\add{
+Below, we shall first review WHAM
+in the particular case of a temperature scan,
+since it permits simpler mathematics
+without much abstraction.
+%
+Generalizations to umbrella sampling
+and other ensembles are discussed
+afterwards.
+}
+
+
+
+
+Consider \del{the particular case of }$K$ temperatures,
+labeled by\del{ the inverse temperature,}
 $\beta = 1/(k_B T)$,
 as
 $\beta_1, \ldots, \beta_K$.
@@ -376,7 +410,9 @@ roux1995, souaille2001, newman, frenkel}.
 {
 That is,
 the observed distribution, $n_k(E)/N_k$
-should match the exact one, $g(E) \, \exp(-\beta_k E + f_k)$.
+should match the exact one, $g(E) \, w_k(E)$,
+where $w_k(E) \equiv \exp(-\beta_k E + f_k)$
+is the normalized weight of the canonical ensemble.
 %
 The values of Eq. \eqref{eq:gnk} from different $k$
 can be combined to improve the precision,
@@ -397,15 +433,62 @@ proportional to the variance.
 %
 Assuming a Poisson distribution
 so that $\mathrm{var}(n_k) = n_k$,
+%
+\del{
 and $N_k \gg n_k$ so that
 the relative error of $d_k$ is negligible
 in comparison to that of $n_k$,
+}
+%
+\note{
+This phrase is deleted
+because $N_k$ is really not a statistical variable,
+unless you are running a simulated tempering.
+%
+In replica exchange and the traditional umbrella sampling,
+it is simply the number of simulation steps
+spent on simulation $k$.
+%
+There is, however, a constraint:
+$\int n_k(E) \, dE = N_k$,
+but it does not affect the result.
+%
+We probably can get away from such subtleties here,
+for this supposedly quick-and-dirty derivation.
+}
+%
 we have
 $\mathrm{var}(n_k/d_k) \approx n_k / d_k^2 \propto 1/d_k$.
 %
 Averaging the values from Eq. \eqref{eq:gnk}
 using $(1/d_k)^{-1}$ as the relative weight yields
 Eq. \eqref{eq:gE_WHAM}.
+%
+\footnote{
+\add{We can also view Eq. \eqref{eq:gE_WHAM}
+as the result of applying Eq. \eqref{eq:gnk}
+to the composite ensemble of the $K$ canonical ensembles,
+using the following substitutions:
+$n_k(E) \rightarrow \sum_{k = 1}^K n_k(E)$,
+$N_k \rightarrow \sum_{k = 1}^K N_k \equiv N_\mathrm{tot}$,
+and
+$w_k(E) \rightarrow \sum_{k = 1}^K (N_k/N_\mathrm{tot}) \, w_k(E)$.
+%
+The last expression is the normalized ensemble weight
+in the composite ensemble.}}
+%
+\note{
+This new footnote contains a new and cleaner,
+albeit less known (if correct at all),
+derivation of WHAM.
+%
+Is it appropriate to placed as a footnote?
+%
+Or should we type it in the main text,
+or even replace the tradition derivation?
+%
+Or should we delete it?
+}
 %
 Since, for a fixed $E$,
 $d_k(E)$ is proportional to $n_k(E)$,
@@ -466,6 +549,10 @@ we notice from definition that\cite{
 souaille2001}
 }
 {
+\paragraph*{Histogram-free form.}
+
+
+
 The histogram dependency of WHAM
 [in using $n_k(E)$]
 can be avoided
@@ -524,6 +611,11 @@ Since both Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR}
 are invariant under $f_i \rightarrow f_i + c$
 for all $i$ and an arbitrary $c$,
 $f_i$ are determined only up to a constant shift.
+
+
+
+\paragraph*{\add{
+Extensions to umbrella sampling.}}
 
 
 
@@ -587,6 +679,11 @@ can be added back to $f_i$ after the analysis.
 
 
 
+\paragraph*{\add{
+Extensions to other ensembles.}}
+
+
+
 Further,
 $\lambda_i$ and $W$
 can be generalized
@@ -631,6 +728,11 @@ weight
 for multiple non-canonical simulations\cite{
 kim2011}.
 %
+
+
+
+\paragraph*{\add{
+Solution by iteration.}}
 
 
 
@@ -1284,11 +1386,13 @@ is used to update the basis as shown next.
   \caption{\label{fig:scheme}
     Schematic illustrations of the method of
     direct inversion of the iterative subspace (DIIS)
-    for solving a set of equations.
+    for solving a set of equations\add{,
+    $\vct R(\vct f) = \vct 0$}.
     %
     Each trial vector $\vct f_i$
     represents an approximate solution,
-    and the residual vector $\vct R_i$
+    and the residual vector\repl{ $\vct R_i$}{,
+    $\vct R_i \equiv \vct R(\vct f_i)$,}
     represents the correction.
     %
     Given a basis of a few (two here) trial vectors,
@@ -1591,8 +1695,11 @@ $\langle \delta E^2 \rangle_k
 for $k = i$ and $i + 1$.
 %
 \add{%
-The third formula is derived from the series expansion
-of the density of states:
+The third formula is derived from the same expansion
+but using $E$ instead of $\beta$ as the independent variable
+(which requires integration by parts,
+$\int E \, d\beta = E \, \beta - \int \beta \, dE$):
+%
 \begin{equation}
 \Delta f_i
 \approx
@@ -1607,11 +1714,9 @@ of the density of states:
 \label{eq:df_tg}
 \end{equation}
 }
-\note{
-Eq. \eqref{eq:df_tg}
-is referred to as the ``tilted Gaussian''
-method in the Notes.
-}
+
+
+
 
 
 \subsection{\label{sec:results_Ising}
@@ -1907,7 +2012,8 @@ The technique achieves rapid convergence
 by an optimal combination of the approximate
 solutions obtained during iteration.
 %
-DIIS does not require computing the Hessian matrix
+DIIS does not require computing
+the \repl{Hessian}{Jacobian} matrix
 and is numerically stable
 with minimal run time overhead.
 %
@@ -1915,7 +2021,7 @@ Compared to other advanced techniques\cite{
 shirts2008, zhu2012},
 DIIS is relatively simple and easy to implement.
 %although better equation solvers may exist.
-\add{However, methods based on Hessian matrices
+\add{However, methods based on Jacobian matrices
 may further accelerate the solution process
 for final stages.}
 %
@@ -2403,7 +2509,8 @@ only as a linear shift
 to the distribution center.
 %
 It follows that both the origin of $\beta$
-and $E_c$ can be set to any value
+and \repl{$E_c$}{that of $E$, represented by $E_c$,}
+can be set to any value
 that facilitates calculations,
 without affecting the value of $A_{ij}$.
 
@@ -2544,7 +2651,8 @@ achieved at $\beta_1 = \beta_2$.
 
 
 By further assuming Gaussian density of states,
-we can set, without loss of generality,
+we can\del{ set}, without loss of generality,
+\add{ set}
 $\beta_1 = -\sigma_\beta$,
 $\beta_2 = \sigma_\beta$,
 and $E_c = 0$.
@@ -2559,7 +2667,7 @@ we have
 1 - \lambda_1
 &= 2 \, A_{12}
 =
-\sqrt \frac{ a } { 8 \, \pi }
+\sqrt \frac{ a } { 2 \, \pi }
 \int
 \frac
 {
@@ -2571,8 +2679,9 @@ we have
 { \cosh( \sigma_\beta \, E ) }
 \, dE
 \notag \\
+%
 &\approx\frac{ e^{-\sigma_\beta^2 \, \sigma_E^2/2} }
-{ 2 \sqrt{ 1 + \sigma_\beta^2 \, \sigma_E^2 } }
+{ \sqrt{ 1 + \sigma_\beta^2 \, \sigma_E^2 } }
 \left[
   1 + \frac{ \sigma_\beta^4 \, \sigma_E^4 }
   {4\,(1 + \sigma_\beta^2 \, \sigma_E^2)^2 }
@@ -2604,9 +2713,10 @@ with the temperature separation.
 
 
 Similarly,
-for three temperatures
-with an even spacing,
-we can set, without loss of generality,
+for three \add{evenly-spaced} temperatures,
+\del{with an even spacing,}
+we can\del{ set}, without loss of generality,
+\add{ set}
 $\beta_1 = -\Delta \beta$,
 $\beta_2 = 0$,
 and
@@ -2701,7 +2811,8 @@ where
 
 If there are a large number $K$ of temperatures
 in a finite range,
-they can be approximated
+\repl{they can be approximated}
+{we can approximate them}
 by a continuous distribution, $w(\beta)$.
 %
 In this case,
