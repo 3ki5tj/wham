@@ -216,7 +216,7 @@ can suffer from
 slow convergence in the later stages.
 %
 Several remedies have been proposed\cite{
-shirts2008, bereau2009, kim2011, zhu2012}.
+shirts2008, fenwick2008, bereau2009, kim2011, zhu2012}.
 %
 For example, one may use the Newton-Raphson method,
 which involves a \repl{Hessian}{Jacobian} matrix,
@@ -237,7 +237,7 @@ the trust region and Broyden-Fletcher-Goldfarb-Shanno (BFGS) methods\cite{zhu201
 
 An elegant non-iterative alternative is
 the statistical-temperature WHAM (ST-WHAM)\cite{
-kim2011}, which
+fenwick2008, kim2011}, which
 determines the density of states
 through its logarithmic derivative,
 or the statistical temperature.
@@ -500,7 +500,7 @@ $g(E)$\cite{
 shen1991}
 or related quantities\cite{
 woolf1994, *crouzy1994, roux1995,
-kastner2005, *kastner2009, kim2011}.
+kastner2005, *kastner2009, fenwick2008, kim2011}.
 %
 
 
@@ -767,7 +767,7 @@ of Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
 For comparison,
 we briefly discuss
 two non-iterative alternatives, ST-WHAM\cite{
-kim2011}
+fenwick2008, kim2011}
 and UIM\cite{
 kastner2005, *kastner2009}.
 %
@@ -847,7 +847,8 @@ the value from the nearest nonempty bin
 would cause a larger error in $g(E)$].
 %
 ST-WHAM is most convenient in one dimension,
-and its results usually differ only slightly from those of WHAM\cite{kim2011}.
+and its results usually differ only slightly
+from those of WHAM\cite{kim2011}.
 %
 In UIM\cite{
 kastner2005, *kastner2009},
@@ -2841,8 +2842,9 @@ K \int w(\beta') \, c_l(\beta') \, A(\beta, \beta') \, d\beta'
 where
 $A(\beta, \beta')$
 is $A_{ij}$
-with $\beta_i$ and $\beta_j$
-replaced by $\beta$ and $\beta'$, respectively.
+with \repl{$\beta_i$ and $\beta_j$
+replaced by $\beta$ and $\beta'$, respectively.}
+{$\beta_i \rightarrow \beta$ and $\beta_j \rightarrow \beta'$.}
 
 
 
