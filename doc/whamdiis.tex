@@ -219,7 +219,7 @@ Several remedies have been proposed\cite{
 shirts2008, fenwick2008, bereau2009, kim2011, zhu2012}.
 %
 For example, one may use the Newton-Raphson method,
-which involves a \repl{Hessian}{Jacobian} matrix,
+which involves a \repl{Hessian}{Hessian-like} matrix,
 although the approach sometimes can be unstable\cite{
 shirts2008}.
 %
@@ -227,7 +227,9 @@ shirts2008}.
 The term ``Hessian'' from optimization problems
 seems to be imply the matrix is symmetric.
 %
-So maybe ``Jacobian'' is a better word?
+So maybe ``Jacobian of the gradient'' is a better word?
+%
+``Hessian-like'' is an expedient compromise.
 }
 %
 Other more advanced techniques include
@@ -1949,7 +1951,7 @@ In terms of precision
 [Figs. \ref{fig:whamcmp}(b) and \ref{fig:whamcmp}(d)],
 the differences were small.
 %
-\add{
+\del{
 With a denser temperature setup, however,
 multiple-temperature-based methods
 may further gain advantage.
@@ -2014,7 +2016,8 @@ by an optimal combination of the approximate
 solutions obtained during iteration.
 %
 DIIS does not require computing
-the \repl{Hessian}{Jacobian} matrix
+the \repl{Hessian}{Hessian-like} matrix,
+\add{$\partial \vct R(\vct f)/\partial \vct f$,}
 and is numerically stable
 with minimal run time overhead.
 %
@@ -2022,7 +2025,7 @@ Compared to other advanced techniques\cite{
 shirts2008, zhu2012},
 DIIS is relatively simple and easy to implement.
 %although better equation solvers may exist.
-\add{However, methods based on Jacobian matrices
+\add{However, methods based on Hessian matrices
 may further accelerate the solution process
 for final stages.}
 %
@@ -2061,10 +2064,11 @@ or the more approximate UIM.
 
 It is a pleasure to thank
 Dr. Y. Zhao,
+\add{J. A. Drake,}
 Dr. M. R. Shirts,
 Dr. M. W. Deem,
 Dr. J. Ma,
-Dr. J. Perkyns, Dr. G. Lynch and J. A. Drake
+Dr. J. Perkyns\repl{,}{ and} Dr. G. Lynch\del{ and J. A. Drake}
 for helpful discussions.
 %
 The authors acknowledge
@@ -2105,7 +2109,8 @@ for simplicity.
 We assume that the system is subject to
 an unknown underlying configuration-space field, $g(\vy)$,
 such that the distribution of state $k$ is
-$g(\vy) \, q_k(\vy) / Z_k[g]$, with
+\repl{$g(\vy) \, q_k(\vy) / Z_k[g]$}{
+$w_k(\vy) \equiv g(\vy) \, q_k(\vy) / Z_k[g]$}, with
 %the partition function being
 %
 \begin{equation}
@@ -2175,6 +2180,26 @@ Using Eq. \eqref{eq:gy}
 in Eq. \eqref{eq:Zg},
 and then setting $g$ to $1.0$
 yields Eq. \eqref{eq:f_MBAR}.
+%
+\footnote{\add{
+We can also show Eq. \eqref{eq:gy}
+by considering the composite ensemble of the $K$ states.
+%
+The number of visits to a phase-space element at $\vy$
+is given by the product of
+%
+the total sample size,
+$N_\mathrm{tot} = \sum_{k = 1}^K N_k$,
+the distribution of the composite ensemble
+$w_\mathrm{tot} = \sum_{k = 1}^K (N_k/N_\mathrm{tot}) \, w_k(\vy)$,
+and the volume $d\vy$.
+%
+This gives
+$g(\vy) \, \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g] \, d\vy$,
+and it should match the observed number of visits
+to the element,
+$\sum_{j = 1}^K n_j(\vy) \, d\vy$,
+with $n_j(\vy) \equiv \sum_{\vx}^{(j)} \delta(\vx - \vy)$.}}
 
 
 

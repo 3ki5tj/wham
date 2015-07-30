@@ -1,6 +1,6 @@
 prj=whamdiis
 
-ver=3.2
+ver=3.3
 
 figgps=$(wildcard fig/*.gp)
 pdffigs=$(patsubst %.gp,%.pdf, $(figgps))
