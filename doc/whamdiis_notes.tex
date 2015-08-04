@@ -129,6 +129,7 @@ yields Eq. \eqref{eq:gE_WHAM}.
 \subsection{Optimal combination of independent data}
 
 
+
 In the main text,
 we mentioned the result that
 in an optimal combination,
@@ -170,6 +171,259 @@ $c_k \propto 1/\mathrm{var}(x_k)$,
 in other words,
 the optimal weight
 is inversely proportional to the variance.
+
+
+
+\subsection{Variance of the histogram}
+
+
+
+The classical derivation of WHAM from the variance analysis
+suffers from the following drawback.
+%
+In the literature,
+the variance of the histogram height $H(E) = n(E) \, \Delta E$,
+is usually assumed to satisfies a Poisson distribution,
+such that $\mathrm{var} H(E) = H(E)$.
+%
+Strictly speaking, however,
+this is incompatible with the setting here;
+and we shall show below that
+the right formula is
+$\mathrm{var} H(E) = H(E) [ 1 - H(E)/N]$,
+with $N = \sum_E H(E)$ being the sample size.
+%
+
+
+
+The conceptual difference is the following.
+%
+In the correct setting,
+for each simulation $k$,
+we have a fixed total sample size $N_k$.
+%
+The energy $E_i$ of each data point $x_i$
+satisfies the canonical distribution.
+
+
+
+If we assume a Poisson distribution,
+we essentially allow the total number of data points
+to fluctuate (as if the data points come from a grand-canonical ensemble).
+%
+In this way,
+each energy bin can \emph{independently} grow
+a random number of data points.
+%
+The total number of data points
+from all bins is not fixed, however.
+
+
+
+\subsubsection{Derivation of the variance}
+
+
+
+The variance of histogram
+of the correct setting
+can be computed as follows.
+%
+We start by defining an indicator function $\chi_E(x)$,
+which is $1$ if $x \in (E - \Delta E/2, E + \Delta E/2)$,
+or $0$ otherwise.
+%
+Then, for a sample of $N$ points,
+$E_1$, $E_2$, \dots, $E_N$,
+we have
+%
+\[
+  H = \sum_{j = 1}^N \chi( E_j ),
+\]
+%
+Note that,
+so far $H$ is a random variable,
+instead of its average value, $\langle H \rangle$.
+%
+To compute the variance of $H$,
+we compute the generating function\cite{vankampen}.
+\begin{align*}
+G(k)
+&\equiv
+\langle
+  \exp( i k H )
+\rangle
+\\
+&=
+\left\langle
+\exp\left[ i k \sum_{j = 1}^N \chi( E_j) \right]
+\right\rangle
+\\
+&=
+\prod_{j = 1}^N
+\left\langle
+\exp[ i k \chi( E_j) ]
+\right\rangle.
+\end{align*}
+%
+In the last step,
+we assume that the data points are independent.
+%
+Since the data points are identical,
+we further have
+\begin{align*}
+G(k)
+&=
+  \left\langle
+    \exp[ i k \chi( E_1) ]
+  \right\rangle^N.
+\end{align*}
+%
+Or
+\begin{align*}
+\log G(k)
+&=
+N \log
+  \left\langle
+    \exp[ i k \chi( E_1) ]
+  \right\rangle
+.
+\end{align*}
+
+
+Now
+\begin{align*}
+  \left\langle
+    \exp[ i k \chi( E_1) ]
+  \right\rangle
+&=
+  1 +
+  \sum_{p = 1}^\infty
+    \frac{ (i k)^p }{ p! }
+    \langle
+    \chi^p( E_1 )
+    \rangle
+\\
+&=
+  1  +
+  \sum_{p = 1}^\infty
+    \frac{ (i k)^p }{ p! }
+    \langle
+    \chi( E_1 )
+    \rangle
+\\
+&=
+  1 -
+    \langle
+    \chi( E_1 )
+    \rangle
+  +
+  \langle
+  \chi( E_1 )
+  \rangle
+  \sum_{p = 0}^\infty
+    \frac{ (i k)^p }{ p! }
+\\
+&=
+  1
+  +
+  \langle
+  \chi( E_1 )
+  \rangle
+  [\exp( i k ) - 1]
+\\
+&=
+  1
+  +
+  \langle
+  \chi( E_1 )
+  \rangle
+  \left[
+  i k
+  +
+  \frac{ (i k)^2 } { 2! }
+  + \dots
+  \right].
+\end{align*}
+%
+Here,
+we have used the fact that
+$\chi^p(E) = \chi(E)$.
+
+
+
+With the definition $n \equiv \langle \chi( E_1 ) \rangle$,
+we have
+%
+\begin{align*}
+\log G(k)
+&=
+N
+\left[
+ n \cdot (i k)
++
+  n
+  \left(
+    1 - n
+  \right)
+  \frac{ (i k)^2 } { 2! }
++ \dots
+\right]
+.
+\end{align*}
+%
+This means
+%
+\begin{align*}
+\langle H \rangle
+&=
+N \cdot n,
+\\
+\langle \Delta H^2 \rangle
+&=
+N \cdot n (1 - n)
+=
+H \cdot ( 1 - H/N).
+\end{align*}
+%
+This shows the variance of
+the histogram height
+is $H (1 - H/N)$,
+which is not equal to $H$,
+unless $H \ll N$.
+
+
+
+
+\subsubsection{Possible resolution}
+
+
+
+The above analysis clear shows
+that for the classical derivation of WHAM
+does not strictly minimize the variance of
+the density of states or the distributions.
+%
+However,
+it does not means that
+the free energies obtained from WHAM are not optimized.
+%
+Actually, from the more rigorous derivation of BAR/MBAR,
+which yields the same result as WHAM,
+we know that the estimates of the free energies
+are in fact optimized.
+%
+Besides the composite ensemble argument,
+clearly supports that.
+
+
+So, we can say that the WHAM result
+optimizes the free energy,
+but it may not optimize
+the histograms of finite width.
+%
+This difference may be
+similar to the difference between canonical and microcanonical ensembles.
+
 
 
 
@@ -337,6 +591,10 @@ f_i
 \end{align*}
 which is Eq. (7).
 
+
+
+
+\section{Methods: ST-WHAM and related methods}
 
 
 

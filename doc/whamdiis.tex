@@ -325,7 +325,10 @@ at those temperatures.
 
 
 In WHAM,
-we first estimate the density of states, $g(E)$, from
+we first estimate the density of states,
+\repl{$g(E)$}{$g(E) = \int \delta(\E(\vx) - E) \, d\vx$,
+as the number density of configurations,
+$\vx$, with energy $E$}, from
 %
 \begin{equation}
 g(E)
@@ -349,8 +352,8 @@ is usually estimated
 from the energy histogram as
 the number of independent trajectory frames
 whose energies fall in the interval
-$(E - h/2, E + h/2)$
-divided by $h$
+\repl{$(E - h/2, E + h/2)$
+divided by $h$}{$(E - \Delta E/2, E + \Delta E/2)$ divided by $\Delta E$}
 (we shall omit ``independent'' below for simplicity);
 %
 \repl{
@@ -434,33 +437,36 @@ the relative weight is inversely
 proportional to the variance.
 %
 Assuming a Poisson distribution
-so that $\mathrm{var}(n_k) = n_k$,
-%
-\del{
+so that \repl{
+$\mathrm{var}(n_k) = n_k$,
 and $N_k \gg n_k$ so that
 the relative error of $d_k$ is negligible
 in comparison to that of $n_k$,
 }
+{
+$\mathrm{var}(n_k \, \Delta E) \approx n_k \, \Delta E$,
+}
 %
 \note{
 This phrase is deleted
-because $N_k$ is really not a statistical variable,
-unless you are running a simulated tempering.
+because $N_k$ is really not a statistical variable.
 %
-In replica exchange and the traditional umbrella sampling,
-it is simply the number of simulation steps
+It is simply the number of simulation steps
 spent on simulation $k$.
 %
 There is, however, a constraint:
-$\int n_k(E) \, dE = N_k$,
-but it does not affect the result.
+$\int n_k(E) \, dE = N_k$.
+%
+This constraint has to be ignored in order
+to assume the Poisson distribution of each $n_k(E) \, \Delta E$,
+i.e., each bin is an independent variable.
 %
 We probably can get away from such subtleties here,
 for this supposedly quick-and-dirty derivation.
 }
 %
-we have
-$\mathrm{var}(n_k/d_k) \approx n_k / d_k^2 \propto 1/d_k$.
+we have \repl{$\mathrm{var}(n_k/d_k) \approx n_k / d_k^2 \propto 1/d_k$}{
+$\mathrm{var}(n_k \, \Delta E / d_k) \approx n_k \, \Delta E/ d_k^2 \propto 1/ d_k$}.
 %
 Averaging the values from Eq. \eqref{eq:gnk}
 using $(1/d_k)^{-1}$ as the relative weight yields
@@ -492,7 +498,7 @@ or even replace the tradition derivation?
 Or should we delete it?
 }
 %
-Since, for a fixed $E$,
+Since for a fixed $E$,
 $d_k(E)$ is proportional to $n_k(E)$,
 several variants of WHAM
 may be derived
@@ -980,7 +986,8 @@ from Eq. \eqref{eq:c_normalize} and
 \end{equation}
 %
 for all $i$,
-with $\lambda$ being the Lagrange multiplier.
+with $\lambda$ being \repl{the}{an unknown} Lagrange multiplier
+\add{that is to be determined from along with $c_i$}.
 %
 Now the corresponding combination
 of the trial vectors,
@@ -1041,7 +1048,7 @@ as shown in Fig. \ref{fig:scheme}(c).
 The number of bases, $M$, however,
 should not exceed $K + 1$
 (or, in our case, $K$
-because of the arbitrary shift constant)
+because of the arbitrary shift constant \add{of $f_i$})
 to keep Eqs. \eqref{eq:cj_DIIS}
 independent,
 %
@@ -1079,9 +1086,34 @@ is used to update the basis as shown next.
 \tikzstyle{fRarrowx}=[->, very thick]
 \tikzstyle{fRarr}=[->, thin]
 \tikzstyle{fRlabel}=[inner sep=0pt, text=black!80!white]
+\tikzstyle{drawNode}=[inner sep=0pt, minimum size=10mm, draw, fill=gray!10!white]
+
 
 \begin{figure}[h]
   \begin{tikzpicture}
+    \newcommand{\sz}{4cm}
+    %
+    %
+    %
+    %
+    % origin of the overall plot
+    %
+    %
+    %
+    \newcommand{\Aox}{0.85*\sz}
+    \newcommand{\Aoy}{1.60*\sz}
+    %
+    \node (label-A) at (-0.10*\sz, 1.9*\sz)
+      [label=below:{\large (a)}] {};
+    \node[circle] (fi) at (\Aox - 0.5*\sz, \Aoy)
+      [drawNode] {\large $\vct f_i$};
+    \node[circle] (Ri) at (\Aox + 0.5*\sz, \Aoy)
+      [drawNode] {\large $\vct R_i$};
+    \path[]
+      (fi) edge[bend left,->,thick] node [above] {Equation} (Ri)
+      (Ri) edge[bend left,->,thick,dotted] node [below] {DIIS} (fi);
+    %
+    %
     %
     %
     % The potential function to minimize is
@@ -1112,9 +1144,10 @@ is used to update the basis as shown next.
     % with the x axis.
     %
     %
-    \newcommand{\sz}{4cm}
-    \node (label-A) at (-0.10*\sz, 1.28*\sz) [label=below:{(a)}] {};
-    \node (label-B) at ( 1.20*\sz, 1.28*\sz) [label=below:{(b)}] {};
+    \node (label-B) at (-0.10*\sz, 1.28*\sz)
+      [label=below:{\large (b)}] {};
+    \node (label-C) at ( 1.20*\sz, 1.28*\sz)
+      [label=below:{\large (c)}] {};
     \begin{scope}
       %\clip ({-0.08*\sz}, {-0.08*\sz}) rectangle ({1.3*\sz}, {1.15*\sz});
       %
@@ -1298,6 +1331,7 @@ is used to update the basis as shown next.
     %
     %
     %
+    %
     % Secant plot
     %
     %
@@ -1313,7 +1347,8 @@ is used to update the basis as shown next.
     %
     %
     %
-    \node (label-C) at ({\Sox - 1.60*\Ssx}, {\Soy + 1.00*\Ssy}) [label=below:{(c)}] {};
+    \node (label-D) at ({\Sox - 1.60*\Ssx}, {\Soy + 1.00*\Ssy})
+      [label=below:{\large (d)}] {};
     %
     \node (Sx) at ({\Sox + 1.4*\Ssx}, {\Soy})
       [ emptydot,
@@ -1388,15 +1423,35 @@ is used to update the basis as shown next.
   %
   \caption{\label{fig:scheme}
     Schematic illustrations of the method of
-    direct inversion of the iterative subspace (DIIS)
-    for solving a set of equations\add{,
-    $\vct R(\vct f) = \vct 0$}.
+    direct inversion of the iterative subspace (DIIS).
     %
-    Each trial vector $\vct f_i$
-    represents an approximate solution,
-    and the residual vector\repl{ $\vct R_i$}{,
-    $\vct R_i \equiv \vct R(\vct f_i)$,}
-    represents the correction.
+    \add{(a) As an iterative method,
+    DIIS solves the equation,
+    $\vct R(\vct f) = \vct 0$,
+    by a feedback loop.
+    %
+    When the equation is applied to
+    a trial solution,
+    represented by vector $\vct f_i$,
+    we get a residual vector
+    $\vct R_i \equiv \vct R(\vct f_i)$,
+    whose magnitude indicates the error.
+    %
+    Ideally, if $\vct f_i$ were the true solution,
+    $\vct R_i$ would be zero.
+    %
+    In the feedback step,
+    we wish to correct $\vct f_i$ using $\vct R_i$.
+    %
+    The task of DIIS is to construct
+    from a few previous vectors
+    accumulated during the iteration
+    an optimal trial vector
+    $\vct{\hat f}$
+    with hopefully the smallest error $\| \vct{\hat R} \|$
+    to help the next round of iteration.}
+    %
+    (b) and (c)
     %
     Given a basis of a few (two here) trial vectors,
     DIIS seeks the combination
@@ -1404,7 +1459,7 @@ is used to update the basis as shown next.
     that minimizes the magnitude
     $\| \vct{\hat R} \|$
     under the constraint
-    $\sum_i c_i = 1$ [panel (b)].
+    $\sum_i c_i = 1$ [panel (c)].
     %
     The corresponding combination
     of the trial vectors,
@@ -1418,7 +1473,7 @@ is used to update the basis as shown next.
     and use it to update the basis
     for the next round of iteration.
     %
-    (c) If the vectors are one-dimensional (i.e., scalars),
+    (d) If the vectors are one-dimensional (i.e., scalars),
     it is possible to find a vanishing $\vct{\hat R}$, and
     DIIS is equivalent to the secant method.
   }
@@ -1585,7 +1640,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     %
     The run times are inversely scaled
     by a factor $\tau$
-    for better comparison.
+    for better \repl{comparison}{alignment with the numbers of iterations}.
     %
     The scaling factors $\tau$ for cases 1-4 are
     $12.54$, $1866$, $14.91$, and $252.2$ seconds,
@@ -1673,8 +1728,8 @@ from \repl{two}{three} approximate formulae.
 where
 $\overline{ A }_i \equiv (A_{i+1} + A_i)/2$.
 %
-\repl{This formula can be improved}{The second is the improvement}
-by an Euler-Maclaurin expansion\cite{
+\repl{This formula can be improved by an}{The second is an improvement by the}
+Euler-Maclaurin expansion\cite{
 arfken, *abramowitz, *wang_specfunc, whittaker}:
 \del{as}
 %
@@ -1778,7 +1833,7 @@ the errors were of the same order of magnitude.
     Refs. \onlinecite{ferdinand1969} and \onlinecite{beale1996},
     respectively.
     %
-    The bin size of the energy histograms is $h = 4$.
+    The bin size of the energy histograms is $\Delta E = 4$.
   }
 \end{figure}
 
@@ -1844,9 +1899,8 @@ were $1.0$ and $2.0$, respectively.
 
 As shown in Fig. \ref{fig:nsnt},
 DIIS WHAM effectively
-reduced the run time significantly.
-%
-This demonstration also shows that
+reduced the run time significantly\repl{.
+This demonstration also shows that}{, although}
 the efficiency of DIIS does not
 always increase with
 the number of basis set members, $M$.
@@ -1995,7 +2049,7 @@ by a small bin size for smaller samples.
     The lines are a guide for the eyes.
     %
     (e) Energy histograms collected
-    with bin width $h = 1.0$.
+    with bin width $\Delta E = 1.0$.
   }
 \end{figure}
 %\end{figure*}
@@ -2109,8 +2163,7 @@ for simplicity.
 We assume that the system is subject to
 an unknown underlying configuration-space field, $g(\vy)$,
 such that the distribution of state $k$ is
-\repl{$g(\vy) \, q_k(\vy) / Z_k[g]$}{
-$w_k(\vy) \equiv g(\vy) \, q_k(\vy) / Z_k[g]$}, with
+\repl{$g(\vy) \, q_k(\vy) / Z_k[g]$}{$w_k(\vy) \equiv g(\vy) \, q_k(\vy) / Z_k[g]$}, with
 %the partition function being
 %
 \begin{equation}
@@ -2676,7 +2729,7 @@ achieved at $\beta_1 = \beta_2$.
 
 
 
-By further assuming Gaussian density of states,
+By further assuming \add{a }Gaussian density of states,
 we can\del{ set}, without loss of generality,
 \add{ set}
 $\beta_1 = -\sigma_\beta$,
@@ -2740,7 +2793,7 @@ with the temperature separation.
 
 Similarly,
 for three \add{evenly-spaced} temperatures,
-\del{with an even spacing,}
+\del{with an even spacing,}%
 we can\del{ set}, without loss of generality,
 \add{ set}
 $\beta_1 = -\Delta \beta$,

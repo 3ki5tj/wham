@@ -103,11 +103,14 @@ set lmargin 3
 unset ylabel
 
 
+set key at screen 0, ht0 + 0.04 left bottom Left reverse font "Times,32" width -4.5 vertical maxrows 2 samplen 2.0
+
+
 plot [:][-0.15:0.3] \
-  "../../data/1VII/whamcmpr0.0001/xvgerrwham.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 1   notitle, \
-  "../../data/1VII/whamcmpr0.0001/xvgerrde100wham.dat"     u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 2   notitle, \
-  "../../data/1VII/whamcmpr0.0001/xvgerrmbar.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 3   notitle, \
-  "../../data/1VII/whamcmpr0.0001/xvgerrbarmbar.dat"       u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 4   notitle, \
+  "../../data/1VII/whamcmpr0.0001/xvgerrwham.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 1   t  "WHAM, {/Symbol D}{/Times-Italic E} = 1", \
+  "../../data/1VII/whamcmpr0.0001/xvgerrde100wham.dat"     u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 2   t  "WHAM, {/Symbol D}{/Times-Italic E} = 100", \
+  "../../data/1VII/whamcmpr0.0001/xvgerrmbar.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 3   t  "MBAR", \
+  "../../data/1VII/whamcmpr0.0001/xvgerrbarmbar.dat"       u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 4   t  "BAR_{({/Times-Italic i}, {/Times-Italic i} + 1)}", \
   "../../data/1VII/whamcmpr0.0001/xvgerrstwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 11  notitle, \
   "../../data/1VII/whamcmpr0.0001/xvgerrde100stwham.dat"   u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 12  notitle, \
   "../../data/1VII/whamcmpr0.0001/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($3 -$5) : 1/0) w lp ls 13  notitle, \
@@ -142,16 +145,16 @@ set ylabel "&{i}_{/Symbol*2.0 \341} {/Symbol-Oblique d} {/Times-Italic f_i}^2&{i
 set ytics 0.02
 set mytics 2
 
-set key at screen 0, ht0 + 0.04 left bottom Left reverse font "Times,32" width -7.5 vertical maxrows 2 samplen 2.0
+set key at screen wd1 - 0.13, ht0 + 0.04
 
 
 plot [:][0.01:0.09] \
-  "../../data/1VII/whamcmpr0.01/xvgerrwham.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 1   t "WHAM, {/Times-Italic h} = 1", \
-  "../../data/1VII/whamcmpr0.01/xvgerrde100wham.dat"     u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 2   t "WHAM, {/Times-Italic h} = 100", \
-  "../../data/1VII/whamcmpr0.01/xvgerrmbar.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 3   t "MBAR", \
-  "../../data/1VII/whamcmpr0.01/xvgerrbarmbar.dat"       u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 4   t "BAR, ({/Times-Italic i}, {/Times-Italic i} + 1)", \
-  "../../data/1VII/whamcmpr0.01/xvgerrstwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 11  t "ST-WHAM, {/Times-Italic h} = 1", \
-  "../../data/1VII/whamcmpr0.01/xvgerrde100stwham.dat"   u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 12  t "ST-WHAM, {/Times-Italic h} = 100", \
+  "../../data/1VII/whamcmpr0.01/xvgerrwham.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 1   notitle, \
+  "../../data/1VII/whamcmpr0.01/xvgerrde100wham.dat"     u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 2   notitle, \
+  "../../data/1VII/whamcmpr0.01/xvgerrmbar.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 3   notitle, \
+  "../../data/1VII/whamcmpr0.01/xvgerrbarmbar.dat"       u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 4   notitle, \
+  "../../data/1VII/whamcmpr0.01/xvgerrstwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 11  t "ST-WHAM, {/Symbol D}{/Times-Italic E} = 1", \
+  "../../data/1VII/whamcmpr0.01/xvgerrde100stwham.dat"   u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 12  t "ST-WHAM, {/Symbol D}{/Times-Italic E} = 100", \
   "../../data/1VII/whamcmpr0.01/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 13  notitle, \
   "../../data/1VII/whamcmpr0.01/xvgerraveambar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 21  notitle, \
   "../../data/1VII/whamcmpr0.01/xvgerravebmbar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 22  notitle, \
@@ -168,7 +171,7 @@ unset ylabel
 set ytics 0.5
 set mytics 5
 
-set key at screen wd1 + 0.16, ht0 + 0.04 width -4.3
+set key at screen wd1 + 0.14, ht0 + 0.04 width -4.5
 
 plot [:][0.1:1.0] \
   "../../data/1VII/whamcmpr0.0001/xvgerrwham.dat"          u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 1   notitle, \
@@ -177,7 +180,7 @@ plot [:][0.1:1.0] \
   "../../data/1VII/whamcmpr0.0001/xvgerrbarmbar.dat"       u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 4   notitle, \
   "../../data/1VII/whamcmpr0.0001/xvgerrstwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 11  notitle, \
   "../../data/1VII/whamcmpr0.0001/xvgerrde100stwham.dat"   u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 12  notitle, \
-  "../../data/1VII/whamcmpr0.0001/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 13  t "UIM, {/Times-Italic h} = 1", \
+  "../../data/1VII/whamcmpr0.0001/xvgerruiwham.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 13  t "UIM, {/Symbol D}{/Times-Italic E} = 1", \
   "../../data/1VII/whamcmpr0.0001/xvgerraveambar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 21  t "Eq. (10)", \
   "../../data/1VII/whamcmpr0.0001/xvgerravebmbar.dat"      u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 22  t "Eq. (11)", \
   "../../data/1VII/whamcmpr0.0001/xvgerrtgmbar.dat"        u (1/BOLTZ/$2):(($1 > 0) ? ($4) : 1/0) w lp ls 23  t "Eq. (12)" \
