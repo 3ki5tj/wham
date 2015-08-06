@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title> Cluster sampling for the Lennard-Jones fluid </title>
+  <link rel="stylesheet" type="text/css" href="./css/default.css" />
+  <script type="text/javascript" src="./js/dygraph-combined.js"></script>
+  <script type="text/javascript" src="./js/util.js"></script>
+  <script type="text/javascript" src="./js/mtrand.js"></script>
+  <script type="text/javascript" src="./js/draw.js"></script>
+  <script type="text/javascript" src="./js/mdutil.js"></script>
+  <script type="text/javascript" src="./js/is2main.js"></script>
+</head>
+<body onload="init()">
+
+<div class="wrapper">
+
+<h2 class="center">
+  Weighted histogram analysis on the Ising model
+</h2>
+
+
+
+<h3>Online demonstration</h3>
+
+
+
+<!-- container -->
+<div id="container">
+
+  <input id="containerscale" type="range" value="500"
+    min="400" max="600" step="4"
+    onchange="resizecontainer('containerscale')">
+
+  <div id="simulbox">
+    <canvas id="is2box" width="500" height="500"
+      style="border: 1px solid #cccccc;"
+      onclick="pausesimul2()"></canvas>
+  </div>
+
+  <div id="controlbox">
+    <span onclick="startsimul()" id="start"
+      class="smallbtn" style="color: #40dd40;"
+    >&#9654;</span>
+    <span onclick="pausesimul()" id="pause"
+      class="smallbtn" style="line-height:150%;"
+    >&#9724;</span>
+    <!-- &#9616;&#9616; -->
+    <span onclick="stopsimul()" id="stop"
+      class="smallbtn" style="color: #dd4020;"
+    >&#9679;</span>
+    <!-- Zoom: -->
+    <input id="ljscale" type="range" value="1.0"
+      min="0.05" max="3.0" step="0.01"
+      style="width: 400px; height: 10px; border: 1px solid #cccccc;"
+      onchange="changescale()">
+    <br>
+  </div>
+
+  <div id="histplot" class="plot"></div>
+
+  <div id="vplot" class="plot"></div>
+
+  <div id="tabsrow">
+    <span class="tab" onclick="showtab('system-params')">System</span>
+    <span class="tab" onclick="showtab('wham-params')">WHAM</span>
+  </div>
+
+  <div class="params-panel" id="system-params">
+  <div class="panel-title">System</div>
+
+  Number of particles per side,
+  <span class="math"><i>L</i></span>:
+  <input type="text" size="6" value="32" id="L"
+    onchange="changeparams()">.
+  &nbsp;
+  <br>
+
+  Density,
+  <span class="math"><i>&rho;</i></span>:
+  <input type="text" size="6" value="0.35" id="density"
+    onchange="changeparams()">.
+  &nbsp;
+
+  Temperature,
+  <span class="math"><i>T</i><sub>min</sub></span>:
+  <input type="text" size="6" value="1.5" id="Tmin"
+    onchange="changeparams()">,
+  <span class="math"><i>T</i><sub>max</sub></span>:
+  <input type="text" size="6" value="3.1" id="Tmin"
+    onchange="changeparams()">,
+  <span class="math"><i>T</i><sub>cnt</sub></span>:
+  <input type="text" size="6" value="17" id="Tcnt"
+    onchange="changeparams()">,
+  &nbsp;
+  <br>
+
+  <br>
+
+  </div> <!-- panel -->
+
+
+
+  <div class="params-panel" id="wham-params">
+  <div class="panel-title">WHAM parameter</div>
+
+  Tolerance:
+  10<sup>&minus;12</sup><input type="range" value="-7"
+    min="-12" max="0" step="0.1"
+    style="width: 140px; border: 1px solid #cccccc;"
+    id="log10tol">1.
+  <br>
+
+  Number of bases <span class="math"><i>M</i></span>:
+  <input type="range" value="5"
+    min="1" max="30" step="1"
+    style="width: 200px; border: 1px solid #cccccc;"
+    id="mdiis_nbases" onchange="changeparams()">.
+  &nbsp;
+  <br>
+
+  </div>
+
+
+  <div id="sinfo"></div>
+
+
+</div> <!-- container -->
+
+
+
+<h3>Download</h3>
+
+<div class="panel">
+  <p>The source code can be found at
+  <ul>
+    <li>
+      <a href="http://github.com/cheng2zhang/fclus">GitHub</a>
+      (source code).
+    </li>
+    <li>
+      <a href="https://www.dropbox.com/sh/1918tkacrp5stuo/AADMxMNMTKs_Zp1zDHRMObGra">Dropbox</a>
+      (source code plus some extra files).
+    </li>
+    <li>
+      <span class="code">/Bossman/cz1/fclus</span>
+      (Pettitt group internal link).
+    </li>
+  </ul>
+</div>
+
+
+</div> <!-- wrapper of the entire page -->
+</body>
+</html>

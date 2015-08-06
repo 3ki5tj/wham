@@ -27,6 +27,7 @@
 \newcommand{\Ham}{\mathcal{H}}
 \newcommand{\W}{\mathcal{W}}
 \newcommand{\A}{\mathcal{A}}
+\newcommand{\var}{\mathrm{var}}
 
 % annotation macros
 \newcommand{\repl}[2]{{\color{gray} [#1] }{\color{blue} #2}}
@@ -150,12 +151,12 @@ with
 The variance of $X$ is
 %
 \begin{align*}
-  \mathrm{var}(X)
+  \var(X)
 =
-\sum_{k = 1}^K c_k^2 \mathrm{var}(x_k)
+\sum_{k = 1}^K c_k^2 \, \var(x_k)
 \end{align*}
 %
-To minimize $\mathrm{var}(X)$,
+To minimize $\var(X)$,
 we seek the minimum
 under the Lagrange multiplier,
 $\lambda$ of Eq. \eqref{eq:constraint_normalization}.
@@ -163,11 +164,11 @@ $\lambda$ of Eq. \eqref{eq:constraint_normalization}.
 This yields,
 %
 \begin{align*}
-  2 c_k \, \mathrm{var}(x_k) - \lambda = 0
+  2 c_k \, \var(x_k) - \lambda = 0
 \end{align*}
 %
 which shows that
-$c_k \propto 1/\mathrm{var}(x_k)$,
+$c_k \propto 1/\var(x_k)$,
 in other words,
 the optimal weight
 is inversely proportional to the variance.
@@ -184,13 +185,13 @@ suffers from the following drawback.
 In the literature,
 the variance of the histogram height $H(E) = n(E) \, \Delta E$,
 is usually assumed to satisfies a Poisson distribution,
-such that $\mathrm{var} H(E) = H(E)$.
+such that $\var H(E) = H(E)$.
 %
 Strictly speaking, however,
 this is incompatible with the setting here;
 and we shall show below that
 the right formula is
-$\mathrm{var} H(E) = H(E) [ 1 - H(E)/N]$,
+$\var H(E) = H(E) [ 1 - H(E)/N]$,
 with $N = \sum_E H(E)$ being the sample size.
 %
 
@@ -228,7 +229,7 @@ The variance of histogram
 of the correct setting
 can be computed as follows.
 %
-We start by defining an indicator function $\chi_E(x)$,
+We start by defining an indicator function $\chi(x)$,
 which is $1$ if $x \in (E - \Delta E/2, E + \Delta E/2)$,
 or $0$ otherwise.
 %
@@ -266,9 +267,10 @@ G(k)
 \end{align*}
 %
 In the last step,
-we assume that the data points are independent.
+we have assumed that the data points are independent.
 %
-Since the data points are identical,
+Since the data points
+satisfy the same distribution,
 we further have
 \begin{align*}
 G(k)
@@ -312,18 +314,6 @@ Now
     \rangle
 \\
 &=
-  1 -
-    \langle
-    \chi( E_1 )
-    \rangle
-  +
-  \langle
-  \chi( E_1 )
-  \rangle
-  \sum_{p = 0}^\infty
-    \frac{ (i k)^p }{ p! }
-\\
-&=
   1
   +
   \langle
@@ -351,7 +341,7 @@ $\chi^p(E) = \chi(E)$.
 
 
 
-With the definition $n \equiv \langle \chi( E_1 ) \rangle$,
+With the definition $\bar\chi \equiv \langle \chi( E_1 ) \rangle$,
 we have
 %
 \begin{align*}
@@ -359,15 +349,29 @@ we have
 &=
 N
 \left[
- n \cdot (i k)
+  \bar\chi \cdot (i k)
 +
-  n
+  \bar\chi
   \left(
-    1 - n
+    1 - \bar\chi
   \right)
   \frac{ (i k)^2 } { 2! }
 + \dots
 \right]
+.
+\end{align*}
+%
+By definition,
+the power expansion of $\log G(k)$
+gives all cumulants\cite{vankampen}:
+\begin{align*}
+\log G(k)
+&=
+ \langle H \rangle \cdot (i k)
++
+\var(H)
+\frac{ (i k)^2 } { 2! }
++ \dots
 .
 \end{align*}
 %
@@ -376,20 +380,20 @@ This means
 \begin{align*}
 \langle H \rangle
 &=
-N \cdot n,
+N \cdot \bar\chi,
 \\
-\langle \Delta H^2 \rangle
+\var( H )
 &=
-N \cdot n (1 - n)
+N \cdot \bar\chi (1 - \bar\chi)
 =
-H \cdot ( 1 - H/N).
+\langle H \rangle \cdot ( 1 - \langle H \rangle /N).
 \end{align*}
 %
 This shows the variance of
 the histogram height
-is $H (1 - H/N)$,
-which is not equal to $H$,
-unless $H \ll N$.
+is $\langle H \rangle (1 - \langle H \rangle/N)$,
+which is not equal to $\langle H \rangle$,
+unless $\langle H \rangle \ll N$.
 
 
 
