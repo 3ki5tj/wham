@@ -16,12 +16,18 @@ set format y "10^{%T}"
 set ytics font "Times,20" offset 0.5, 0
 set mytics 10
 
-color1  = "#aa0000"
-color2  = "#aa00aa"
-color3  = "#224488"
-color4  = "#006000"
+# color figure
+
+#color1  = "#aa0000"
+#color2  = "#aa00aa"
+#color3  = "#224488"
+#color4  = "#006000"
 
 
+color1  = "#000000"
+color2  = "#111111"
+color3  = "#222222"
+color4  = "#333333"
 
 set style line 1  lw 1.0 lt 1 lc rgb color1  pt 10  ps 1.0
 set style line 2  lw 1.0 lt 2 lc rgb color2  pt 4   ps 0.7

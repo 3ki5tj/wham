@@ -27,29 +27,58 @@ set rmargin 5.0
 set key invert font "Times,24" spacing 1.2
 #set key Left reverse spacing 1.5
 
-color1  = "#224488"
-color2  = "#aa0000"
-color3  = "#aa00aa"
-color4  = "#00aa00"
-color5  = "#00aaaa"
+# Color figure
 
-color11 = "#aaaaff"
-color12 = "#ffaaaa"
-color13 = "#ffaaff"
-color14 = "#aaffaa"
-color15 = "#aaffff"
+#color1  = "#224488"
+#color2  = "#aa0000"
+#color3  = "#aa00aa"
+#color4  = "#00aa00"
+#color5  = "#00aaaa"
+
+#color11 = "#aaaaff"
+#color12 = "#ffaaaa"
+#color13 = "#ffaaff"
+#color14 = "#aaffaa"
+#color15 = "#aaffff"
+
+#set style line 1  lw 2.0 lt 1 lc rgb color1  pt 4   ps 1.8
+#set style line 2  lw 2.0 lt 1 lc rgb color2  pt 8   ps 2.0
+#set style line 3  lw 2.0 lt 1 lc rgb color3  pt 10  ps 2.0
+#set style line 4  lw 2.0 lt 1 lc rgb color4  pt 6   ps 2.0
+#set style line 5  lw 2.0 lt 1 lc rgb color5  pt 12  ps 2.0
+#
+#set style line 11 lw 2.0 lt 1 lc rgb color11 pt 5   ps 1.8
+#set style line 12 lw 2.0 lt 1 lc rgb color12 pt 9   ps 2.0
+#set style line 13 lw 2.0 lt 1 lc rgb color13 pt 11  ps 2.0
+#set style line 14 lw 2.0 lt 1 lc rgb color14 pt 7   ps 2.0
+#set style line 15 lw 2.0 lt 1 lc rgb color15 pt 13  ps 2.0
+
+
+# black and white figures
+
+color1  = "#000000"
+color2  = "#111111"
+color3  = "#222222"
+color4  = "#333333"
+color5  = "#444444"
+
+color11 = "#888888"
+color12 = "#aaaaaa"
+color13 = "#bbbbbb"
+color14 = "#cccccc"
+color15 = "#dddddd"
 
 set style line 1  lw 2.0 lt 1 lc rgb color1  pt 4   ps 1.8
-set style line 2  lw 2.0 lt 1 lc rgb color2  pt 8   ps 2.0
-set style line 3  lw 2.0 lt 1 lc rgb color3  pt 10  ps 2.0
-set style line 4  lw 2.0 lt 1 lc rgb color4  pt 6   ps 2.0
-set style line 5  lw 2.0 lt 1 lc rgb color5  pt 12  ps 2.0
+set style line 2  lw 2.0 lt 2 lc rgb color2  pt 8   ps 2.0
+set style line 3  lw 2.0 lt 5 lc rgb color3  pt 10  ps 2.0
+set style line 4  lw 2.0 lt 4 lc rgb color4  pt 6   ps 2.0
+set style line 5  lw 2.0 lt 5 lc rgb color5  pt 12  ps 2.0
 
 set style line 11 lw 2.0 lt 1 lc rgb color11 pt 5   ps 1.8
-set style line 12 lw 2.0 lt 1 lc rgb color12 pt 9   ps 2.0
-set style line 13 lw 2.0 lt 1 lc rgb color13 pt 11  ps 2.0
-set style line 14 lw 2.0 lt 1 lc rgb color14 pt 7   ps 2.0
-set style line 15 lw 2.0 lt 1 lc rgb color15 pt 13  ps 2.0
+set style line 12 lw 2.0 lt 2 lc rgb color12 pt 9   ps 2.0
+set style line 13 lw 2.0 lt 5 lc rgb color13 pt 11  ps 2.0
+set style line 14 lw 2.0 lt 4 lc rgb color14 pt 7   ps 2.0
+set style line 15 lw 2.0 lt 5 lc rgb color15 pt 13  ps 2.0
 
 is2it = real(`sed '2!d' ../../data/is2/run/is2wham.dat | awk '{print $2}'`)
 is2tm = real(`sed '2!d' ../../data/is2/run/is2tmwham.dat | awk '{print $2}'`)

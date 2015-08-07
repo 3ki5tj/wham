@@ -1,6 +1,6 @@
 prj=whamdiis
 
-ver=3.4
+ver=3.5
 
 figgps=$(wildcard fig/*.gp)
 pdffigs=$(patsubst %.gp,%.pdf, $(figgps))
@@ -34,17 +34,19 @@ $(prj)docV$(ver).zip:
 	mkdir -p old/V$(ver)
 	rsync -avz $(prj).tex old/V$(ver)/$(prj)_annotatedV$(ver).tex
 	rsync -avz $(prj)_notes.tex old/V$(ver)/$(prj)_notesV$(ver).tex
-	rsync -avz simul.bib old/V$(ver)/
 	rsync -avz Makefile old/V$(ver)/
 	rsync -avz README.md old/V$(ver)/
+	rsync -avzL gMOS.bst old/V$(ver)/
 	rsync -avz deannote.py old/V$(ver)/
+	rsync -avz rmbiburl.py old/V$(ver)/
+	python rmbiburl.py -i simul.bib -o old/V$(ver)/simul.bib
 	cd old/V$(ver) && \
-	  ln -sf ../../fig
+	  ln -sf ../../fig* .
 	cd old/V$(ver) && \
-	  python deannote.py -v -i $(prj)_annotatedV$(ver).tex -o $(prj)V$(ver).tex
+	  python deannote.py -v -i -c $(prj)_annotatedV$(ver).tex -o $(prj)V$(ver).tex
 	make all -C old/V$(ver)/
 	cd old/V$(ver) && \
-	  zip -r ../../$(prj)V$(ver).zip *.tex *.pdf simul.bib \
+	  zip -r ../../$(prj)V$(ver).zip *.tex *.pdf simul.bib *.py \
 	       $(epsfigs) $(pdffigs) $(figgps) Makefile README.md
 
 

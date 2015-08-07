@@ -23,17 +23,26 @@ set label 10 "(a)" at screen ldx,    1 - ldy font "Times, 48"
 set label 11 "(b)" at screen wl+ldx, 1 - ldy font "Times, 48"
 
 
+# for color figure
 
-color1  = "#aa0000"
-color2  = "#224488"
-color3  = "#006000"
-color4  = "#aa00aa"
+#color1  = "#aa0000"
+#color2  = "#224488"
+#color3  = "#006000"
+#color4  = "#aa00aa"
+
+# for black/white figure
+
+color1 = "#000000"
+color2 = "#222222"
+color3 = "#444444"
+color4 = "#666666"
+
 color9  = "#202020"
 
 set style line 1  lw 4.0 lt 1 lc rgb color1  pt 10  ps 1.6
 set style line 2  lw 4.0 lt 2 lc rgb color2  pt 8   ps 1.6
 set style line 3  lw 4.0 lt 3 lc rgb color3  pt 4   ps 1.2
-set style line 4  lw 4.0 lt 4 lc rgb color4  pt 6   ps 1.2
+set style line 4  lw 4.0 lt 5 lc rgb color4  pt 6   ps 1.2
 
 set style line 9  lw 4.0 lt 1 lc rgb color9  pt 1   ps 1.0
 

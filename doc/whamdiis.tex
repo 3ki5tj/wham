@@ -1,11 +1,11 @@
 %\documentclass[reprint,aip,jcp,superscriptaddress]{revtex4-1}
-\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
-%\documentclass{gMOS2e}
+%\documentclass[aip,jcp,preprint,superscriptaddress]{revtex4-1}
+\documentclass{gMOS2e}
 \usepackage{amsmath}
 \usepackage{bm}
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{tikz}
-%\usepackage{subfigure}
+\usepackage{subfigure}
 \begin{document}
 
 
@@ -32,14 +32,30 @@
 by direct inversion in the iterative subspace}
 
 
-\author{Cheng Zhang}
-\author{Chun-Liang Lai}
-\author{B. Montgomery Pettitt}
-\email{bmpettitt@utmb.edu}
-\affiliation{
-Sealy Center for Structural Biology and Molecular Biophysics,
-The University of Texas Medical Branch,
-Galveston, Texas 77555-0304, USA}
+\author{
+  \name{
+    Cheng Zhang\textsuperscript{a},
+    Chun-Liang Lai\textsuperscript{a},
+    and
+    B. Montgomery Pettitt\textsuperscript{a}$^{\ast}$\thanks{$^\ast$Corresponding author.
+      Email: bmpettitt@utmb.edu}
+  }
+  \affil{\textsuperscript{a}
+  Sealy Center for Structural Biology and Molecular Biophysics,
+  The University of Texas Medical Branch,
+  Galveston, Texas 77555-0304, USA}
+}
+
+\maketitle
+
+%\author{Cheng Zhang}
+%\author{Chun-Liang Lai}
+%\author{B. Montgomery Pettitt}
+%\email{bmpettitt@utmb.edu}
+%\affiliation{
+%Sealy Center for Structural Biology and Molecular Biophysics,
+%The University of Texas Medical Branch,
+%Galveston, Texas 77555-0304, USA}
 
 
 
@@ -84,7 +100,7 @@ which allows for
 rapid convergence to the \repl{optimum}{solution}.
 %
 \note{
-We haven't related WHAM to an optimization problem,
+We haven't related WHAM to an optimisation problem,
 so the word ``optimum'' may be a bit confusing.
 }
 %
@@ -99,7 +115,15 @@ simple liquids
 and aqueous protein solutions.
 \end{abstract}
 
-\maketitle
+
+\begin{keywords}
+free energy;
+WHAM;
+MBAR;
+DIIS.
+\end{keywords}
+
+%\maketitle
 
 
 
@@ -117,12 +141,12 @@ shirts2008}.
 %
 For free energy calculations,
 the multiple histogram method\cite{
-ferrenberg1988, *ferrenberg1989,
+ferrenberg1988, ferrenberg1989,
 newman, frenkel}
-or its generalization,
+or its generalisation,
 the weighted histogram analysis method (WHAM)\cite{
 kumar1992, roux1995,
-bartels1997, *gallicchio2005, *habeck2007, *habeck2012,
+bartels1997, gallicchio2005, habeck2007, habeck2012,
 souaille2001,
 chodera2007, shirts2008, bereau2009,
 hub2010, zhu2012},
@@ -136,11 +160,11 @@ a standard free energy analysis tool,
 particularly popular
 for enhanced-sampling simulations,
 such as umbrella sampling\cite{
-torrie1974, *laio2002},
+torrie1974, laio2002},
 and simulated\cite{
-marinari1992, *lyubartsev1992}
+marinari1992, lyubartsev1992}
 and parallel\cite{
-swendsen1986, *geyer1991, *hukushima1996, *hansmann1997, *earl2005}
+swendsen1986, geyer1991, hukushima1996, hansmann1997, earl2005}
 tempering.
 %and even single-molecule experiments\cite{
 %shirts2008}.
@@ -166,7 +190,7 @@ The optimal density of states
 is computed from a weighted average
 of the reweighted energy histograms
 (hence the name of the method)
-from different distribution realizations or trajectories.
+from different distribution realisations or trajectories.
 %
 The weights, however,
 depend on the free energies,
@@ -226,7 +250,7 @@ although the approach sometimes can be unstable\cite{
 shirts2008}.
 %
 \note{
-The term ``Hessian'' from optimization problems
+The term ``Hessian'' from optimisation problems
 seems to be imply the matrix is symmetric.
 %
 So maybe ``Jacobian of the gradient'' is a better word?
@@ -256,7 +280,7 @@ with minimal approximation.
 %
 ST-WHAM can be regarded as a refinement of
 the more approximate umbrella integration method (UIM)\cite{
-kastner2005, *kastner2009}.
+kastner2005, kastner2009}.
 %
 However, the extension to multidimensional ensembles,
 e.g., the isothermal-isobaric ensemble,
@@ -267,10 +291,10 @@ can be numerically challenging\cite{kim2011}.
 Here, we discuss a numerical improvement of
 the implementation of WHAM using
 the method of direct inversion in the iterative subspace (DIIS)\cite{
-pulay1980, *pulay1982, *hamilton1986,
+pulay1980, pulay1982, hamilton1986,
 kovalenko1999, howard2011}.
 %
-DIIS shares characteristics with other optimization techniques which use a limited (non-spanning) basis of vectors which produce the most gain towards the optimum.
+DIIS shares characteristics with other optimisation techniques which use a limited (non-spanning) basis of vectors which produce the most gain towards the optimum.
 %
 Although still iterative in nature,
 this implementation
@@ -298,13 +322,13 @@ of multiple thermodynamic states
 with different parameters,
 such as temperatures, pressures, etc.
 %
-\add{
+\add{%
 Below, we shall first review WHAM
 in the particular case of a temperature scan,
 since it permits simpler mathematics
 without much abstraction.
 %
-Generalizations to umbrella sampling
+Generalisations to umbrella sampling
 and other ensembles are discussed
 afterwards.
 }
@@ -313,7 +337,7 @@ afterwards.
 
 
 Consider \del{the particular case of }$K$ temperatures,
-labeled by\del{ the inverse temperature,}
+labelled by\del{ the inverse temperature,}
 $\beta = 1/(k_B T)$,
 as
 $\beta_1, \ldots, \beta_K$.
@@ -347,7 +371,7 @@ g(E)
 where
 $n_k(E)$
 is
-the unnormalized energy distribution
+the unnormalised energy distribution
 observed from trajectory $k$,
 which
 is usually estimated
@@ -364,7 +388,7 @@ is the total number of trajectory frames
 }
 {
 thus, $n_k(E)/N_k$
-is the normalized distribution
+is the normalised distribution
 with $N_k$ being
 the total number of trajectory frames
 from simulation $k$;
@@ -419,12 +443,12 @@ That is,
 the observed distribution, $n_k(E)/N_k$
 should match the exact one, $g(E) \, w_k(E)$,
 where $w_k(E) \equiv \exp(-\beta_k E + f_k)$
-is the normalized weight of the canonical ensemble.
+is the normalised weight of the canonical ensemble.
 %
 The values of Eq. \eqref{eq:gnk} from different $k$
 can be combined to improve the precision,
 and Eq. \eqref{eq:gE_WHAM}
-is the optiomal combination\cite{
+is the optimal combination\cite{
 roux1995, souaille2001, newman, frenkel}.
 }
 %
@@ -484,7 +508,7 @@ $N_k \rightarrow \sum_{k = 1}^K N_k \equiv N_\mathrm{tot}$,
 and
 $w_k(E) \rightarrow \sum_{k = 1}^K (N_k/N_\mathrm{tot}) \, w_k(E)$.
 %
-The last expression is the normalized ensemble weight
+The last expression is the normalised ensemble weight
 in the composite ensemble.}}
 %
 \note{
@@ -509,8 +533,8 @@ as the relative weight for
 $g(E)$\cite{
 shen1991}
 or related quantities\cite{
-woolf1994, *crouzy1994, roux1995,
-kastner2005, *kastner2009, fenwick2008, kim2011}.
+woolf1994, crouzy1994, roux1995,
+kastner2005, kastner2009, fenwick2008, kim2011}.
 %
 
 
@@ -664,7 +688,7 @@ f_i
 where
 $n_k(W)$
 is understood to be
-the unnormalized distribution of
+the unnormalised distribution of
 the bias $\W(\vx)$.
 %
 Equation \eqref{eq:f_WHAM}
@@ -696,7 +720,7 @@ Extensions to other ensembles.}}
 
 Further,
 $\lambda_i$ and $W$
-can be generalized
+can be generalised
 to vectors as
 $\bm{\lambda}_i$
 and
@@ -730,10 +754,10 @@ the factor $\exp(-\beta_i \, E)$
 can be replaced by
 a non-Boltzmann
 (e.g., the multicanonical\cite{
-mezei1987, *berg1992, *lee1993},
+mezei1987, berg1992, lee1993},
 Tsallis\cite{tsallis1988},
 microcanonical\cite{
-yan2003, *martin-mayor2007, *zhang2013})
+yan2003, martin-mayor2007})
 weight
 for multiple non-canonical simulations\cite{
 kim2011}.
@@ -779,7 +803,7 @@ we briefly discuss
 two non-iterative alternatives, ST-WHAM\cite{
 fenwick2008, kim2011}
 and UIM\cite{
-kastner2005, *kastner2009}.
+kastner2005, kastner2009}.
 %
 By taking the logarithmic derivative of
 the denominator of Eq. \eqref{eq:gE_WHAM},
@@ -851,7 +875,7 @@ with $\sum_{k = 1}^K n_k(E') = 0$,
 which leaves the integrand indeterminate.
 %
 An expedient fix is to let the integrand borrow
-the value from the nearest nonempty bin
+the value from the nearest non-empty bin
 %
 [note, however, setting the integrand to zero
 would cause a larger error in $g(E)$].
@@ -861,7 +885,7 @@ and its results usually differ only slightly
 from those of WHAM\cite{kim2011}.
 %
 In UIM\cite{
-kastner2005, *kastner2009},
+kastner2005, kastner2009},
 the distribution $n_k(E)$
 is further approximated as a Gaussian.
 %
@@ -881,7 +905,7 @@ for the Lennard-Jones (LJ) fluid, readily.
 
 
 DIIS is a technique useful for solving equations\cite{
-pulay1980, *pulay1982, *hamilton1986,
+pulay1980, pulay1982, hamilton1986,
 kovalenko1999, howard2011},
 and we use it
 to solve Eq. \eqref{eq:f_WHAM} here.
@@ -970,17 +994,17 @@ from a linear combination of the trial vectors.
 
 To do so, we first find the combination of the residual vectors
 $\vct{\hat R} = \sum_i c_i \, \vct R_i$,
-that minimizes the error
+that minimises the error
 $\| \vct{\hat R} \|$
 under the constraint
 \begin{equation}
   \sum_i c_i = 1.
-  \label{eq:c_normalize}
+  \label{eq:c_normalise}
 \end{equation}
 %
 Mathematically,
 this means \add{that} we solve for the $c_i$ simultaneously
-from Eq. \eqref{eq:c_normalize} and
+from Eq. \eqref{eq:c_normalise} and
 %
 \begin{equation}
   \sum_j \left( \vct R_i \cdot \vct R_j \right) \, c_j = \lambda,
@@ -1080,11 +1104,18 @@ is used to update the basis as shown next.
 
 
 
+\newcommand{\fRcolorone}{gray}
+\newcommand{\fRcolortwo}{gray}
+
+% Uncomment the following two lines to make a colour plot
+%\renewcommand{\fRcolorone}{red}
+%\renewcommand{\fRcolortwo}{blue}
+
 
 
 \tikzstyle{emptydot}=[inner sep=0pt,minimum size=0.0mm]
-\tikzstyle{fRarrow1}=[->, very thick, draw={rgb:red,4;white,1;gray,1}]
-\tikzstyle{fRarrow2}=[->, very thick, draw={rgb:blue,4;white,1;gray,1}]
+\tikzstyle{fRarrow1}=[->, very thick, draw={rgb:\fRcolorone,4;white,1;gray,1}]
+\tikzstyle{fRarrow2}=[->, very thick, draw={rgb:\fRcolortwo,4;white,1;gray,1}]
 \tikzstyle{fRarrowx}=[->, very thick]
 \tikzstyle{fRarr}=[->, thin]
 \tikzstyle{fRlabel}=[inner sep=0pt, text=black!80!white]
@@ -1092,6 +1123,7 @@ is used to update the basis as shown next.
 
 
 \begin{figure}[h]
+\begin{center}
   \begin{tikzpicture}
     \newcommand{\sz}{4cm}
     %
@@ -1118,7 +1150,7 @@ is used to update the basis as shown next.
     %
     %
     %
-    % The potential function to minimize is
+    % The potential function to minimise is
     %
     % F = 3/8 (x - 3/5)^2 + 5/8 (y - 4/5)^2 + 1/4 (x - 3/5) (y - 4/5)
     %   = 7/2 R^2
@@ -1180,7 +1212,7 @@ is used to update the basis as shown next.
         \pgfmathsetmacro\dy{0.9 - 1.0 * \lambda};
         \pgfmathsetmacro\xx{\x + \dx};
         \pgfmathsetmacro\yy{\y + \dy};
-        \draw [fRarr, draw={rgb:red,\x;blue,\y;white,1.5;gray,0.5}]
+        \draw [fRarr, draw={rgb:\fRcolorone,\x;\fRcolortwo,\y;white,1.5;gray,0.5}]
           (0, 0) -- (\x*\sz, \y*\sz) -- (\xx*\sz, \yy*\sz);
       }
       %
@@ -1278,7 +1310,7 @@ is used to update the basis as shown next.
       \pgfmathsetmacro\y{\lambda};
       \pgfmathsetmacro\dx{-0.1 + 0.5 * \lambda}
       \pgfmathsetmacro\dy{0.9 - 1.0 * \lambda}
-      \draw [fRarr, draw={rgb:red,\x;blue,\y;white,1.5;gray,0.5}]
+      \draw [fRarr, draw={rgb:\fRcolorone,\x;\fRcolortwo,\y;white,1.5;gray,0.5}]
         (\Rox, \Roy) -- (\Rox + \dx*\sz, \Roy + \dy*\sz);
     }
     %
@@ -1458,7 +1490,7 @@ is used to update the basis as shown next.
     Given a basis of a few (two here) trial vectors,
     DIIS seeks the combination
     $\vct {\hat R} = \sum_i c_i \, \vct R_i$
-    that minimizes the magnitude
+    that minimises the magnitude
     $\| \vct{\hat R} \|$
     under the constraint
     $\sum_i c_i = 1$ [panel (c)].
@@ -1479,6 +1511,7 @@ is used to update the basis as shown next.
     it is possible to find a vanishing $\vct{\hat R}$, and
     DIIS is equivalent to the secant method.
   }
+\end{center}
 \end{figure}
 
 
@@ -1597,7 +1630,7 @@ to finish.
 
 
 The main results
-are summarized
+are summarised
 in Fig. \ref{fig:nsnt},
 from which one can see that
 DIIS can speed up WHAM and MBAR
@@ -1615,6 +1648,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
 
 
 \begin{figure}[h]
+\begin{center}
   \makebox[\linewidth][c]{
     \includegraphics[angle=0, width=0.95\linewidth]{fig/nsnt.pdf}
   }
@@ -1628,7 +1662,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     \note{In the Ising model, the label $NVT$ is removed,
       because the volume, $V$, is ill-defined.
       %
-      There are people who insist $V$ as the magnetization
+      There are people who insist $V$ as the magnetisation
       and say it is actually an $NpT$ ensemble.}%
     %
     The four test cases are
@@ -1665,6 +1699,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     %
     The lines are a guide for the eyes.
   }
+\end{center}
 \end{figure}
 
 
@@ -1672,7 +1707,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
 
 
 \subsection{\label{sec:results_setup}
-\repl{Set-up}{Setup}}
+Set-up}
 
 
 
@@ -1681,7 +1716,7 @@ we assumed equal autocorrelation times
 from different temperatures (and pressures).
 %
 The approximation should not affect
-the \repl{general}{convergence} behavior of the methods.
+the \repl{general}{convergence} behaviour of the methods.
 
 
 
@@ -1732,7 +1767,7 @@ $\overline{ A }_i \equiv (A_{i+1} + A_i)/2$.
 %
 \repl{This formula can be improved by an}{The second is an improvement by the}
 Euler-Maclaurin expansion\cite{
-arfken, *abramowitz, *wang_specfunc, whittaker}:
+arfken, abramowitz, wang_specfunc, whittaker}:
 \del{as}
 %
 \begin{equation}
@@ -1790,7 +1825,7 @@ The first system is
 a $64\times64$ Ising model.
 %
 We used parallel tempering\cite{
-swendsen1986, *geyer1991, *hukushima1996, *hansmann1997, *earl2005}
+swendsen1986, geyer1991, hukushima1996, hansmann1997, earl2005}
 Monte Carlo (MC)
 for
 eighty temperatures: $T = 1.5$, $1.52$, \dots, $3.08$,
@@ -1817,6 +1852,7 @@ the errors were of the same order of magnitude.
 
 
 \begin{figure}[h]
+\begin{center}
   \makebox[\linewidth][c]{
     \includegraphics[angle=0, width=1.0\linewidth]{fig/is2ref.pdf}
   }
@@ -1825,18 +1861,23 @@ the errors were of the same order of magnitude.
     Errors of
     (a) the dimensionless free energies, $f_i$, and
     (b) the logarithmic density of states, $\log g(E)$,
-    for the $N = 64\times64$ two-dimensional Ising model.
+    for the $N = 64\times64$ two-dimensional Ising model
+    \add{(plotted with an energy spacing of 200)}.
     %
     Here,
     $\varepsilon(a) \equiv a - a^\mathrm{ref}$,
     %
     and the reference values for $f_i$ and $g(E)$
     were computed using the methods in
-    Refs. \onlinecite{ferdinand1969} and \onlinecite{beale1996},
+    %Refs. \onlinecite{ferdinand1969} and \onlinecite{beale1996},
+    Refs. \cite{ferdinand1969} and \cite{beale1996},
     respectively.
     %
     The bin size of the energy histograms is $\Delta E = 4$.
+    %
+    \add{Lines are a guide to the eyes.}
   }
+\end{center}
 \end{figure}
 
 
@@ -1857,6 +1898,7 @@ than in direct WHAM.
 
 
 \begin{figure}[h]
+\begin{center}
   \makebox[\linewidth][c]{
     \includegraphics[angle=0, width=1.0\linewidth]{fig/is2trace.pdf}
   }
@@ -1869,6 +1911,7 @@ than in direct WHAM.
     %
     Results were geometrically averaged over independent samples.
   }
+\end{center}
 \end{figure}
 
 
@@ -1924,7 +1967,7 @@ a dodecahedron box with 1898 TIP3P water molecules and two chloride ions.
 %
 MD simulations were performed
 using GROMACS\cite{
-berendsen1995, *lindahl2001, *vanderspoel2005, *hess2008},
+berendsen1995, lindahl2001, vanderspoel2005, hess2008},
 with a time step of 2 fs.
 %
 Velocity rescaling\cite{bussi2007}
@@ -1961,7 +2004,7 @@ at each temperature.
 As shown in Fig. \ref{fig:nsnt},
 direct WHAM suffered from slow convergence,
 while the DIIS methodology again
-delivered a speedup of two orders of magnitude,
+delivered a speed-up of two orders of magnitude,
 in the number of iterations or in real time.
 %
 The MBAR case was similar.
@@ -2008,7 +2051,7 @@ In terms of precision
 the differences were small.
 %
 \del{
-With a denser temperature setup, however,
+With a denser temperature set-up, however,
 multiple-temperature-based methods
 may further gain advantage.
 }
@@ -2022,6 +2065,7 @@ by a small bin size for smaller samples.
 
 %\begin{figure*}[t]
 \begin{figure}[h]
+\begin{center}
   \makebox[\linewidth][c]{
     \includegraphics[angle=0, width=1.0\linewidth]{fig/whamcmp.pdf}
   }
@@ -2053,6 +2097,7 @@ by a small bin size for smaller samples.
     (e) Energy histograms collected
     with bin width $\Delta E = 1.0$.
   }
+\end{center}
 \end{figure}
 %\end{figure*}
 
@@ -2086,7 +2131,7 @@ may further accelerate the solution process
 for final stages.}
 %
 Other related free energy methods\cite{
-shen1991, woolf1994, *crouzy1994, roux1995}
+shen1991, woolf1994, crouzy1994, roux1995}
 may also benefit from this technique.
 %
 
@@ -2111,8 +2156,8 @@ or the more approximate UIM.
 
 
 
-
-\section{Acknowledgments}
+% British spelling
+\section*{Acknowledgements}
 
 
 
@@ -2127,6 +2172,11 @@ Dr. J. Ma,
 Dr. J. Perkyns\repl{,}{ and} Dr. G. Lynch\del{ and J. A. Drake}
 for helpful discussions.
 %
+
+
+\section*{Funding}
+
+
 The authors acknowledge
 partial financial support from
 the National Science Foundation (CHE-1152876),
@@ -2142,7 +2192,9 @@ is gratefully acknowledged.
 
 
 
-\appendix
+\appendices
+
+%\appendix
 
 
 
@@ -2155,11 +2207,11 @@ Probabilistic derivation of Eq. \eqref{eq:f_MBAR}}
 
 Here we show that
 Eq. \eqref{eq:f_MBAR}
-is a generalization of Eq. \eqref{eq:f_WHAM}
+is a generalisation of Eq. \eqref{eq:f_WHAM}
 from the energy space to the configuration space.
 %
 We follow the probabilistic argument\cite{
-bartels1997, *gallicchio2005, *habeck2007, *habeck2012, zhu2012}
+bartels1997, gallicchio2005, habeck2007, habeck2012, zhu2012}
 for simplicity.
 %
 We assume that the system is subject to
@@ -2195,6 +2247,7 @@ p\left( \{ \vx \} | g \right)
 %\label{eq:pg}
 \end{equation*}
 %
+\repl{%
 Assuming a uniform prior distribution,
 $p[g(\vy)]$, of the value of $g(\vy)$,
 at each configuration-space point $\vy$,
@@ -2204,11 +2257,14 @@ the posterior distribution of $g$,
 $p\left( g | \{ \vx \} \right)$,
 is proportional to
 $p\left( \{ \vx \} | g \right) \, p(g) \propto p\left( \{ \vx \} | g \right)$.
-%
+}{%
+This is also the likelihood of $g$
+given the observed trajectory, $\{\vx\}$.
+}%
 Thus,
 to find the most probable $g(\vy)$,
-we only need to maximize
-$\log p\left( g | \{ \vx \} \right)$
+we only need to maximise
+\repl{$\log p\left( g | \{ \vx \} \right)$}{$\log p\left( \{ \vx \} | g \right)$}
 by taking the functional derivative
 with respect to $g(\vy)$
 and setting it to zero,
@@ -2234,9 +2290,7 @@ $\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.
 Using Eq. \eqref{eq:gy}
 in Eq. \eqref{eq:Zg},
 and then setting $g$ to $1.0$
-yields Eq. \eqref{eq:f_MBAR}.
-%
-\footnote{\add{
+yields Eq. \eqref{eq:f_MBAR}.\footnote{\add{
 We can also show Eq. \eqref{eq:gy}
 by considering the composite ensemble of the $K$ states.
 %
@@ -2280,7 +2334,7 @@ especially with a large spacing.
 
 
 
-\subsection{Linearized WHAM equation}
+\subsection{Linearised WHAM equation}
 
 
 
@@ -2288,14 +2342,14 @@ Consider $K$ distributions, $\rho_i(E)$,
 at different temperatures,
 $\beta_i$ ($i = 1, \dots, K$),
 %
-normalized as
+normalised as
 %
 %\begin{equation}
 $
 \int \rho_i(E) \, dE = 1.
 $
 %\notag
-%\label{eq:rho_normalize}
+%\label{eq:rho_normalise}
 %\end{equation}
 %
 %
@@ -2330,7 +2384,7 @@ dE.
 %
 Around the true solution,
 $\vct f^* = (f_1^*, \dots, f_K^*)$,
-the equation can be linearized as
+the equation can be linearised as
 %
 \begin{align}
 \delta f_i^\mathrm{(new)}
@@ -2399,14 +2453,14 @@ The elements of matrix $\vct A$
 are positive, i.e.,
 %
 $A_{ij} > 0$,
-and normalized, i.e.,
+and normalised, i.e.,
 %
 \begin{align}
 %A_{ij} &> 0,
 %\label{eq:Aij_positive}
 %\\
 \sum_{i = 1}^K A_{ij} &= 1.
-\label{eq:Aij_normalization}
+\label{eq:Aij_normalisation}
 \end{align}
 %
 The latter can be seen from
@@ -2461,7 +2515,7 @@ $
 \sum_{i=1}^K \delta f_i^\mathrm{(old)},
 $
 as a consequence of
-Eq. \eqref{eq:Aij_normalization}.
+Eq. \eqref{eq:Aij_normalisation}.
 %
 The next largest eigenvalue,
 $\lambda_1$,
@@ -2587,7 +2641,7 @@ $\sigma_E = 1/\sqrt{a}$.
 The inverse temperature $\beta_i$
 affects the energy distributions
 only as a linear shift
-to the distribution center.
+to the distribution centre.
 %
 It follows that both the origin of $\beta$
 and \repl{$E_c$}{that of $E$, represented by $E_c$,}
@@ -2603,7 +2657,7 @@ without affecting the value of $A_{ij}$.
 
 For the two-temperature case,
 the matrix $\vct A$ has only one free variable
-because of Eqs. \eqref{eq:Aij_normalization}
+because of Eqs. \eqref{eq:Aij_normalisation}
 and \eqref{eq:Aij_symmetry},
 and it can be written as
 %
@@ -2663,6 +2717,7 @@ achieved at $\beta_1 = \beta_2$.
 
 
 \begin{figure}[h]
+\begin{center}
   %\newcommand{\xmax}{4.0}
   %\newcommand{\ymax}{2.0}
   %\begin{tikzpicture}[scale=1.0]
@@ -2727,6 +2782,7 @@ achieved at $\beta_1 = \beta_2$.
     A larger value of $1 - \lambda_1$
     means faster convergence.
   }
+\end{center}
 \end{figure}
 
 
@@ -2850,7 +2906,7 @@ where
 $\theta = 1 + \frac 1 2 \exp\left(-u \Delta \beta^2 E^2\right/4)$.
 %
 The parameter $u$ should be $5/2$
-to match the small $\Delta \beta$ behavior,
+to match the small $\Delta \beta$ behaviour,
 although the overall accuracy can be improved
 by a value of $u \approx 2.11$.
 }
@@ -2973,7 +3029,7 @@ H_l\left(
 where
 $H_l(x)$
 is the Hermite polynomial\cite{
-arfken, *abramowitz, *wang_specfunc},
+arfken, abramowitz, wang_specfunc},
 generated as
 $e^{-t^2 + 2x t} = \sum_{l = 0}^\infty H_l(x) \, t^l/l!$.
 %
@@ -3002,6 +3058,6 @@ and nonzero spacing between temperatures
 can further slow down the convergence.
 
 
-
+\bibliographystyle{gMOS}
 \bibliography{simul}
 \end{document}
