@@ -44,7 +44,7 @@ def usage():
     -n              set the number of steps
     --nt=           set the number of threads
     -v              be verbose
-    --verbose=      set verbocity
+    --verbose=      set verbosity
     -h, --help      help
   """
   exit(1)

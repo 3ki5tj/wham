@@ -109,6 +109,13 @@ the iterative solution to WHAM
 can be improved by using the method of
 direct inversion in the iterative subspace.
 %
+\note{
+Should we merge the above two sentences?
+In this work, we use a well-known linear algebra algorithm,
+the method of direct inversion in the iterative subspace,
+for more rapid convergence to the solution of the WHAM equation.
+}
+%
 We give examples from
 \add{lattice models,}
 simple liquids
@@ -299,7 +306,7 @@ DIIS shares characteristics with other optimisation techniques which use a limit
 Although still iterative in nature,
 this implementation
 can often improve
-the convergence rate
+the rate of convergence
 significantly in difficult cases.
 
 
@@ -418,6 +425,7 @@ respectively.
 
 To understand Eq. \eqref{eq:gE_WHAM},
 we first observe from the definition,
+\add{the single histogram estimate}
 %
 \begin{equation}
 g(E)
@@ -441,7 +449,7 @@ roux1995, souaille2001, newman, frenkel}.
 {
 That is,
 the observed distribution, $n_k(E)/N_k$
-should match the exact one, $g(E) \, w_k(E)$,
+should \add{roughly} match the exact one, $g(E) \, w_k(E)$,
 where $w_k(E) \equiv \exp(-\beta_k E + f_k)$
 is the normalised weight of the canonical ensemble.
 %
@@ -470,7 +478,7 @@ the relative error of $d_k$ is negligible
 in comparison to that of $n_k$,
 }
 {
-$\mathrm{var}(n_k \, \Delta E) \approx n_k \, \Delta E$,
+$\mathrm{var}(n_k \, \Delta E) \approx \langle n_k \rangle \, \Delta E$,
 }
 %
 \note{
@@ -492,13 +500,12 @@ for this supposedly quick-and-dirty derivation.
 }
 %
 we have \repl{$\mathrm{var}(n_k/d_k) \approx n_k / d_k^2 \propto 1/d_k$}{
-$\mathrm{var}(n_k \, \Delta E / d_k) \approx n_k \, \Delta E/ d_k^2 \propto 1/ d_k$}.
+$\mathrm{var}(n_k \, \Delta E / d_k) \approx \langle n_k \rangle \, \Delta E/ d_k^2 \propto 1/ d_k$
+(here, $\langle \cdots \rangle$ means an ensemble average)}.
 %
 Averaging the values from Eq. \eqref{eq:gnk}
 using $(1/d_k)^{-1}$ as the relative weight yields
-Eq. \eqref{eq:gE_WHAM}.
-%
-\footnote{
+Eq. \eqref{eq:gE_WHAM}.\footnote{
 \add{We can also view Eq. \eqref{eq:gE_WHAM}
 as the result of applying Eq. \eqref{eq:gnk}
 to the composite ensemble of the $K$ canonical ensembles,
@@ -525,7 +532,7 @@ Or should we delete it?
 }
 %
 Since for a fixed $E$,
-$d_k(E)$ is proportional to $n_k(E)$,
+$d_k(E)$ is proportional to \repl{$n_k(E)$}{$\langle n_k(E) \rangle$},
 several variants of WHAM
 may be derived
 by using $n_k(E)$ in place of $d_k(E)$
@@ -613,7 +620,7 @@ of simulation $k$.
 %
 Using Eq. \eqref{eq:n_delta}
 in Eq. \eqref{eq:f_WHAM} yields
-the MBAR result\cite{
+\repl{the MBAR result}{the histogram-free, or the MBAR, form}\cite{
 kumar1992, souaille2001, shirts2008}:
 %
 \begin{equation}
@@ -1069,7 +1076,7 @@ the virtual dimension is 1.}.
 %
 We then recover
 the secant method\cite{press},
-as shown in Fig. \ref{fig:scheme}(c).
+as shown in Fig. \ref{fig:scheme}(d).
 %
 The number of bases, $M$, however,
 should not exceed $K + 1$
@@ -1875,7 +1882,7 @@ the errors were of the same order of magnitude.
     %
     The bin size of the energy histograms is $\Delta E = 4$.
     %
-    \add{Lines are a guide to the eyes.}
+    \add{Lines are a guide for the eyes.}
   }
 \end{center}
 \end{figure}
@@ -1883,7 +1890,7 @@ the errors were of the same order of magnitude.
 
 
 
-To study the convergence rate,
+To study the rate of convergence,
 we generated independent samples with
 $10^7$ MC steps at each temperature.
 %
@@ -1944,7 +1951,7 @@ were $1.0$ and $2.0$, respectively.
 
 As shown in Fig. \ref{fig:nsnt},
 DIIS WHAM effectively
-reduced the run time significantly\repl{.
+reduced the run time\repl{significantly.
 This demonstration also shows that}{, although}
 the efficiency of DIIS does not
 always increase with
@@ -2118,7 +2125,7 @@ solutions obtained during iteration.
 %
 DIIS does not require computing
 the \repl{Hessian}{Hessian-like} matrix,
-\add{$\partial \vct R(\vct f)/\partial \vct f$,}
+\add{$-\partial \vct R(\vct f)/\partial \vct f$,}
 and is numerically stable
 with minimal run time overhead.
 %
@@ -2285,12 +2292,7 @@ g(\vy)
 where we have used
 $\delta \log g(\vx) / \delta g(\vy) = \delta(\vx - \vy)/g(\vy)$,
 and
-$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.
-%
-Using Eq. \eqref{eq:gy}
-in Eq. \eqref{eq:Zg},
-and then setting $g$ to $1.0$
-yields Eq. \eqref{eq:f_MBAR}.\footnote{\add{
+$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.\footnote{\add{
 We can also show Eq. \eqref{eq:gy}
 by considering the composite ensemble of the $K$ states.
 %
@@ -2305,10 +2307,15 @@ and the volume $d\vy$.
 %
 This gives
 $g(\vy) \, \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g] \, d\vy$,
-and it should match the observed number of visits
+and it is expected to match the observed number of visits
 to the element,
 $\sum_{j = 1}^K n_j(\vy) \, d\vy$,
 with $n_j(\vy) \equiv \sum_{\vx}^{(j)} \delta(\vx - \vy)$.}}
+%
+Using Eq. \eqref{eq:gy}
+in Eq. \eqref{eq:Zg},
+and then setting $g$ to $1.0$
+yields Eq. \eqref{eq:f_MBAR}.
 
 
 
@@ -2565,7 +2572,7 @@ with $g(E)$ being the density of states.
 %\end{align}
 %%
 %
-This simplifies Eq. \eqref{eq:f_WHAM1} as
+This simplifies Eq. \eqref{eq:Aij} as
 %
 \begin{align}
 A_{ij}
@@ -2592,8 +2599,8 @@ dE.
 Further, we approximate $g(E)$
 as a Gaussian.
 %
-With a proper choice of the shift constant of
-$\log g(E)$, we have,
+With a proper choice of the \repl{shift constant of
+$\log g(E)$}{multiplicative constant of $g(E)$}, we have,
 %
 \begin{equation}
 g(E)
@@ -2645,8 +2652,8 @@ to the distribution centre.
 %
 It follows that both the origin of $\beta$
 and \repl{$E_c$}{that of $E$, represented by $E_c$,}
-can be set to any value
-that facilitates calculations,
+can be set to any \repl{value
+that facilitates}{values that help} calculations,
 without affecting the value of $A_{ij}$.
 
 
@@ -2840,7 +2847,7 @@ $1/\cosh x \approx \exp(-x^2/2)(1 + x^4/12)$.
 %
 This model shows
 a rapid decrease in
-the convergence of direct WHAM
+the \add{rate of} convergence of direct WHAM
 with the temperature separation.
 
 

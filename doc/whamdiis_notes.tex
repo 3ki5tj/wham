@@ -141,7 +141,9 @@ consider $K$ independent quantities,
 $x_k$.
 %
 The combination is
-$X = c_1 \, x_1 + \cdots + c_K \, x_K$,
+\[
+  X = c_1 \, x_1 + \cdots + c_K \, x_K,
+\]
 with
 \begin{equation}
   c_1 + \cdots + c_K = 1,
@@ -185,13 +187,13 @@ suffers from the following drawback.
 In the literature,
 the variance of the histogram height $H(E) = n(E) \, \Delta E$,
 is usually assumed to satisfies a Poisson distribution,
-such that $\var H(E) = H(E)$.
+such that $\var \, H(E) = H(E)$.
 %
 Strictly speaking, however,
 this is incompatible with the setting here;
 and we shall show below that
 the right formula is
-$\var H(E) = H(E) [ 1 - H(E)/N]$,
+$\var \, H(E) = H(E) [ 1 - H(E)/N]$,
 with $N = \sum_E H(E)$ being the sample size.
 %
 
@@ -203,7 +205,7 @@ In the correct setting,
 for each simulation $k$,
 we have a fixed total sample size $N_k$.
 %
-The energy $E_i$ of each data point $x_i$
+The energy $E_i$ of each data point $\vx_i$
 satisfies the canonical distribution.
 
 
@@ -422,12 +424,23 @@ clearly supports that.
 
 So, we can say that the WHAM result
 optimizes the free energy,
-but it may not optimize
+but it \emph{might} not always optimize
 the histograms of finite width.
 %
 This difference may be
 similar to the difference between canonical and microcanonical ensembles.
 
+
+We should also be aware of
+that the formula for optimal combination of histograms
+assumes that histogram at different energies
+to be independent.
+%
+This is clearly untrue.
+%
+But if this were true,
+then each histogram would
+satisfy a Poisson distribution.
 
 
 
@@ -1067,25 +1080,25 @@ $\phi = \arctan(\bar y/\bar x) = \arctan \left(-\sqrt 2 - 1\right) = -3 \, \pi/8
 
 
 From the unnumbered equation after Eq. (A1),
-we get the posterior probability
-\begin{align*}
-p\left( g | \{ \vct x \} \right)
-&=
-\frac{
-  p\left( \{ \vct x \} | g \right) \, p(g)
-}
-{
-  p\left( \{ \vct x \} \right)
-}
-\\
-&\propto
-p\left( \{ \vct x \} | g \right).
-\end{align*}
+%we get the posterior probability
+%\begin{align*}
+%p\left( g | \{ \vct x \} \right)
+%&=
+%\frac{
+%  p\left( \{ \vct x \} | g \right) \, p(g)
+%}
+%{
+%  p\left( \{ \vct x \} \right)
+%}
+%\\
+%&\propto
+%p\left( \{ \vct x \} | g \right).
+%\end{align*}
 %
-Taking the logarithm, we get
+by taking the logarithm, we get
 %
 \begin{align*}
-\log p\left( g | \{ \vct x \} \right)
+\log p\left( \{ \vct x \} | g \right)
 &=
 \sum_{k = 1}^K
   \sum_{\vct x}^{(k)}
@@ -1109,7 +1122,7 @@ We now differentiate it with respect to $g(\vy)$,
 %
 \begin{align}
 \frac{
-  \delta \log p\left( g | \{ \vct x \} \right)
+  \delta \log p\left( \{ \vct x \} | g \right)
 }
 {
   \delta g(\vy)
@@ -3351,6 +3364,16 @@ f(b) - f(a)
 \, h^{2 s}
 \frac{ B_{2 s} }{ (2 s)! }
     \, \left[f^{(2 s)}(b) - f^{(2 s)}(a)\right]
+  + \dots
+\notag \\
+&=
+\frac{ h \, \left[
+    f'(b) + f'(a)
+  \right]
+} {2 }
+-
+\frac{ h^2 }{ 12 }
+    \, \left[f''(b) - f''(a)\right]
   + \dots,
 \label{eq:Darboux_Bernoulli}
 \end{align}
@@ -3388,6 +3411,16 @@ f(b) - f(a)
 h^{2 s - 1}
 \frac{ E_{2 s - 1}(0) }{ (2 s - 1)! }
     \, \left[f^{(2 s - 1)}(b) + f^{(2 s - 1)}(a)\right]
+  + \dots
+\notag \\
+&=
+\frac{ h \, \left[
+    f'(b) + f'(a)
+  \right]
+} {2 }
+-
+\frac{ h^2 }{ 12 }
+  \, \frac{ f'''(b) + f'''(a) } { 2 }
   + \dots,
 \label{eq:Darboux_Euler}
 \end{align}
@@ -3398,6 +3431,98 @@ Eqs. \eqref{eq:dEuler_polynomial} and \eqref{eq:Euler1_odd}.
 %we set $b = \beta_{i + 1}$,
 %$a = \beta_i$,
 %and $E_{2s - 1} \rightarrow a_s$.
+
+
+
+
+\subsubsection{Difference from the ``Zwanzig'' expansion}
+
+
+
+There is a similar expression,
+so-called Zwanzig expression\cite{leach},
+that appears to be different from
+Eq. \eqref{eq:Darboux_Bernoulli}.
+%
+This expression essentially goes like this,
+%
+From the Taylor expansion
+%
+\begin{align*}
+f(b) - f(a)
+=
+f'(a) \, h
++
+f''(a) \, \frac{ h^2 } { 2 }
++
+f'''(a) \, \frac{ h^3 } { 6 }
++
+\dots
+\end{align*}
+%
+and
+\begin{align*}
+f(b) - f(a)
+=
+f'(b) \, h
+-
+f''(b) \, \frac{ h^2 } { 2 }
++
+f'''(b) \, \frac{ h^3 } { 6 }
+-
+\dots
+\end{align*}
+%
+Now averaging the two expressions yield
+%
+\begin{align}
+f(b) - f(a)
+=
+h \frac{ f'(a) + f'(b) } { 2 }
+-
+\frac{ h^2}{ 4 } [ f''(b) - f''(a) ]
++
+\frac{ h^3 } { 6 } \frac{ f'''(a) + f'''(b) } { 2 }
++
+\dots
+\label{eq:zwanzig}
+\end{align}
+%
+Now the coefficient of $h^2$ is $-1/4$
+instead of $-1/12$,
+which appears to be a paradox.
+
+
+
+This problem is due to the inefficiency of
+Eq. \eqref{eq:zwanzig}.
+%
+For one thing,
+we see that the second and third term
+on the right-hand side of Eq. \eqref{eq:zwanzig}
+are of the same order of magnitude.
+%
+Note particularly that the second term is difference,
+while the third is an average.
+%
+
+
+In comparison,
+neither Eq. \eqref{eq:Darboux_Bernoulli}
+nor \eqref{eq:Darboux_Euler}
+suffers from this problem.
+%
+So the correct coefficient should be $-1/12$.
+%
+In fact,
+if we assume to the leading order
+\[
+f''(b) - f''(a)
+\approx
+\frac{ h \, [f'''(a) + f'''(b)] } { 2 },
+\]
+then we indeed recover the factor
+$-1/4 + 1/6 = -1/12$.
 
 
 

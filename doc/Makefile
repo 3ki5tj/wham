@@ -43,11 +43,11 @@ $(prj)docV$(ver).zip:
 	cd old/V$(ver) && \
 	  ln -sf ../../fig* .
 	cd old/V$(ver) && \
-	  python deannote.py -v -i -c $(prj)_annotatedV$(ver).tex -o $(prj)V$(ver).tex
+	  python deannote.py -v -c -i $(prj)_annotatedV$(ver).tex -o $(prj)V$(ver).tex
 	make all -C old/V$(ver)/
 	cd old/V$(ver) && \
 	  zip -r ../../$(prj)V$(ver).zip *.tex *.pdf simul.bib *.py \
-	       $(epsfigs) $(pdffigs) $(figgps) Makefile README.md
+	       $(epsfigs) $(pdffigs) $(figgps) figclr Makefile README.md
 
 
 $(prj)doc.zip: $(prj).tex $(prj).pdf \

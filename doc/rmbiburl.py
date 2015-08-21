@@ -2,7 +2,7 @@
 
 
 
-r''' remove url and doi of the .bib file 
+r''' remove url and doi of the .bib file
 
 '''
 
@@ -86,7 +86,7 @@ def delete(s, tag):
         if j >= 0 and s[j].strip().endswith(","):
           s[j] = s[j].rstrip()[:-1] + "\n"
       s[i] = ""
-          
+
   return s
 
 
