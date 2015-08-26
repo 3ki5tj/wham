@@ -57,6 +57,7 @@ typedef struct {
   double actmax; /* cutoff time of the autocorrelation function */
   double acmin; /* minimum of the autocorrelation function */
   char *fnac;
+  char *fnact;
   char *fninp;
   int verbose;
   int re;
@@ -131,9 +132,10 @@ __inline static void model_default(model_t *m)
   m->fnlndos2 = NULL;
   m->fneav2 = NULL;
   m->actmax = 0;
-  m->acmin = 0;
+  m->acmin = 0.05;
   m->fninp = NULL;
   m->fnac = NULL;
+  m->fnact = NULL;
   m->verbose = 0;
   m->re = 0;
 }
@@ -207,7 +209,8 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --fneav2=:     set the file for the 2D average energy, default %s\n", m->fneav2);
   fprintf(stderr, "  --actmax=:     set the time cutoff of the autocorrelation function, default: %g\n", m->actmax);
   fprintf(stderr, "  --acmin=:      set thet minimal value of the autocorrelation function, default: %g\n", m->acmin);
-  fprintf(stderr, "  --fnac=:       set the autocorrelation functions, default: %s\n", m->fnac);
+  fprintf(stderr, "  --fnac=:       set the file for autocorrelation functions, default: %s\n", m->fnac);
+  fprintf(stderr, "  --fnact=:      set the file for autocorrelation times, default: %s\n", m->fnact);
   fprintf(stderr, "  --re:          do replica exchange when possible, default: %d\n", m->re);
 #ifdef IS2_MODEL
   fprintf(stderr, "  --L:           set the side length, default: %d\n", m->L);
@@ -336,6 +339,8 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->acmin = atof(q);
       } else if ( strcmpfuzzy(p, "fnac") == 0 ) {
         m->fnac = q;
+      } else if ( strcmpfuzzy(p, "fnact") == 0 ) {
+        m->fnact = q;
       } else if ( strcmpfuzzy(p, "re") == 0 ) {
         m->re = 1;
 #ifdef IS2_MODEL

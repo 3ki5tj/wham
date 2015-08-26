@@ -15,7 +15,20 @@
 
 #ifdef MTRAND
 #include "../mtrand.h"
-#endif
+#else
+/* backup random number generator */
+__inline static double rand01()
+{
+  static unsigned long s1 = 5318008, s2 = 11547776, s3 = 1040032;
+
+#define TAUS(s,a,b,c,d) (((s &c) <<d) & 0xffffffffUL) ^ ((((s <<a) & 0xffffffffUL)^s) >>b)
+  s1 = TAUS(s1, 13, 19, 4294967294UL, 12);
+  s2 = TAUS(s2,  2, 25, 4294967288UL, 4);
+  s3 = TAUS(s3,  3, 11, 4294967280UL, 17);
+#undef TAUS
+  return (s1^s2^s3)/4294967296.0;
+}
+#endif /* defined(MTRAND) */
 
 
 
@@ -144,16 +157,17 @@ __inline static xvg_t *xvg_load(const char *fn)
 
   if ( fn == NULL || (fp = fopen(fn, "r")) == NULL ) {
     fprintf(stderr, "xvg_load: cannot open %s\n", fn);
-    return xvg;
+    return NULL;
   }
 
   /* detect the number of y rows */
   if ( (m = xvg_detectyrows(fp, &dx)) <= 0 ) {
-    return xvg;
+    fprintf(stderr, "xvg_load: cannot determine the number of rows %d\n", m);
+    return NULL;
   }
 
   if ( (xvg = xvg_open(m)) == NULL ) {
-    return xvg;
+    return NULL;
   }
 
   xvg->dx = dx;
@@ -264,11 +278,13 @@ __inline static void xvg_mean(const xvg_t *xvg, double *av)
 
 
 
-/* construct a new trajectory from bootstrapping */
-__inline static xvg_t *xvg_bootstrap(xvg_t* xvg0)
+/* construct a new trajectory from bootstrapping
+ * `tau` is the autocorrelation time */
+__inline static xvg_t *xvg_bootstrap(xvg_t* xvg0, double tau)
 {
   xvg_t *xvg;
   int i, i0, k, n = xvg0->n, m = xvg0->m;
+  double gam;
 
   xvg = xvg_open(m);
   xvg->n = n;
@@ -289,12 +305,12 @@ __inline static xvg_t *xvg_bootstrap(xvg_t* xvg0)
   }
 
   /* bootstrapping */
-  for ( i = 0; i < n; i++ ) {
-#ifdef MTRAND
-    i0 = (int) (rand01() * n);
-#else
-    i0 = (int) (1.0 * rand() / RAND_MAX * n);
-#endif
+  gam = (tau > 0 ? exp(-xvg->dx/tau) : 0);
+  for ( i0 = i = 0; i < n; i++ ) {
+    /* selective update the current frame */
+    if ( rand01() > gam || i == 0 ) {
+      i0 = (int) (rand01() * n);
+    }
     xvg->x[i] = xvg0->x[i0];
     for ( k = 0; k < m; k++ ) {
       xvg->y[k][i] = xvg0->y[k][i0];
@@ -305,12 +321,14 @@ __inline static xvg_t *xvg_bootstrap(xvg_t* xvg0)
 
 
 
-/* compute the autocorrelation time
+/* compute the integral autocorrelation time `act[0 ... xvg->m-1]`
+ * the maximal time for integration is given by `tcutoff`
+ * the cutoff of the autocorrlation function is given by `min`
  * optionally save the autocorrelation function to `fn` */
 __inline static int xvg_act(xvg_t *xvg, double *act,
     double tcutoff, double min, const char *fn)
 {
-  int i, j, k, n = xvg->n, m = xvg->m;
+  int i, j, k, done, n = xvg->n, m = xvg->m;
   double *av, *at;
   double dy1, dy2, syy, var = 0;
   FILE *fp = NULL;
@@ -320,12 +338,14 @@ __inline static int xvg_act(xvg_t *xvg, double *act,
     return -1;
   }
 
-  if ( (at = calloc(xvg->m, sizeof(*act))) == NULL ) {
-    fprintf(stderr, "no memory for act\n");
+  if ( (at = calloc(xvg->m, sizeof(*at))) == NULL ) {
+    fprintf(stderr, "no memory for at\n");
     return -1;
   }
 
+  /* compute the mean */
   xvg_mean(xvg, av);
+
   for ( k = 0; k < m; k++ ) {
     act[k] = 0.5 * xvg->dx;
   }
@@ -339,6 +359,7 @@ __inline static int xvg_act(xvg_t *xvg, double *act,
     }
 
     /* autocorrelation function at separation j */
+    done = 1;
     for ( k = 0; k < m; k++ ) {
       syy = 0;
       for ( i = 0; i < n - j; i++ ) {
@@ -351,13 +372,15 @@ __inline static int xvg_act(xvg_t *xvg, double *act,
       if ( j == 0 ) {
         var = syy;
         at[k] = 1.0;
+        done = 0;
       } else {
         at[k] = syy / var;
-        if ( at[k] < min ) {
-          break;
+        if ( at[k] >= min ) {
+          act[k] += at[k] * xvg->dx;
+          done = 0;
         }
-        act[k] += at[k] * xvg->dx;
       }
+      //fprintf(stderr, "j %d, k %d, ac %g, tau %g\n", j, k, at[k], act[k]);
     }
 
     if ( fp != NULL ) {
@@ -367,6 +390,8 @@ __inline static int xvg_act(xvg_t *xvg, double *act,
       }
       fprintf(fp, "\n");
     }
+
+    if ( done ) break;
   }
 
   if ( fp != NULL ) {

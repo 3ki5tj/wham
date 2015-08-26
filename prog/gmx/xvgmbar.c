@@ -254,12 +254,13 @@ static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
   }
 
   for ( j = 0; j < nbeta; j++ ) {
-    printf("%3d %10.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %15.7f %14.7f %8d\n",
+    printf("%3d %10.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %14.7f %15.7f %14.7f %14.7f %8d\n",
         j, (double) beta[j],
         (double) lnza[j], (double) lnzb[j], (double) lnzc[j],
         (double) lnzxpa[j], (double) lnzxpb[j], (double) lnzbar[j],
         (double) lnzgp[j], (double) lnztg[j], (double) lnzlnv[j],
-        (double) eav[j], (double) SQRT(var[j]), xvg[j]->n);
+        (double) eav[j], (double) SQRT(var[j]),
+        (double) BOLTZ*var[j]*beta[j]*beta[j], xvg[j]->n);
   }
 
   free(eav);
@@ -304,13 +305,15 @@ int main(int argc, char **argv)
 
   if ( m->bootstrap ) {
     xvg_t *xvg0;
+    double tau[10];
 
     /* scramble the random number seed */
     mtscramble( time(NULL) + clock() );
     /* bootstrapping */
     for ( i = 0; i < nbeta; i++ ) {
       xvg0 = xvg[i];
-      xvg[i] = xvg_bootstrap( xvg0 );
+      xvg_act(xvg0, tau, m->actmax, m->acmin, m->fnac);
+      xvg[i] = xvg_bootstrap( xvg0, tau[0] );
       xvg_close(xvg0);
     }
   }

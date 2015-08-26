@@ -35,3 +35,42 @@ Notes
 ======
 
 * MBAR can achieve a lower precision due to the larger number of operations
+
+
+
+Usage
+======
+
+
+### xvgact
+
+```
+./xvgact ../data/1VII/T300/e.xvg --fnac=ac.dat
+```
+
+### xvgwham
+
+
+Direct WHAM, simplest example.
+```
+./xvgwham e.ls
+```
+
+MDIIS-WHAM, be verbose
+```
+./xvgwham e.ls --wham=mdiis -v
+```
+The options `--wham=` can also be `st` and `ui`.
+
+
+MDIIS-WHAM, save a histogram and a file for autocorrelation times,
+and then do bootscrapping three times
+```
+./xvgwham e.ls --fnhis=hist.dat --wham=mdiis --fnact=act.dat
+./xvgwham e.ls --fnhis=hist.dat --wham=mdiis --fnact=act.dat --bootstrap -H
+./xvgwham e.ls --fnhis=hist.dat --wham=mdiis --fnact=act.dat --bootstrap -H
+./xvgwham e.ls --fnhis=hist.dat --wham=mdiis --fnact=act.dat --bootstrap -H
+```
+
+
+

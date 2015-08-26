@@ -175,7 +175,7 @@ def main():
   except:
     pass
 
-  cmd0 = "./%s -v %s %s %s %s %s %s --%s=%s %s" % (
+  cmd0 = "./%s -v %s %s %s %s %s %s --%s=%s %s --fnact=act.dat" % (
       prog, strfnhis, fnls, cmdopt, radd, bootstrap,
       "--est" if est else "",
       "mbar" if mbar else "wham", whammethod, nbases)
