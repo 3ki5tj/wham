@@ -29,3 +29,11 @@ Away from the critical point T = [3.0, 4.6]
 number of iterations significantly reduced
 40 temperatures, 166 iterations.
 160 temperaturs, 159 iterations.
+
+
+# Debug #
+
+In the debugging mode, we will
+```
+./is2wham --wham=mdiis --debug
+```

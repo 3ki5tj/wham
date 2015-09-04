@@ -15,5 +15,6 @@ lonestar:
 	make -C .. lonestar
 
 clean:
+	$(RM) $(progs)
 	make -C .. clean
 

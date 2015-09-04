@@ -51,12 +51,14 @@ int main(int argc, char **argv)
   model_t m[1];
   xvg_t **xvg = NULL;
   int i, nbp;
+  unsigned flags = 0;
   xdouble *beta, *bpres, *lnz;
 
   model_default(m);
   /* reduce the error tolerance for MBAR */
   m->tol = 1e-7;
   model_doargs(m, argc, argv);
+  if ( m->rmcom ) flags |= MBAR2_RMCOM;
 
   if ( m->fninp == NULL ) {
     model_help(m);
@@ -73,7 +75,7 @@ int main(int argc, char **argv)
     lnz[i] = 0;
   }
 
-  mbar2x(nbp, xvg, beta, bpres, lnz,
+  mbar2x(nbp, xvg, beta, bpres, lnz, flags,
       m->damp, m->mdiis_nbases,
       m->mdiis_update_method, m->mdiis_threshold,
       m->itmin, m->itmax, m->tol, m->verbose, m->mbar_method);

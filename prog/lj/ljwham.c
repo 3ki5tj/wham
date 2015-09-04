@@ -223,9 +223,11 @@ int main(int argc, char **argv)
   hist_t *hs;
   double *beta, *lnz;
   int iT;
+  unsigned flags = 0;
 
   model_default_lj(m);
   model_doargs(m, argc, argv);
+  if ( m->rmcom ) flags |= WHAM_RMCOM;
 
   xnew(beta, m->nT);
   xnew(lnz, m->nT);
@@ -247,7 +249,7 @@ int main(int argc, char **argv)
     }
   }
 
-  whamx(hs, beta, lnz,
+  whamx(hs, beta, lnz, flags, NULL,
       m->damp, m->mdiis_nbases,
       m->mdiis_update_method, m->mdiis_threshold,
       m->itmin, m->itmax, m->tol, m->verbose,

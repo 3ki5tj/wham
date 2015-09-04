@@ -59,7 +59,9 @@ typedef struct {
   char *fnac;
   char *fnact;
   char *fninp;
+  int rmcom; /* remove center of mass */
   int verbose;
+  int debug;
   int re;
 #ifdef IS2_MODEL
   int L; /* override the length */
@@ -136,6 +138,7 @@ __inline static void model_default(model_t *m)
   m->fninp = NULL;
   m->fnac = NULL;
   m->fnact = NULL;
+  m->rmcom = 0;
   m->verbose = 0;
   m->re = 0;
 }
@@ -247,6 +250,7 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --nstvmov=:    set the number of steps for volume moves, default: %d\n", m->nstvmov);
   fprintf(stderr, "  --defsetup:    use the default setup, default: %d\n", m->defsetup);
 #endif /* LJ_MODEL */
+  fprintf(stderr, "  --rmcom:       normalize by removing the center of mass, etc., default %d\n", m->rmcom);
   fprintf(stderr, "  -v:            be verbose, -vv to be more verbose, etc., default %d\n", m->verbose);
   fprintf(stderr, "  -h, --help:    display this message\n");
   exit(1);
@@ -409,8 +413,13 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
       } else if ( strcmpfuzzy(p, "defsetup") == 0 ) {
         m->defsetup = 1;
 #endif /* LJ_MODEL */
+      } else if ( strcmpfuzzy(p, "rmcom") == 0 ) {
+        m->rmcom = 1;
       } else if ( strcmpfuzzy(p, "help") == 0 ) {
         model_help(m);
+      } else if ( strcmpfuzzy(p, "debug") == 0
+               || strcmpfuzzy(p, "dbg") == 0 ) {
+        m->debug = 1;
       } else {
         fprintf(stderr, "unknown option %s\n", argv[i]);
         model_help(m);

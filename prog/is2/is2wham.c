@@ -108,17 +108,23 @@ int main(int argc, char **argv)
 {
   model_t m[1];
   hist_t *hs;
-  double *beta, *lnz;
+  double *beta, *lnz, *lnzref, *lnz1;
   int iT;
+  unsigned flags = 0;
 
   model_default_is2(m);
   model_doargs(m, argc, argv);
+  if ( m->rmcom ) flags |= WHAM_RMCOM;
 
   xnew(beta, m->nT);
   xnew(lnz, m->nT);
+  xnew(lnzref, m->nT);
+  xnew(lnz1, m->nT);
   for ( iT = 0; iT < m->nT; iT++ ) {
     beta[iT] = 1./(m->Tmin + m->Tdel * iT);
     lnz[iT] = 0;
+    lnz1[iT] = 0;
+    lnzref[iT] = is2_exact(IS2_L, IS2_L, beta[iT], NULL, NULL);
   }
 
   if ( m->loadprev ) {
@@ -130,29 +136,32 @@ int main(int argc, char **argv)
     hs = is2_simul(m, beta);
   }
 
-  whamx(hs, beta, lnz,
+  whamx(hs, beta, lnz, flags, NULL,
       m->damp, m->mdiis_nbases,
       m->mdiis_update_method, m->mdiis_threshold,
       m->itmin, m->itmax, m->tol, m->verbose,
       m->fnlndos, m->fneav, m->wham_method);
 
   if ( m->verbose ) {
-    double *lnzref;
-
-    xnew(lnzref, m->nT);
-    for ( iT = 0; iT < m->nT; iT++ ) {
-      lnzref[iT] = is2_exact(IS2_L, IS2_L, beta[iT], NULL, NULL);
-    }
     for ( iT = 0; iT < m->nT; iT++ ) {
       printf("%3d %10.7f %14.7f %14.7f\n",
          iT, beta[iT], lnz[iT], lnzref[iT] - lnzref[0]);
     }
-    free(lnzref);
+  }
+
+  if ( m->debug ) {
+    whamx(hs, beta, lnz1, flags, lnz,
+        m->damp, m->mdiis_nbases,
+        m->mdiis_update_method, m->mdiis_threshold,
+        m->itmin, m->itmax, m->tol, m->verbose + 1,
+        m->fnlndos, m->fneav, m->wham_method);
   }
 
   hist_close(hs);
   free(beta);
   free(lnz);
+  free(lnz1);
+  free(lnzref);
   return 0;
 }
 

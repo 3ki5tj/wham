@@ -260,7 +260,7 @@ static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
         (double) lnzxpa[j], (double) lnzxpb[j], (double) lnzbar[j],
         (double) lnzgp[j], (double) lnztg[j], (double) lnzlnv[j],
         (double) eav[j], (double) SQRT(var[j]),
-        (double) BOLTZ*var[j]*beta[j]*beta[j], xvg[j]->n);
+        (double) (BOLTZ*var[j]*beta[j]*beta[j]), xvg[j]->n);
   }
 
   free(eav);
@@ -285,6 +285,7 @@ int main(int argc, char **argv)
   model_t m[1];
   xvg_t **xvg = NULL;
   int i, nbeta;
+  unsigned flags = 0;
   xdouble *beta, *lnz;
 
   model_default(m);
@@ -293,6 +294,7 @@ int main(int argc, char **argv)
     m->tol = 1e-7;
   }
   model_doargs(m, argc, argv);
+  if ( m->rmcom ) flags |= MBAR_RMCOM;
 
   if ( m->fninp == NULL ) {
     model_help(m);
@@ -331,7 +333,7 @@ int main(int argc, char **argv)
         m->tol, m->itmax, m->verbose);
   } else {
     /* do MBAR */
-    mbarx(nbeta, xvg, beta, lnz,
+    mbarx(nbeta, xvg, beta, lnz, flags,
         m->damp, m->mdiis_nbases,
         m->mdiis_update_method, m->mdiis_threshold,
         m->itmin, m->itmax, m->tol, m->verbose, m->mbar_method);

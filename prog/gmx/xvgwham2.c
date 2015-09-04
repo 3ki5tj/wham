@@ -85,11 +85,13 @@ int main(int argc, char **argv)
   model_t m[1];
   hist2_t *hs = NULL;
   int i, nbp;
+  unsigned flags = 0;
   xdouble *beta, *bpres, *lnz;
 
   model_default(m);
   m->de = 10.0;
   model_doargs(m, argc, argv);
+  if ( m->rmcom ) flags |= WHAM2_RMCOM;
 
   if ( m->fninp == NULL ) {
     model_help(m);
@@ -122,7 +124,7 @@ int main(int argc, char **argv)
     lnz[i] = 0;
   }
 
-  wham2x(hs, beta, bpres, lnz,
+  wham2x(hs, beta, bpres, lnz, flags,
       m->damp, m->mdiis_nbases,
       m->mdiis_update_method, m->mdiis_threshold,
       m->itmin, m->itmax, m->tol, m->verbose,

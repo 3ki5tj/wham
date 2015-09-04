@@ -26,17 +26,26 @@ const char *wham_methods[] = {"Direct", "MDIIS"};
 
 typedef struct {
   const double *bx, *by; /* temperature array, reference */
-  double *lntot; /* total number of visits to each temperature */
+  double *tot; /* total number of visits to each temperature */
+  double *lntot; /* logarithm of the total number of visits to each temperature */
   double *res; /* difference between new and old lnz */
   double *htot; /* overall histogram */
   double *lndos; /* density of states */
   hist2_t *hist; /* histograms, reference */
   int imin, imax, jmin, jmax;
+  unsigned flags;
 } wham2_t;
 
 
 
-static wham2_t *wham2_open(const double *bx, const double *by, hist2_t *hist)
+/* flags */
+#define WHAM2_RMCOM   0x0010 /* normalize by removing the center of mass motion */
+#define WHAM2_NOEST   0x0020 /* do not estimate lnz at the beginning */
+
+
+
+static wham2_t *wham2_open(const double *bx, const double *by,
+    hist2_t *hist, unsigned flags)
 {
   wham2_t *w;
   int i, j, ij, n = hist->n, m = hist->m, nm = n * m, k, nbeta = hist->rows;
@@ -45,6 +54,7 @@ static wham2_t *wham2_open(const double *bx, const double *by, hist2_t *hist)
   w->bx = bx;
   w->by = by;
   w->hist = hist;
+  xnew(w->tot, hist->rows);
   xnew(w->lntot, hist->rows);
   xnew(w->res, hist->rows);
   xnew(w->htot, nm);
@@ -61,6 +71,7 @@ static wham2_t *wham2_open(const double *bx, const double *by, hist2_t *hist)
       s += x;
       w->htot[ij] += x;
     }
+    w->tot[k] = s;
     w->lntot[k] = (s > 0) ? log(s) : LOG0;
   }
 
@@ -101,6 +112,8 @@ static wham2_t *wham2_open(const double *bx, const double *by, hist2_t *hist)
   }
   w->jmax = j + 1;
 
+  w->flags = flags;
+
   fprintf(stderr, "i: [%d, %d), j: [%d, %d)\n", w->imin, w->imax, w->jmin, w->jmax);
   return w;
 }
@@ -109,6 +122,7 @@ static wham2_t *wham2_open(const double *bx, const double *by, hist2_t *hist)
 
 static void wham2_close(wham2_t *w)
 {
+  free(w->tot);
   free(w->lntot);
   free(w->res);
   free(w->htot);
@@ -208,6 +222,52 @@ static void wham2_getav(wham2_t *w, const char *fn)
 
 
 
+/* shift `lnz` such that `lnz[0] == 0` */
+static void wham2_shift(double *lnz, int nbeta)
+{
+  int i;
+
+  for ( i = 1; i < nbeta; i++ ) {
+    lnz[i] -= lnz[0];
+  }
+  lnz[0] = 0;
+}
+
+
+
+/* normalize by removing the center of mass motion */
+static void wham2_rmcom(double *arr,
+    const double *tot, int n)
+{
+  int i;
+  double s = 0, sy = 0;
+
+  for ( i = 0; i < n; i++ ) {
+    s += tot[i];
+    sy += arr[i] * tot[i];
+  }
+  sy /= s;
+  for ( i = 0; i < n; i++ ) {
+    arr[i] -= sy;
+  }
+}
+
+
+
+/* normalize lnz */
+static void wham2_normalize(double *lnz, int nbeta, const void *ptr)
+{
+  const wham2_t *w = (const wham2_t *) ptr;
+
+  if ( w->flags & WHAM2_RMCOM ) {
+    wham2_rmcom(lnz, w->tot, nbeta);
+  } else {
+    wham2_shift(lnz, nbeta);
+  }
+}
+
+
+
 /* estimate the partition function using the single histogram method */
 static void wham2_estimatelnz(wham2_t *w, double *lnz)
 {
@@ -256,18 +316,8 @@ static void wham2_estimatelnz(wham2_t *w, double *lnz)
     }
     lnz[k] = lnz[kk] + (s > 0 ? log(s) - dlnz : 0);
   }
-}
 
-
-
-static void wham2_normalize(double *lnz, int nbeta)
-{
-  int i;
-
-  for ( i = 1; i < nbeta; i++ ) {
-    lnz[i] -= lnz[0];
-  }
-  lnz[0] = 0;
+  wham2_normalize(lnz, nbeta, w);
 }
 
 
@@ -295,7 +345,8 @@ static void wham2_getlnz(wham2_t *w, double *lnz)
       }
     }
   }
-  wham2_normalize(lnz, nbeta);
+
+  wham2_normalize(lnz, nbeta, w);
 }
 
 
@@ -349,7 +400,7 @@ static double wham2_step(wham2_t *w, double *lnz, double *res,
     for ( i = 0; i < nbeta; i++ ) {
       lnz[i] += damp * res[i];
     }
-    wham2_normalize(lnz, nbeta);
+    wham2_normalize(lnz, nbeta, w);
   }
 
   return err;
@@ -391,13 +442,17 @@ static double wham2_getlndos(wham2_t *w, double *lnz,
 /* two-dimensional weighted histogram analysis method */
 static double wham2(hist2_t *hist,
     const double *bx, const double *by, double *lnz,
-    double damp, int itmin, int itmax, double tol, int verbose,
+    unsigned flags, double damp,
+    int itmin, int itmax, double tol, int verbose,
     const char *fnlndos, const char *fneav)
 {
-  wham2_t *w = wham2_open(bx, by, hist);
+  wham2_t *w = wham2_open(bx, by, hist, flags);
   double err;
 
-  wham2_estimatelnz(w, lnz);
+  if ( !(flags & WHAM2_NOEST) ) {
+    wham2_estimatelnz(w, lnz);
+  }
+
   err = wham2_getlndos(w, lnz,
       damp, itmin, itmax, tol, verbose);
   if ( fnlndos ) {
@@ -425,18 +480,22 @@ static double wham2_getres(void *w, double *lnz, double *res)
 
 static double wham2_mdiis(hist2_t *hist,
     const double *bx, const double *by, double *lnz,
+    unsigned flags,
     int nbases, double damp, int queue, double threshold,
     int itmin, int itmax, double tol, int verbose,
     const char *fnlndos, const char *fneav)
 {
-  wham2_t *w = wham2_open(bx, by, hist);
+  wham2_t *w = wham2_open(bx, by, hist, flags);
   double err;
 
-  wham2_estimatelnz(w, lnz);
+  if ( !(flags & WHAM2_NOEST) ) {
+    wham2_estimatelnz(w, lnz);
+  }
+
   err = iter_mdiis(lnz, hist->rows,
       wham2_getres, wham2_normalize, w,
       nbases, damp, queue, threshold,
-      itmin, itmax, tol, verbose);
+      itmin, itmax, tol, NULL, verbose);
   if ( fnlndos ) wham2_savelndos(w, fnlndos);
   wham2_getav(w, fneav);
   wham2_close(w);
@@ -449,17 +508,18 @@ static double wham2_mdiis(hist2_t *hist,
 
 static double wham2x(hist2_t *hist,
     const double *bx, const double *by, double *lnz,
+    unsigned flags,
     double damp, int nbases, int update_method, double threshold,
     int itmin, int itmax, double tol, int verbose,
     const char *fnlndos, const char *fneav, int method)
 {
   if ( method == WHAM_DIRECT ) {
-    return wham2(hist, bx, by, lnz,
+    return wham2(hist, bx, by, lnz, flags,
         damp, itmin, itmax, tol,
         verbose, fnlndos, fneav);
 #ifdef ENABLE_MDIIS
   } else if ( method == WHAM_MDIIS ) {
-    return wham2_mdiis(hist, bx, by, lnz,
+    return wham2_mdiis(hist, bx, by, lnz, flags,
         nbases, damp, update_method, threshold,
         itmin, itmax, tol, verbose,
         fnlndos, fneav);

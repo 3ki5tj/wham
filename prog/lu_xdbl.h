@@ -7,7 +7,7 @@ __inline static int lusolve(xdouble *a, xdouble *b, int n, xdouble tiny)
 
   for (i = 0; i < n; i++) {  /* normalize each equation */
     for (max = 0.0, j = 0; j < n; j++)
-      if ((x = fabs(a[i*n + j])) > max)
+      if ((x = FABS(a[i*n + j])) > max)
         max = x;
     if (max < DBL_EPSILON) return -1;
     for (x = 1.0/max, j = 0; j < n; j++)
@@ -30,8 +30,8 @@ __inline static int lusolve(xdouble *a, xdouble *b, int n, xdouble tiny)
       for (x = a[i*n + j], k = 0; k < j; k++)
         x -= a[i*n + k] * a[k*n + j];
       a[i*n + j] = x;
-      if (fabs(x) >= max) {
-        max = fabs(x);
+      if (FABS(x) >= max) {
+        max = FABS(x);
         ip = i;
       }
     }
@@ -41,7 +41,7 @@ __inline static int lusolve(xdouble *a, xdouble *b, int n, xdouble tiny)
         x = a[ip*n + k], a[ip*n + k] = a[j*n + k], a[j*n + k] = x;
       x = b[ip], b[ip] = b[j], b[j] = x;
     }
-    if (fabs(a[j*n + j]) < tiny) {
+    if (FABS(a[j*n + j]) < tiny) {
 #ifdef LU_VERBOSE
       fprintf(stderr, "j %d/%d, a(j,j) %g\n", j, n, a[j*n+j]);
 #endif
@@ -83,7 +83,7 @@ __inline static int luinv(xdouble *a, xdouble *b, int n, xdouble tiny)
 
   for (i = 0; i < n; i++) {  /* normalize each equation */
     for (max = 0.0, j = 0; j < n; j++)
-      if ((x = fabs(a[i*n + j])) > max)
+      if ((x = FABS(a[i*n + j])) > max)
         max = x;
     if (max < tiny) return 1;
     for (x = 1.0/max, j = 0; j < n; j++)
@@ -107,8 +107,8 @@ __inline static int luinv(xdouble *a, xdouble *b, int n, xdouble tiny)
       for (x = a[i*n + j], k = 0; k < j; k++)
         x -= a[i*n + k] * a[k*n + j];
       a[i*n + j] = x;
-      if (fabs(x) >= max) {
-        max = fabs(x);
+      if (FABS(x) >= max) {
+        max = FABS(x);
         ip = i;
       }
     }
@@ -119,7 +119,7 @@ __inline static int luinv(xdouble *a, xdouble *b, int n, xdouble tiny)
         x = b[ip*n + k], b[ip*n + k] = b[j*n + k], b[j*n + k] = x;
       }
     }
-    if (fabs(a[j*n + j]) < tiny)
+    if (FABS(a[j*n + j]) < tiny)
       a[j*n + j] = tiny;
     /* divide by the pivot element, for the L matrix */
     if (j != n - 1)

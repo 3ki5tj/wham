@@ -306,12 +306,14 @@ int main(int argc, char **argv)
   hist2_t *hs;
   double *beta, *pres, *bp, *lnz;
   int it, ip, itp, ntp;
+  unsigned flags = 0;
 #define NTPDEF 24
   double tpdef[NTPDEF]   = {1.30, 1.30, 1.30, 1.30, 1.30, 1.30, 1.40, 1.40, 1.40, 1.40, 1.40, 1.40, 1.50, 1.50, 1.50, 1.50, 1.50, 1.50, 1.60, 1.60, 1.60, 1.60, 1.60, 1.60};
   double presdef[NTPDEF] = {0.08, 0.09, 0.10, 0.11, 0.12, 0.13, 0.09, 0.10, 0.12, 0.15, 0.18, 0.21, 0.10, 0.12, 0.17, 0.22, 0.27, 0.32, 0.11, 0.12, 0.20, 0.28, 0.36, 0.44};
 
   model_default_lj2(m);
   model_doargs(m, argc, argv);
+  if ( m->rmcom ) flags |= WHAM2_RMCOM;
 
   if ( m->defsetup ) {
     ntp = NTPDEF;
@@ -366,7 +368,7 @@ int main(int argc, char **argv)
   }
 
   /* do WHAM */
-  wham2x(hs, beta, bp, lnz,
+  wham2x(hs, beta, bp, lnz, flags,
       m->damp, m->mdiis_nbases,
       m->mdiis_update_method, m->mdiis_threshold,
       m->itmin, m->itmax, m->tol, m->verbose,

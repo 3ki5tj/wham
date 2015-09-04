@@ -155,7 +155,8 @@ static int mdiis_solve(mdiis_t *m)
 
 /* construct the new f */
 static void mdiis_gen(mdiis_t *m, xdouble *f,
-    void (*normalize)(xdouble *, int), xdouble damp)
+    void (*normalize)(xdouble *, int, const void *),
+    const void *obj, xdouble damp)
 {
   int ib, il, npt = m->npt, nb = m->nb;
 
@@ -164,12 +165,13 @@ static void mdiis_gen(mdiis_t *m, xdouble *f,
   for ( ib = 0; ib < nb; ib++ ) {
     xdouble coef = m->coef[ib];
     for ( il = 0; il < npt; il++ ) {
-      m->f[nb][il] += coef * (m->f[ib][il] + damp * m->res[ib][il]);
+      xdouble x = m->f[ib][il] + damp * m->res[ib][il];
+      m->f[nb][il] += coef * x;
     }
   }
 
   if ( normalize != NULL ) {
-    normalize(m->f[nb], m->npt);
+    normalize(m->f[nb], m->npt, obj);
   }
 
   /* f = m->f[nb] */
@@ -464,6 +466,46 @@ static int mdiis_update(mdiis_t *m, xdouble *f, xdouble *res,
 
 
 
+__inline static void mdiis_summary(mdiis_t *m, int it)
+{
+  int j;
+  fprintf(stderr, "it %d, %d bases:", it, m->nb);
+  for ( j = 0; j < m->nb; j++ ) {
+    fprintf(stderr, " %g(%g)", (double) m->coef[j],
+        (double) SQRT(m->mat[j*m->mnb+j]));
+  }
+  fprintf(stderr, "\n");
+}
+
+
+
+__inline static int mdiis_log(mdiis_t *m,
+    const xdouble *f, const xdouble *res,
+    const xdouble *fref, int it)
+{
+  FILE *fp;
+  char fn[FILENAME_MAX];
+  int i, n = m->npt;
+
+  sprintf(fn, "mdiis_iter%d.dat", it);
+  if ( (fp = fopen(fn, "w")) == NULL ) {
+    fprintf(stderr, "cannot write log %s\n", fn);
+    return -1;
+  }
+
+  fprintf(fp, "# %d %d\n", it, n);
+  for ( i = 0; i < n; i++ ) {
+    fprintf(fp, "%d %g %g", i, (double) f[i], (double) res[i]);
+    if ( fref ) fprintf(fp, " %g", (double) (f[i] - fref[i]));
+    fprintf(fp, "\n");
+  }
+
+  fclose(fp);
+  return 0;
+}
+
+
+
 enum {
   MDIIS_UPDATE_DEFAULT,
   MDIIS_UPDATE_KTH,
@@ -484,10 +526,11 @@ const char *mdiis_update_methods[] = {
 
 static xdouble iter_mdiis(xdouble *f, int npt,
     xdouble (*getres)(void *, xdouble *, xdouble *),
-    void (*normalize)(xdouble *, int), void *obj,
+    void (*normalize)(xdouble *, int, const void *), void *obj,
     int nbases, xdouble damp,
     int update_method, xdouble threshold,
-    int itmin, int itmax, xdouble tol, int verbose)
+    int itmin, int itmax, xdouble tol,
+    const xdouble *fref, int verbose)
 {
   mdiis_t *mdiis;
   int it, ibp = 0, ib, success;
@@ -509,16 +552,18 @@ static xdouble iter_mdiis(xdouble *f, int npt,
     /* obtain a set of optimal coefficients of combination */
     mdiis_solve(mdiis);
     if ( verbose >= 2 ) {
-      int j;
-      fprintf(stderr, "it %d, %d bases:", it, mdiis->nb);
-      for ( j = 0; j < mdiis->nb; j++ ) {
-        fprintf(stderr, " %g(%g)", (double) mdiis->coef[j], (double) sqrt(mdiis->mat[j*mdiis->mnb+j]));
-      }
-      fprintf(stderr, "\n");
+      mdiis_summary(mdiis, it + 1);
     }
+
     /* generate a new f from the set of coefficients */
-    mdiis_gen(mdiis, f, normalize, damp);
+    mdiis_gen(mdiis, f, normalize, obj, damp);
+
+    /* compute the residual vector `res` of `f` */
     err = mdiis->getres(obj, f, res);
+    if ( fref != NULL ) {
+      mdiis_log(mdiis, f, res, fref, it + 1);
+    }
+
     /* add the new f into the basis */
     if ( update_method == MDIIS_UPDATE_KTH ) {
       ib = mdiis_update_kth(mdiis, f, res, err, threshold);

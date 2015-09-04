@@ -214,12 +214,14 @@ int main(int argc, char **argv)
   model_t m[1];
   hist_t *hs = NULL;
   int i, nbeta;
+  unsigned flags = 0;
   xdouble *beta, *lnz;
   double *tcorr = NULL; /* array of correlation time */
 
 
   model_default(m);
   model_doargs(m, argc, argv);
+  if ( m->rmcom ) flags |= WHAM_RMCOM;
 
   if ( m->fninp == NULL ) {
     model_help(m);
@@ -269,7 +271,7 @@ int main(int argc, char **argv)
     lnz[i] = 0;
   }
 
-  whamx(hs, beta, lnz,
+  whamx(hs, beta, lnz, flags, NULL,
       m->damp, m->mdiis_nbases,
       m->mdiis_update_method, m->mdiis_threshold,
       m->itmin, m->itmax, m->tol, m->verbose,

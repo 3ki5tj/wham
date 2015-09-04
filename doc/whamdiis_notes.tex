@@ -1238,13 +1238,12 @@ f_i^\mathrm{(new)}
 \int
 \frac
 {
-  \sum_{k=1}^K \rho_k(E) \, \exp(-\beta_i \, E)
+  \sum_{k=1}^K
+    N_k \, \rho_k(E) \, \exp(-\beta_i \, E)
 }
 {
   \sum_{k=1}^K
-  \exp(
-    -\beta_k \, E + f_k^\mathrm{(old)}
-  )
+    N_k \, \exp( -\beta_k \, E + f_k^\mathrm{(old)} )
 }
 dE
 \notag \\
@@ -1253,15 +1252,24 @@ dE
 \int
 \frac
 {
-  \sum_{k=1}^K \rho_k(E) \, \exp(-\beta_i \, E)
+  \sum_{k=1}^K N_k \, \rho_k(E) \, \exp(-\beta_i \, E)
 }
 {
   D(E; \vct f^\mathrm{(old)})
 }
-dE
-\tag{B1}
+dE,
 \label{eq:f_WHAM1}
 \end{align}
+%
+where
+%
+\begin{align}
+D(E; \vct f)
+=
+\sum_{k=1}^K N_k \, \exp(-\beta_k \, E + f_k).
+\end{align}
+%
+If $N_i = \mathrm{const}$, then it is reduced to Eq. (B1) in the main text.
 
 
 
@@ -1273,7 +1281,7 @@ The linearized equation is
   \int
   \frac
   {
-    \sum_{k=1}^K \rho_k(E) \, e^{-\beta_i \, E}
+    \sum_{k=1}^K N_k \, \rho_k(E) \, e^{-\beta_i \, E}
   }
   {
     D(E; \vct f^*)^2
@@ -1284,7 +1292,7 @@ The linearized equation is
   \int
   \frac
   {
-    \sum_{k=1}^K \rho_k(E) \, e^{-\beta_i \, E}
+    \sum_{k=1}^K N_k \, \rho_k(E) \, e^{-\beta_i \, E}
   }
   {
     D(E; \vct f^*)
@@ -1299,20 +1307,20 @@ The linearized equation is
 \int
 \frac
 {
-  \sum_{k=1}^K \rho_k(E) \, e^{-\beta_i \, E + f_i^*}
+  \sum_{k=1}^K N_k \, \rho_k(E) \, e^{-\beta_i \, E + f_i^*}
 }
 {
   D(E; \vct f^*)^2
 }
-e^{-\beta_j \, E + f_j^*}
+N_j \, e^{-\beta_j \, E + f_j^*}
 dE
 \right)
 \, \delta f_j^\mathrm{(old)}
 \notag \\
 &=
 \sum_{j = 1}^K
-A_{ij} \, \delta f_j^\mathrm{(old)}
-\tag{B2}
+A_{ij} \, \delta f_j^\mathrm{(old)},
+%\tag{B2}
 \label{eq:f_lin}
 \end{align}
 where we have used
@@ -1323,43 +1331,51 @@ for the denominator.
 
 
 
-
-\subsubsection{Derivation of the normalization of $A_{ij}$, Eq. (B4)}
-
+\subsubsection{On the normalization of $A_{ij}$, Eq. (B3)}
 
 
-For the normalization, we have
+From \eqref{eq:f_lin}, we have
+%
 \begin{align}
-\sum_{i = 1}^K
+  \sum_{j = 1}^K A_{ij}         &= 1,
+\label{eq:Aij_normalization_j} \\
+  \sum_{i = 1}^K N_i \, A_{ij}  &= N_j.
+\label{eq:Aij_normalization_i}
+\end{align}
+
+
+
+For the first condition, we have
+\begin{align}
+\sum_{j = 1}^K
 A_{ij}
 &=
 \int
 \frac
 {
-  \sum_{k=1}^K \rho_k(E) \,
+  \sum_{k=1}^K N_k \, \rho_k(E) \,
   \sum_{i = 1}^K e^{-\beta_i \, E + f_i^*}
 }
 {
   D(E; \vct f^*)^2
 }
-e^{-\beta_j \, E + f_j^*}
+N_j \, e^{-\beta_j \, E + f_j^*}
 dE
 \notag \\
 &=
 \int
 \frac
 {
-  \sum_{k=1}^K \rho_k(E)
+  \sum_{k=1}^K N_k \rho_k(E)
 }
 {
   D(E; \vct f^*)
 }
-e^{-\beta_j \, E + f_j^*}
+e^{-\beta_i \, E + f_i^*}
 dE
 =
-e^{-f_j^* + f_j^*} = 1.
-\tag{B4}
-\label{eq:Aij_normalization}
+e^{-f_i^* + f_i^*} = 1.
+\notag
 \end{align}
 %
 where,
@@ -1370,6 +1386,61 @@ $f_i^\mathrm{(old)} \rightarrow f_i^*$
 and
 $f_i^\mathrm{(new)} \rightarrow f_i^*$
 ).
+
+
+
+Similarly,
+\begin{align}
+\sum_{i = 1}^K
+N_i \, A_{ij}
+&=
+\int
+\frac
+{
+  \sum_{k=1}^K N_k \, \rho_k(E) \,
+  \sum_{i = 1}^K N_i \, e^{-\beta_i \, E + f_i^*}
+}
+{
+  D(E; \vct f^*)^2
+}
+N_j \, e^{-\beta_j \, E + f_j^*}
+dE
+\notag \\
+&=
+\int
+\frac
+{
+  \sum_{k=1}^K N_k \, \rho_k(E)
+}
+{
+  D(E; \vct f^*)
+}
+N_j \, e^{-\beta_j \, E + f_j^*}
+dE
+=
+N_j \, e^{-f_j^* + f_j^*} = N_j.
+\notag
+\end{align}
+%
+
+
+Thus, from Eq. \eqref{eq:f_lin}, we get
+%
+\begin{align}
+  \sum_{i = 1}^K
+    N_i \, \delta^\mathrm{(new)}
+&=
+  \sum_{j = 1}^K
+    \sum_{i = 1}^K
+      N_i \, A_{ij}
+    \, \delta f_j^\mathrm{(old)} \notag \\
+&=
+  \sum_{j = 1}^K
+    N_j \, \delta f_j^\mathrm{(old)},
+  \notag
+\end{align}
+%
+where we have used Eq. \eqref{eq:Aij_normalization_i}.
 
 
 
