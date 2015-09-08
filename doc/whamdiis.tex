@@ -63,18 +63,8 @@ by direct inversion in the iterative subspace}
 The weighted histogram analysis method (WHAM)
 for free energy calculations
 is a valuable tool to produce
-free energy differences with the minimal \repl{bias}{errors}.
-\note{
-WHAM is supposed to be ``unbiased'';
-maybe ``error'' or ``uncertainty'' is a better word?
-}
+free energy differences with the minimal errors.
 %
-\repl{
-If we have two (or more) simulations,
-we want the best statistical estimator
-of the overlap of the density of states.
-}
-{
 Given multiple simulations,
 WHAM obtains
 from the distribution overlaps
@@ -82,42 +72,26 @@ the optimal statistical estimator
 of the density of states,
 from which the free energy differences
 can be computed.
-}
 %
-\note{
-We may be introducing too many new things in this sentence,
-and it also feels a bit detached from the previous sentence.
-The phrase ``overlap of the density of states'' is somewhat vague.
-}
 %
-\repl{This is most often found}{The WHAM equations are often solved}
+The WHAM equations are often solved
 by an iterative procedure.
 %
 In this work,
 we use a well-known linear algebra algorithm
 which allows for
-\repl{a}{more}
-rapid convergence to the \repl{optimum}{solution}.
+more
+rapid convergence to the solution.
 %
-\note{
-We haven't related WHAM to an optimisation problem,
-so the word ``optimum'' may be a bit confusing.
-}
 %
-We find \add{that} the computational complexity of
+We find that the computational complexity of
 the iterative solution to WHAM
 can be improved by using the method of
 direct inversion in the iterative subspace.
 %
-\note{
-Should we merge the above two sentences?
-In this work, we use a well-known linear algebra algorithm,
-the method of direct inversion in the iterative subspace,
-for more rapid convergence to the solution of the WHAM equation.
-}
 %
 We give examples from
-\add{lattice models,}
+lattice models,
 simple liquids
 and aqueous protein solutions.
 \end{abstract}
@@ -186,7 +160,7 @@ of the free energies of the states.
 %
 This problem arises in the calculation of potentials of mean force and a variety of free energy difference methods.
 %
-The central idea \add{of WHAM} is to find an optimal estimate
+The central idea of WHAM is to find an optimal estimate
 of the density of states,
 or the unbiased distribution,
 which then allows
@@ -209,30 +183,13 @@ must be determined self-consistently.
 
 
 WHAM can be
-\repl{reformulated in the limit of
-continuous functions (bins of zero width)\cite{
-souaille2001, shirts2008}
-}
-{
 reformulated\cite{
 shirts2008}
 in the limit of zero histogram bin width
-}
 as an extension
 of the Bennett acceptance ratio (BAR) method\cite{
 bennett1976}.
 %
-\note{
-While Kumar's\cite{kumar1992} and Souaille's\cite{souaille2001} papers
-definitely contain the key formula, Eq. \eqref{eq:f_MBAR},
-Shirts's paper appears to be the one (if I'm not mistaken)
-that manages to cast it as an extension of BAR
-in the case of more than one temperature.
-In this sense, only Shirts's paper should be cited here.
-The citation anchor point is adjusted to reflect this.
-The citations of the other two papers
-are moved to the end of the paragraph.
-}
 %
 This form,
 adopted by the multistate BAR (MBAR) method\cite{
@@ -252,18 +209,10 @@ Several remedies have been proposed\cite{
 shirts2008, fenwick2008, bereau2009, kim2011, zhu2012}.
 %
 For example, one may use the Newton-Raphson method,
-which involves a \repl{Hessian}{Hessian-like} matrix,
+which involves a Hessian-like matrix,
 although the approach sometimes can be unstable\cite{
 shirts2008}.
 %
-\note{
-The term ``Hessian'' from optimisation problems
-seems to be imply the matrix is symmetric.
-%
-So maybe ``Jacobian of the gradient'' is a better word?
-%
-``Hessian-like'' is an expedient compromise.
-}
 %
 Other more advanced techniques include
 the trust region and Broyden-Fletcher-Goldfarb-Shanno (BFGS) methods\cite{zhu2012}.
@@ -329,7 +278,7 @@ of multiple thermodynamic states
 with different parameters,
 such as temperatures, pressures, etc.
 %
-\add{%
+%
 Below, we shall first review WHAM
 in the particular case of a temperature scan,
 since it permits simpler mathematics
@@ -338,13 +287,13 @@ without much abstraction.
 Generalisations to umbrella sampling
 and other ensembles are discussed
 afterwards.
-}
 
 
 
 
-Consider \del{the particular case of }$K$ temperatures,
-labelled by\del{ the inverse temperature,}
+
+Consider $K$ temperatures,
+labelled by
 $\beta = 1/(k_B T)$,
 as
 $\beta_1, \ldots, \beta_K$.
@@ -359,9 +308,9 @@ at those temperatures.
 
 In WHAM,
 we first estimate the density of states,
-\repl{$g(E)$}{$g(E) = \int \delta(\E(\vx) - E) \, d\vx$,
+$g(E) = \int \delta(\E(\vx) - E) \, d\vx$,
 as the number density of configurations,
-$\vx$, with energy $E$}, from
+$\vx$, with energy $E$, from
 %
 \begin{equation}
 g(E)
@@ -385,21 +334,14 @@ is usually estimated
 from the energy histogram as
 the number of independent trajectory frames
 whose energies fall in the interval
-\repl{$(E - h/2, E + h/2)$
-divided by $h$}{$(E - \Delta E/2, E + \Delta E/2)$ divided by $\Delta E$}
+$(E - \Delta E/2, E + \Delta E/2)$ divided by $\Delta E$
 (we shall omit ``independent'' below for simplicity);
 %
-\repl{
-$N_k$
-is the total number of trajectory frames
-}
-{
 thus, $n_k(E)/N_k$
 is the normalised distribution
 with $N_k$ being
 the total number of trajectory frames
 from simulation $k$;
-}
 %
 and finally,
 %
@@ -425,7 +367,7 @@ respectively.
 
 To understand Eq. \eqref{eq:gE_WHAM},
 we first observe from the definition,
-\add{the single histogram estimate}
+the single histogram estimate
 %
 \begin{equation}
 g(E)
@@ -438,18 +380,9 @@ g(E)
 \end{equation}
 where $d_k(E) \equiv N_k \exp(-\beta_k E + f_k)$.
 %
-\repl{
-Then, Eq. \eqref{eq:gE_WHAM}
-can be regarded as
-a linear combination
-of the values from
-Eq. \eqref{eq:gnk}\cite{
-roux1995, souaille2001, newman, frenkel}.
-}
-{
 That is,
 the observed distribution, $n_k(E)/N_k$
-should \add{roughly} match the exact one, $g(E) \, w_k(E)$,
+should roughly match the exact one, $g(E) \, w_k(E)$,
 where $w_k(E) \equiv \exp(-\beta_k E + f_k)$
 is the normalised weight of the canonical ensemble.
 %
@@ -458,55 +391,24 @@ can be combined to improve the precision,
 and Eq. \eqref{eq:gE_WHAM}
 is the optimal combination\cite{
 roux1995, souaille2001, newman, frenkel}.
-}
 %
-\repl{
-Now in an optimal combination,
-}
-{
 To see this,
 recall that in an optimal combination,
-}
 the relative weight is inversely
 proportional to the variance.
 %
 Assuming a Poisson distribution
-so that \repl{
-$\mathrm{var}(n_k) = n_k$,
-and $N_k \gg n_k$ so that
-the relative error of $d_k$ is negligible
-in comparison to that of $n_k$,
-}
-{
-$\mathrm{var}(n_k \, \Delta E) \approx \langle n_k \rangle \, \Delta E$,
-}
+so that $\mathrm{var}(n_k \, \Delta E) \approx \langle n_k \rangle \, \Delta E$,
 %
-\note{
-This phrase is deleted
-because $N_k$ is really not a statistical variable.
 %
-It is simply the number of simulation steps
-spent on simulation $k$.
-%
-There is, however, a constraint:
-$\int n_k(E) \, dE = N_k$.
-%
-This constraint has to be ignored in order
-to assume the Poisson distribution of each $n_k(E) \, \Delta E$,
-i.e., each bin is an independent variable.
-%
-We probably can get away from such subtleties here,
-for this supposedly quick-and-dirty derivation.
-}
-%
-we have \repl{$\mathrm{var}(n_k/d_k) \approx n_k / d_k^2 \propto 1/d_k$}{
+we have
 $\mathrm{var}(n_k \, \Delta E / d_k) \approx \langle n_k \rangle \, \Delta E/ d_k^2 \propto 1/ d_k$
-(here, $\langle \cdots \rangle$ means an ensemble average)}.
+(here, $\langle \cdots \rangle$ means an ensemble average).
 %
 Averaging the values from Eq. \eqref{eq:gnk}
 using $(1/d_k)^{-1}$ as the relative weight yields
 Eq. \eqref{eq:gE_WHAM}.\footnote{
-\add{We can also view Eq. \eqref{eq:gE_WHAM}
+We can also view Eq. \eqref{eq:gE_WHAM}
 as the result of applying Eq. \eqref{eq:gnk}
 to the composite ensemble of the $K$ canonical ensembles,
 using the following substitutions:
@@ -516,23 +418,11 @@ and
 $w_k(E) \rightarrow \sum_{k = 1}^K (N_k/N_\mathrm{tot}) \, w_k(E)$.
 %
 The last expression is the normalised ensemble weight
-in the composite ensemble.}}
+in the composite ensemble.}
 %
-\note{
-This new footnote contains a new and cleaner,
-albeit less known (if correct at all),
-derivation of WHAM.
-%
-Is it appropriate to placed as a footnote?
-%
-Or should we type it in the main text,
-or even replace the tradition derivation?
-%
-Or should we delete it?
-}
 %
 Since for a fixed $E$,
-$d_k(E)$ is proportional to \repl{$n_k(E)$}{$\langle n_k(E) \rangle$},
+$d_k(E)$ is proportional to $\langle n_k(E) \rangle$,
 several variants of WHAM
 may be derived
 by using $n_k(E)$ in place of $d_k(E)$
@@ -581,15 +471,6 @@ by substituting $\beta$ for $\beta_k$.
 
 
 
-\repl{
-In the above,
-$n_k(E)$ is estimated from the energy histogram.
-%
-To avoid this dependency,
-we notice from definition that\cite{
-souaille2001}
-}
-{
 \paragraph*{Histogram-free form.}
 
 
@@ -599,7 +480,6 @@ The histogram dependency of WHAM
 can be avoided
 by noticing from definition that\cite{
 souaille2001}
-}
 %
 \begin{equation}
 n_k(E)
@@ -620,7 +500,7 @@ of simulation $k$.
 %
 Using Eq. \eqref{eq:n_delta}
 in Eq. \eqref{eq:f_WHAM} yields
-\repl{the MBAR result}{the histogram-free, or the MBAR, form}\cite{
+the histogram-free, or the MBAR, form\cite{
 kumar1992, souaille2001, shirts2008}:
 %
 \begin{equation}
@@ -644,7 +524,7 @@ $q_i(\vx) \equiv \exp[ -\beta_i \, \E(\vx) ]$.
 The $K = 2$ case is the BAR result\cite{
 bennett1976},
 and Eq. \eqref{eq:f_MBAR}
-also holds for a general \add{setting, which permits, e.g., a nonlinear} parameter dependence
+also holds for a general setting, which permits, e.g., a nonlinear parameter dependence
 (see Appendix \ref{sec:deriveMBAR}
 for a derivation).
 %
@@ -655,8 +535,8 @@ $f_i$ are determined only up to a constant shift.
 
 
 
-\paragraph*{\add{
-Extensions to umbrella sampling.}}
+\paragraph*{
+Extensions to umbrella sampling.}
 
 
 
@@ -720,8 +600,8 @@ can be added back to $f_i$ after the analysis.
 
 
 
-\paragraph*{\add{
-Extensions to other ensembles.}}
+\paragraph*{
+Extensions to other ensembles.}
 
 
 
@@ -750,7 +630,7 @@ respectively.
 However, if the vector dimension is high,
 or if the Hamiltonian $\Ham(\vx; \lambda_i)$
 depends nonlinearly on $\lambda_i$,
-the histogram-free form\add{, Eq. \eqref{eq:f_MBAR},} is more convenient\cite{
+the histogram-free form, Eq. \eqref{eq:f_MBAR}, is more convenient\cite{
 shirts2008}.
 %which is based directly on
 %Eq. \eqref{eq:f_MBAR},
@@ -772,8 +652,8 @@ kim2011}.
 
 
 
-\paragraph*{\add{
-Solution by iteration.}}
+\paragraph*{
+Solution by iteration.}
 
 
 
@@ -814,10 +694,7 @@ kastner2005, kastner2009}.
 %
 By taking the logarithmic derivative of
 the denominator of Eq. \eqref{eq:gE_WHAM},
-\del{
-and using Eq. \eqref{eq:gnk}
-}
-we \repl{have}{get},
+we get,
 %
 \begin{align}
 \frac{d}{dE}
@@ -845,15 +722,10 @@ we \repl{have}{get},
 %\label{eq:beta_STWHAM}
 \end{align}
 %
-\repl{
-which is independent of $d_k(E)$, hence $f_k$.
-}
-{
 where
 we have used Eq. \eqref{eq:gnk}
 to make the final expression
 independent of $d_k(E)$, hence $f_k$.
-}
 %
 So
 \begin{align}
@@ -899,7 +771,7 @@ is further approximated as a Gaussian.
 We note that ST-WHAM is difficult when we have more
 thermodynamic variables in the ensemble of interest.
 %
-Below we show \add{that WHAM with} the DIIS method can
+Below we show that WHAM with the DIIS method can
 handle such a case
 for the Lennard-Jones (LJ) fluid, readily.
 %This, however, may limit the long-term accuracy.
@@ -949,7 +821,7 @@ represents the error,
 and
 $\vct R(\vct f)$
 should optimally point in a direction
-\repl{reducing}{that reduces} the error of $\vct f$.
+that reduces the error of $\vct f$.
 %
 %That is,
 %for $\vct f' = \vct f + \alpha \, \vct R(\vct f)$
@@ -1010,7 +882,7 @@ under the constraint
 \end{equation}
 %
 Mathematically,
-this means \add{that} we solve for the $c_i$ simultaneously
+this means that we solve for the $c_i$ simultaneously
 from Eq. \eqref{eq:c_normalise} and
 %
 \begin{equation}
@@ -1019,8 +891,8 @@ from Eq. \eqref{eq:c_normalise} and
 \end{equation}
 %
 for all $i$,
-with $\lambda$ being \repl{the}{an unknown} Lagrange multiplier
-\add{that is to be determined from along with $c_i$}.
+with $\lambda$ being an unknown Lagrange multiplier
+that is to be determined from along with $c_i$.
 %
 Now the corresponding combination
 of the trial vectors,
@@ -1081,7 +953,7 @@ as shown in Fig. \ref{fig:scheme}(d).
 The number of bases, $M$, however,
 should not exceed $K + 1$
 (or, in our case, $K$
-because of the arbitrary shift constant \add{of $f_i$})
+because of the arbitrary shift constant of $f_i$)
 to keep Eqs. \eqref{eq:cj_DIIS}
 independent,
 %
@@ -1466,7 +1338,7 @@ is used to update the basis as shown next.
     Schematic illustrations of the method of
     direct inversion of the iterative subspace (DIIS).
     %
-    \add{(a) As an iterative method,
+    (a) As an iterative method,
     DIIS solves the equation,
     $\vct R(\vct f) = \vct 0$,
     by a feedback loop.
@@ -1490,7 +1362,7 @@ is used to update the basis as shown next.
     an optimal trial vector
     $\vct{\hat f}$
     with hopefully the smallest error $\| \vct{\hat R} \|$
-    to help the next round of iteration.}
+    to help the next round of iteration.
     %
     (b) and (c)
     %
@@ -1666,11 +1538,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     versus the number of bases, $M$,
     in DIIS.
     %
-    \note{In the Ising model, the label $NVT$ is removed,
-      because the volume, $V$, is ill-defined.
-      %
-      There are people who insist $V$ as the magnetisation
-      and say it is actually an $NpT$ ensemble.}%
+    %
     %
     The four test cases are
     (1) WHAM on the Ising model,
@@ -1683,7 +1551,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     %
     The run times are inversely scaled
     by a factor $\tau$
-    for better \repl{comparison}{alignment with the numbers of iterations}.
+    for better alignment with the numbers of iterations.
     %
     The scaling factors $\tau$ for cases 1-4 are
     $12.54$, $1866$, $14.91$, and $252.2$ seconds,
@@ -1723,7 +1591,7 @@ we assumed equal autocorrelation times
 from different temperatures (and pressures).
 %
 The approximation should not affect
-the \repl{general}{convergence} behaviour of the methods.
+the convergence behaviour of the methods.
 
 
 
@@ -1758,10 +1626,10 @@ below a certain value.
 
 
 For comparison,
-we also computed \repl{the dimensionless free energies}{$f_i$}
-from \repl{two}{three} approximate formulae.
+we also computed $f_i$
+from three approximate formulae.
 %
-\repl{First}{The first is}\cite{park2007}
+The first is\cite{park2007}
 %
 \begin{equation}
 \Delta f_i
@@ -1772,10 +1640,10 @@ from \repl{two}{three} approximate formulae.
 where
 $\overline{ A }_i \equiv (A_{i+1} + A_i)/2$.
 %
-\repl{This formula can be improved by an}{The second is an improvement by the}
+The second is an improvement by the
 Euler-Maclaurin expansion\cite{
 arfken, abramowitz, wang_specfunc, whittaker}:
-\del{as}
+
 %
 \begin{equation}
 \Delta f_i
@@ -1796,7 +1664,7 @@ $\langle \delta E^2 \rangle_k
 \equiv \langle (E - \langle E \rangle_k)^2 \rangle_k$
 for $k = i$ and $i + 1$.
 %
-\add{%
+%
 The third formula is derived from the same expansion
 but using $E$ instead of $\beta$ as the independent variable
 (which requires integration by parts,
@@ -1815,7 +1683,7 @@ $\int E \, d\beta = E \, \beta - \int \beta \, dE$):
 \frac{ \left( \Delta \langle E \rangle_i \right)^2 }{ 12 }.
 \label{eq:df_tg}
 \end{equation}
-}
+
 
 
 
@@ -1869,7 +1737,7 @@ the errors were of the same order of magnitude.
     (a) the dimensionless free energies, $f_i$, and
     (b) the logarithmic density of states, $\log g(E)$,
     for the $N = 64\times64$ two-dimensional Ising model
-    \add{(plotted with an energy spacing of 200)}.
+    (plotted with an energy spacing of 200).
     %
     Here,
     $\varepsilon(a) \equiv a - a^\mathrm{ref}$,
@@ -1882,7 +1750,7 @@ the errors were of the same order of magnitude.
     %
     The bin size of the energy histograms is $\Delta E = 4$.
     %
-    \add{Lines are a guide for the eyes.}
+    Lines are a guide for the eyes.
   }
 \end{center}
 \end{figure}
@@ -1931,12 +1799,12 @@ LJ fluid}
 We tested the DIIS method
 on the 256-particle LJ fluid in the isothermal-isobaric ($NpT$) ensemble.
 %
-This is a \add{case for }the two-dimensional (\repl{p \& T}{$p$ and $T$}) WHAM,
+This is a case for the two-dimensional ($p$ and $T$) WHAM,
 which is difficult for some implementations.
 %
 The potential interaction between particles was cutoff at half the box size.
 %
-We simulated the system \del{in $NpT$ ensembles}
+We simulated the system
 using parallel tempering MC.
 %
 We considered the system
@@ -1951,8 +1819,7 @@ were $1.0$ and $2.0$, respectively.
 
 As shown in Fig. \ref{fig:nsnt},
 DIIS WHAM effectively
-reduced the run time\repl{significantly.
-This demonstration also shows that}{, although}
+reduced the run time, although
 the efficiency of DIIS does not
 always increase with
 the number of basis set members, $M$.
@@ -2022,7 +1889,7 @@ The MBAR case was similar.
 
 
 
-To \repl{test}{compare} the errors of the methods,
+To compare the errors of the methods,
 we prepared two types of samples of different sizes.
 %
 A larger sample was randomly selected from roughly $r = 1\%$
@@ -2036,8 +1903,8 @@ were computed from all trajectory frames using MBAR.
 In terms of accuracy
 [Figs. \ref{fig:whamcmp}(a) and \ref{fig:whamcmp}(c)],
 WHAM, MBAR and BAR were the best,
-followed by \repl{Eq.}{Eqs.} \eqref{eq:df_eavb}\repl{,}{ and \eqref{eq:df_tg}},
-\add{then by} ST-WHAM and UIM,
+followed by Eqs. \eqref{eq:df_eavb} and \eqref{eq:df_tg},
+then by ST-WHAM and UIM,
 then by Eq. \eqref{eq:df_eav}.
 %
 The accuracy was largely independent of the sample size,
@@ -2045,23 +1912,11 @@ and we suspect that the difference
 between ST-WHAM and WHAM
 might reflect some intrinsic sampling errors.
 %
-\note{
-We still don't know what caused the difference.
-However, we know that
-it was not because of the precision (single or double),
-integrator (leapfrog or velocity Verlet),
-or the constraint algorithm of the proteins.
-}
 %
 In terms of precision
 [Figs. \ref{fig:whamcmp}(b) and \ref{fig:whamcmp}(d)],
 the differences were small.
 %
-\del{
-With a denser temperature set-up, however,
-multiple-temperature-based methods
-may further gain advantage.
-}
 %
 Generally,
 WHAM and ST-WHAM were insensitive to the bin size,
@@ -2124,8 +1979,8 @@ by an optimal combination of the approximate
 solutions obtained during iteration.
 %
 DIIS does not require computing
-the \repl{Hessian}{Hessian-like} matrix,
-\add{$-\partial \vct R(\vct f)/\partial \vct f$,}
+the Hessian-like matrix,
+$-\partial \vct R(\vct f)/\partial \vct f$,
 and is numerically stable
 with minimal run time overhead.
 %
@@ -2133,9 +1988,9 @@ Compared to other advanced techniques\cite{
 shirts2008, zhu2012},
 DIIS is relatively simple and easy to implement.
 %although better equation solvers may exist.
-\add{However, methods based on Hessian matrices
+However, methods based on Hessian matrices
 may further accelerate the solution process
-for final stages.}
+for final stages.
 %
 Other related free energy methods\cite{
 shen1991, woolf1994, crouzy1994, roux1995}
@@ -2149,7 +2004,7 @@ although they may be less general and/or accurate
 in some aspect.
 %
 The use of DIIS makes scanning more than one thermodynamic state variable
-\add{or a nonlinear variable}
+or a nonlinear variable
 computationally convenient.
 %
 This was demonstrated here in the $NpT$ LJ fluid case.
@@ -2172,11 +2027,11 @@ or the more approximate UIM.
 
 It is a pleasure to thank
 Dr. Y. Zhao,
-\add{J. A. Drake,}
+J. A. Drake,
 Dr. M. R. Shirts,
 Dr. M. W. Deem,
 Dr. J. Ma,
-Dr. J. Perkyns\repl{,}{ and} Dr. G. Lynch\del{ and J. A. Drake}
+Dr. J. Perkyns and Dr. G. Lynch
 for helpful discussions.
 %
 
@@ -2224,7 +2079,7 @@ for simplicity.
 We assume that the system is subject to
 an unknown underlying configuration-space field, $g(\vy)$,
 such that the distribution of state $k$ is
-\repl{$g(\vy) \, q_k(\vy) / Z_k[g]$}{$w_k(\vy) \equiv g(\vy) \, q_k(\vy) / Z_k[g]$}, with
+$w_k(\vy) \equiv g(\vy) \, q_k(\vy) / Z_k[g]$, with
 %the partition function being
 %
 \begin{equation}
@@ -2254,24 +2109,14 @@ p\left( \{ \vx \} | g \right)
 %\label{eq:pg}
 \end{equation*}
 %
-\repl{%
-Assuming a uniform prior distribution,
-$p[g(\vy)]$, of the value of $g(\vy)$,
-at each configuration-space point $\vy$,
-Bayes' theorem\cite{leonard} states that
-given the observed trajectories, $\{\vx\}$,
-the posterior distribution of $g$,
-$p\left( g | \{ \vx \} \right)$,
-is proportional to
-$p\left( \{ \vx \} | g \right) \, p(g) \propto p\left( \{ \vx \} | g \right)$.
-}{%
+%
 This is also the likelihood of $g$
 given the observed trajectory, $\{\vx\}$.
-}%
+%
 Thus,
 to find the most probable $g(\vy)$,
 we only need to maximise
-\repl{$\log p\left( g | \{ \vx \} \right)$}{$\log p\left( \{ \vx \} | g \right)$}
+$\log p\left( \{ \vx \} | g \right)$
 by taking the functional derivative
 with respect to $g(\vy)$
 and setting it to zero,
@@ -2292,7 +2137,7 @@ g(\vy)
 where we have used
 $\delta \log g(\vx) / \delta g(\vy) = \delta(\vx - \vy)/g(\vy)$,
 and
-$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.\footnote{\add{
+$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.\footnote{
 We can also show Eq. \eqref{eq:gy}
 by considering the composite ensemble of the $K$ states.
 %
@@ -2310,7 +2155,7 @@ $g(\vy) \, \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g] \, d\vy$,
 and it is expected to match the observed number of visits
 to the element,
 $\sum_{j = 1}^K n_j(\vy) \, d\vy$,
-with $n_j(\vy) \equiv \sum_{\vx}^{(j)} \delta(\vx - \vy)$.}}
+with $n_j(\vy) \equiv \sum_{\vx}^{(j)} \delta(\vx - \vy)$.}
 %
 Using Eq. \eqref{eq:gy}
 in Eq. \eqref{eq:Zg},
@@ -2325,9 +2170,6 @@ Models for the convergence of direct WHAM}
 
 
 
-\note{
-This Appendix has been rewritten and expanded.
-}
 
 Here, we use simple models
 to study the convergence of direct WHAM.
@@ -2599,8 +2441,7 @@ dE.
 Further, we approximate $g(E)$
 as a Gaussian.
 %
-With a proper choice of the \repl{shift constant of
-$\log g(E)$}{multiplicative constant of $g(E)$}, we have,
+With a proper choice of the multiplicative constant of $g(E)$, we have,
 %
 \begin{equation}
 g(E)
@@ -2651,9 +2492,8 @@ only as a linear shift
 to the distribution centre.
 %
 It follows that both the origin of $\beta$
-and \repl{$E_c$}{that of $E$, represented by $E_c$,}
-can be set to any \repl{value
-that facilitates}{values that help} calculations,
+and that of $E$, represented by $E_c$,
+can be set to any values that help calculations,
 without affecting the value of $A_{ij}$.
 
 
@@ -2794,9 +2634,9 @@ achieved at $\beta_1 = \beta_2$.
 
 
 
-By further assuming \add{a }Gaussian density of states,
-we can\del{ set}, without loss of generality,
-\add{ set}
+By further assuming a Gaussian density of states,
+we can, without loss of generality,
+ set
 $\beta_1 = -\sigma_\beta$,
 $\beta_2 = \sigma_\beta$,
 and $E_c = 0$.
@@ -2847,7 +2687,7 @@ $1/\cosh x \approx \exp(-x^2/2)(1 + x^4/12)$.
 %
 This model shows
 a rapid decrease in
-the \add{rate of} convergence of direct WHAM
+the rate of convergence of direct WHAM
 with the temperature separation.
 
 
@@ -2857,10 +2697,10 @@ with the temperature separation.
 
 
 Similarly,
-for three \add{evenly-spaced} temperatures,
-\del{with an even spacing,}%
-we can\del{ set}, without loss of generality,
-\add{ set}
+for three evenly-spaced temperatures,
+%
+we can, without loss of generality,
+ set
 $\beta_1 = -\Delta \beta$,
 $\beta_2 = 0$,
 and
@@ -2955,8 +2795,7 @@ where
 
 If there are a large number $K$ of temperatures
 in a finite range,
-\repl{they can be approximated}
-{we can approximate them}
+we can approximate them
 by a continuous distribution, $w(\beta)$.
 %
 In this case,
@@ -2985,9 +2824,7 @@ K \int w(\beta') \, c_l(\beta') \, A(\beta, \beta') \, d\beta'
 where
 $A(\beta, \beta')$
 is $A_{ij}$
-with \repl{$\beta_i$ and $\beta_j$
-replaced by $\beta$ and $\beta'$, respectively.}
-{$\beta_i \rightarrow \beta$ and $\beta_j \rightarrow \beta'$.}
+with $\beta_i \rightarrow \beta$ and $\beta_j \rightarrow \beta'$.
 
 
 
