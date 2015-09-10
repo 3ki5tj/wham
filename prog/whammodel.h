@@ -32,6 +32,7 @@ typedef struct {
   int loadprev; /* load previous histogram */
   double radd; /* rate of adding trajectory frames into the histogram */
   int bootstrap;
+  int eebootstrap; /* expanded ensemble bootstrap */
   double de;
 #ifndef IS2MODEL
   double dv;
@@ -111,6 +112,7 @@ __inline static void model_default(model_t *m)
   m->loadprev = 0;
   m->radd = 1.0;
   m->bootstrap = 0;
+  m->eebootstrap = 0;
   m->de = 1.0;
   m->dv = 0.02;
 #ifdef WHAM
@@ -187,7 +189,8 @@ __inline static void model_help(const model_t *m)
   fprintf(stderr, "  --fnhis2=:     set the 2D histogram file, default: %s\n", m->fnhis2);
   fprintf(stderr, "  -H:            load the previous histogram\n");
   fprintf(stderr, "  -r:            set the rate of adding trajectory frames into the histogram, default %g\n", m->radd);
-  fprintf(stderr, "  --bootstrap=:  set the number of tries for bootstrapping, default %d\n", m->bootstrap);
+  fprintf(stderr, "  --bootstrap=:  set the number of trials for bootstrapping, default %d\n", m->bootstrap);
+  fprintf(stderr, "  --eebs=:       set the number of trials for expanded ensemble bootstrapping, default %d\n", m->eebootstrap);
   fprintf(stderr, "  --de=:         set the energy bin size, default %g\n", m->de);
   fprintf(stderr, "  --dv=:         set the volume bin size, default %g\n", m->dv);
 #ifdef WHAM
@@ -292,6 +295,9 @@ __inline static void model_doargs(model_t *m, int argc, char **argv)
         m->fnhis2 = q;
       } else if ( strncmpfuzzy(p, "bootstrap", 4) == 0 ) {
         m->bootstrap = (q != NULL) ? atoi(q) : 1;
+      } else if ( strncmpfuzzy(p, "eebootstrap", 6) == 0
+               || strcmpfuzzy(p, "eebs") ) {
+        m->eebootstrap = (q != NULL) ? atoi(q) : 1;
       } else if ( strcmpfuzzy(p, "de") == 0 ) {
         m->de = atof(q);
 #ifndef IS2MODEL

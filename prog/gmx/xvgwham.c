@@ -209,6 +209,123 @@ static hist_t *hist_bootstrap(hist_t *hs0, double *tau)
 
 
 
+/* select a temperature using the heat bath algorithm */
+static int selectbeta(hist_t *hs,
+    const xdouble *beta, const xdouble *lnz,
+    int id, double *proba)
+{
+  int i, n = hs->rows;
+  xdouble e, y, max, r;
+
+  e = hs->xmin + (id + 0.5) * hs->dx;
+
+  /* find the maximal of -beta * e - lnz */
+  max = -DBL_MAX; 
+  for ( i = 0; i < n; i++ ) {
+    y = -beta[i] * e - lnz[i];
+    if ( y > max ) y = max;
+  }
+
+  /* compute the cumulative distribution function */
+  proba[0] = 0;
+  for ( i = 0; i < n; i++ ) {
+    y = -beta[i] * e - lnz[i] - max;
+    proba[i+1] = proba[i] + exp((double)y);
+  }
+
+  /* select the temperature */
+  r = proba[n] * rand01();
+  for ( i = 0; i < n; i++ ) {
+    if ( r >= proba[i] && r < proba[i+1] ) {
+      break;
+    }
+  }
+
+  if ( i >= n ) {
+    fprintf(stderr, "error!\n");
+    return n - 1;
+  }
+
+  return i; 
+}
+
+
+
+/* expanded ensemble bootstrapping with autocorrelation time `tau`
+ * `tau` is measured in terms of the number of frames */
+static hist_t *hist_eebootstrap(hist_t *hs0,
+    const xdouble *beta, const xdouble *lnz, double *tau)
+{
+  hist_t *hs;
+  int i, imin, imax, k, r, rr, n, il, ir;
+  double x, tot, *arr, *cnt;
+  double *proba;
+  double gam;
+
+  hs = hist_open(hs0->rows, hs0->xmin,
+      hs0->xmin + hs0->n * hs0->dx, hs0->dx);
+
+  n = hs->n;
+  xnew(cnt, n + 1);
+  xnew(proba, n + 1);
+
+  for ( r = 0; r < hs->rows; r++ ) {
+    /* bootstrap for histogram r */
+    arr = hs0->arr + r * hs->n;
+
+    /* count the total for histogram r */
+    tot = 0;
+    imin = n;
+    imax = 0;
+    cnt[0] = 0;
+    for ( i = 0; i < n; i++ ) {
+      x = arr[i];
+      cnt[i + 1] = cnt[i] + x;
+      if ( x > 0 ) {
+        if ( i < imin ) imin = i;
+        if ( i + 1 > imax ) imax = i + 1;
+      }
+    }
+    tot = cnt[n];
+
+    /* bootstrapping */
+    gam = (tau != NULL && tau[r] > 0 ? exp(-1/tau[r]) : 0);
+    rr = r;
+    for ( i = 0, k = 0; k < tot; k++ ) {
+      /* selectively update the current frame */
+      if ( rand01() > gam || k == 0 ) {
+        x = tot * rand01();
+        /* find the bin i containing x using binary search
+         * that is cnt[i] < x < cnt[i+1] */
+        il = imin;
+        ir = imax;
+        while ( il < ir - 1 ) {
+          i = (il + ir + 1) / 2;
+          if ( x > cnt[i] ) {
+            il = i;
+          } else {
+            ir = i;
+          }
+        }
+        i = il;
+
+        /* try to change the temperature */
+        rr = selectbeta(hs, beta, lnz, i, proba);
+      } else {
+        /* otherwise keep the old i and r */
+      }
+
+      hs->arr[rr * n + i] += 1;
+    }
+  }
+
+  free(cnt);
+  free(proba);
+  return hs;
+}
+
+
+
 int main(int argc, char **argv)
 {
   model_t m[1];
@@ -276,6 +393,31 @@ int main(int argc, char **argv)
       m->mdiis_update_method, m->mdiis_threshold,
       m->itmin, m->itmax, m->tol, m->verbose,
       m->fnlndos, m->fneav, m->wham_method);
+
+  if ( m->eebootstrap ) {
+    hist_t *hs0 = hs;
+
+    /* load autocorrelation time */
+    xnew(tcorr, hs->rows);
+    if ( loadact(m->fnact, hs->rows, tcorr) != 0 ) {
+      fprintf(stderr, "cannot load autocorrelation time from %s\n", m->fnact);
+      free(tcorr);
+      tcorr = NULL;
+    }
+
+    /* scramble the random number seed */
+    mtscramble( time(NULL) + clock() );
+    /* expanded ensemble bootstrapping */
+    hs = hist_eebootstrap(hs0, beta, lnz, tcorr);
+    hist_close(hs0);
+
+    /* do WHAM for the bootstrap sample */
+    whamx(hs, beta, lnz, flags, NULL,
+        m->damp, m->mdiis_nbases,
+        m->mdiis_update_method, m->mdiis_threshold,
+        m->itmin, m->itmax, m->tol, m->verbose,
+        m->fnlndos, m->fneav, m->wham_method);
+  }
 
   if ( m->verbose ) {
     for ( i = 0; i < hs->rows; i++ ) {
