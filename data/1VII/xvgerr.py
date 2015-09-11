@@ -14,6 +14,7 @@ import zcom
 
 nsamp = 10000
 bootstrap = ""
+strfnact = "--fnact=act.dat"
 radd = "-r 0.0001"
 est = False
 mbar = False
@@ -42,6 +43,7 @@ def usage():
     --mbar          set the program to MBAR
     -r, --radd=     set the rate of adding frames
     --bootstrap     use bootstrapping
+    --eebs          use expanded ensemble bootstrapping
     --wham=         WHAM or MBAR method, MDIIS, ST, UI
     -M, --nbases=   set the number of bases in MDIIS
     -l, --ls=       set the input list file
@@ -62,7 +64,7 @@ def doargs():
     opts, args = getopt.gnu_getopt(sys.argv[1:],
         "hvN:r:M:l:o:",
         [ "help", "verbose=",
-          "radd=", "bootstrap", "est", "mbar",
+          "radd=", "bootstrap", "eebs", "est", "mbar",
           "wham=", "nbases=",
           "ls=", "log=",
           "opt=", "ev", "xvg2", "gmx2",
@@ -84,7 +86,9 @@ def doargs():
     elif o in ("-r", "--radd"):
       radd = "-r %g" % float(a)
     elif o in ("--bootstrap"):
-      bootstrap = "--bootstrap"
+      bootstrap += " --bootstrap"
+    elif o in ("--eebs"):
+      bootstrap += " --eebs"
     elif o in ("--est",):
       est = True
       mbar = True  # estimations are done through the mbar program
@@ -175,10 +179,11 @@ def main():
   except:
     pass
 
-  cmd0 = "./%s -v %s %s %s %s %s %s --%s=%s %s --fnact=act.dat" % (
+  cmd0 = "./%s -v %s %s %s %s %s %s --%s=%s %s %s" % (
       prog, strfnhis, fnls, cmdopt, radd, bootstrap,
       "--est" if est else "",
-      "mbar" if mbar else "wham", whammethod, nbases)
+      "mbar" if mbar else "wham", whammethod, nbases,
+      strfnact)
   cmd0 = cmd0.strip()
 
   if bootstrap and not mbar:
