@@ -1900,12 +1900,13 @@ In a smaller one, $r$ was reduced to $0.01\%$.
 The reference values of $f_i$
 were computed from all trajectory frames using MBAR.
 %
-In terms of accuracy
+{\color{red}
+  In terms of accuracy
 [Figs. \ref{fig:whamcmp}(a) and \ref{fig:whamcmp}(c)],
 WHAM, MBAR and BAR were the best,
 followed by Eqs. \eqref{eq:df_eavb} and \eqref{eq:df_tg},
 then by ST-WHAM and UIM,
-then by Eq. \eqref{eq:df_eav}.
+then by Eq. \eqref{eq:df_eav}.}
 %
 The accuracy was largely independent of the sample size,
 and we suspect that the difference
@@ -2138,7 +2139,10 @@ where we have used
 $\delta \log g(\vx) / \delta g(\vy) = \delta(\vx - \vy)/g(\vy)$,
 and
 $\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.\footnote{
-We can also show Eq. \eqref{eq:gy}
+%
+%
+%
+We can \repl{also}{alternatively} show Eq. \eqref{eq:gy}
 by considering the composite ensemble of the $K$ states.
 %
 The number of visits to a phase-space element at $\vy$
@@ -2155,7 +2159,45 @@ $g(\vy) \, \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g] \, d\vy$,
 and it is expected to match the observed number of visits
 to the element,
 $\sum_{j = 1}^K n_j(\vy) \, d\vy$,
-with $n_j(\vy) \equiv \sum_{\vx}^{(j)} \delta(\vx - \vy)$.}
+with $n_j(\vy) \equiv \sum_{\vx}^{(j)} \delta(\vx - \vy)$.
+
+\add{
+It is also possible to directly show Eq. \eqref{eq:f_MBAR}
+from the composite ensemble view
+without assuming a phase-space field, $g(\vct x)$.
+%
+Instead, we allow each trajectory frame $\vct x$
+to choose the state $i$ according to
+the weight in the composite ensemble.
+%
+That is, the probability of $\vx$
+being in state $i$ is given by
+\[
+  p(i|\vx)
+  = \frac{ (N_i/N_\mathrm{tot}) \, w_i(\vx) }
+         { w_\mathrm{tot} }
+  = \frac{ N_i \, q_i(\vx) / Z_i }
+  { \sum_{k = 1}^K N_k \, q_k(\vx) / Z_k }.
+\]
+Summing this over all trajectory frames $\vx$
+(no matter the original state $j$)
+yields the expected population of state $i$,
+\[
+  \hat N_i = \sum_{j = 1}^K \sum_{\vx}^{(j)} p(i|\vx)
+  = \sum_{j = 1}^K \sum_{\vx}^{(j)}
+  \frac{ N_i \, q_i(\vx) / Z_i }
+  { \sum_{k = 1}^K N_k \, q_k(\vx) / Z_k }.
+\]
+If we demand $\hat N_i$ to be equal to the $N_i$,
+Eq. \eqref{eq:f_MBAR} is recovered.
+}
+%
+%
+%
+%
+}
+%
+%
 %
 Using Eq. \eqref{eq:gy}
 in Eq. \eqref{eq:Zg},

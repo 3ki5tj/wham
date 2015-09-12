@@ -240,14 +240,17 @@ static int estimate(int nbeta, xvg_t **xvg, const xdouble *beta,
         tol, itmax, verbose);
     lnzbar[j+1] = lnzbar[j] + dlnzbar;
 
+    /* Gaussian partition, not so good */
     dlnzgp = getdlnzgp(beta[j], eav[j], var[j],
         beta[j+1], eav[j+1], var[j+1]);
     lnzgp[j+1] = lnzgp[j] + dlnzgp;
 
+    /* tilted Gaussian, supposed to be good */
     dlnztg = getdlnztg(beta[j], eav[j], var[j],
         beta[j+1], eav[j+1], var[j+1]);
     lnztg[j+1] = lnztg[j] + dlnztg;
 
+    /* similar to tilted the above, between dlnztg and dlnzb */
     dlnzlnv = getdlnzlnv(beta[j], eav[j], var[j],
         beta[j+1], eav[j+1], var[j+1]);
     lnzlnv[j+1] = lnzlnv[j] + dlnzlnv;
