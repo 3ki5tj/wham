@@ -1,0 +1,21 @@
+* We added a sentence in the abstract to state that our technique is applicable also to MBAR.  We thank the referee to point this out.  We did not add MBAR to the title, as it would make the title too long.
+
+* Eq. (6) we added parentheses around f_k.
+
+* In the paragraph containing Eq. (6), we added a sentence to clarify MBAR can be treated both a special form (the histogram-free form, and hence the zero-bin-width limit) of WHAM, and also as a generalisation of WHAM with for Hamiltonians with nonlinear parameter dependence.  The connection is furthered in Appendix A, where a new derivation of the MBAR equation is given in the composite ensemble viewpoint.
+
+* In Section 3.4, we specified the GROMACS version and force field, which were missing from the previous version.  Three more recent citations of GROMACS were also added.
+
+* In Section 3.4, we added a brief discussion on the comparison between MBAR and WHAM, according to the referee's suggestion.  This is the case where both methods are applicable.  MBAR was much slower than WHAM in terms of speed.  However, it gives the zero-bin-width limit of WHAM, which can be useful.
+
+* In Section 3.4, we have found the difference between WHAM and ST-WHAM was due to the use of an inexact algorithm in simulation.  The original simulation used different temperature coupling groups for the thermostat.  This, however, is not rigorous, when the center of mass motion is removed.  We have fixed the set up and redone the simulations.  We found that based on the new simulation protocol, WHAM and ST-WHAM yielded much closer results.
+
+* Fig. 5 has been redone because of the above change.
+
+* The title of Appendix A is changed from "Probabilistic derivation of Eq. (6)" to "Derivations of Eq. (6)".
+
+* The old footnote 3 for Appendix A is changed to a new paragraph.  This paragraph serves as a smoother link to the newly-added paragraph in the Appendix (see below).
+
+* We have added a new paragraph in Appendix A to derive the MBAR result, Eq. (6), from the composite ensemble viewpoint.  This should set up a further link between the WHAM and MBAR: both methods can be readily derived in the composite ensemble.
+
+

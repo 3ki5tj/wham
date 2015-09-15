@@ -21,8 +21,8 @@
 \newcommand{\A}{\mathcal{A}}
 
 % annotation macros
-\newcommand{\repl}[2]{{\color{gray} [#1] }{\color{blue} #2}}
-\newcommand{\add}[1]{{\color{blue} #1}}
+\newcommand{\repl}[2]{{\color{gray} [#1] }{\color{red} #2}}
+\newcommand{\add}[1]{{\color{red} #1}}
 \newcommand{\del}[1]{{\color{gray} [#1]}}
 \newcommand{\note}[1]{{\color{OliveGreen}\small [\textbf{Comment.} #1]}}
 
@@ -89,6 +89,11 @@ the iterative solution to WHAM
 can be improved by using the method of
 direct inversion in the iterative subspace.
 %
+\add{
+This technique is also applicable
+to a closely related method,
+the multiple Bennett acceptance ratio (MBAR) method.
+}
 %
 We give examples from
 lattice models,
@@ -513,7 +518,7 @@ f_i
   q_i(\vx)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vx) \exp f_k
+  \sum_{k = 1}^K N_k \, q_k(\vx) \exp \add{(}f_k\add{)}
 }.
 \label{eq:f_MBAR}
 \end{equation}
@@ -527,6 +532,20 @@ and Eq. \eqref{eq:f_MBAR}
 also holds for a general setting, which permits, e.g., a nonlinear parameter dependence
 (see Appendix \ref{sec:deriveMBAR}
 for a derivation).
+%
+\add{
+In this sense,
+MBAR is
+not only a special form or the zero-bin-width limit of WHAM,
+but also a generalisation\cite{shirts2008}.
+%
+Nonetheless,
+the structural similarity of
+Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR},
+as we shall see,
+permits our acceleration technique to be
+applicable to both methods.
+}
 %
 Since both Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR}
 are invariant under $f_i \rightarrow f_i + c$
@@ -987,8 +1006,8 @@ is used to update the basis as shown next.
 \newcommand{\fRcolortwo}{gray}
 
 % Uncomment the following two lines to make a colour plot
-%\renewcommand{\fRcolorone}{red}
-%\renewcommand{\fRcolortwo}{blue}
+\renewcommand{\fRcolorone}{red}
+\renewcommand{\fRcolortwo}{blue}
 
 
 
@@ -1839,9 +1858,15 @@ the villin headpiece
 The protein was immersed in
 a dodecahedron box with 1898 TIP3P water molecules and two chloride ions.
 %
+\add{
+The force field was AMBER99SB\cite{wang2000, hornak2006}
+with the side-chain modifications\cite{lindorff-larsen2010}.
+}
+%
 MD simulations were performed
-using GROMACS\cite{
-berendsen1995, lindahl2001, vanderspoel2005, hess2008},
+using \add{GROMACS 5.0}\cite{
+berendsen1995, lindahl2001, vanderspoel2005, hess2008,
+pronk2013, pall2015, abraham2015},
 with a time step of 2 fs.
 %
 Velocity rescaling\cite{bussi2007}
@@ -1883,6 +1908,15 @@ in the number of iterations or in real time.
 %
 The MBAR case was similar.
 %
+\add{
+In this case, MBAR was considerably slower than WHAM
+as the former did not use histogram
+to aggregate similar data.
+%
+The MBAR result was useful, however,
+for it provides the zero-bin-width limit of WHAM.
+}
+%
 %It also appeared to be counterproductive
 %to use more bases than the vector dimension,
 %which is 11.
@@ -1900,7 +1934,7 @@ In a smaller one, $r$ was reduced to $0.01\%$.
 The reference values of $f_i$
 were computed from all trajectory frames using MBAR.
 %
-{\color{red}
+\textcolor{red}{
   In terms of accuracy
 [Figs. \ref{fig:whamcmp}(a) and \ref{fig:whamcmp}(c)],
 WHAM, MBAR and BAR were the best,
@@ -1908,10 +1942,10 @@ followed by Eqs. \eqref{eq:df_eavb} and \eqref{eq:df_tg},
 then by ST-WHAM and UIM,
 then by Eq. \eqref{eq:df_eav}.}
 %
-The accuracy was largely independent of the sample size,
-and we suspect that the difference
-between ST-WHAM and WHAM
-might reflect some intrinsic sampling errors.
+The accuracy was largely independent of the sample size.
+%and we suspect that the difference
+%between ST-WHAM and WHAM
+%might reflect some intrinsic sampling errors.
 %
 %
 In terms of precision
@@ -2064,7 +2098,7 @@ is gratefully acknowledged.
 
 
 \section{\label{sec:deriveMBAR}
-Probabilistic derivation of Eq. \eqref{eq:f_MBAR}}
+\add{Derivations} of Eq. \eqref{eq:f_MBAR}}
 
 
 
@@ -2138,11 +2172,18 @@ g(\vy)
 where we have used
 $\delta \log g(\vx) / \delta g(\vy) = \delta(\vx - \vy)/g(\vy)$,
 and
-$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.\footnote{
+$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.
 %
 %
 %
-We can \repl{also}{alternatively} show Eq. \eqref{eq:gy}
+Using Eq. \eqref{eq:gy}
+in Eq. \eqref{eq:Zg},
+and then setting $g$ to $1.0$
+yields Eq. \eqref{eq:f_MBAR}.
+
+
+
+We can \textcolor{red}{alternatively} show Eq. \eqref{eq:gy}
 by considering the composite ensemble of the $K$ states.
 %
 The number of visits to a phase-space element at $\vy$
@@ -2163,14 +2204,14 @@ with $n_j(\vy) \equiv \sum_{\vx}^{(j)} \delta(\vx - \vy)$.
 
 \add{
 It is also possible to directly show Eq. \eqref{eq:f_MBAR}
-from the composite ensemble view
-without assuming a phase-space field, $g(\vct x)$.
+from the composite ensemble viewpoint
+without using the phase-space field, $g(\vct x)$.
 %
 Instead, we allow each trajectory frame $\vct x$
 to choose the state $i$ according to
 the weight in the composite ensemble.
 %
-That is, the probability of $\vx$
+Then, the probability of $\vx$
 being in state $i$ is given by
 \[
   p(i|\vx)
@@ -2194,17 +2235,6 @@ Eq. \eqref{eq:f_MBAR} is recovered.
 %
 %
 %
-%
-}
-%
-%
-%
-Using Eq. \eqref{eq:gy}
-in Eq. \eqref{eq:Zg},
-and then setting $g$ to $1.0$
-yields Eq. \eqref{eq:f_MBAR}.
-
-
 
 
 \section{\label{sec:convwham}

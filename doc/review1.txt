@@ -1,0 +1,43 @@
+14-Sep-2015
+
+Dear Prof. Pettitt:
+
+Manuscript ID GMOS-2015-0238 entitled "Accelerating the weighted histogram analysis method by direct inversion in
+the iterative subspace" which you submitted to Molecular Simulation, has been reviewed.  The comments of the reviewer(s) are included at the bottom of this letter.
+
+The reviewer(s) have recommended publication, but also suggest some minor revisions to your manuscript.  Therefore, I invite you to respond to the reviewer(s)' comments and revise your manuscript.
+
+To revise your manuscript, log into https://mc.manuscriptcentral.com/jenmol and enter your Author Center, where you will find your manuscript title listed under "Manuscripts with Decisions."  Under "Actions," click on "Create a Revision."  Your manuscript number has been appended to denote a revision.
+
+You will be unable to make your revisions on the originally submitted version of the manuscript.  Instead, revise your manuscript using a word processing program and save it on your computer.  Please also highlight the changes to your manuscript within the document by using the track changes mode in MS Word or by using bold or colored text.
+
+Once the revised manuscript is prepared, you can upload it and submit it through your Author Center.
+
+When submitting your revised manuscript, you will be able to respond to the comments made by the reviewer(s) in the space provided.  You can use this space to document any changes you make to the original manuscript.  In order to expedite the processing of the revised manuscript, please be as specific as possible in your response to the reviewer(s).
+
+IMPORTANT:  Your original files are available to you when you upload your revised manuscript.  Please delete any redundant files before completing the submission.
+
+Because we are trying to facilitate timely publication of manuscripts submitted to Molecular Simulation, your revised manuscript should be uploaded as soon as possible.  If it is not possible for you to submit your revision in a reasonable amount of time, we may have to consider your paper as a new submission.
+
+Once again, thank you for submitting your manuscript to Molecular Simulation and I look forward to receiving your revision.
+
+Sincerely,
+Prof. Jerome Delhommelle
+Regional Editor, Molecular Simulation
+jerome.delhommelle@und.edu
+
+
+Reviewer(s)' Comments to Author:
+
+Comments:
+
+This manuscript presents a faster-converging algorithm to solve the WHAM equation numerically. The results are convincing and the manuscript, well-written. I think it is suitable for publication with minor enhancements.
+
+The manuscript gives a clear introduction of the methods that form the basis and context of this work, mostly WHAM and DIIS. The gain in convergence rate with respect to previous iterative methods is impressive. The exact relationship between this and MBAR is not stated in a very straightforward way, though. The title, abstract, and some parts of the manuscript focus solely on WHAM, while the rest provides results that seem equally valid for WHAM and MBAR. It should be possible to clarify that a little. One very practical question that could be worth addressing directly is, does this improvement in convergence tilt the balance in favor of WHAM over MBAR in cases when both methods are suitable?
+
+p.6, paragraph 3: "The accuracy was largely independent of the sample size, and we suspect that the difference between ST-WHAM and WHAM might reflect some intrinsic sampling errors."
+The meaning of the phrase "intrinsic sampling error" here is not very clear to me. Could the authors clarify?
+
+eq. 6 is missing parentheses around f_k in the denominator.
+
+.
