@@ -379,23 +379,48 @@ gives all cumulants\cite{vankampen}:
 %
 This means
 %
-\begin{align*}
+\begin{align}
 \langle H \rangle
 &=
 N \cdot \bar\chi,
-\\
+\label{eq:hist_mean} \\
 \var( H )
 &=
 N \cdot \bar\chi (1 - \bar\chi)
 =
 \langle H \rangle \cdot ( 1 - \langle H \rangle /N).
-\end{align*}
+\label{eq:hist_var}
+\end{align}
 %
 This shows the variance of
 the histogram height
 is $\langle H \rangle (1 - \langle H \rangle/N)$,
 which is not equal to $\langle H \rangle$,
 unless $\langle H \rangle \ll N$.
+
+
+
+The above result can be alternatively
+understood from the results of the binomial distribution.
+%
+If a random event can only two outcomes, $1$ and $0$
+with probabilities $p$ and $q = 1 - p$,
+then the number of $1$'s after $N$ events, $n$
+satisfies the binomial distribution,
+which means the mean of $n$ is given by $N \, p$,
+and the variance is given by
+$N \, p \, q = N \, p \, (1 - p)$.
+%
+To adapt this result to our problem,
+let the outcome being $1$ mean
+$x$ falling in $(E - \Delta E/2, E + \Delta E/2)$,
+or $\chi(x)$ being 1.
+%
+Then we set $p = \bar \chi$,
+and the mean and variance of the binomial distribution
+lead to Eqs. \eqref{eq:hist_mean} and \eqref{eq:hist_var}
+respectively.
+
 
 
 

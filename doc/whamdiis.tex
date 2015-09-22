@@ -86,14 +86,9 @@ rapid convergence to the solution.
 %
 We find that the computational complexity of
 the iterative solution to WHAM
+\add{and the closely-related multiple Bennett acceptance ratio (MBAR) method}
 can be improved by using the method of
 direct inversion in the iterative subspace.
-%
-\add{
-This technique is also applicable
-to a closely related method,
-the multiple Bennett acceptance ratio (MBAR) method.
-}
 %
 We give examples from
 lattice models,
@@ -250,7 +245,7 @@ can be numerically challenging\cite{kim2011}.
 
 
 Here, we discuss a numerical improvement of
-the implementation of WHAM using
+the implementation of WHAM \add{and MBAR} using
 the method of direct inversion in the iterative subspace (DIIS)\cite{
 pulay1980, pulay1982, hamilton1986,
 kovalenko1999, howard2011}.
@@ -395,7 +390,8 @@ The values of Eq. \eqref{eq:gnk} from different $k$
 can be combined to improve the precision,
 and Eq. \eqref{eq:gE_WHAM}
 is the optimal combination\cite{
-roux1995, souaille2001, newman, frenkel}.
+roux1995, souaille2001, chodera2007,
+newman, frenkel}.
 %
 To see this,
 recall that in an optimal combination,
@@ -415,7 +411,8 @@ using $(1/d_k)^{-1}$ as the relative weight yields
 Eq. \eqref{eq:gE_WHAM}.\footnote{
 We can also view Eq. \eqref{eq:gE_WHAM}
 as the result of applying Eq. \eqref{eq:gnk}
-to the composite ensemble of the $K$ canonical ensembles,
+to the composite ensemble of
+the $K$ canonical ensembles\add{\cite{chodera2007}},
 using the following substitutions:
 $n_k(E) \rightarrow \sum_{k = 1}^K n_k(E)$,
 $N_k \rightarrow \sum_{k = 1}^K N_k \equiv N_\mathrm{tot}$,
@@ -423,7 +420,31 @@ and
 $w_k(E) \rightarrow \sum_{k = 1}^K (N_k/N_\mathrm{tot}) \, w_k(E)$.
 %
 The last expression is the normalised ensemble weight
-in the composite ensemble.}
+in the composite ensemble.
+%
+\add{
+Note that the composite ensemble
+is closely related to the expanded ensemble
+that underlies the simulated tempering method\cite{marinari1992, lyubartsev1992}.
+%
+However, in the latter case,
+$N_k$ is a random variable,
+and its appearance in Eq. \eqref{eq:gE_WHAM}
+should be replaced by the average, $\langle N_k \rangle$.
+%
+One can also show that $\langle N_k \rangle/Z_k$
+is proportional to the weight $\exp( \eta_k )$
+in the acceptance probability of temperature transitions,
+$A(\beta_k \rightarrow \beta_{k'})
+=
+\min\{1, \exp[ \eta_{k'} - \eta_k -(\beta_{k'}-\beta_k) \, E ] \}$.
+%
+The modified Eq. \eqref{eq:gE_WHAM} is more convenient
+because it depends only on the known weight, $\eta_k$,
+instead of on the unknown partition function, $Z_k$.
+}
+%
+}
 %
 %
 Since for a fixed $E$,
@@ -531,20 +552,18 @@ bennett1976},
 and Eq. \eqref{eq:f_MBAR}
 also holds for a general setting, which permits, e.g., a nonlinear parameter dependence
 (see Appendix \ref{sec:deriveMBAR}
-for a derivation).
+for derivation).
 %
 \add{
 In this sense,
-MBAR is
-not only a special form or the zero-bin-width limit of WHAM,
+MBAR is not only the zero-bin-width limit of WHAM,
 but also a generalisation\cite{shirts2008}.
 %
-Nonetheless,
+As we shall see,
 the structural similarity of
-Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR},
-as we shall see,
-permits our acceleration technique to be
-applicable to both methods.
+Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR}
+allows our acceleration technique
+applicable to both cases.
 }
 %
 Since both Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR}
@@ -831,7 +850,7 @@ in our case.
 The left-hand side of Eq. \eqref{eq:R_f}
 also forms a $K$-dimensional vector,
 $\vct R = (R_1, \dots, R_K)$,
-which is referred to as the residual or correction vector.
+which is referred to as the residual vector.
 %
 The magnitude
 $\| \vct R \|$
@@ -1513,7 +1532,7 @@ only if multiple basis vectors are used.
 
 We tested DIIS WHAM and MBAR on three systems:
 Ising model, LJ fluid,
-and the villin headpiece, a small protein in aqueous solution
+and the villin headpiece \add{(}a small protein\add{)} in aqueous solution
 (see Secs.
 \ref{sec:results_Ising}, \ref{sec:results_LJ}, and
 \ref{sec:results_villin},
@@ -1686,7 +1705,7 @@ for $k = i$ and $i + 1$.
 %
 The third formula is derived from the same expansion
 but using $E$ instead of $\beta$ as the independent variable
-(which requires integration by parts,
+(\add{after} integration by parts,
 $\int E \, d\beta = E \, \beta - \int \beta \, dE$):
 %
 \begin{equation}
@@ -2098,7 +2117,7 @@ is gratefully acknowledged.
 
 
 \section{\label{sec:deriveMBAR}
-\add{Derivations} of Eq. \eqref{eq:f_MBAR}}
+Probabilistic derivation of Eq. \eqref{eq:f_MBAR}}
 
 
 
@@ -2172,18 +2191,9 @@ g(\vy)
 where we have used
 $\delta \log g(\vx) / \delta g(\vy) = \delta(\vx - \vy)/g(\vy)$,
 and
-$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.
+$\delta Z_k[g] / \delta g(\vy) = q_k(\vy)$.\footnote{
 %
-%
-%
-Using Eq. \eqref{eq:gy}
-in Eq. \eqref{eq:Zg},
-and then setting $g$ to $1.0$
-yields Eq. \eqref{eq:f_MBAR}.
-
-
-
-We can \textcolor{red}{alternatively} show Eq. \eqref{eq:gy}
+We can also show Eq. \eqref{eq:gy}
 by considering the composite ensemble of the $K$ states.
 %
 The number of visits to a phase-space element at $\vy$
@@ -2201,25 +2211,35 @@ and it is expected to match the observed number of visits
 to the element,
 $\sum_{j = 1}^K n_j(\vy) \, d\vy$,
 with $n_j(\vy) \equiv \sum_{\vx}^{(j)} \delta(\vx - \vy)$.
+}
+%
+%
+%
+Using Eq. \eqref{eq:gy}
+in Eq. \eqref{eq:Zg},
+and then setting $g$ to $1.0$
+yields Eq. \eqref{eq:f_MBAR}.
+
 
 \add{
-It is also possible to directly show Eq. \eqref{eq:f_MBAR}
-from the composite ensemble viewpoint
-without using the phase-space field, $g(\vct x)$.
+Alternatively,
+we can directly show Eq. \eqref{eq:f_MBAR}
+from the composite ensemble viewpoint.
 %
-Instead, we allow each trajectory frame $\vct x$
-to choose the state $i$ according to
+Suppose that each trajectory frame $\vct x$
+is free to choose the state $i$ according to
 the weight in the composite ensemble.
 %
 Then, the probability of $\vx$
-being in state $i$ is given by
+being in state $i$ is given by\cite{habeck2012}
 \[
   p(i|\vx)
   = \frac{ (N_i/N_\mathrm{tot}) \, w_i(\vx) }
-         { w_\mathrm{tot} }
+  { \sum_{k = 1}^K (N_k/N_\mathrm{tot}) \, w_k(\vx) }
   = \frac{ N_i \, q_i(\vx) / Z_i }
-  { \sum_{k = 1}^K N_k \, q_k(\vx) / Z_k }.
+  { \sum_{k = 1}^K N_k \, q_k(\vx) / Z_k },
 \]
+where we have set $g(\vct x) = 1$.
 Summing this over all trajectory frames $\vx$
 (no matter the original state $j$)
 yields the expected population of state $i$,
@@ -2761,6 +2781,7 @@ This model shows
 a rapid decrease in
 the rate of convergence of direct WHAM
 with the temperature separation.
+%
 
 
 
@@ -2972,6 +2993,12 @@ Eq. \eqref{eq:lambda1_continuous}
 only gives a upper bound,
 and nonzero spacing between temperatures
 can further slow down the convergence.
+%
+\add{
+Further, since we have ignored the sampling error
+in using EDA in the above derivation,
+the actually rate of convergence can be even smaller.
+}
 
 
 \bibliographystyle{gMOS}
