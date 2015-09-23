@@ -1,12 +1,165 @@
-Overview
-=========
+# 0. Overview
 
+This directory contains data for simulations on the villin headpiece.
+
+Two figures in the manuscript depends on data collected here.
+
+The first is the overall performance figure (Fig. 1).
+This figure is drawn using the gnuplot script `nsnt.gp`.
+
+The second figure is the error comparison figure (Fig. 5),
+which is dedicated to WHAM.
+This figure is drawn using the gnuplot script `whamcmp.gp`.
+
+Below we shall describe how we prepared the system,
+how simulation were run on the supercomputer,
+and how the data were analysized.
+
+
+1. System preparation
+2. Running simulations
+3. Generating energy log files
+4. Running analyses
+5. Collecting results
+
+
+# 1. System preparation
+
+## Template under `init`
+
+The initial system is saved in the directory `init`.
+In preparing the system, we went through the standard
+GROMACS procedure.
+
+The initial files were generated using the python script
+`simulpdb.py`, which automates the GROMACS calls.
+
+
+## Using the template, `prep.py`
+
+Once we have the template,
+simulation files for different temperatures
+were created using python `prep.py`.
+
+We originally planned simulations for NVT and NPT ensembles,
+however only data from the NVT ensemble simulations
+were actually used.
+
+
+## NVT ensemble
+
+The system under 12 temperatures, 300K, 310K, ... 410K
+were prepared.
+
+Prepare systems one-by-one:
+```
+./prep.py -T 300 --nt=4
+./prep.py -T 310 --nt=4
+...
+./prep.py -T 410 --nt=4
+```
+Here, `--nt=4` limits the number of threads to 4.
+
+Locally, the above steps can be combined as
+```
+./mkT.sh
+```
+
+We have also prepared another set of simulations
+for temperatures from 420K to 530K.
+```
+./mkT2.sh
+```
+
+## NPT ensemble
+
+We have created several sets of simulations
+in the NPT ensemble.
+
+To prepare systems one-by-one:
+```
+./prep.py -T 300 -P 1    --nt=4
+./prep.py -T 310 -P 1.05 --nt=4
+...
+./prep.py -T 410 -P 1.15 --nt=4
+```
+Here, `--nt=4` limits the number of threads to 4.
+
+Locally, the above steps can be combined as
+```
+./mkTP.sh
+```
+
+For the second set, use `mkTP2.sh`.
+For the two-dimensional set, use `mkTP2d.sh`.
+
+
+
+
+# 2. Running simulations
+
+## NVT ensemble simulations
+
+On lonestar
+```
+module load python
+cds wham/data/1VII
+qsub T_lonestar.pbs
+```
+
+Locally
+```
+cd T300
+~/lwork/gmx/gromacs5.0/buildgcc/bin/gmx mdrun -v -deffnm nvt
+```
+
+
+
+## 3. Generating energy log files
+
+## For the NVT ensemble
+
+This is done by the shell script `T_scan.sh`
+```
+./T_scan.sh
+```
+Internally, it call the GROMACS program `gmx energy`.
+For each directory T300, T310, ...,
+it will create an energy log file `e.xvg` under it.
+
+Preferrably, we should run this script on `lonestar`
+so the `e.xvg` will be copied to the local machine
+when we are running the syncin script.
+
+Manually
+```
+~/lwork/gmx/gromacs5.0/buildgcc/bin/gmx energy -f nvt.edr -o e.xvg
+```
+Select "Potential" (11) and possibly "Pressure" (17).
+
+
+
+
+
+# 4. Running analyses
+
+
+# 5. Collecting results
+
+# Collecting data from lonestar
+
+```
+./syncin
+./T_scan.sh
+```
+
+
+# Data analysis
 
 ## Data collection for nsnt.gp
 
 To collect data lonestar
 ```
-./syncin
 make
 ```
 
@@ -27,12 +180,11 @@ cd whamcmpr0.0001 && ./gen.sh && make && cd ..
 
 
 
-Files
-=====
+# Files
 
 
 File            | Description
-----------------+--------------------------------------------------------------------
+----------------|--------------------------------------------------------------------
 mkwhamcmp.sh    | script to generate files for the GNUplot script doc/fig/whamcmp.gp. This is sufficient only the old whacmp.gp, which applies to the entire data set. For the new version, which is compute for subsamples, check the subdirectories, whamcmpr0.01 and whamcmpr0.0001.  However, mbar.out is still needed, which can be generated either by mkwhamcmp.sh or manually.
 xvgrun.py       | running script to measure the number of iterations and run time, output used for doc/fig/nsnt.gp, the output is .log
 xvgtrace.py     | running script to measure the decay of error, not used, the output is .tr
@@ -54,68 +206,6 @@ Making the comparison figure
 =============================
 
 ./mkwhamcmp.sh
-
-
-Protocols
-==========
-
-The file give detailed protocols for data collection.
-
-`prep.py` is the script to prepare system for GROMACS.
-
-
-## NVT ensemble ##
-
-### Prepare systems ###
-
-On lonestar first go to the scratch directory:
-```
-cds wham/data/1VII
-```
-
-Prepare systems one-by-one:
-```
-./prep.py -T 300 --nt=4
-./prep.py -T 310 --nt=4
-...
-./prep.py -T 410 --nt=4
-```
-Here, `--nt=4` limits the number of threads to 4.
-
-Locally, the above steps can be combined as
-```
-./mkT.sh
-```
-
-
-
-### Run simulations ###
-
-On lonestar
-```
-qsub T_lonestar.pbs
-```
-
-Locally
-```
-cd T300
-~/lwork/gmx/gromacs5.0/buildgcc/bin/gmx mdrun -v -deffnm nvt
-```
-
-
-
-### Export energy ###
-
-```
-./T_scan.sh
-```
-
-Manually
-```
-~/lwork/gmx/gromacs5.0/buildgcc/bin/gmx energy -f nvt.edr -o e.xvg
-```
-Select "Potential" (11) and possibly "Pressure" (17).
-
 
 
 ### Run WHAM ###
@@ -149,36 +239,6 @@ For the error versus the number of iteractions
 python xvgtrace.py
 python stat.py
 ```
-
-
-
-
-
-## NPT ensemble ##
-
-### Prepare systems ###
-
-On lonestar first go to the scratch directory:
-```
-cds wham/data/1VII
-```
-
-Prepare systems one-by-one:
-```
-./prep.py -T 300 -P 1    --nt=4
-./prep.py -T 310 -P 1.05 --nt=4
-...
-./prep.py -T 410 -P 1.15 --nt=4
-```
-Here, `--nt=4` limits the number of threads to 4.
-
-Locally, the above steps can be combined as
-```
-./mkTP.sh
-```
-
-For the second set, use `mkTP2.sh`.
-For the two-dimensional set, use `mkTP2d.sh`.
 
 
 
