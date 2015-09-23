@@ -683,6 +683,7 @@ static xdouble wham_mdiis(const hist_t *hist,
 
 
 
+/* convenience wrapper of WHAM */
 __inline static xdouble whamx(const hist_t *hist,
     const xdouble *beta, xdouble *lnz, unsigned flags, xdouble *lnzref,
     xdouble damp, int nbases, int update_method, xdouble threshold,

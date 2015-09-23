@@ -144,7 +144,11 @@ static int mdiis_solve(mdiis_t *m)
   }
   m->mat2[nb*nb1 + nb] = 0;
 
-  if ( lusolve(m->mat2, m->coef, nb1, 1e-20) != 0 ) {
+#ifndef MDIIS_TINY
+#define MDIIS_TINY 1e-20
+#endif
+
+  if ( lusolve(m->mat2, m->coef, nb1, MDIIS_TINY) != 0 ) {
     fprintf(stderr, "MDIIS lusolve failed\n");
     exit(1);
   }
@@ -219,11 +223,8 @@ static int mdiis_build(mdiis_t *m, xdouble *f, xdouble *res)
 static int mdiis_update_kth(mdiis_t *m, xdouble *f, xdouble *res,
     xdouble err, xdouble threshold)
 {
-  int i, ibmin, ib, nb, mnb, npt = m->npt;
+  int i, ibmin, ib, nb = m->nb, mnb = m->mnb, npt = m->npt;
   xdouble dot, min;
-
-  nb = m->nb;
-  mnb = m->mnb;
 
   /* save this function if it achieves the minimal error so far */
   if ( err < m->errmin ) {
@@ -248,11 +249,11 @@ static int mdiis_update_kth(mdiis_t *m, xdouble *f, xdouble *res,
     return 0;
   }
 
-  if ( nb < m->mnb ) {
+  if ( nb < mnb ) {
     ib = nb;
     m->nb = ++nb;
   } else {
-    ib = (m->ibQ + 1) % m->mnb;
+    ib = (m->ibQ + 1) % mnb;
     m->ibQ = ib;
   }
 
@@ -278,10 +279,7 @@ static int mdiis_update_kth(mdiis_t *m, xdouble *f, xdouble *res,
 static int mdiis_update_hp(mdiis_t *m, xdouble *f, xdouble *res,
     xdouble err)
 {
-  int i, ibmax, ib, nb, mnb, npt = m->npt;
-
-  nb = m->nb;
-  mnb = m->mnb;
+  int i, ibmax, ib, nb = m->nb, mnb = m->mnb, npt = m->npt;
 
   /* save this function if it achieves the minimal error so far */
   if ( err < m->errmin ) {
@@ -340,10 +338,7 @@ static int mdiis_update_hp(mdiis_t *m, xdouble *f, xdouble *res,
 static int mdiis_update_hpl(mdiis_t *m, xdouble *f, xdouble *res,
     xdouble err)
 {
-  int i, ibmax, ib, nb, mnb, npt = m->npt;
-
-  nb = m->nb;
-  mnb = m->mnb;
+  int i, ibmax, ib, nb = m->nb, mnb = m->mnb, npt = m->npt;
 
   /* save this function if it achieves the minimal error so far */
   if ( err < m->errmin ) {
@@ -361,7 +356,7 @@ static int mdiis_update_hpl(mdiis_t *m, xdouble *f, xdouble *res,
     }
   }
 
-  if ( nb < m->mnb ) {
+  if ( nb < mnb ) {
     ib = nb;
     m->nb = ++nb;
   } else {
@@ -392,11 +387,8 @@ static int mdiis_update_hpl(mdiis_t *m, xdouble *f, xdouble *res,
 static int mdiis_update(mdiis_t *m, xdouble *f, xdouble *res,
     xdouble err)
 {
-  int i, ib, jb, nb, mnb, npt = m->npt;
+  int i, ib, jb, nb = m->nb, mnb = m->mnb, npt = m->npt;
   xdouble dot, max;
-
-  nb = m->nb;
-  mnb = m->mnb;
 
   /* save this function if it achieves the minimal error so far */
   if ( err < m->errmin ) {
@@ -444,7 +436,7 @@ static int mdiis_update(mdiis_t *m, xdouble *f, xdouble *res,
     }
   }
 
-  if ( nb < m->mnb ) {
+  if ( nb < mnb ) {
     ib = nb;
     m->nb = ++nb;
   }

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+cat whamrun1/xvg_wham.log         >  xvg_wham.log
+cat whamrun2/xvg_wham.log         >> xvg_wham.log
+cat whamrun3/xvg_wham.log         >> xvg_wham.log
+cat whamrun4/xvg_wham.log         >> xvg_wham.log
+
+cat whamrun1/xvg_whamtm.log       >  xvg_whamtm.log
+cat whamrun2/xvg_whamtm.log       >> xvg_whamtm.log
+cat whamrun3/xvg_whamtm.log       >> xvg_whamtm.log
+cat whamrun4/xvg_whamtm.log       >> xvg_whamtm.log
+
+./stat.py xvg_wham*.log

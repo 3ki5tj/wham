@@ -512,7 +512,7 @@ static xdouble wham2_mdiis(hist2_t *hist,
 
 
 
-static xdouble wham2x(hist2_t *hist,
+__inline static xdouble wham2x(hist2_t *hist,
     const xdouble *bx, const xdouble *by, xdouble *lnz,
     unsigned flags,
     xdouble damp, int nbases, int update_method, xdouble threshold,

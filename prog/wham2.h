@@ -506,7 +506,7 @@ static double wham2_mdiis(hist2_t *hist,
 
 
 
-static double wham2x(hist2_t *hist,
+__inline static double wham2x(hist2_t *hist,
     const double *bx, const double *by, double *lnz,
     unsigned flags,
     double damp, int nbases, int update_method, double threshold,
