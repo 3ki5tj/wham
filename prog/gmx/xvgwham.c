@@ -186,7 +186,7 @@ static hist_t *hist_bootstrap(hist_t *hs0, double *tau)
 
     for ( i = 0, k = 0; k < tot; k++ ) {
       /* randomly change i */
-      if ( k == 0 || rand01() < gam ) {
+      if ( k == 0 || rand01() >= gam ) {
         /* translate y to the histogram frame */
         x = tot * rand01();
         /* find the bin i containing x using binary search
@@ -438,7 +438,7 @@ static hist_t *hist_eebootstrap(hist_t *hs0,
   i = -1; /* frame index */
   for ( j = 0; j < ctot[K]; j++ ) {
     /* randomly pick a frame in the current temperature */
-    if ( i < 0 || rand01() > gam[r] ) {
+    if ( i < 0 || rand01() >= gam[r] ) {
       x = tot[r] * rand01();
       /* find the bin i containing x using binary search
        * that is cnt[r][i] < x < cnt[r][i+1] */
@@ -530,7 +530,12 @@ int main(int argc, char **argv)
   if ( m->bootstrap || m->eebootstrap || m->weightact ) {
     /* load autocorrelation time */
     if ( loadact(m->fnact, hs->rows, tcorr) != 0 ) {
-      fprintf(stderr, "cannot load autocorrelation time from %s\n", m->fnact);
+      if ( m->fnact == NULL ) {
+        fprintf(stderr, "no file for autocorrelation time\n");
+      } else {
+        fprintf(stderr, "cannot load autocorrelation time from %s\n",
+            m->fnact);
+      }
       free(tcorr);
       tcorr = NULL;
     }

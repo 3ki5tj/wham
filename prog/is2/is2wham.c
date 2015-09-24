@@ -150,6 +150,8 @@ int main(int argc, char **argv)
   }
 
   if ( m->debug ) {
+    /* increase the verbose level, using the converged `lnz`
+     * as the reference to compute the error */
     whamx(hs, beta, lnz1, flags, lnz,
         m->damp, m->mdiis_nbases,
         m->mdiis_update_method, m->mdiis_threshold,

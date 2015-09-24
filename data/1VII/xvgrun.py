@@ -18,6 +18,7 @@ radd = 1.0
 nbases = 20
 fnls = None
 fnlog = None
+fnact = "--fnact=act.dat"
 update_method = " "
 mthreshold = " "
 tol = " "
@@ -135,7 +136,7 @@ def getnstepstime(err):
 
 
 def main():
-  global mbar, radd, cmdopt, fnls, fnlog
+  global mbar, radd, cmdopt, fnls, fnlog, fnact
 
   progdir = "../../prog"
   if not os.path.isdir(progdir):
@@ -181,8 +182,8 @@ def main():
   except:
     pass
 
-  cmd0 = "./%s %s %s %s %s" % (
-      prog, strfnhis, fnls, tol, cmdopt)
+  cmd0 = "./%s %s %s %s %s %s" % (
+      prog, strfnhis, fnls, tol, fnact, cmdopt)
   cmd0 = cmd0.strip()
 
   if radd < 1:

@@ -261,7 +261,8 @@ make -C .. lonestar
 ```
 Or manually,
 ```
-rsync -avz ../*.pbs oo1@lonestar.tacc.utexas.edu:/scratch/02464/oo1/wham/data/
+rsync -avz ../*.pbs       oo1@lonestar.tacc.utexas.edu:/scratch/02464/oo1/wham/data/
+rsync -avz ../dotdote.ls  oo1@lonestar.tacc.utexas.edu:/scratch/02464/oo1/wham/data/
 ```
 
 ### Prepare the energy log files
@@ -275,7 +276,7 @@ cds wham/data/1VII
 
 ### Running scripts
 
-To the analyses file
+To submit the analysis job
 ```
 cds wham/data
 module load python
@@ -287,41 +288,25 @@ qsub 1VII.pbs
 
 ### Generate the reference values
 
-
+The reference values of different methods are generated
+using the following script
 ```
 ./mkwhamcmp.sh
 ```
+In computing the references, all data points are used.
+Particularlly, `mbar.out` is used as the reference
+for other subsample data.
 
 
-# 5. Collecting results
+### Generate subsample data
 
-## Collecting data from lonestar
-
-### For Fig. 1 `nsnt.gp`
 ```
-./syncin
-./syncin_whamrun
-./syncin_mbarrun
-```
-
-The last two commands are included in `Makefile`.
-So we can alternatively type `make`
-
-
-## Data collection for whamcmp.gp
-
-For the old whamcmp.gp for all data points
-```
-./mkwhamcmp.sh
+cd whamcmpr0.01   && ./gen.sh && cd ..
+cd whamcmpr0.0001 && ./gen.sh && cd ..
 ```
 
-For the new whamcmp.gp for subsamples
-```
-./mkwhamcmp.sh
-cd whamcmpr0.01   && ./gen.sh && make && cd ..
-cd whamcmpr0.0001 && ./gen.sh && make && cd ..
-```
-
+Note, if the data set changes, make sure to clear all log files
+under `whamcmpr0.01` and `whamcmpr0.0001`
 
 
 
@@ -345,20 +330,11 @@ T\_extend.sh    | extend simulation time (no longer needed)
 uploadTPxxx.sh  | update initial files for running on Lonstar
 
 
+# Usage of `xvgrun.py` and `xvgtrace.py`
 
 
-Making the comparison figure
-=============================
-
-./mkwhamcmp.sh
-
-
-### Run MBAR ###
-
-```
-./xvgmbar e.ls --wham=mdiis
-```
-
+`xvgrun.py` computes the number of iterations and run time.
+`xvgtrace.py` gives a profile of the error versus the number of iterations.
 
 
 ### Benchmark ###
@@ -374,9 +350,6 @@ For the error versus the number of iteractions
 python xvgtrace.py
 python stat.py
 ```
-
-
-
 
 
 ### Run WHAM2 ###

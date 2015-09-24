@@ -14,6 +14,7 @@ lonestar: clean
 	rsync -avLz is2/*.py  is2/*.sh              is2/Makefile    $(remotelonestar)/data/is2/
 	rsync -avLz lj/*.py                         lj/Makefile     $(remotelonestar)/data/lj/
 	rsync -avLz 1VII/*.py 1VII/*.sh 1VII/*.pbs  1VII/Makefile   $(remotelonestar)/data/1VII/
+	rsync -avLz 1VII/e.ls 1VII/dotdote.ls                       $(remotelonestar)/data/1VII/
 	make -C ../prog lonestar
 
 lstar: lonestar
