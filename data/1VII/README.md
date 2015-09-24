@@ -22,7 +22,7 @@ and how the data were analysized.
 2. Running simulations
 3. Generating energy log files
 4. Running analyses
-5. Collecting results
+5. Making plots
 
 
 # 1. System preparation
@@ -310,6 +310,25 @@ under `whamcmpr0.01` and `whamcmpr0.0001`
 
 
 
+# 5. Making plots
+
+Go to `doc/fig` (or `doc/figclr` for color figures).
+
+## For Figure 1
+
+```
+gnuplot nsnt.gp
+make nsnt.pdf
+```
+
+## For Figure 5
+
+```
+gnuplot whamcmp.gp
+make whamcmp.pdf
+```
+
+
 # Files
 
 
@@ -328,6 +347,7 @@ mkTPxxx.sh      | prepare systems for NPT simulations
 prep.py         | prepare system for GROMACS simulations (low level), called in mkTxxx.sh and mkTPxxx.sh
 T\_extend.sh    | extend simulation time (no longer needed)
 uploadTPxxx.sh  | update initial files for running on Lonstar
+
 
 
 # Usage of `xvgrun.py` and `xvgtrace.py`

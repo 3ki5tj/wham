@@ -48,56 +48,36 @@ set ytics 0.1 offset 0.5, 0
 set mytics 10
 set ylabel "&{i}_{/Symbol*2.0 \341} {/Times-Italic f_i} - {/Times-Italic f_i}^{/*0.7 (ref)}&{i}_{/Symbol*2.0 \361}" offset 1.0, 0.0
 
-# color figure
-
-#color1  = "#224488"
-#color2  = "#aa2222"
-#color3  = "#804000"
-#color4  = "#aa00aa"
-#color5  = "#208020"
-#color6  = "#6688ff"
-#color7  = "#228888"
-#
-#color9  = "#808080"
-#
-#color11 = "#6688aa"
-#color12 = "#ff6666"
-#color14 = "#cc44cc"
-
-
-# grayscale figure
-
-color1  = "#444444"
-color2  = "#000000"
-color3  = "#333333"
-color4  = "#222222"
-color5  = "#111111"
-color6  = "#444444"
-color7  = "#666666"
+color1  = "#224488"
+color2  = "#aa2222"
+color3  = "#804000"
+color4  = "#aa00aa"
+color5  = "#208020"
+color6  = "#6688ff"
+color7  = "#228888"
 
 color9  = "#808080"
 
-color11 = "#aaaaaa"
-color12 = "#777777"
-color14 = "#333333"
+color11 = "#6688aa"
+color12 = "#ff6666"
+color14 = "#cc44cc"
 
+set style line 1  lw 2.0 lt 4 lc rgb color11 pt 5   ps 2.0
+set style line 2  lw 3.0 lt 4 lc rgb color1  pt 4   ps 1.8
+set style line 3  lw 2.0 lt 4 lc rgb color1  pt 7   ps 2.2
+set style line 4  lw 4.0 lt 4 lc rgb color6  pt 13  ps 2.4
 
-set style line 1  lw 1.5 lt 1 lc rgb color11 pt 5   ps 1.4
-set style line 2  lw 2.0 lt 2 lc rgb color1  pt 4   ps 1.6
-set style line 3  lw 1.5 lt 3 lc rgb color4  pt 6   ps 2.0
-set style line 4  lw 1.5 lt 4 lc rgb color6  pt 12  ps 2.4
+set style line 11 lw 2.0 lt 4 lc rgb color12 pt 9   ps 2.4
+set style line 12 lw 3.0 lt 4 lc rgb color2  pt 8   ps 2.2
+set style line 13 lw 2.0 lt 4 lc rgb color14 pt 11  ps 2.4
+set style line 14 lw 2.0 lt 4 lc rgb color2  pt 13  ps 2.4
 
-set style line 11 lw 1.5 lt 5 lc rgb color12 pt 9   ps 2.0
-set style line 12 lw 2.0 lt 6 lc rgb color2  pt 8   ps 2.2
-set style line 13 lw 1.5 lt 7 lc rgb color14 pt 10  ps 2.4
-set style line 14 lw 1.5 lt 7 lc rgb color2  pt 13  ps 2.4
+set style line 21 lw 5.0 lt 4 lc rgb color3  pt 1   ps 2.0
+set style line 22 lw 3.0 lt 4 lc rgb color7  pt 3   ps 1.8
+set style line 23 lw 3.0 lt 4 lc rgb color5  pt 2   ps 1.4
+set style line 24 lw 3.0 lt 4 lc rgb color7  pt 15  ps 2.0
 
-set style line 21 lw 2.0 lt 10 lc rgb color3  pt 1   ps 2.0
-set style line 22 lw 2.0 lt 8  lc rgb color7  pt 2   ps 1.8
-set style line 23 lw 2.0 lt 9  lc rgb color5  pt 14  ps 2.4
-set style line 24 lw 2.0 lt 12 lc rgb color7  pt 15  ps 2.0
-
-set style line 9  lw 1.5 lt 1 lc rgb color9  pt 10  ps 2.0
+set style line 9  lw 2.0 lt 1 lc rgb color9  pt 10  ps 2.0
 
 set xrange [305:415]
 
