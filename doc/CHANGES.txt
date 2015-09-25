@@ -4,7 +4,7 @@
 
 * In footnote 1, we have added a citation to Ref. 13.
 
-* In footnote 1, we have added the necessary changes in interpretation of using WHAM for simulated tempering.
+* In footnote 1, we have added the necessary changes in using WHAM for simulated tempering.
 
 * Eq. (6) we have added parentheses around f_k.
 
@@ -16,9 +16,9 @@
 
 * In Section 3.4, we have found the difference between WHAM and ST-WHAM was due to the use of an inexact algorithm in simulation.  The original simulation used different temperature coupling groups for the thermostat.  This, however, is not rigorous, when the center of mass motion is removed.  We have fixed the set up and redone the simulations.  We found that based on the new simulation protocol, WHAM and ST-WHAM yielded much closer results.
 
-* Fig. 5 has been redone because of the above change.
+* Figures 1 and 5 have been redone because of the above change.
 
 * We have added a new paragraph in Appendix A to derive the MBAR result, Eq. (6), from the composite ensemble viewpoint.  This should set up a further link between the WHAM and MBAR: both methods can be readily derived in the composite ensemble.
 
-* In Appendix B, we have added a sentence to point out that the our analysis does not take into account sampling error.  And the actual rate of convergence can be smaller.
+* In Appendix B, we have added a sentence to point out the limitation of our analysis: it does not take into account sampling error.  And the actual rate of convergence can be smaller.
 

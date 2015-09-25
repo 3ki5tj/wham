@@ -21,10 +21,12 @@
 \newcommand{\A}{\mathcal{A}}
 
 % annotation macros
-\newcommand{\repl}[2]{{\color{gray} [#1] }{\color{red} #2}}
-\newcommand{\add}[1]{{\color{red} #1}}
+\newcommand{\repl}[2]{{\color{gray} [#1] }{\color{blue} #2}}
+\newcommand{\add}[1]{{\color{blue} #1}}
 \newcommand{\del}[1]{{\color{gray} [#1]}}
 \newcommand{\note}[1]{{\color{OliveGreen}\small [\textbf{Comment.} #1]}}
+
+\newcommand{\hladd}[1]{{\color{red} #1}}
 
 
 
@@ -86,7 +88,7 @@ rapid convergence to the solution.
 %
 We find that the computational complexity of
 the iterative solution to WHAM
-\add{and the closely-related multiple Bennett acceptance ratio (MBAR) method}
+\hladd{and the closely-related multiple Bennett acceptance ratio (MBAR) method}
 can be improved by using the method of
 direct inversion in the iterative subspace.
 %
@@ -245,7 +247,7 @@ can be numerically challenging\cite{kim2011}.
 
 
 Here, we discuss a numerical improvement of
-the implementation of WHAM \add{and MBAR} using
+the implementation of WHAM \hladd{and MBAR} using
 the method of direct inversion in the iterative subspace (DIIS)\cite{
 pulay1980, pulay1982, hamilton1986,
 kovalenko1999, howard2011}.
@@ -412,7 +414,7 @@ Eq. \eqref{eq:gE_WHAM}.\footnote{
 We can also view Eq. \eqref{eq:gE_WHAM}
 as the result of applying Eq. \eqref{eq:gnk}
 to the composite ensemble of
-the $K$ canonical ensembles\add{\cite{chodera2007}},
+the $K$ canonical ensembles\hladd{\cite{chodera2007}},
 using the following substitutions:
 $n_k(E) \rightarrow \sum_{k = 1}^K n_k(E)$,
 $N_k \rightarrow \sum_{k = 1}^K N_k \equiv N_\mathrm{tot}$,
@@ -422,7 +424,7 @@ $w_k(E) \rightarrow \sum_{k = 1}^K (N_k/N_\mathrm{tot}) \, w_k(E)$.
 The last expression is the normalised ensemble weight
 in the composite ensemble.
 %
-\add{
+\hladd{
 Note that the composite ensemble
 is closely related to the expanded ensemble
 that underlies the simulated tempering method\cite{marinari1992, lyubartsev1992}.
@@ -539,7 +541,7 @@ f_i
   q_i(\vx)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vx) \exp \add{(}f_k\add{)}
+  \sum_{k = 1}^K N_k \, q_k(\vx) \exp \hladd{(}f_k\hladd{)}
 }.
 \label{eq:f_MBAR}
 \end{equation}
@@ -554,7 +556,7 @@ also holds for a general setting, which permits, e.g., a nonlinear parameter dep
 (see Appendix \ref{sec:deriveMBAR}
 for derivation).
 %
-\add{
+\hladd{
 In this sense,
 MBAR is not only the zero-bin-width limit of WHAM,
 but also a generalisation\cite{shirts2008}.
@@ -1532,7 +1534,7 @@ only if multiple basis vectors are used.
 
 We tested DIIS WHAM and MBAR on three systems:
 Ising model, LJ fluid,
-and the villin headpiece \add{(}a small protein\add{)} in aqueous solution
+and the villin headpiece \hladd{(}a small protein\hladd{)} in aqueous solution
 (see Secs.
 \ref{sec:results_Ising}, \ref{sec:results_LJ}, and
 \ref{sec:results_villin},
@@ -1592,7 +1594,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     for better alignment with the numbers of iterations.
     %
     The scaling factors $\tau$ for cases 1-4 are
-    $12.54$, $1866$, $14.91$, and $252.2$ seconds,
+    $12.54$, $1866$, \hladd{$14.30$, and $259.8$} seconds,
     respectively.
     %
     The results were averaged
@@ -1705,7 +1707,7 @@ for $k = i$ and $i + 1$.
 %
 The third formula is derived from the same expansion
 but using $E$ instead of $\beta$ as the independent variable
-(\add{after} integration by parts,
+(\hladd{after} integration by parts,
 $\int E \, d\beta = E \, \beta - \int \beta \, dE$):
 %
 \begin{equation}
@@ -1877,13 +1879,13 @@ the villin headpiece
 The protein was immersed in
 a dodecahedron box with 1898 TIP3P water molecules and two chloride ions.
 %
-\add{
+\hladd{
 The force field was AMBER99SB\cite{wang2000, hornak2006}
 with the side-chain modifications\cite{lindorff-larsen2010}.
 }
 %
 MD simulations were performed
-using \add{GROMACS 5.0}\cite{
+using \hladd{GROMACS 5.0}\cite{
 berendsen1995, lindahl2001, vanderspoel2005, hess2008,
 pronk2013, pall2015, abraham2015},
 with a time step of 2 fs.
@@ -1927,10 +1929,9 @@ in the number of iterations or in real time.
 %
 The MBAR case was similar.
 %
-\add{
+\hladd{
 In this case, MBAR was considerably slower than WHAM
-as the former did not use histogram
-to aggregate similar data.
+as it did not use histogram to aggregate data.
 %
 The MBAR result was useful, however,
 for it provides the zero-bin-width limit of WHAM.
@@ -1953,7 +1954,7 @@ In a smaller one, $r$ was reduced to $0.01\%$.
 The reference values of $f_i$
 were computed from all trajectory frames using MBAR.
 %
-\textcolor{red}{
+\hladd{
 In terms of accuracy
 [Figs. \ref{fig:whamcmp}(a) and \ref{fig:whamcmp}(c)],
 WHAM, MBAR, BAR, ST-WHAM,
@@ -2222,7 +2223,7 @@ and then setting $g$ to $1.0$
 yields Eq. \eqref{eq:f_MBAR}.
 
 
-\add{
+\hladd{
 Alternatively,
 we can directly show Eq. \eqref{eq:f_MBAR}
 from the composite ensemble viewpoint.
@@ -2995,9 +2996,9 @@ only gives a upper bound,
 and nonzero spacing between temperatures
 can further slow down the convergence.
 %
-\add{
+\hladd{
 Further, since we have ignored the sampling error
-in using EDA in the above derivation,
+in using EDA in the above calculation,
 the actually rate of convergence can be even smaller.
 }
 

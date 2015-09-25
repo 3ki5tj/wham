@@ -22,9 +22,9 @@ set logscale y2
 set y2tics nomirror font "Times,20" offset -0.5, 0
 set y2label "Relative run time, {/Times-Italic t}_{/=16 rel} = {/Times-Italic t}/{/Symbol-Oblique t}" textcolor rgb "#404040" offset -3.5, 0
 set y2range [0.01:4]
-set rmargin 5.0
+set rmargin 6.0
 
-set key invert font "Times,24" spacing 1.2
+set key invert font "Times,24" spacing 1.1
 #set key Left reverse spacing 1.5
 
 # Color figure

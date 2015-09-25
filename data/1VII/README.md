@@ -120,7 +120,7 @@ rsync -avz *.sh             oo1@lonestar.tacc.utexas.edu:/scratch/02464/oo1/wham
 ```
 
 
-## NVT ensemble simulations
+## 2.1. NVT ensemble simulations
 
 On Lonestar
 ```
@@ -138,7 +138,7 @@ cd T300
 ~/lwork/gmx/gromacs5.0/buildgcc/bin/gmx mdrun -v -deffnm nvt
 ```
 
-## NPT ensemble
+## 2.2. NPT ensemble
 
 On lonestar
 ```
@@ -160,7 +160,7 @@ cd T300P1
 # 3. Generating energy log files
 
 
-## NVT ensemble
+## 3.1. NVT ensemble
 
 This is done by the shell script `T_scan.sh`
 ```
@@ -187,7 +187,7 @@ do the following
 Select "Potential" (11) and possibly "Pressure" (17).
 
 
-## NPT ensemble
+## 3.2. NPT ensemble
 
 ```
 ./TP_scan.sh
@@ -207,10 +207,10 @@ Manually,
 ```
 ~/lwork/gmx/gromacs5.0/buildgcc/bin/gmx energy -f npt.edr -o ev.xvg
 ```
-Select "Potential" (11), "Pressure" (16), and "Volume" (21).
+Select "Potential" (11), and "Volume" (21).
 
 
-## Generating lists of energy files
+## 3.3. Generating lists of energy files
 
 Data analysis programs such as `xvgwham` in `prog/gmx`,
 requires a list of energy files as the input.
@@ -250,10 +250,10 @@ For Figure 5, the error comparison data can be done locally.
 
 
 
-## For Fig. 1, `nsnt.gp`
+## 4.1. For Fig. 1, `nsnt.gp`
 
 
-### Copy files
+### 4.1.1. Copy files
 
 First copy the programs and analyses scripts to Lonestar.
 ```
@@ -265,7 +265,7 @@ rsync -avz ../*.pbs       oo1@lonestar.tacc.utexas.edu:/scratch/02464/oo1/wham/d
 rsync -avz ../dotdote.ls  oo1@lonestar.tacc.utexas.edu:/scratch/02464/oo1/wham/data/
 ```
 
-### Prepare the energy log files
+### 4.1.2. Prepare the energy log files
 
 Run
 ```
@@ -274,7 +274,7 @@ cds wham/data/1VII
 ```
 
 
-### Running scripts
+### 4.1.3. Running scripts
 
 To submit the analysis job
 ```
@@ -283,10 +283,24 @@ module load python
 qsub 1VII.pbs
 ```
 
+### 4.1.4 Collecting data
 
-## For Fig. 5 `whamcmp.gp`
+```
+./syncin
+make
+```
 
-### Generate the reference values
+Manually,
+```
+./syncin
+./combine_whamrun
+./combine_mbarrun
+```
+
+
+## 4.2. For Fig. 5 `whamcmp.gp`
+
+### 4.2.1. Generate the reference values
 
 The reference values of different methods are generated
 using the following script
@@ -298,7 +312,7 @@ Particularlly, `mbar.out` is used as the reference
 for other subsample data.
 
 
-### Generate subsample data
+### 4.2.2. Generate subsample data
 
 ```
 cd whamcmpr0.01   && ./gen.sh && cd ..
@@ -314,14 +328,19 @@ under `whamcmpr0.01` and `whamcmpr0.0001`
 
 Go to `doc/fig` (or `doc/figclr` for color figures).
 
-## For Figure 1
+```
+cd doc/fig
+make -B
+```
+
+## 5.1. For Figure 1
 
 ```
 gnuplot nsnt.gp
 make nsnt.pdf
 ```
 
-## For Figure 5
+## 5.2. For Figure 5
 
 ```
 gnuplot whamcmp.gp
@@ -329,7 +348,7 @@ make whamcmp.pdf
 ```
 
 
-# Files
+# 6. Files
 
 
 File            | Description
@@ -350,7 +369,7 @@ uploadTPxxx.sh  | update initial files for running on Lonstar
 
 
 
-# Usage of `xvgrun.py` and `xvgtrace.py`
+# 7. Usage of `xvgrun.py` and `xvgtrace.py`
 
 
 `xvgrun.py` computes the number of iterations and run time.

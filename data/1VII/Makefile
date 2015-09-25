@@ -1,10 +1,10 @@
 all: whamrun mbarrun
 
 whamrun:
-	./syncin_whamrun
+	./combine_whamrun
 
 mbarrun:
-	./syncin_mbarrun
+	./combine_mbarrun
 
 
 lonestar:
