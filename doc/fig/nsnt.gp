@@ -24,7 +24,7 @@ set y2label "Relative run time, {/Times-Italic t}_{/=16 rel} = {/Times-Italic t}
 set y2range [0.01:4]
 set rmargin 6.0
 
-set key invert font "Times,24" spacing 1.1
+set key invert font "Times,24" spacing 1.15
 #set key Left reverse spacing 1.5
 
 # Color figure

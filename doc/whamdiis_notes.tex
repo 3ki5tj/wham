@@ -1,6 +1,7 @@
 %\documentclass[reprint,superscriptaddress]{revtex4-1}
 \documentclass[aip,jcp,preprint,notitlepage, superscriptaddress]{revtex4-1}
 \usepackage{amsmath}
+\usepackage{bm}
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{tikz}
 \usepackage{hyperref}
@@ -19,7 +20,7 @@
 
 \renewcommand{\theequation}{N.\arabic{equation}}
 
-\newcommand{\vct}[1]{\mathbf{#1}}
+\newcommand{\vct}[1]{\bm{\mathrm{#1}}}
 \newcommand{\vx}{\vct{x}}
 \newcommand{\vy}{\vct{y}}
 \newcommand{\Z}{\mathcal{Z}}
@@ -1104,6 +1105,10 @@ $\phi = \arctan(\bar y/\bar x) = \arctan \left(-\sqrt 2 - 1\right) = -3 \, \pi/8
 
 
 
+\subsection{Maximum-likelihood argument}
+
+
+
 From the unnumbered equation after Eq. (A1),
 %we get the posterior probability
 %\begin{align*}
@@ -1230,6 +1235,172 @@ q_i(\vy) d\vy
   \sum_{k = 1}^K N_k \, q_k(\vct x) / Z_k[g]
 }.
 \end{align}
+
+
+
+
+\subsection{Expectation-maximization argument}
+
+
+
+\paragraph{Function to maximize}
+
+
+
+In the manuscript,
+we show that the likelihood function is
+%
+\begin{align}
+  L(\vct \nu)
+  = p\left( \{ \vx \} | \vct \nu \right)
+  =
+  \prod_{\vx}
+    \sum_{ k = 1 }^K
+      \nu_k \, w_k(\vx).
+\end{align}
+%
+Taking the logarithm,
+we get
+%
+\begin{align}
+  \log L(\vct \nu)
+  =
+  \sum_{\vx}
+  \log\left(
+  \sum_{ k = 1 }^K
+    \nu_k \, w_k(\vx)
+  \right).
+\end{align}
+%
+Our aim is to maximize this likelihood function.
+%
+Since $\nu_i$ represents the fractions of mixing,
+we have a constraint
+%
+\begin{equation}
+  \sum_{i = 1}^K \nu_i = 1.
+  \label{eq:constraint_nu}
+\end{equation}
+%
+Thus the actual function to maximize is
+%
+\begin{align*}
+  S(\vct \nu)
+  &=
+  \log L(\vct \nu) - \lambda \,
+    \left( \sum_{i = 1}^K \nu_i - 1 \right)
+  \notag \\
+  &=
+  \sum_{\vx}
+  \log\left(
+  \sum_{ k = 1 }^K
+    \nu_k \, w_k(\vx)
+  \right)
+  -
+  \lambda \,
+  \left(
+    \sum_{i = 1}^K \nu_i - 1
+  \right),
+\end{align*}
+where $\lambda$ is the Lagrange multiplier.
+
+
+
+
+\paragraph{Location of the maximum}
+
+
+
+The maximum of $S(\vct \nu)$
+should be achieved at
+\[
+  \frac{ \partial S(\vct \nu) }
+  { \partial \nu_i } = 0.
+\]
+%
+This gives
+%
+\begin{align}
+  \sum_{\vx}
+    \frac{ w_i(\vx) }
+    { \sum_{k = 1}^K \nu_k \, w_k(\vx) }
+  =
+  \lambda.
+  \label{eq:sumx_lambda}
+\end{align}
+
+
+
+\paragraph{Determination of the Lagrange multiplier}
+
+
+
+We still need to determine $\lambda$.
+%
+To do this, we multiply Eq. \eqref{eq:sumx_lambda}
+by $\nu_i$ and sum over $i$.
+For the left-hand side,
+we have
+%
+\begin{align*}
+  \sum_{i = 1}^K \nu_i \, \sum_{\vx}
+    \frac{ w_i(\vx) }
+    { \sum_{k = 1}^K \nu_k \, w_k(\vx) }
+  &=
+  \sum_{\vx}
+    \frac
+    { \sum_{i = 1}^K \nu_i \, w_i(\vx) }
+    { \sum_{k = 1}^K \nu_k \, w_k(\vx) }
+  = \sum_{\vx} 1 = N_\mathrm{tot}.
+\end{align*}
+%
+For the right-hand side,
+we have
+%
+\begin{align*}
+  \lambda \, \sum_{i = 1}^K \nu_i
+  &=
+  \lambda.
+\end{align*}
+%
+This means that the Lagrange multiplier
+\[
+  \lambda = N_\mathrm{tot}.
+\]
+
+
+\paragraph{Finishing up}
+
+
+Using this result in Eq. \eqref{eq:sumx_lambda},
+we get
+%
+\begin{equation*}
+  \sum_{ \vx}
+    \frac{
+      w_i(\vx)
+    }
+    {
+      \sum_{k = 1}^K \nu_k \, w_k(\vx)
+    }
+    = N_\mathrm{tot}.
+\end{equation*}
+%
+Finally by using
+\begin{align*}
+  w_i(\vx) &= q_i(\vx) / Z_i, \\
+  \nu_k    &= N_k / N_\mathrm{tot}
+\end{align*}
+we get
+\begin{equation*}
+  \sum_{ \vx }
+  \frac{ q_i(\vx) / Z_i }
+  { \sum_{k = 1}^K N_k \, q_k(\vx) / Z_k }
+  = 1,
+\end{equation*}
+which becomes the MBAR result,
+upon multiplying both sides by $Z_i$.
+
 
 
 

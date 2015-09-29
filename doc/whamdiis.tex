@@ -11,7 +11,7 @@
 
 
 
-\newcommand{\vct}[1]{\mathbf{#1}}
+\newcommand{\vct}[1]{\bm{\mathrm{#1}}}
 \newcommand{\vx}{\vct{x}}
 \newcommand{\vy}{\vct{y}}
 \newcommand{\Z}{\mathcal{Z}}
@@ -1608,6 +1608,14 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     samples for WHAM,
     or over random subsamples with about 1\% of the trajectory frames
     for MBAR.
+    \hladd{To mimic the successive correlation in the trajectory,
+      we choose each data point in the bootstrap sample
+      to be either a repetition of the previous one (if any)
+      with probability $\exp(-\Delta t_\mathrm{MD}/t_\mathrm{act})$,
+      where $t_\mathrm{MD}$ and $t_\mathrm{act}$
+      are the time step of molecular dynamics
+      and the autocorrelation time of the potential energy, respectively,
+      or drawn randomly from the trajectory.}
     %
     Here, the error tolerance
     $\max \{ |R_i| \}$ is $10^{-8}$.
@@ -1884,7 +1892,7 @@ The force field was AMBER99SB\cite{wang2000, hornak2006}
 with the side-chain modifications\cite{lindorff-larsen2010}.
 }
 %
-MD simulations were performed
+\hladd{Molecular dynamics (MD)} simulations were performed
 using \hladd{GROMACS 5.0}\cite{
 berendsen1995, lindahl2001, vanderspoel2005, hess2008,
 pronk2013, pall2015, abraham2015},
@@ -2119,11 +2127,12 @@ is gratefully acknowledged.
 
 
 \section{\label{sec:deriveMBAR}
-Probabilistic derivation of Eq. \eqref{eq:f_MBAR}}
+Probabilistic \hladd{derivations} of Eq. \eqref{eq:f_MBAR}}
 
 
 
-Here we show that
+Here \hladd{we give several derivations of Eq. \eqref{eq:f_MBAR}.
+First,} we show that
 Eq. \eqref{eq:f_MBAR}
 is a generalisation of Eq. \eqref{eq:f_WHAM}
 from the energy space to the configuration space.
@@ -2223,40 +2232,139 @@ and then setting $g$ to $1.0$
 yields Eq. \eqref{eq:f_MBAR}.
 
 
+
 \hladd{
 Alternatively,
-we can directly show Eq. \eqref{eq:f_MBAR}
-from the composite ensemble viewpoint.
+we can show Eq. \eqref{eq:f_MBAR} directly.
 %
-Suppose that each trajectory frame $\vct x$
+We no longer need the configuration-space field
+and thus set $g(\vct x) = 1$ below.
+%
+Instead,
+we now assume that each trajectory frame $\vct x$
 is free to choose the state $i$ according to
-the weight in the composite ensemble.
+the Bayes' rule\cite{leonard, duda}:
 %
-Then, the probability of $\vx$
+since the prior probability of state $i$
+is $N_i/N_\mathrm{tot}$,
+and the condition probability of observing
+configuration $\vx$ in state $i$ is
+%
+\begin{equation}
+  w_i(\vx) \equiv q_i(\vx) / Z_i,
+  \label{eq:wi_qi}
+\end{equation}
+%
+the posterior probability of $\vx$
 being in state $i$ is given by\cite{habeck2012}
 \[
   p(i|\vx)
   = \frac{ (N_i/N_\mathrm{tot}) \, w_i(\vx) }
-  { \sum_{k = 1}^K (N_k/N_\mathrm{tot}) \, w_k(\vx) }
-  = \frac{ N_i \, q_i(\vx) / Z_i }
-  { \sum_{k = 1}^K N_k \, q_k(\vx) / Z_k },
+  { \sum_{k = 1}^K (N_k/N_\mathrm{tot}) \, w_k(\vx) }.
+  %= \frac{ N_i \, q_i(\vx) / Z_i }
+  %{ \sum_{k = 1}^K N_k \, q_k(\vx) / Z_k },
 \]
-where we have set $g(\vct x) = 1$.
+%
 Summing this over all trajectory frames $\vx$
 (no matter the original state $j$)
 yields the expected population of state $i$,
 \[
-  \hat N_i = \sum_{j = 1}^K \sum_{\vx}^{(j)} p(i|\vx)
-  = \sum_{j = 1}^K \sum_{\vx}^{(j)}
-  \frac{ N_i \, q_i(\vx) / Z_i }
-  { \sum_{k = 1}^K N_k \, q_k(\vx) / Z_k }.
+  \hat N_i = \sum_{\vx} p(i|\vx)
+  = \sum_{\vx}
+  \frac{ N_i \, w_i(\vx) }
+  { \sum_{k = 1}^K N_k \, w_k(\vx) },
 \]
+%
+where
+$\sum_{\vx} \equiv \sum_{j=1}^K \sum_{\vx}^{(j)}$.
+%
 If we demand $\hat N_i$ to be equal to the $N_i$,
 Eq. \eqref{eq:f_MBAR} is recovered.
+
+
+
+The above argument is akin to the one used
+the expectation-maximisation algorithm\cite{dempster1977, neal1998,
+duda, press3rd, habeck2012}.
+%
+To see the connection,
+let us treat the state label
+of each configuration $\vx$
+as a missing or latent variable,
+$k(\vx) = 1, \dots, K$,
+and the prior probability $\nu_i$ of state $i$
+as a parameter.
+%
+Then,
+the probability of observing
+$\vx$ with state $k(\vx)$ is
+$\nu_{ k(\vx) } \, w_{ k(\vx) }(\vx)$.
+%
+To get the probability
+of observing trajectory $\{ \vx \}$
+for given $\vct \nu = (\nu_1, \dots, \nu_K)$
+regardless of the states $\{ k(\vx) \}$,
+we sum over all possible combinations
+of $\{ k(\vx) \}$:
+%
+\begin{align*}
+  p\left( \{\vx \} | \vct \nu \right)
+  &=
+  \sum_{ \{ k(\vx) \} }
+  \prod_{ \vx }
+  p\left(
+      \vx, k(\vx) | \vct \nu
+    \right)
+  \\
+  &=
+  \sum_{ \{ k(\vx) \} }
+  \prod_{\vx}
+    \nu_{ k(\vx) } \, w_{ k(\vx) }(\vx)
+  \\
+  &=
+  \prod_{\vx}
+  \sum_{ k = 1 }^K
+    \nu_k \, w_k(\vx),
+\end{align*}
+%
+where the product $\prod_{\vx}$
+runs through all trajectory frames, $\vx$,
+regardless of the original state.
+%
+The probability gives the likelihood of $\vct \nu$
+given trajectory $\{ \vx \}$.
+%
+We now maximise
+$\log p\left( \{ \vx \} | \vct \nu \right)$
+with respect to $\nu_i$
+under the constraint
+$\sum_{i = 1}^K \nu_i = 1$,
+and
+%
+\begin{align}
+  \sum_{\vx}
+  \frac{ w_i(\vx) }
+  { \sum_{k = 1}^K \nu_k \, w_k(\vx) }
+  =\lambda,
+  \label{eq:posterior_em}
+\end{align}
+%
+where $\lambda$ is the Lagrange multiplier of the constraint.
+%
+By mutiplying both sides of Eq. \eqref{eq:posterior_em}
+by $\nu_i$ and summing over $i$,
+we get $\lambda = \sum_{\vx} 1 = N_\mathrm{tot}$.
+%
+We then recover Eq. \eqref{eq:f_MBAR}
+upon setting $\nu_k = N_k / N_\mathrm{tot}$
+and using Eq. \eqref{eq:wi_qi}.
+%
 }
 %
 %
 %
+
+
 
 
 \section{\label{sec:convwham}

@@ -92,8 +92,8 @@ set style line 12 lw 2.0 lt 6 lc rgb color2  pt 8   ps 2.2
 set style line 13 lw 1.5 lt 7 lc rgb color14 pt 10  ps 2.4
 set style line 14 lw 1.5 lt 7 lc rgb color2  pt 13  ps 2.4
 
-set style line 21 lw 2.0 lt 10 lc rgb color3  pt 1   ps 2.0
-set style line 22 lw 2.0 lt 8  lc rgb color7  pt 2   ps 1.8
+set style line 21 lw 3.0 lt 10 lc rgb color3  pt 1   ps 2.0
+set style line 22 lw 3.0 lt 8  lc rgb color7  pt 2   ps 1.8
 set style line 23 lw 2.0 lt 9  lc rgb color5  pt 14  ps 2.4
 set style line 24 lw 2.0 lt 12 lc rgb color7  pt 15  ps 2.0
 

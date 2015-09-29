@@ -2,13 +2,13 @@
 
 * We have added MBAR to the first sentence of the last paragraph in the introduction.
 
-* In footnote 1, we have added a citation to Ref. 13.
-
-* In footnote 1, we have added the necessary changes in using WHAM for simulated tempering.
+* In footnote 1, we have added a citation to Ref. 13. We believe the idea of composite-ensemble can be traced at least back to this reference.  In the reference, however,the argument is applied to the expanded ensemble for simulated tempering, which differs slightly from the composite ensemble. Therefore, we have also added the necessary changes in using WHAM for simulated tempering to explain the difference.
 
 * Eq. (6) we have added parentheses around f_k.
 
 * In the paragraph containing Eq. (6), we have added a sentence to clarify MBAR can be treated both a special form (the histogram-free form, and hence the zero-bin-width limit) of WHAM, and also as a generalisation of WHAM with for Hamiltonians with nonlinear parameter dependence.  The connection is furthered in Appendix A, where a new derivation of the MBAR equation is given in the composite ensemble viewpoint.
+
+* For the caption of Figure 2, we added a sentence to explain how we handled the correlated data in the MD trajectory in bootstrapping.
 
 * In Section 3.4, we have specified the GROMACS version and force field, which were missing from the previous version.  Three more recent citations of GROMACS were also added.
 
@@ -16,9 +16,9 @@
 
 * In Section 3.4, we have found the difference between WHAM and ST-WHAM was due to the use of an inexact algorithm in simulation.  The original simulation used different temperature coupling groups for the thermostat.  This, however, is not rigorous, when the center of mass motion is removed.  We have fixed the set up and redone the simulations.  We found that based on the new simulation protocol, WHAM and ST-WHAM yielded much closer results.
 
-* Figures 1 and 5 have been redone because of the above change.
+* Figures 2 and 5 have been redone because of the above change.
 
-* We have added a new paragraph in Appendix A to derive the MBAR result, Eq. (6), from the composite ensemble viewpoint.  This should set up a further link between the WHAM and MBAR: both methods can be readily derived in the composite ensemble.
+* We have added two new paragraphs in Appendix A to directly derive the MBAR result, Eq. (6), from the composite ensemble viewpoint.  This provides a further link between the WHAM and MBAR: both methods can be readily derived in the composite ensemble.
 
 * In Appendix B, we have added a sentence to point out the limitation of our analysis: it does not take into account sampling error.  And the actual rate of convergence can be smaller.
 
