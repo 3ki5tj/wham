@@ -1534,7 +1534,7 @@ only if multiple basis vectors are used.
 
 We tested DIIS WHAM and MBAR on three systems:
 Ising model, LJ fluid,
-and the villin headpiece \hladd{(}a small protein\hladd{)} in aqueous solution
+and the villin headpiece (a small protein) in aqueous solution
 (see Secs.
 \ref{sec:results_Ising}, \ref{sec:results_LJ}, and
 \ref{sec:results_villin},
@@ -1594,7 +1594,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     for better alignment with the numbers of iterations.
     %
     The scaling factors $\tau$ for cases 1-4 are
-    $12.54$, $1866$, \hladd{$14.30$, and $259.8$} seconds,
+    $12.54$, $1866$, \hladd{$14.30$, and $259.9$} seconds,
     respectively.
     %
     The results were averaged
@@ -1608,11 +1608,11 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     samples for WHAM,
     or over random subsamples with about 1\% of the trajectory frames
     for MBAR.
-    \hladd{To mimic the successive correlation in the trajectory,
-      we choose each data point in the bootstrap sample
+    \hladd{To mimic the correlation in the trajectories,
+      we allow each data point in the bootstrap sample
       to be either a repetition of the previous one (if any)
       with probability $\exp(-\Delta t_\mathrm{MD}/t_\mathrm{act})$,
-      where $t_\mathrm{MD}$ and $t_\mathrm{act}$
+      where $\Delta t_\mathrm{MD}$ and $t_\mathrm{act}$
       are the time step of molecular dynamics
       and the autocorrelation time of the potential energy, respectively,
       or drawn randomly from the trajectory.}
@@ -1880,9 +1880,11 @@ Villin headpiece}
 
 
 
-We tested the methods on a small protein in aqueous solution,
+We tested the methods on a small protein,
 the villin headpiece
-(PDB ID: 1VII), which is a well-known test system\cite{duan1998}.
+(PDB ID: 1VII),
+\hladd{in aqueous solution},
+which is a well-known test system\cite{duan1998}.
 %
 The protein was immersed in
 a dodecahedron box with 1898 TIP3P water molecules and two chloride ions.
@@ -1935,15 +1937,10 @@ while the DIIS methodology again
 delivered a speed-up of two orders of magnitude,
 in the number of iterations or in real time.
 %
-The MBAR case was similar.
+The MBAR case was similar,
 %
-\hladd{
-In this case, MBAR was considerably slower than WHAM
-as it did not use histogram to aggregate data.
-%
-The MBAR result was useful, however,
-for it provides the zero-bin-width limit of WHAM.
-}
+\hladd{although it was slower than WHAM
+as it did not use histogram to aggregate data.}
 %
 %It also appeared to be counterproductive
 %to use more bases than the vector dimension,
@@ -1960,9 +1957,9 @@ of all trajectory frames from every temperature.
 In a smaller one, $r$ was reduced to $0.01\%$.
 %
 The reference values of $f_i$
-were computed from all trajectory frames using MBAR.
+were computed from all trajectory frames using MBAR,
+\hladd{which is the zero-bin-width limit of WHAM.
 %
-\hladd{
 In terms of accuracy
 [Figs. \ref{fig:whamcmp}(a) and \ref{fig:whamcmp}(c)],
 WHAM, MBAR, BAR, ST-WHAM,
@@ -2036,7 +2033,7 @@ by a small bin size for smaller samples.
 
 In this work, we showed that the DIIS technique
 can often significantly accelerate
-the WHAM and MBAR methods to produce free energy difference.
+WHAM and MBAR to produce free energy difference.
 %
 The technique achieves rapid convergence
 by an optimal combination of the approximate
@@ -2131,7 +2128,7 @@ Probabilistic \hladd{derivations} of Eq. \eqref{eq:f_MBAR}}
 
 
 
-Here \hladd{we give several derivations of Eq. \eqref{eq:f_MBAR}.
+Here \hladd{we give some derivations of Eq. \eqref{eq:f_MBAR}.
 First,} we show that
 Eq. \eqref{eq:f_MBAR}
 is a generalisation of Eq. \eqref{eq:f_WHAM}
@@ -2234,11 +2231,9 @@ yields Eq. \eqref{eq:f_MBAR}.
 
 
 \hladd{
-Alternatively,
-we can show Eq. \eqref{eq:f_MBAR} directly.
-%
-We no longer need the configuration-space field
-and thus set $g(\vct x) = 1$ below.
+We can also show Eq. \eqref{eq:f_MBAR}
+without introducing the configuration-space field
+[thus, $g(\vct x) = 1$ below].
 %
 Instead,
 we now assume that each trajectory frame $\vct x$
@@ -2247,8 +2242,8 @@ the Bayes' rule\cite{leonard, duda}:
 %
 since the prior probability of state $i$
 is $N_i/N_\mathrm{tot}$,
-and the condition probability of observing
-configuration $\vx$ in state $i$ is
+and the conditional probability of observing
+$\vx$ in state $i$ is
 %
 \begin{equation}
   w_i(\vx) \equiv q_i(\vx) / Z_i,
@@ -2266,103 +2261,42 @@ being in state $i$ is given by\cite{habeck2012}
 \]
 %
 Summing this over all trajectory frames $\vx$
-(no matter the original state $j$)
+(no matter the original state label $j$)
 yields the expected population of state $i$,
-\[
+%
+\begin{equation}
   \hat N_i = \sum_{\vx} p(i|\vx)
   = \sum_{\vx}
   \frac{ N_i \, w_i(\vx) }
   { \sum_{k = 1}^K N_k \, w_k(\vx) },
-\]
+  \label{eq:population_match}
+\end{equation}
 %
 where
 $\sum_{\vx} \equiv \sum_{j=1}^K \sum_{\vx}^{(j)}$.
 %
 If we demand $\hat N_i$ to be equal to the $N_i$,
 Eq. \eqref{eq:f_MBAR} is recovered.
-
-
-
-The above argument is akin to the one used
-the expectation-maximisation algorithm\cite{dempster1977, neal1998,
-duda, press3rd, habeck2012}.
 %
-To see the connection,
-let us treat the state label
-of each configuration $\vx$
-as a missing or latent variable,
-$k(\vx) = 1, \dots, K$,
-and the prior probability $\nu_i$ of state $i$
-as a parameter.
+Alternatively, by following the argument used
+in the expectation-maximisation algorithm\cite{dempster1977,
+duda, press3rd, habeck2012},
+we can view Eq. \eqref{eq:population_match}
+as the result of maximising
+the probability of observing the trajectory $\{ \vx \}$,
 %
-Then,
-the probability of observing
-$\vx$ with state $k(\vx)$ is
-$\nu_{ k(\vx) } \, w_{ k(\vx) }(\vx)$.
-%
-To get the probability
-of observing trajectory $\{ \vx \}$
-for given $\vct \nu = (\nu_1, \dots, \nu_K)$
-regardless of the states $\{ k(\vx) \}$,
-we sum over all possible combinations
-of $\{ k(\vx) \}$:
-%
-\begin{align*}
-  p\left( \{\vx \} | \vct \nu \right)
-  &=
-  \sum_{ \{ k(\vx) \} }
-  \prod_{ \vx }
-  p\left(
-      \vx, k(\vx) | \vct \nu
-    \right)
-  \\
-  &=
-  \sum_{ \{ k(\vx) \} }
-  \prod_{\vx}
-    \nu_{ k(\vx) } \, w_{ k(\vx) }(\vx)
-  \\
-  &=
+\[
+  p\left( \{\vx \} | N_1, \dots, N_K \right)
+  \propto
   \prod_{\vx}
   \sum_{ k = 1 }^K
-    \nu_k \, w_k(\vx),
-\end{align*}
+    ( N_k / N_\mathrm{tot} ) \, w_k(\vx),
+\]
 %
-where the product $\prod_{\vx}$
-runs through all trajectory frames, $\vx$,
-regardless of the original state.
-%
-The probability gives the likelihood of $\vct \nu$
-given trajectory $\{ \vx \}$.
-%
-We now maximise
-$\log p\left( \{ \vx \} | \vct \nu \right)$
-with respect to $\nu_i$
-under the constraint
-$\sum_{i = 1}^K \nu_i = 1$,
-and
-%
-\begin{align}
-  \sum_{\vx}
-  \frac{ w_i(\vx) }
-  { \sum_{k = 1}^K \nu_k \, w_k(\vx) }
-  =\lambda,
-  \label{eq:posterior_em}
-\end{align}
-%
-where $\lambda$ is the Lagrange multiplier of the constraint.
-%
-By mutiplying both sides of Eq. \eqref{eq:posterior_em}
-by $\nu_i$ and summing over $i$,
-we get $\lambda = \sum_{\vx} 1 = N_\mathrm{tot}$.
-%
-We then recover Eq. \eqref{eq:f_MBAR}
-upon setting $\nu_k = N_k / N_\mathrm{tot}$
-and using Eq. \eqref{eq:wi_qi}.
+with respect to variations of $N_i$
+under the constraint $\sum_{i = 1}^K N_i = N_\mathrm{tot}$.
 %
 }
-%
-%
-%
 
 
 
@@ -3105,9 +3039,9 @@ and nonzero spacing between temperatures
 can further slow down the convergence.
 %
 \hladd{
-Further, since we have ignored the sampling error
-in using EDA in the above calculation,
-the actually rate of convergence can be even smaller.
+Besides, sampling error, which we have ignored
+in the above calculation in using EDA,
+may decrease the rate of convergence further.
 }
 
 

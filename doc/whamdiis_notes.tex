@@ -435,6 +435,8 @@ that for the classical derivation of WHAM
 does not strictly minimize the variance of
 the density of states or the distributions.
 %
+This problem is known\cite{chodera2007}.
+%
 However,
 it does not means that
 the free energies obtained from WHAM are not optimized.
@@ -1243,12 +1245,155 @@ q_i(\vy) d\vy
 
 
 
+\subsubsection{Literature survey}
+
+
+
+Expectation-maximization\cite{
+dempster1977, duda, press3rd}
+is a wide-spread algorithm.
+%
+However, most of the literatures
+tend to be a bit dense and abstract.
+%
+Personally,
+I find the exposition in Numerical Recipes,
+3rd edition\cite{press3rd}
+to be quite understandable,
+although it is limited to
+the example of soft $K$-means clustering
+of a Gaussian mixture.
+%
+Another intuitive example
+is provided in the original reference\cite{
+dempster1977}.
+
+For the description of the general framework,
+the following online tutorial
+``A Gentle Tutorial of the EM algorithm
+and its Application to Parameter Estimation
+for Gaussian Mixture and Hidden Markov Models''
+by Jeff A. Bilmes is relatively reader-friendly.
+%
+Actually, there is an even plainer tutorial on this tutorial:
+``Expectation maximization: a gentle introduction''
+by Moritz Blume.
+
+
+
+
+\subsubsection{Derivation}
+
+
+%The above argument is akin to the one used in
+We shall derive the MBAR equation from
+the expectation-maximisation algorithm\cite{dempster1977,
+duda, press3rd, habeck2012}.
+%
+%To see the connection,
+
+\paragraph{Likelihood function}
+
+First,
+let us treat the state label
+of each configuration $\vx$
+as a missing or latent variable,
+$k(\vx) = 1, \dots, K$,
+and the prior probability $\nu_i$ of state $i$
+as a parameter.
+%
+Then,
+the probability $p(\vx, k(\vx)|\vct \nu)$
+of observing
+$\vx$ with state $k(\vx)$ is
+$\nu_{ k(\vx) } \, w_{ k(\vx) }(\vx)$.
+%
+The product over all trajectory frames $\vx$
+yields the probability
+$p(\{ \vx, k(\vx) \} | \vct \nu)$
+of observing trajectory $\{ \vx \}$
+with the state labels $\{ k(\vx) \}$:
+%
+\[
+  p(\{ \vx, k(\vx) \} | \vct \nu)
+  =
+  \prod_{\vx}
+  p(\vx, k(\vx) | \vct \nu).
+\]
+%
+To get the marginal probability
+of observing trajectory $\{ \vx \}$
+for given $\vct \nu = (\nu_1, \dots, \nu_K)$
+regardless of the state labels $\{ k(\vx) \}$,
+we sum or average over all possible combinations
+of $\{ k(\vx) \}$:
+%
+\begin{align*}
+  p\left( \{\vx \} | \vct \nu \right)
+  &=
+  \sum_{ \{ k(\vx) \} }
+  p\left(
+     \{ \vx, k(\vx) \} | \vct \nu
+    \right)
+  \\
+  &=
+  \sum_{ \{ k(\vx) \} }
+  \prod_{ \vx }
+  p\left(
+      \vx, k(\vx) | \vct \nu
+    \right)
+  \\
+  &=
+  \sum_{ \{ k(\vx) \} }
+  \prod_{\vx}
+    \nu_{ k(\vx) } \, w_{ k(\vx) }(\vx)
+  \\
+  &=
+  \prod_{\vx}
+  \sum_{ k = 1 }^K
+    \nu_k \, w_k(\vx),
+\end{align*}
+%
+where the product $\prod_{\vx}$
+runs through all trajectory frames, $\vx$,
+regardless of the original state.
+%
+%The probability gives the likelihood of $\vct \nu$
+%given trajectory $\{ \vx \}$.
+%%
+%We now maximise
+%$\log p\left( \{ \vx \} | \vct \nu \right)$
+%with respect to $\nu_i$
+%under the constraint
+%$\sum_{i = 1}^K \nu_i = 1$,
+%and
+%%
+%\begin{align}
+%  \sum_{\vx}
+%  \frac{ w_i(\vx) }
+%  { \sum_{k = 1}^K \nu_k \, w_k(\vx) }
+%  =\lambda,
+%  \label{eq:posterior_em}
+%\end{align}
+%%
+%where $\lambda$ is the Lagrange multiplier of the constraint.
+%%
+%By multiplying both sides of Eq. \eqref{eq:posterior_em}
+%by $\nu_i$ and summing over $i$,
+%we get $\lambda = \sum_{\vx} 1 = N_\mathrm{tot}$.
+%%
+%We then recover Eq. \eqref{eq:f_MBAR}
+%upon setting $\nu_k = N_k / N_\mathrm{tot}$
+%and using Eq. \eqref{eq:wi_qi}.
+
+
+
+
 \paragraph{Function to maximize}
 
 
-
-In the manuscript,
-we show that the likelihood function is
+The above probability can be treated as
+the likelihood function of $\vct \nu$,
 %
 \begin{align}
   L(\vct \nu)
@@ -1274,7 +1419,7 @@ we get
 %
 Our aim is to maximize this likelihood function.
 %
-Since $\nu_i$ represents the fractions of mixing,
+Since $\nu_i$'s represent the fractions of mixing,
 we have a constraint
 %
 \begin{equation}
