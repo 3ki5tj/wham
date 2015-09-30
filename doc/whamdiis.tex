@@ -26,7 +26,7 @@
 \newcommand{\del}[1]{{\color{gray} [#1]}}
 \newcommand{\note}[1]{{\color{OliveGreen}\small [\textbf{Comment.} #1]}}
 
-\newcommand{\hladd}[1]{{\color{red} #1}}
+\newcommand{\hl}[1]{{\color{red} #1}}
 
 
 
@@ -88,14 +88,14 @@ rapid convergence to the solution.
 %
 We find that the computational complexity of
 the iterative solution to WHAM
-\hladd{and the closely-related multiple Bennett acceptance ratio (MBAR) method}
+\hl{and the closely-related multiple Bennett acceptance ratio (MBAR) method}
 can be improved by using the method of
 direct inversion in the iterative subspace.
 %
 We give examples from
-lattice models,
-simple liquids
-and aqueous protein solutions.
+\hl{a lattice model,
+a simple liquid
+and an aqueous protein solution}.
 \end{abstract}
 
 
@@ -185,8 +185,8 @@ must be determined self-consistently.
 
 
 WHAM can be
-reformulated\cite{
-shirts2008}
+reformulated\hl{\cite{
+shirts2008, tan2012}}
 in the limit of zero histogram bin width
 as an extension
 of the Bennett acceptance ratio (BAR) method\cite{
@@ -205,7 +205,8 @@ The straightforward implementation of WHAM or MBAR,
 in which the equations regarding the free energies
 are solved by direct iteration,
 can suffer from
-slow convergence in the later stages.
+slow convergence in the later stages\hl{\cite{
+bereau2009, kim2011, zhu2012}}.
 %
 Several remedies have been proposed\cite{
 shirts2008, fenwick2008, bereau2009, kim2011, zhu2012}.
@@ -247,7 +248,7 @@ can be numerically challenging\cite{kim2011}.
 
 
 Here, we discuss a numerical improvement of
-the implementation of WHAM \hladd{and MBAR} using
+the implementation of WHAM \hl{and MBAR} using
 the method of direct inversion in the iterative subspace (DIIS)\cite{
 pulay1980, pulay1982, hamilton1986,
 kovalenko1999, howard2011}.
@@ -368,7 +369,7 @@ respectively.
 
 
 To understand Eq. \eqref{eq:gE_WHAM},
-we first observe from the definition,
+we first observe from the definition
 the single histogram estimate
 %
 \begin{equation}
@@ -383,7 +384,7 @@ g(E)
 where $d_k(E) \equiv N_k \exp(-\beta_k E + f_k)$.
 %
 That is,
-the observed distribution, $n_k(E)/N_k$
+the observed distribution, $n_k(E)/N_k$,
 should roughly match the exact one, $g(E) \, w_k(E)$,
 where $w_k(E) \equiv \exp(-\beta_k E + f_k)$
 is the normalised weight of the canonical ensemble.
@@ -414,7 +415,7 @@ Eq. \eqref{eq:gE_WHAM}.\footnote{
 We can also view Eq. \eqref{eq:gE_WHAM}
 as the result of applying Eq. \eqref{eq:gnk}
 to the composite ensemble of
-the $K$ canonical ensembles\hladd{\cite{chodera2007}},
+the $K$ canonical ensembles\hl{\cite{chodera2007}},
 using the following substitutions:
 $n_k(E) \rightarrow \sum_{k = 1}^K n_k(E)$,
 $N_k \rightarrow \sum_{k = 1}^K N_k \equiv N_\mathrm{tot}$,
@@ -424,26 +425,25 @@ $w_k(E) \rightarrow \sum_{k = 1}^K (N_k/N_\mathrm{tot}) \, w_k(E)$.
 The last expression is the normalised ensemble weight
 in the composite ensemble.
 %
-\hladd{
+\hl{
 Note that the composite ensemble
 is closely related to the expanded ensemble
 that underlies the simulated tempering method\cite{marinari1992, lyubartsev1992}.
 %
 However, in the latter case,
-$N_k$ is a random variable,
-and its appearance in Eq. \eqref{eq:gE_WHAM}
-should be replaced by the average, $\langle N_k \rangle$.
-%
-One can also show that $\langle N_k \rangle/Z_k$
+one can show that
+the $N_k$ in Eq. \eqref{eq:gE_WHAM}
+should be replaced by the average, $\langle N_k \rangle$,
+and the combination $\langle N_k \rangle/Z_k$
 is proportional to the weight $\exp( \eta_k )$
 in the acceptance probability of temperature transitions,
 $A(\beta_k \rightarrow \beta_{k'})
 =
 \min\{1, \exp[ \eta_{k'} - \eta_k -(\beta_{k'}-\beta_k) \, E ] \}$.
 %
-The modified Eq. \eqref{eq:gE_WHAM} is more convenient
-because it depends only on the known weight, $\eta_k$,
-instead of on the unknown partition function, $Z_k$.
+This variant is thus more convenient
+as it depends only on the known weight, $\eta_k$,
+instead of on the unknown $f_k$.
 }
 %
 }
@@ -487,9 +487,9 @@ f_i
 \notag
 \end{align}
 %
-where,
+where
 $\Z_i(\vct f)$
-denotes the integral on the right-hand side,
+denotes the integral on the right-hand side
 as a function of $\vct f = (f_1, \dots, f_K)$.
 %
 Once all $f_i$ and $g(E)$ are determined,
@@ -528,8 +528,8 @@ of simulation $k$.
 %
 Using Eq. \eqref{eq:n_delta}
 in Eq. \eqref{eq:f_WHAM} yields
-the histogram-free, or the MBAR, form\cite{
-kumar1992, souaille2001, shirts2008}:
+the histogram-free, or the MBAR, form\hl{\cite{
+kumar1992, souaille2001, shirts2008, tan2012}}:
 %
 \begin{equation}
 f_i
@@ -541,7 +541,7 @@ f_i
   q_i(\vx)
 }
 {
-  \sum_{k = 1}^K N_k \, q_k(\vx) \exp \hladd{(}f_k\hladd{)}
+  \sum_{k = 1}^K N_k \, q_k(\vx) \exp \hl{(f_k)}
 }.
 \label{eq:f_MBAR}
 \end{equation}
@@ -556,16 +556,16 @@ also holds for a general setting, which permits, e.g., a nonlinear parameter dep
 (see Appendix \ref{sec:deriveMBAR}
 for derivation).
 %
-\hladd{
+\hl{
 In this sense,
-MBAR is not only the zero-bin-width limit of WHAM,
+MBAR is not only the zero-bin-width limit of WHAM\hl{\cite{shirts2008, tan2012}},
 but also a generalisation\cite{shirts2008}.
 %
 As we shall see,
 the structural similarity of
 Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR}
 allows our acceleration technique
-applicable to both cases.
+to be applicable to both cases.
 }
 %
 Since both Eqs. \eqref{eq:f_WHAM} and \eqref{eq:f_MBAR}
@@ -613,7 +613,7 @@ f_i
 \end{align}
 %
 where
-$n_k(W)$
+\hl{$n_k(W) \equiv \sum_{\vx}^{(k)} \delta(\W(\vx) - W)$}
 is understood to be
 the unnormalised distribution of
 the bias $\W(\vx)$.
@@ -790,7 +790,7 @@ This is the ST-WHAM result.
 %
 In evaluating the integral,
 we may encounter an empty bin
-with $\sum_{k = 1}^K n_k(E') = 0$,
+with $\sum_{k = 1}^K n_k(E') \, \hl{\Delta E} = 0$,
 which leaves the integrand indeterminate.
 %
 An expedient fix is to let the integrand borrow
@@ -841,7 +841,7 @@ the dimensionless free energies.
 The target equations can be written as
 %
 \begin{equation}
-  R_i(\vct f) = 0  \quad i = 1, \ldots, K,
+  R_i(\vct f) = 0  \qquad \mbox{for $i = 1, \ldots, K$},
   \label{eq:R_f}
 \end{equation}
 %
@@ -912,12 +912,12 @@ from a linear combination of the trial vectors.
 
 
 To do so, we first find the combination of the residual vectors
-$\vct{\hat R} = \sum_i c_i \, \vct R_i$,
+$\vct{\hat R} = \hl{\sum_{i = 1}^M} c_i \, \vct R_i$,
 that minimises the error
 $\| \vct{\hat R} \|$
 under the constraint
 \begin{equation}
-  \sum_i c_i = 1.
+  \hl{\sum_{i = 1}^M} c_i = 1.
   \label{eq:c_normalise}
 \end{equation}
 %
@@ -926,7 +926,7 @@ this means that we solve for the $c_i$ simultaneously
 from Eq. \eqref{eq:c_normalise} and
 %
 \begin{equation}
-  \sum_j \left( \vct R_i \cdot \vct R_j \right) \, c_j = \lambda,
+  \hl{\sum_{j = 1}^M} \left( \vct R_i \cdot \vct R_j \right) \, c_j = \lambda,
   \label{eq:cj_DIIS}
 \end{equation}
 %
@@ -936,7 +936,7 @@ that is to be determined from along with $c_i$.
 %
 Now the corresponding combination
 of the trial vectors,
-$\vct{\hat f} = \sum_i c_i \, \vct f_i$,
+$\vct{\hat f} = \sum_{i = 1}^M c_i \, \vct f_i$,
 should be close to the desired minimal-error vector.
 %
 This is because
@@ -1394,7 +1394,7 @@ is used to update the basis as shown next.
     $\vct R_i$ would be zero.
     %
     In the feedback step,
-    we wish to correct $\vct f_i$ using $\vct R_i$.
+    we correct $\vct f_i$ using $\vct R_i$.
     %
     The task of DIIS is to construct
     from a few previous vectors
@@ -1406,17 +1406,17 @@ is used to update the basis as shown next.
     %
     (b) and (c)
     %
-    Given a basis of a few (two here) trial vectors,
+    Given a basis of \hl{$M$} (two here) trial vectors,
     DIIS seeks the combination
-    $\vct {\hat R} = \sum_i c_i \, \vct R_i$
+    $\vct {\hat R} = \hl{\sum_{i = 1}^M} c_i \, \vct R_i$
     that minimises the magnitude
     $\| \vct{\hat R} \|$
     under the constraint
-    $\sum_i c_i = 1$ [panel (c)].
+    $\hl{\sum_{i = 1}^M} c_i = 1$ [panel (c)].
     %
     The corresponding combination
     of the trial vectors,
-    $\vct {\hat f} = \sum_i c_i \, \vct f_i$,
+    $\vct {\hat f} = \hl{\sum_{i = 1}^M} c_i \, \vct f_i$,
     is expected to be close to true solution, $\vct f^*$.
     %
     Then,
@@ -1594,7 +1594,7 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     for better alignment with the numbers of iterations.
     %
     The scaling factors $\tau$ for cases 1-4 are
-    $12.54$, $1866$, \hladd{$14.30$, and $259.9$} seconds,
+    \hl{$12.5$, $1.87\times 10^3$, $14.3$, and $260$} seconds,
     respectively.
     %
     The results were averaged
@@ -1608,14 +1608,15 @@ Eq. \eqref{eq:f_WHAM} or \eqref{eq:f_MBAR}.
     samples for WHAM,
     or over random subsamples with about 1\% of the trajectory frames
     for MBAR.
-    \hladd{To mimic the correlation in the trajectories,
-      we allow each data point in the bootstrap sample
-      to be either a repetition of the previous one (if any)
+    \hl{To mimic the correlation in the trajectories,
+      each data point in the bootstrap sample is
+      either randomly drawn from the trajectory,
+      or the same as the previous one (if any)
       with probability $\exp(-\Delta t_\mathrm{MD}/t_\mathrm{act})$,
       where $\Delta t_\mathrm{MD}$ and $t_\mathrm{act}$
       are the time step of molecular dynamics
-      and the autocorrelation time of the potential energy, respectively,
-      or drawn randomly from the trajectory.}
+      and the autocorrelation time of the potential energy, respectively.
+    }
     %
     Here, the error tolerance
     $\max \{ |R_i| \}$ is $10^{-8}$.
@@ -1662,7 +1663,7 @@ where $\Delta A_i \equiv A_{i+1} - A_i$,
 for any quantity $A$,
 and
 $\langle\dots\rangle_{i + 1}$
-denotes an average over frames in trajectory $i + 1$.
+denotes an average \hl{over trajectory} $i + 1$.
 %
 Then, $f_i = f_1 + \sum_{j = 1}^{i - 1} \Delta f_j$.
 %
@@ -1677,7 +1678,7 @@ For comparison,
 we also computed $f_i$
 from three approximate formulae.
 %
-The first is\cite{park2007}
+The first is\hl{\cite{park2007, zhu2012}}
 %
 \begin{equation}
 \Delta f_i
@@ -1715,7 +1716,7 @@ for $k = i$ and $i + 1$.
 %
 The third formula is derived from the same expansion
 but using $E$ instead of $\beta$ as the independent variable
-(\hladd{after} integration by parts,
+(\hl{after} integration by parts,
 $\int E \, d\beta = E \, \beta - \int \beta \, dE$):
 %
 \begin{equation}
@@ -1769,8 +1770,8 @@ whereas the approximate UIM
 produced more deviation in the results,
 especially around the critical region.
 %
-Nonetheless,
-the errors were of the same order of magnitude.
+%Nonetheless,
+%the errors were of the same order of magnitude.
 
 
 
@@ -1848,7 +1849,7 @@ We tested the DIIS method
 on the 256-particle LJ fluid in the isothermal-isobaric ($NpT$) ensemble.
 %
 This is a case for the two-dimensional ($p$ and $T$) WHAM,
-which is difficult for some implementations.
+which \hl{can be difficult for ST-WHAM\cite{kim2011}}.
 %
 The potential interaction between particles was cutoff at half the box size.
 %
@@ -1856,9 +1857,9 @@ We simulated the system
 using parallel tempering MC.
 %
 We considered the system
-at $N_T \times N_p = 6\times 3$ conditions:
-the temperatures were $T = 1.2, 1.3, \dots, 1.7$,
-the pressures were $p = 0.1, 0.15, 0.2$.
+at $N_T \times N_p = 6\times 3$ conditions,
+\hl{with temperatures} $T = 1.2, 1.3, \dots, 1.7$,
+\hl{and pressures} $p = 0.1, 0.15, 0.2$.
 %
 The bin sizes for energy and volume
 were $1.0$ and $2.0$, respectively.
@@ -1883,19 +1884,20 @@ Villin headpiece}
 We tested the methods on a small protein,
 the villin headpiece
 (PDB ID: 1VII),
-\hladd{in aqueous solution},
-which is a well-known test system\cite{duan1998}.
+\hl{in aqueous solution}.
+%
+\hl{This} is a well-known test system\cite{duan1998}.
 %
 The protein was immersed in
 a dodecahedron box with 1898 TIP3P water molecules and two chloride ions.
 %
-\hladd{
+\hl{
 The force field was AMBER99SB\cite{wang2000, hornak2006}
 with the side-chain modifications\cite{lindorff-larsen2010}.
 }
 %
-\hladd{Molecular dynamics (MD)} simulations were performed
-using \hladd{GROMACS 5.0}\cite{
+\hl{Molecular dynamics (MD)} simulations were performed
+using \hl{GROMACS 5.0}\cite{
 berendsen1995, lindahl2001, vanderspoel2005, hess2008,
 pronk2013, pall2015, abraham2015},
 with a time step of 2 fs.
@@ -1939,7 +1941,7 @@ in the number of iterations or in real time.
 %
 The MBAR case was similar,
 %
-\hladd{although it was slower than WHAM
+\hl{although MBAR was slower than WHAM
 as it did not use histogram to aggregate data.}
 %
 %It also appeared to be counterproductive
@@ -1958,7 +1960,7 @@ In a smaller one, $r$ was reduced to $0.01\%$.
 %
 The reference values of $f_i$
 were computed from all trajectory frames using MBAR,
-\hladd{which is the zero-bin-width limit of WHAM.
+\hl{which is the zero-bin-width limit of WHAM\cite{shirts2008, tan2012}.
 %
 In terms of accuracy
 [Figs. \ref{fig:whamcmp}(a) and \ref{fig:whamcmp}(c)],
@@ -1980,9 +1982,9 @@ the differences were small.
 %
 %
 Generally,
-WHAM and ST-WHAM were insensitive to the bin size,
-although the precision of ST-WHAM was slightly affected
-by a small bin size for smaller samples.
+WHAM \hl{was} insensitive to the bin size,
+\hl{whereas ST-WHAM} was slightly affected
+by a small bin size for \hl{the} smaller samples.
 
 
 
@@ -2124,18 +2126,19 @@ is gratefully acknowledged.
 
 
 \section{\label{sec:deriveMBAR}
-Probabilistic \hladd{derivations} of Eq. \eqref{eq:f_MBAR}}
+Probabilistic \hl{derivations} of Eq. \eqref{eq:f_MBAR}}
 
 
 
-Here \hladd{we give some derivations of Eq. \eqref{eq:f_MBAR}.
+Here \hl{we give some derivations of Eq. \eqref{eq:f_MBAR}.
 First,} we show that
 Eq. \eqref{eq:f_MBAR}
 is a generalisation of Eq. \eqref{eq:f_WHAM}
 from the energy space to the configuration space.
 %
-We follow the probabilistic argument\cite{
-bartels1997, gallicchio2005, habeck2007, habeck2012, zhu2012}
+We follow the probabilistic argument\hl{\cite{
+bartels1997, gallicchio2005, habeck2007, habeck2012,
+zhu2012, tan2012}}
 for simplicity.
 %
 We assume that the system is subject to
@@ -2217,8 +2220,10 @@ This gives
 $g(\vy) \, \sum_{k = 1}^K N_k \, q_k(\vy) / Z_k[g] \, d\vy$,
 and it is expected to match the observed number of visits
 to the element,
-$\sum_{j = 1}^K n_j(\vy) \, d\vy$,
-with $n_j(\vy) \equiv \sum_{\vx}^{(j)} \delta(\vx - \vy)$.
+\hl{
+$\sum_{j = 1}^K \sum_{\vx}^{(j)} \delta(\vx - \vy) \, d\vy$,
+regardless of the state $j$.
+}
 }
 %
 %
@@ -2230,7 +2235,7 @@ yields Eq. \eqref{eq:f_MBAR}.
 
 
 
-\hladd{
+\hl{
 We can also show Eq. \eqref{eq:f_MBAR}
 without introducing the configuration-space field
 [thus, $g(\vct x) = 1$ below].
@@ -2243,12 +2248,7 @@ the Bayes' rule\cite{leonard, duda}:
 since the prior probability of state $i$
 is $N_i/N_\mathrm{tot}$,
 and the conditional probability of observing
-$\vx$ in state $i$ is
-%
-\begin{equation}
-  w_i(\vx) \equiv q_i(\vx) / Z_i,
-  \label{eq:wi_qi}
-\end{equation}
+$\vx$ in state $i$ is $w_i(\vx) \equiv q_i(\vx) / Z_i$,
 %
 the posterior probability of $\vx$
 being in state $i$ is given by\cite{habeck2012}
@@ -2261,7 +2261,7 @@ being in state $i$ is given by\cite{habeck2012}
 \]
 %
 Summing this over all trajectory frames $\vx$
-(no matter the original state label $j$)
+(no matter the original state $j$)
 yields the expected population of state $i$,
 %
 \begin{equation}
@@ -2279,7 +2279,8 @@ If we demand $\hat N_i$ to be equal to the $N_i$,
 Eq. \eqref{eq:f_MBAR} is recovered.
 %
 Alternatively, by following the argument used
-in the expectation-maximisation algorithm\cite{dempster1977,
+in the expectation-maximisation algorithm\cite{
+dempster1977, neal1998,
 duda, press3rd, habeck2012},
 we can view Eq. \eqref{eq:population_match}
 as the result of maximising
@@ -2528,7 +2529,7 @@ and thus the solution,
 $(f_1^*, \dots, f_K^*)$,
 is also exact.
 %
-Thus, for any $k$, we have
+\hl{Then}, for any $k$, we have
 %
 \begin{equation}
 \rho_k(E)
@@ -2575,7 +2576,7 @@ dE.
 
 
 Further, we approximate $g(E)$
-as a Gaussian.
+as a Gaussian\hl{\cite{bereau2009}}.
 %
 With a proper choice of the multiplicative constant of $g(E)$, we have,
 %
@@ -2629,7 +2630,7 @@ to the distribution centre.
 %
 It follows that both the origin of $\beta$
 and that of $E$, represented by $E_c$,
-can be set to any values that help calculations,
+can be set to any values that help \hl{calculation},
 without affecting the value of $A_{ij}$.
 
 
@@ -2850,16 +2851,18 @@ Then,\footnote{
 For $A_{12}$,
 we set $E_c = -\Delta \beta/(2 \, a)$,
 and
+\hl{$D(E; \vct f^*) = \exp\left( \frac{1}{2} \Delta \beta E \right) J(E)$},
+with
 \begin{align*}
-D(E; \vct f^*)
-&\propto
+  \hl{J(E)}
+  &\hl{\equiv}
 2 \cosh\left(
   \tfrac{1}{2} \Delta \beta E
 \right)
 +
 \exp\left(
   -\tfrac{3}{2} \Delta \beta E
-  -\tfrac{1}{2} \Delta \beta^2
+  -\tfrac{1}{\hl{a}} \Delta \beta^2
 \right)
 \\
 &\approx
@@ -2868,7 +2871,7 @@ D(E; \vct f^*)
 \right)
 +
 \exp\left(
-  -\tfrac{ u \Delta \beta^2 }{ a }
+  -\tfrac{ u \Delta \beta^2 }{ \hl{4} \, a }
 \right)
 \\
 &\approx
@@ -2887,7 +2890,7 @@ D(E; \vct f^*)
 \right.,
 \end{align*}
 where
-$\theta = 1 + \frac 1 2 \exp\left(-u \Delta \beta^2 E^2\right/4)$.
+\hl{ $\theta = 1 + \frac 1 2 \exp\left[-u \Delta \beta^2 / (4 \, a) \right]$ }.
 %
 The parameter $u$ should be $5/2$
 to match the small $\Delta \beta$ behaviour,
@@ -3038,10 +3041,10 @@ only gives a upper bound,
 and nonzero spacing between temperatures
 can further slow down the convergence.
 %
-\hladd{
-Besides, sampling error, which we have ignored
-in the above calculation in using EDA,
-may decrease the rate of convergence further.
+\hl{
+Besides, sampling error,
+which is ignored in the above calculation,
+may also slow down the convergence.
 }
 
 

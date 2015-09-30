@@ -1,4 +1,4 @@
-The main changes are listed below
+The main changes are listed below. Small changes are shown in red, which was produced by the LaTeX macro, \hl{}.
 
 * We have clarified in the abstract that our technique is applicable also to MBAR.  We thank the referee to point this out.  We did not add MBAR to the title, as it would make the title too long.
 
@@ -8,11 +8,13 @@ The main changes are listed below
 
 * Eq. (6) we have added parentheses around f_k, according the referee's suggestion.
 
-* In the paragraph containing Eq. (6), we have added a sentence to clarify the relationship between MBAR and WHAM, according the referee's suggestion.  That is, MBAR can be treated both a special form (the histogram-free form, and hence the zero-bin-width limit) of WHAM, and also as a generalisation of WHAM with for Hamiltonians with nonlinear parameter dependence.
+* In the paragraph containing Eq. (6), we now clarify the relationship between MBAR and WHAM, according the referee's suggestion.  That is, MBAR can be treated both a special form (the histogram-free form, and hence the zero-bin-width limit) of WHAM, and also as a generalisation of WHAM with for Hamiltonians with nonlinear parameter dependence.
+
+* In Sec. 2.3 for DIIS the caption of Fig. 1, we now add the limits of the sum to avoid confusions.
+
+* Figure 1 now has colors.
 
 * For the caption of Figure 2, we added a sentence to explain how we handled the correlated data in the MD trajectory in bootstrapping.
-
-* In Section 3.4, we have moved the phrase "in aqueous solution" after "villin headpiece".
 
 * In Section 3.4, we have specified the GROMACS version and force field, which were missing from the previous version.  Three more recent citations of GROMACS were also added.
 
@@ -24,5 +26,8 @@ The main changes are listed below
 
 * We have added a paragraph in Appendix A to directly derive the MBAR result, Eq. (6), from the composite ensemble viewpoint.  This provides a further link between the WHAM and MBAR: both methods can be readily derived in the composite ensemble.
 
+* In footnote 4, we have fixed several typos. 1.  "1/2" --> "1/a" on the first line of the unnumbered equation.  2. Missing factor 4 on the second line.  3. Incorrect definition of $\theta$.
+
 * In Appendix B, we have added a sentence to point out the limitation of our analysis: it does not take into account sampling error.  And the actual rate of convergence can be smaller.
 
+* In various places, we have now added a relatively recent reference by Tan et al..

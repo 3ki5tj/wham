@@ -2241,13 +2241,13 @@ $A_{12}$ is computed as follows
 &=
 \sqrt{ \frac a {2 \, \pi} }
 \int
-  \frac{ \exp[-\frac 1 2 a E^2 + \beta E - \beta^2/(2a) ] }
+  \frac{ \exp[-\frac 1 2 a E^2 + \frac{1}{2} \beta E - \beta^2/(8a) ] }
   { D(E) } \, dE
 \notag \\
 &\approx
 \sqrt{ \frac 1 {2 \, \pi} }
 \int
-  \frac{ \exp[-\frac 1 2 x^2 + b \, x - b^2 / 2 ] }
+  \frac{ \exp( -\frac 1 2 x^2 + b \, x - \frac{1}{2} \, b^2 ) }
   { 2 \, \theta \,
     \exp\left(
       b \, x
@@ -2265,7 +2265,7 @@ $A_{12}$ is computed as follows
  \, d x
 \notag \\
 &=
-\frac { \exp(-b^2/2) }
+\frac { \exp(-b^2 / 2 ) }
 { 2 \, \theta \, \sqrt{2 \, \pi} }
 \int
   \exp\left[
@@ -2284,7 +2284,7 @@ $A_{12}$ is computed as follows
  \, d x
 \notag \\
 &=
-\frac { \exp(-b^2/2) }
+\frac { \exp(-b^2 / 2) }
 { 2 \, \theta \, \sqrt{1 + b^2/\theta} }
   \left[
     1
@@ -2626,8 +2626,7 @@ K \sqrt{\frac{a}{a+a'}}
   2 (a + a')
 }
 -\beta_c \, E
-+
-\frac{\beta_c^2}{2 \, a}
+-\frac{\beta_c^2}{2 \, a}
 \right],
 \end{align*}
 
