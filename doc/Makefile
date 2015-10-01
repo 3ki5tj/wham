@@ -1,6 +1,6 @@
 prj=whamdiis
 
-ver=4.2
+ver=4.3
 
 figgps=$(wildcard fig/*.gp)
 pdffigs=$(patsubst %.gp,%.pdf, $(figgps))
@@ -46,7 +46,7 @@ $(prj)docV$(ver).zip:
 	  python deannote.py -v -c -i $(prj)_annotatedV$(ver).tex -o $(prj)V$(ver).tex
 	make all -C old/V$(ver)/
 	cd old/V$(ver) && \
-	  zip -r ../../$(prj)V$(ver).zip *.tex *.pdf simul.bib *.py \
+	  zip -r ../../$(prj)docV$(ver).zip *.tex *.pdf simul.bib *.py \
 	       CHANGES.txt review1.txt \
 	       $(epsfigs) $(pdffigs) $(figgps) figclr Makefile README.md
 
@@ -59,5 +59,5 @@ $(prj)doc.zip: $(prj).tex $(prj).pdf \
 	zip -r $@ $^
 
 Bossman: zip
-	rsync -avL $(prj)doc.zip \
+	rsync -avL $(prj)docV$(ver).zip \
 	  cz1@129.109.88.204:/Bossman/cz1/vir/$(prj)
