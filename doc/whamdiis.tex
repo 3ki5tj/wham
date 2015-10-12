@@ -2276,16 +2276,34 @@ we can view Eq. \eqref{eq:population_match}
 as the result of maximising
 the probability of observing the trajectory $\{ \vx \}$,
 %
-\[
+\begin{equation}
   p\left( \{\vx \} | N_1, \dots, N_K \right)
   \propto
   \prod_{\vx}
   \sum_{ k = 1 }^K
     ( N_k / N_\mathrm{tot} ) \, w_k(\vx),
-\]
+  \label{eq:likelihoodNk}
+\end{equation}
 %
 with respect to variations of $N_i$
-under the constraint $\sum_{i = 1}^K N_i = N_\mathrm{tot}$.
+under the constraint $\sum_{i = 1}^K N_i = N_\mathrm{tot}$\footnote{
+  \hl{
+  Note that varying $N_i$ under fixed $Z_i$
+  is equivalent to inversely varying $Z_i$ under fixed $N_i$,
+  i.e., $\delta N_k \rightarrow -N_k \, \delta \log Z_k$,
+  we can treat Eq. \eqref{eq:likelihoodNk}
+  as a functional of $Z_i$, under the constraint that
+  $\sum_k N_k \, \log Z_k$ is a constant.
+  Further, we can show that the Lagrange multiplier is $1.0$,
+  and obtain a functional of $Z_i$\cite{zhu2012, tan2012}:
+  \[
+  \sum_{\vx}
+  \log \sum_{ k = 1 }^K
+  \frac{ N_k }{ N_\mathrm{tot} } \, w_k(\vx)
+  + \sum_{k = 1}^K N_k \, \log Z_k.
+  \]
+  }
+}.
 %
 
 
