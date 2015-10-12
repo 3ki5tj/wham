@@ -47,7 +47,7 @@ $(prj)docV$(ver).zip:
 	make all -C old/V$(ver)/
 	cd old/V$(ver) && \
 	  zip -r ../../$(prj)docV$(ver).zip *.tex *.pdf simul.bib *.py \
-	       CHANGES.txt review1.txt \
+	       CHANGES.txt review1.txt gMOS.bst \
 	       $(epsfigs) $(pdffigs) $(figgps) figclr Makefile README.md
 
 
