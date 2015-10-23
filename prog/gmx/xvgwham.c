@@ -49,7 +49,7 @@ static int saveact(xvg_t **xvg, int nbet,
 /* load autocorrelation times in terms of number of frames */
 static int loadact(const char *fnact, int nbet, double *tcorr)
 {
-  int i;
+  int i, err = 0;
   double dx;
   char s[1024];
   FILE *fp;
@@ -65,18 +65,26 @@ static int loadact(const char *fnact, int nbet, double *tcorr)
     tcorr[i] = 0;
   }
 
-  fgets(s, sizeof s, fp);
+  if ( fgets(s, sizeof s, fp) == NULL ) {
+    err = -1;
+    goto END;
+  }
   sscanf(s + 1, "%d%lf", &i, &dx);
 
   for ( i = 0; i < nbet; i++ ) {
-    fgets(s, sizeof s, fp);
+    if ( fgets(s, sizeof s, fp) == NULL ) {
+      fprintf(stderr, "cannot load entry %d from %s\n", i, fnact);
+      err = -1;
+      break;
+    }
     sscanf(s, "%lf", &tcorr[i]);
     tcorr[i] /= dx;
     //fprintf(stderr, "tcorr %d: %g %g\n", i, tcorr[i], tcorr[i] * dx);
   }
 
+END:
   fclose(fp);
-  return 0;
+  return err;
 }
 
 

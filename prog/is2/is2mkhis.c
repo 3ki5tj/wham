@@ -37,7 +37,7 @@ static int getlndos(double *arr, int n, const char *fn)
 {
   FILE *fp;
   char s[1024], *p;
-  int i;
+  int i, err = 0;
 
   if ( (fp = fopen(fn, "r")) == NULL ) {
     fprintf(stderr, "cannot open file %s\n", fn);
@@ -45,14 +45,19 @@ static int getlndos(double *arr, int n, const char *fn)
   }
 
   for ( i = 0; i <= n; i++ ) {
-    fgets(s, sizeof s, fp);
+    if ( fgets(s, sizeof s, fp) == NULL ) {
+      fprintf(stderr, "cannot read DOS of entry %d from %s\n", i, fn);
+      err = -1;
+      break;
+    }
     /* remove whatever that is after "`" */
     if ( ( p = strchr(s, '`')) != NULL )
       *p = '\0';
     sscanf(s, "%lf", &arr[i]);
   }
 
-  return 0;
+  fclose(fp);
+  return err;
 }
 
 
