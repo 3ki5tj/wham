@@ -1,6 +1,8 @@
 #ifndef MTRAND_H__
 #define MTRAND_H__
 
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -157,5 +159,63 @@ __inline static double *randdir(double *v)
   v[2] = 1 - 2 * sq;
   return v;
 }
+
+
+
+/* save the current state to file */
+__inline static int mtsave(const char *fn)
+{
+  FILE *fp;
+  int k;
+
+  if ( !mtonce ) return 1; /* never used */
+  if ( (fp = fopen(fn, "w")) == NULL ) {
+    fprintf(stderr, "cannot open %s\n", fn);
+    return -1;
+  }
+  fprintf(fp, "MTSEED\n%d\n", mtidx);
+  for (k = 0; k < MT_N; k++)
+    fprintf(fp, "%lu\n", mtarr[k]);
+  fclose(fp);
+  return 0;
+}
+
+
+
+/* load state from `fn' */
+__inline static int mtload(const char *fn, unsigned long seed)
+{
+  char s[64];
+  int k, z, err = 1;
+  FILE *fp;
+
+  if ( (fp = fopen(fn, "r")) != NULL ) { /* try to load from file */
+    if ( fgets(s, sizeof s, fp) == NULL ) {
+      fprintf(stderr, "%s is empty\n", fn);
+    } else if ( strncmp(s, "MTSEED", 6) != 0 ) { /* to check the first line */
+      fprintf(stderr, "%s corrupted\n", fn);
+    } else if ( fscanf(fp, "%d", &mtidx) != 1 ) {
+      fprintf(stderr, "no index in %s\n", fn);
+    } else {
+      if ( !mtonce ) mtidx = MT_N; /* request updating */
+      for ( z = 1, k = 0; k < MT_N; k++ ) {
+        if ( fscanf(fp, "%lu", &mtarr[k]) != 1 ) break;
+        if ( mtarr[k] != 0 ) z = 0; /* a non-zero number */
+      }
+      if ( k != MT_N ) {
+        fprintf(stderr, "%s incomplete %d/%d\n", fn, k, MT_N);
+      } else {
+        err = z; /* clear error, if array is nonzero */
+        mtonce = 1;
+      }
+    }
+    fclose(fp);
+  }
+
+  if (err) mtscramble(seed);
+  return !mtonce;
+}
+
+
 
 #endif
