@@ -65,7 +65,7 @@ MDIIS.prototype.solve = function()
 
 
 /* construct the new f */
-MDIIS.prototype.gen = function(f, normalize, damp)
+MDIIS.prototype.gen = function(f, normalize, obj, damp)
 {
   var ib, il, npt = this.npt, nb = this.nb;
 
@@ -83,7 +83,7 @@ MDIIS.prototype.gen = function(f, normalize, damp)
   }
 
   if ( normalize ) {
-    normalize(this.f[nb], npt);
+    normalize(this.f[nb], npt, obj);
   }
 
   // f = this.f[nb]
@@ -106,7 +106,7 @@ function mdiis_getdot(a, b, n)
 
 
 /* build the residue correlation matrix */
-MDIIS.proto.build = function(f, res)
+MDIIS.prototype.build = function(f, res)
 {
   var i, npt = this.npt;
 
@@ -243,7 +243,7 @@ MDIIS.prototype.update_hp = function(f, res, err)
 
 /* try to add the new vector `f` and its residue `res`
  * into the base using the Howard-Pettitt scheme */
-MDIIS.prototype.update_hpl = function(f, res, err)(
+MDIIS.prototype.update_hpl = function(f, res, err)
 {
   var i, ibmax, ib, nb = this.nb, mnb = this.mnb, npt = this.npt;
 
@@ -384,7 +384,7 @@ function iter_mdiis(f, npt, getres, normalize, obj,
     // obtain a set of optimal coefficients of combination
     mdiis.solve();
     // generate a new f from the set of coefficients
-    mdiis.gen(f, normalize, damp);
+    mdiis.gen(f, normalize, obj, damp);
     err = mdiis.getres(obj, f, res);
     // add the new f into the basis
     if ( update_method == "KTH" ) {

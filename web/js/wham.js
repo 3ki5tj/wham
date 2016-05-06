@@ -36,6 +36,7 @@ function WHAM(beta, hist, flags)
 
   var n = hist.n;
   this.htot = newarr(n);
+  this.lndos = newarr(n);
   this.sum = newarr(nbeta);
   this.ave = newarr(nbeta);
   this.var = newarr(nbeta);
@@ -46,6 +47,7 @@ function WHAM(beta, hist, flags)
   this.imax = 0;
   this.flags = flags;
 
+  var i, j;
   // compute the total
   for ( i = 0; i < n; i++ ) {
     this.htot[i] = 0;
@@ -53,7 +55,7 @@ function WHAM(beta, hist, flags)
   for ( j = 0; j < nbeta; j++ ) {
     var x, s = 0;
     for ( i = 0; i < n; i++ ) {
-      x = hist.arr[j*n + i];
+      x = hist.arr[j][i];
       s += x;
       this.htot[i] += x;
     }
@@ -74,10 +76,8 @@ function WHAM(beta, hist, flags)
   }
   this.imax = i + 1;
 
-  console.log("i: [" +  this.imin + ", " + this.imax + ")");
-
-  return w;
-};
+  console.log("tot: ", this.tot, "i: [",  this.imin, ", ", this.imax, ")");
+}
 
 
 
@@ -191,7 +191,7 @@ WHAM.prototype.estimatelnz = function(lnz)
      *               Sum_E h_j(E)
      **/
     for ( i = imin; i < imax; i++ ) {
-      h = hist.arr[j*n + i];
+      h = hist.arr[j][i];
       if ( h <= 0 ) continue;
       e = hist.xmin + (i + .5) * hist.dx;
       s += h;
@@ -217,7 +217,7 @@ WHAM.prototype.getlnz = function(lnz)
     lnz[j] = LOG0;
     for ( i = imin; i < imax; i++ ) {
       if ( this.lndos[i] <= LOG0 ) continue;
-      e = this.xmin + (i + .5) * this.dx;
+      e = hist.xmin + (i + .5) * hist.dx;
       lnz[j] = wham_lnadd(lnz[j], this.lndos[i] - this.beta[j] * e);
     }
   }
@@ -260,8 +260,8 @@ WHAM.prototype.step = function(lnz, res, damp)
 
   for ( err = 0, i = 0; i < nbeta; i++ ) {
     res[i] -= lnz[i];
-    if ( Math.fabs(res[i]) > err ) {
-      err = Math.fabs(res[i]);
+    if ( Math.abs(res[i]) > err ) {
+      err = Math.abs(res[i]);
     }
   }
 
@@ -327,9 +327,9 @@ function wham(hist, beta, lnz, flags, damp,
 WHAM.prototype.stwham_getlndos = function()
 {
   var hist = this.hist;
-  var i, j, imin, imax, n = this.n, nbeta = this.rows;
-  var x, y, stbeta, de = this.dx;
+  var i, j, n = hist.n, nbeta = hist.rows;
   var imin = this.imin, imax = this.imax;
+  var x, y, stbeta, de = hist.dx;
 
   for ( i = imin; i < imax; i++ ) {
     if ( this.htot[i] <= 0 ) continue;
@@ -341,7 +341,7 @@ WHAM.prototype.stwham_getlndos = function()
        * beta(E) = -----------------------------------
        *                     sum_k n_k(E)
        * y is the numerator */
-      stbeta += hist.arr[j*n + i] * this.beta[j];
+      stbeta += hist.arr[j][i] * this.beta[j];
     }
 
     // lndos currently holds the second part of
@@ -350,7 +350,7 @@ WHAM.prototype.stwham_getlndos = function()
   }
 
   for ( i = imin; i < imax; i++ ) {
-    int il, ir;
+    var il, ir;
 
     if ( this.htot[i] > 0 ) continue;
 
@@ -408,6 +408,7 @@ function stwham(hist, beta, lnz, flags)
   w.stwham_getlndos();
   w.getlnz(lnz);
   //w.getav();
+  console.log("ST-WHAM", w.tot, lnz);
   return 0.0;
 }
 
@@ -425,7 +426,7 @@ WHAM.prototype.gethave = function()
   for ( j = 0; j < nbeta; j++ ) {
     tot = sx = sxx = 0;
     for ( i = imin; i < imax; i++ ) {
-      y = hist.arr[j*n + i];
+      y = hist.arr[j][i];
       x = hist.xmin + ( i + 0.5 ) * de;
       tot += y;
       sx += x * y;
@@ -455,7 +456,7 @@ WHAM.prototype.umbint_getlndos = function()
   /* compute averages and variance */
   this.gethave();
   for ( j = 0; j < nbeta; j++ ) {
-    hist.hnorm[j] = this.sum[j] * de / sqrt(2 * Math.PI * this.var[j]);
+    this.hnorm[j] = this.sum[j] * de / Math.sqrt(2 * Math.PI * this.var[j]);
   }
 
   imin = 0; // this.imin;
@@ -494,7 +495,7 @@ WHAM.prototype.umbint_getlndos = function()
     this.lndos[i] = LOG0;
   }
 
-  console.log("ST-WHAM completed");
+  console.log("Umbrella integration completed");
 }
 
 
@@ -505,8 +506,9 @@ function umbint(hist, beta, lnz, flags)
   var w = new WHAM(beta, hist, flags);
 
   w.umbint_getlndos();
-  v.getlnz(lnz);
+  w.getlnz(lnz);
   //w.getav();
+  console.log("UI", w.tot, lnz);
   return 0.0;
 }
 
@@ -520,8 +522,8 @@ function wham_getres(w, lnz, res)
 
 
 function wham_mdiis(hist, beta, lnz, flags, lnzref,
-    int nbases, double damp, int update_method, double threshold,
-    int itmin, int itmax, double tol, int verbose)
+    nbases, damp, update_method, threshold,
+    itmin, itmax, tol, verbose)
 {
   var w = new WHAM(beta, hist, flags);
   var err;

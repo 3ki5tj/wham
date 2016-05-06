@@ -11,6 +11,10 @@
   <script type="text/javascript" src="./js/mdutil.js"></script>
   <script type="text/javascript" src="./js/ising.js"></script>
   <script type="text/javascript" src="./js/simtemp.js"></script>
+  <script type="text/javascript" src="./js/hist.js"></script>
+  <script type="text/javascript" src="./js/lu.js"></script>
+  <script type="text/javascript" src="./js/mdiis.js"></script>
+  <script type="text/javascript" src="./js/wham.js"></script>
   <script type="text/javascript" src="./js/isingdraw.js"></script>
   <script type="text/javascript" src="./js/isingmain.js"></script>
 </head>
@@ -48,7 +52,7 @@
     <span onclick="pausesimul()" id="pause"
       class="smallbtn" style="line-height:150%;"
     >&#9724;</span>
-    <!-- &#9616;&#9616; -->
+    <!-- &#10704; or &#9616;&#9616; for the alternative sign-->
     <span onclick="stopsimul()" id="stop"
       class="smallbtn" style="color: #dd4020;"
     >&#9679;</span>
@@ -65,8 +69,9 @@
       disabled>
 
 
-    <span style="font-size: 70%; font-weight: bold;">Run WHAM</span>
-    <span onclick="startsimul()" id="startwham"
+    <span style="font-size: 70%; font-weight: bold;"
+      onclick="runwham()">Run WHAM</span>
+    <span onclick="runwham()" id="runwham"
       class="smallbtn" style="color: #4040dd;"
     >&#9654;</span>
     <br>
@@ -133,21 +138,58 @@
   <div class="params-panel" id="wham-params">
     <div class="panel-title">WHAM parameter</div>
 
-    Tolerance:
+    WHAM method:
+    <select id="WHAM-method">
+      <option value="WHAM_DIRECT">Direct WHAM</option>
+      <option value="WHAM_MDIIS">MDIIS WHAM</option>
+      <option value="WHAM_ST">Statistical-temperature WHAM</option>
+      <option value="WHAM_UI">Umbrella integration</option>
+    </select>
+    <br>
+
+    Precision:
     10<sup>&minus;12</sup><input type="range" value="-7"
       min="-12" max="0" step="0.1"
-      style="width: 140px; border: 1px solid #cccccc;"
-      id="log10tol">1.
+      style="width: 120px; border: 1px solid #cccccc;"
+      id="WHAM-tol">1.
+    &nbsp;
+    <br>
+
+    <span title="Mixing fraction of the new solution.">
+      Damping</span>:
+    0</sup><input type="range" value="1.0"
+      min="0" max="1" step="0.0001"
+      style="width: 120px; border: 1px solid #cccccc;"
+      id="WHAM-damp">1.
+    <br>
+
+    Maximal number of iterations
+    <input type="text" size="4" value="1000" id="WHAM-itmax">.
+    <br>
+
+    <b>MDIIS parameters</b>
     <br>
 
     Number of bases <span class="math"><i>M</i></span>:
     <input type="range" value="5"
       min="1" max="30" step="1"
       style="width: 200px; border: 1px solid #cccccc;"
-      id="mdiis_nbases" onchange="changeparams()">.
+      id="MDIIS-nbases" onchange="changeparams()">.
     &nbsp;
     <br>
 
+    MDIIS method:
+    <select id="MDIIS-method">
+      <option value="Default">Default</option>
+      <option value="KTH">Kovalenko, Ten-no, and Hirata</option>
+      <option value="HP">Howard and Pettitt</option>
+      <option value="HPL">Howard and Pettitt 2</option>
+    </select>.
+    &nbsp;
+
+    KTH threshold:
+    <input type="text" size="4" value="10" id="KTH-threshold">.
+    <br>
   </div> <!-- panel: wham-params -->
 
 

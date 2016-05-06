@@ -13,8 +13,10 @@ var ibeta = 0; // current temperature index
 var tempfreq = 0.5; // tempering frequency
 var ising_proba = null; // probability for the Metropolis algorithm
 var ising_padd = null; // probability for the Wolff cluster algorithm
-var ene_hist = null; // energy histogram
+var hist = null; // energy histogram
 var tpmctot = 1e-16, tpmcacc = 0;
+
+var lnz_wham = null;
 
 var timer_interval = 100; // in milliseconds
 var ising_timer = null;
@@ -46,7 +48,8 @@ function getparams()
   simtemp = new SimTemp(beta);
   ising_proba = newarr(tpcnt);
   ising_padd = newarr(tpcnt);
-  ene_hist = newarr(tpcnt);
+  hist = new Hist(tpcnt, -2*ising.n - 2, 2*ising.n + 1.999, 4);
+  //console.log( hist.n, hist.xmin );
 
   for ( i = 0; i < tpcnt; i++ ) {
     var arr = is2_exact(l, l, beta[i]);
@@ -64,9 +67,10 @@ function getparams()
     ising_proba[i][4] = x * x;
 
     ising_padd[i] = 1 - Math.exp(-2*beta[i]);
-    ene_hist[i] = newarr(ising.n + 1);
   }
   ibeta = 0;
+
+  lnz_wham = newarr(tpcnt);
 
   mc_algorithm = grab("mc_algorithm").value;
 
@@ -100,7 +104,7 @@ function dotempering()
     }
   }
   simtemp.add(ibeta, ising.E);
-  ene_hist[ibeta][(ising.E + ising.n*2)/4] += 1;
+  hist.arr[ibeta][(ising.E + ising.n*2)/4] += 1;
 }
 
 
@@ -162,14 +166,14 @@ function updatehistplot()
   var imin = 0;
   for ( ; imin <= ising.n; imin++ ) {
     for ( j = 0; j < ntp; j++ )
-      if ( ene_hist[j][imin] > 0 ) break;
+      if ( hist.arr[j][imin] > 0 ) break;
     if ( j < ntp ) break;
   }
 
   var imax = Math.floor(ising.n * 3 / 5);
   for ( ; imax >= imin; imax-- ) {
     for ( j = 0; j < ntp; j++ )
-      if ( ene_hist[j][imax] > 0 ) break;
+      if ( hist.arr[j][imax] > 0 ) break;
     if ( j < ntp ) break;
   }
   if ( imin > imax ) return;
@@ -179,7 +183,7 @@ function updatehistplot()
     var ep = -2 * ising.n + 4 * i;
     dat += "" + ep;
     for ( j = 0; j < ntp; j++ ) {
-      dat += "," + ene_hist[j][i];
+      dat += "," + hist.arr[j][i];
     }
     dat += "\n";
   }
@@ -200,6 +204,42 @@ function updatehistplot()
     histplot = new Dygraph(grab("histplot"), dat, options);
   } else {
     histplot.updateOptions({file: dat});
+  }
+}
+
+
+
+function updatevplot()
+{
+  var i, j, ntp = simtemp.n;
+  // prepare the header
+  var dat = "Temperature,lnZ<sub>WHAM</sub>,lnZ<sub>ref</sub>\n";
+
+  // fill in the energy histogram data
+  for ( j = 0; j < ntp; j++ ) {
+    var tp = 1.0 / simtemp.beta[j];
+    var lnzref = simtemp.lnzref[j] - simtemp.lnzref[0];
+    dat += "" + tp + "," + lnz_wham[j] + ","
+      + lnzref + "\n";
+  }
+
+  if ( vplot === null || 1 ) {
+    var h = grab("animationbox").height / 2 - 5;
+    var w = h * 3 / 2;
+    var options = {
+      xlabel: "<small>Temperature</small>",
+      ylabel: "<small>ln Z</small>",
+      includeZero:true,
+      axisLabelFontSize: 10,
+      xRangePad: 2,
+      drawPoints: true,
+      pointSize: 2,
+      width: w,
+      height: h
+    };
+    vplot = new Dygraph(grab("vplot"), dat, options);
+  } else {
+    vplot.updateOptions({file: dat});
   }
 }
 
@@ -230,6 +270,9 @@ function stopsimul()
     clearInterval(ising_timer);
     ising_timer = null;
   }
+  grab("pause").innerHTML = "&#9724;";
+  tpmctot = 1e-16;
+  tpmcacc = 0;
 }
 
 
@@ -242,12 +285,12 @@ function pausesimul()
   if ( ising_timer !== null ) {
     clearInterval(ising_timer);
     ising_timer = null;
-    grab("pause").value = "Resume";
+    grab("pause").innerHTML = "&#10704";
   } else {
     ising_timer = setInterval(
         function() { pulse(); },
         timer_interval);
-    grab("pause").value = "Pause";
+    grab("pause").innerHTML = "&#9724;";
   }
 }
 
@@ -276,6 +319,30 @@ function pausesimul2()
   //} else if ( mousemoved === 0 ) {
   } else {
     pausesimul();
+  }
+}
+
+
+function runwham()
+{
+  if ( ising_timer ) {
+    pausesimul();
+  }
+  if ( simtemp ) {
+    var wham_method = grab("WHAM-method").value;
+    var wham_itmax = get_int("WHAM-itmax", 1000);
+    var wham_tol = get_float("WHAM-tol", 1e-8);
+    var wham_damp = get_float("WHAM-damp", 1.0);
+    var mdiis_nbases = get_int("MDIIS-nbases", 5);
+    var mdiis_method = grab("MDIIS-method").value;
+    var kth_threshold = get_float("KTH-threshold", 10.0);
+
+    whamx(hist, simtemp.beta, lnz_wham, 0, null,
+        wham_damp, mdiis_nbases, mdiis_method,
+        kth_threshold, 0, wham_itmax,
+        wham_tol, 0, wham_method);
+    updatevplot();
+    showtab("wham-params");
   }
 }
 

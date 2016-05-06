@@ -614,7 +614,7 @@ static void umbint_getlndos(wham_t *w)
   }
 
   t1 = clock();
-  fprintf(stderr, "ST-WHAM completed, time %.4fs\n",
+  fprintf(stderr, "Umbrella integration completed, time %.4fs\n",
       1.0*(t1 - t0)/CLOCKS_PER_SEC);
 }
 
