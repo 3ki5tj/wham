@@ -60,4 +60,4 @@ $(prj)doc.zip: $(prj).tex $(prj).pdf \
 
 Bossman: zip
 	rsync -avL $(prj)docV$(ver).zip \
-	  cz1@129.109.88.204:/Bossman/cz1/vir/$(prj)
+	  cz1@129.109.88.204:/Bossman/cz1/wham/

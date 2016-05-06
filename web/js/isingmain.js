@@ -7,8 +7,14 @@
 
 
 var ising = null;
-var l = 32;
-var tp = 2.3;
+
+var simtemp = null;
+var ibeta = 0; // current temperature index
+var tempfreq = 0.5; // tempering frequency
+var ising_proba = null; // probability for the Metropolis algorithm
+var ising_padd = null; // probability for the Wolff cluster algorithm
+var ene_hist = null; // energy histogram
+var tpmctot = 1e-16, tpmcacc = 0;
 
 var timer_interval = 100; // in milliseconds
 var ising_timer = null;
@@ -16,88 +22,110 @@ var mc_algorithm = "Metropolis";
 
 var nstepspsmc = 1000; // number of steps per second for MC
 var nstepspfmc = 100;  // number of steps per frame for MC
-var mctot = 0.0;
-var mcacc = 0.0;
 
-var sum1 = 1e-300;
-var sumU = 0;
-
-var lnzref, eavref, cvref;
-
+var histplot = null;
 
 
 function getparams()
 {
-  l = get_int("L", 32);
-  tp = get_float("temperature", 2.3);
+  var l = get_int("L", 16);
+  ising = new Ising(l);
 
-  var arr = is2_exact(l, l, 1/tp);
-  lnzref = arr[0];
-  eavref = arr[1];
-  cvref = arr[2];
+  // set the temperature array
+  var tpmin = get_float("tpmin", 1.5);
+  var tpmax = get_float("tpmax", 3.1);
+  var tpcnt = get_int("tpcnt", 17);
+  var tp, dtp = (tpmax - tpmin) / tpcnt;
+  var beta = newarr(tpcnt);
+  var i;
+  for ( i = 0; i < tpcnt; i++ ) {
+    tp = tpmin + i * dtp;
+    beta[i] = 1 / tp;
+  }
+  simtemp = new SimTemp(beta);
+  ising_proba = newarr(tpcnt);
+  ising_padd = newarr(tpcnt);
+  ene_hist = newarr(tpcnt);
+
+  for ( i = 0; i < tpcnt; i++ ) {
+    var arr = is2_exact(l, l, beta[i]);
+    simtemp.lnzref[i] = arr[0];
+    simtemp.uref[i] = arr[1];
+    simtemp.cvref[i] = arr[2];
+
+    simtemp.lnz[i] = simtemp.lnzref[i];
+    simtemp.hist[i] = 0;
+
+    ising_proba[i] = newarr(5);
+    var x = Math.exp(-4 * beta[i]);
+    ising_proba[i][0] = 1.0;
+    ising_proba[i][2] = x;
+    ising_proba[i][4] = x * x;
+
+    ising_padd[i] = 1 - Math.exp(-2*beta[i]);
+    ene_hist[i] = newarr(ising.n + 1);
+  }
+  ibeta = 0;
 
   mc_algorithm = grab("mc_algorithm").value;
 
   nstepspsmc = get_int("nstepspersecmc", 10000);
   nstepspfmc = nstepspsmc * timer_interval / 1000;
 
-  mousescale = get_float("isingscale");
+  tpmcacc = 0;
+  tpmctot = 1e-16;
+  //mousescale = get_float("animationboxscale");
 }
 
 
 
 function changescale()
 {
-  mousescale = get_float("isingscale");
+  //mousescale = get_float("animationboxscale");
   paint();
 }
 
 
 
-function dometropolis()
+function dotempering()
 {
-  var istep, sinfo = "";
-  var i, id, n = ising.n;
-
-  ising.setproba(1.0/tp);
-  //ising.em();
-  for ( istep = 0; istep < nstepspfmc; istep++ ) {
-    for ( i = 0; i < n; i++ ) {
-      mctot += 1.0;
-      id = ising.pick();
-      if ( ising.h <= 0 || rand01() < ising.proba[ising.h] ) {
-        mcacc += 1;
-        ising.flip(id);
-      }
-      sum1 += 1.0;
-      sumU += ising.E;
+  if ( rand01() < tempfreq ) {
+    var jbeta = simtemp.jump(ibeta, ising.E, 1);
+    tpmctot += 1;
+    if ( ibeta != jbeta ) {
+      tpmcacc += 1;
+      ibeta = jbeta;
     }
   }
-  sinfo += "acc: " + roundto(100.0 * mcacc / mctot, 2) + "%, ";
-  sinfo += '<span class="math"><i>U</i>/<i>N</i></span>: '
-         + roundto(sumU/sum1/n, 3) + " (Ref.: "
-         + roundto(eavref/n, 3) + ").";
-  return sinfo;
+  simtemp.add(ibeta, ising.E);
+  ene_hist[ibeta][(ising.E + ising.n*2)/4] += 1;
+}
+
+
+function ising_metropolis()
+{
+  var istep, id;
+
+  for ( istep = 0; istep < nstepspfmc; istep++ ) {
+    id = ising.pick();
+    if ( ising.h <= 0
+      || rand01() < ising_proba[ibeta][ising.h] ) {
+      ising.flip(id);
+    }
+    dotempering();
+  }
 }
 
 
 
-function dowolff()
+function ising_wolff()
 {
-  var istep, sinfo = "";
-  var i, id, n = ising.n;
-  var padd;
+  var istep;
 
-  padd = 1 - Math.exp(-2/tp);
   for ( istep = 0; istep < nstepspfmc; istep++ ) {
-    ising.wolff(padd);
-    sum1 += 1.0;
-    sumU += ising.E;
+    ising.wolff(ising_padd[ibeta]);
+    dotempering();
   }
-  sinfo += '<span class="math"><i>U</i>/<i>N</i></span>: '
-         + roundto(sumU/sum1/n, 3) + " (Ref.: "
-         + roundto(eavref/n, 3) + ").";
-  return sinfo;
 }
 
 
@@ -107,9 +135,69 @@ function paint()
   if ( !ising ) {
     return;
   }
-  isingdraw(ising, "isingbox", mousescale);
+  // construct color from temperature
+  var x = (ibeta + 0.5)/ simtemp.n;
+  var color = rgb2str(Math.floor(255 * x), 0, Math.floor(255 * (1-x)));
+  isingdraw(ising, "animationbox", 1.0, color);
 }
 
+
+
+function updatehistplot()
+{
+  var i, j, ntp = simtemp.n;
+  var dat = "Energy";
+
+  // prepare the header
+  for ( j = 0; j < ntp; j++ ) {
+    dat += ",Histogram " + (j+1);
+  }
+  dat += "\n";
+
+  // refine the energy range
+  var imin = 0;
+  for ( ; imin <= ising.n; imin++ ) {
+    for ( j = 0; j < ntp; j++ )
+      if ( ene_hist[j][imin] > 0 ) break;
+    if ( j < ntp ) break;
+  }
+
+  var imax = Math.floor(ising.n * 3 / 5);
+  for ( ; imax >= imin; imax-- ) {
+    for ( j = 0; j < ntp; j++ )
+      if ( ene_hist[j][imax] > 0 ) break;
+    if ( j < ntp ) break;
+  }
+  if ( imin > imax ) return;
+
+  // fill in the energy histogram data
+  for ( i = imin; i <= imax; i++ ) {
+    var ep = -2 * ising.n + 4 * i;
+    dat += "" + ep;
+    for ( j = 0; j < ntp; j++ ) {
+      dat += "," + ene_hist[j][i];
+    }
+    dat += "\n";
+  }
+
+  if ( histplot === null || 1 ) {
+    var h = grab("animationbox").height / 2 - 5;
+    var w = h * 3 / 2;
+    var options = {
+      xlabel: "<small>Energy</small>",
+      ylabel: "<small>Histogram</small>",
+      includeZero:true,
+      axisLabelFontSize: 10,
+      xRangePad: 2,
+      plotter: barChartPlotter,
+      width: w,
+      height: h
+    };
+    histplot = new Dygraph(grab("histplot"), dat, options);
+  } else {
+    histplot.updateOptions({file: dat});
+  }
+}
 
 
 function pulse()
@@ -117,13 +205,16 @@ function pulse()
   var sinfo;
 
   if ( mc_algorithm === "Metropolis" ) {
-    sinfo = dometropolis();
+    ising_metropolis();
   } else if ( mc_algorithm === "Wolff" ) {
-    sinfo = dowolff();
+    ising_wolff();
   }
+  sinfo = "" + ibeta + "/" + simtemp.n + ", E " + ising.E
+        + ", tempering acc. ratio: " + (100.*tpmcacc/tpmctot).toPrecision(4) + "%";
   grab("sinfo").innerHTML = sinfo;
 
   paint();
+  updatehistplot();
 }
 
 
@@ -134,10 +225,6 @@ function stopsimul()
     clearInterval(ising_timer);
     ising_timer = null;
   }
-  mctot = 0.0;
-  mcacc = 0.0;
-  sum1 = 1e-30;
-  sumU = 0.0;
 }
 
 
@@ -165,13 +252,27 @@ function startsimul()
 {
   stopsimul();
   getparams();
-  ising = new Ising(l);
-  installmouse("isingbox", "isingscale");
+  //installmouse("animationbox", "animationboxscale");
   ising_timer = setInterval(
     function(){ pulse(); },
-    timer_interval);
+    timer_interval );
 }
 
+
+
+function pausesimul2()
+{
+  // skip a mouse-move
+  //if ( mousemoved > 0 ) {
+  //  return;
+  //}
+  if ( !ising ) {
+    startsimul();
+  //} else if ( mousemoved === 0 ) {
+  } else {
+    pausesimul();
+  }
+}
 
 
 /* respond to critical parameter changes: restart simulation */
@@ -182,3 +283,111 @@ function changeparams()
   }
 }
 
+
+
+function showtab(who)
+{
+  who = grab(who);
+  var par = who.parentNode;
+  var c = par.childNodes;
+  var i, iwho, k = 0;
+
+  // arrange the tabs
+  for ( i = 0; i < c.length; i++ ) {
+    if ( c[i].className === "params-panel" ) {
+      if ( c[i] !== who ) {
+        c[i].style.zIndex = k;
+        k += 1;
+      } else {
+        iwho = k;
+      }
+    }
+  }
+  who.style.zIndex = k;
+
+  // arrange the clickable tab titles
+  k += 1;
+  var pt = grab("tabsrow");
+  pt.style.zIndex = k;
+  var ct = pt.childNodes, ik = 0;
+  for ( i = 0; i < ct.length; i++ ) {
+    if ( ct[i].tagName ) {
+      if ( ik === iwho ) {
+        ct[i].style.fontWeight = "bold";
+        ct[i].style.borderTop = "2px solid #c0c0d0";
+      } else {
+        ct[i].style.fontWeight = "normal";
+        ct[i].style.borderTop = "0px solid #e0e0f0";
+      }
+      ik += 1;
+    }
+  }
+}
+
+
+
+function resizecontainer(a)
+{
+  var canvas = grab("animationbox");
+  var ctx = canvas.getContext("2d");
+  var w, h;
+  if ( a === null || a === undefined ) {
+    w = canvas.width;
+    h = canvas.height;
+  } else {
+    a = parseInt( grab(a).value );
+    w = h = a;
+    canvas.width = w;
+    canvas.height = h;
+  }
+  ctx.font = "24px Verdana";
+  ctx.fillText("Click to start", w/2-40, h/2-10);
+
+  var hsbar = 30; // height of the global scaling bar
+  var hcbar = 40; // height of the control bar
+  var htbar = 30; // height of the tabs bar
+  var wr = h*3/4; // width of the plots
+  var wtab = 560; // width of the tabs
+  var htab = 280;
+
+  grab("simulbox").style.width = "" + w + "px";
+  grab("simulbox").style.height = "" + h + "px";
+  grab("simulbox").style.top = "" + hsbar + "px";
+  grab("controlbox").style.top = "" + (h + hsbar) + "px";
+  grab("animationboxscale").style.width = "" + (w - 100) + "px";
+  histplot = null;
+  grab("histplot").style.left = "" + w + "px";
+  grab("histplot").style.width = "" + wr + "px";
+  grab("vplot").style.top = "" + hcbar + "px";
+  grab("histplot").style.height = "" + h/2 + "px";
+  vplot = null;
+  grab("vplot").style.left = "" + w + "px";
+  grab("vplot").style.width = "" + wr + "px";
+  grab("vplot").style.top = "" + (h/2 + hcbar) + "px";
+  grab("vplot").style.height = "" + h/2 + "px";
+  grab("tabsrow").style.top = "" + (h + hsbar + hcbar) + "px";
+  grab("tabsrow").style.width = "" + wtab + "px";
+
+  var c = grab("container").childNodes;
+  var i;
+  // tabs
+  for ( i = 0; i < c.length; i++ ) {
+    if ( c[i].className === "params-panel" ) {
+      c[i].style.top = "" + (h + hsbar + hcbar + htbar) + "px";
+      c[i].style.width = "" + (wtab - 20) + "px";
+      c[i].style.height = "" + htab + "px";
+    }
+  }
+  grab("sinfo").style.top = "" + (h + hsbar + hcbar + htbar) + "px";
+  grab("sinfo").style.left = "" + (wtab + 10) + "px";
+  grab("sinfo").style.width = "" + (w + wr - wtab - 20) + "px";
+  grab("container").style.height = "" + (h + hsbar + hcbar + htbar + htab) + "px";
+  grab("container").style.width = "" + (w + wr) + "px";
+}
+
+
+function init()
+{
+  resizecontainer();
+  showtab("system-params");
+}

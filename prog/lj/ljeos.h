@@ -8,12 +8,6 @@
 
 
 
-#ifndef INLINE
-#define INLINE __inline static
-#endif
-
-
-
 enum { LJEOS_MBWRJZG = 0, LJEOS_MBWRKN = 1, LJEOS_PVEhBHKN = 2};
 
 #define ljeos3d_MBWRJZG(rho, T, P, Fex, muex) \
@@ -30,7 +24,7 @@ enum { LJEOS_MBWRJZG = 0, LJEOS_MBWRKN = 1, LJEOS_PVEhBHKN = 2};
    *P:  pressure
    *Fex: Helmholtz free energy (potential part)
    *muex: Gibbs free energy (potential part) */
-INLINE double ljeos3d_MBWR(double rho, double T, double *P,
+__inline double ljeos3d_MBWR(double rho, double T, double *P,
     double *Fex, double *muex, int eos, const double *x)
 {
   /* Reference:
@@ -205,7 +199,7 @@ INLINE double ljeos3d_MBWR(double rho, double T, double *P,
 
 
 
-INLINE double ljeos3d_bAhs(double eta)
+__inline double ljeos3d_bAhs(double eta)
 {
   double e1 = 1 - eta;
   return log(e1)*5/3 + eta*(34 - 33*eta + 4*eta*eta)/(6*e1*e1);
@@ -213,7 +207,7 @@ INLINE double ljeos3d_bAhs(double eta)
 
 
 
-INLINE double ljeos3d_zhs(double eta)
+__inline double ljeos3d_zhs(double eta)
 {
   double e1 = 1 - eta;
   return (1 + eta*(1 + eta*(1 - eta*(1 + eta)*2/3)))/(e1*e1*e1);
@@ -229,7 +223,7 @@ INLINE double ljeos3d_zhs(double eta)
  * To verify it WolframAlpha or Mathematica
  * Integrate[(1-Exp[-(4/x^12-4/x^6+1)/T]), {x, 0, 2.0^(1.0/6)}]
  * */
-INLINE double ljeos3d_dhBH(double T, double *dfdbeta)
+__inline double ljeos3d_dhBH(double T, double *dfdbeta)
 {
   const double Ci[3] = {1.080142248, -0.076383859, 0.011117524};
   const double C1 = 0.000693129, Cln = -0.063920968;
@@ -245,7 +239,7 @@ INLINE double ljeos3d_dhBH(double T, double *dfdbeta)
 /* The residual second virial coefficient B2_LJ - B2_hs
  * from the hybrid Barker-Henderson theory
  * Parameters are given by Table 2 with the functional form given by (29) */
-INLINE double ljeos3d_dB2hBH(double T, double *dfdbeta)
+__inline double ljeos3d_dB2hBH(double T, double *dfdbeta)
 {
   /* from Table 2 */
   const double Ci[8] = {
@@ -279,7 +273,7 @@ INLINE double ljeos3d_dB2hBH(double T, double *dfdbeta)
  * Fluid Phase Equilibria (1994) Vol. 100, 1-34
  * http://www.sklogwiki.org/SklogWiki/index.php/Lennard-Jones_equation_of_state
  */
-INLINE double ljeos3d_PVEhBH(double rho, double T, double *P, double *A, double *mu)
+__inline double ljeos3d_PVEhBH(double rho, double T, double *P, double *A, double *mu)
 {
   /* Table 3 */
   const double Cij[5][7] = {
@@ -349,7 +343,7 @@ INLINE double ljeos3d_PVEhBH(double rho, double T, double *P, double *A, double 
 #define ljeos3d_get(rho, T, P, Fex, muex) \
   ljeos3d_getx(rho, T, P, Fex, muex, LJEOS_PVEhBHKN)
 
-INLINE double ljeos3d_getx(double rho, double T, double *P,
+__inline double ljeos3d_getx(double rho, double T, double *P,
     double *Fex, double *muex, int eos)
 {
   if ( eos == LJEOS_MBWRJZG || eos == LJEOS_MBWRKN ) {

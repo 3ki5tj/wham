@@ -2,7 +2,8 @@
 
 
 
-r''' remove annotations in the tex file
+r'''
+Remove annotations in the tex file
 
 The applicable macros are the following
 
@@ -111,7 +112,7 @@ def eatprev(s, p):
 
 def eatnext(s, p):
   ''' eat the next newline '''
-  if (p >= 1 and s[p - 1] == '\n'
+  if ( p >= 1 and s[p - 1] == '\n'
       and p < len(s) - 1 and s[p + 1] == '\n'):
     p += 1
   return p + 1
@@ -145,11 +146,13 @@ def delete(tag, s):
     if q < 0:
       print "cannot find brace ending for the deleted text! %s, %s" % (p, tag)
       break
+    # save the actual brace pair
     p0, q0 = p, q
     q1 = eatnext(s, q)
     if verbose:
-      print "Removing [%s]" % repr(s[p0+len(tag):q].strip())
-      if verbose >= 2: raw_input()
+      print "Removing [%s]" % repr( s[p0+len(tag):q].strip() )
+      if verbose >= 2:
+        raw_input()
     s = s[:p] + s[q1:]
   return s
 

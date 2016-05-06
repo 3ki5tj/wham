@@ -10,6 +10,7 @@
   <script type="text/javascript" src="./js/draw.js"></script>
   <script type="text/javascript" src="./js/mdutil.js"></script>
   <script type="text/javascript" src="./js/ising.js"></script>
+  <script type="text/javascript" src="./js/simtemp.js"></script>
   <script type="text/javascript" src="./js/isingdraw.js"></script>
   <script type="text/javascript" src="./js/isingmain.js"></script>
 </head>
@@ -35,7 +36,7 @@
     onchange="resizecontainer('containerscale')">
 
   <div id="simulbox">
-    <canvas id="is2box" width="500" height="500"
+    <canvas id="animationbox" width="500" height="500"
       style="border: 1px solid #cccccc;"
       onclick="pausesimul2()"></canvas>
   </div>
@@ -52,7 +53,7 @@
       class="smallbtn" style="color: #dd4020;"
     >&#9679;</span>
     <!-- Zoom: -->
-    <input id="ljscale" type="range" value="1.0"
+    <input id="animationboxscale" type="range" value="1.0"
       min="0.05" max="3.0" step="0.01"
       style="width: 400px; height: 10px; border: 1px solid #cccccc;"
       onchange="changescale()">
@@ -69,59 +70,76 @@
   </div>
 
   <div class="params-panel" id="system-params">
-  <div class="panel-title">System</div>
+    <div class="panel-title">System</div>
 
-  Number of particles per side,
-  <span class="math"><i>L</i></span>:
-  <input type="text" size="6" value="32" id="L"
-    onchange="changeparams()">.
-  &nbsp;
-  <br>
+    Number of particles per side,
+    <span class="math"><i>L</i></span>:
+    <input type="text" size="6" value="16" id="L"
+      onchange="changeparams()">.
+    &nbsp;
+    <br>
 
-  Density,
-  <span class="math"><i>&rho;</i></span>:
-  <input type="text" size="6" value="0.35" id="density"
-    onchange="changeparams()">.
-  &nbsp;
+<!--
+    Density,
+    <span class="math"><i>&rho;</i></span>:
+    <input type="text" size="6" value="0.35" id="density"
+      onchange="changeparams()">.
+    &nbsp;
+-->
 
-  Temperature,
-  <span class="math"><i>T</i><sub>min</sub></span>:
-  <input type="text" size="6" value="1.5" id="Tmin"
-    onchange="changeparams()">,
-  <span class="math"><i>T</i><sub>max</sub></span>:
-  <input type="text" size="6" value="3.1" id="Tmin"
-    onchange="changeparams()">,
-  <span class="math"><i>T</i><sub>cnt</sub></span>:
-  <input type="text" size="6" value="17" id="Tcnt"
-    onchange="changeparams()">,
-  &nbsp;
-  <br>
+    Temperature range:
+    <span class="math"><i>T</i><sub>min</sub></span>:
+    <input type="text" size="6" value="1.5" id="tpmin"
+      onchange="changeparams()">,
+    <span class="math"><i>T</i><sub>max</sub></span>:
+    <input type="text" size="6" value="3.1" id="tpmax"
+      onchange="changeparams()">,
+    <span class="math"><i>T</i><sub>cnt</sub></span>:
+    <input type="text" size="6" value="9" id="tpcnt"
+      onchange="changeparams()">.
+    &nbsp;
+    <br>
 
-  <br>
+    Monte Carlo (MC) algorithm:
+    <select id="mc_algorithm" onchange="changeparams()">
+      <option value="Metropolis">Metropolis algorithm</option>
+      <option value="Wolff">Wolff algorithm</option>
+    </select>
+    <br>
 
-  </div> <!-- panel -->
+    Number of MC steps per second:
+    <input type="text" size="6" value="10000" id="nstepspersecmc"
+      onchange="changeparams()">
+    <br>
+
+    Tempering frequency: 0%<input type="range" value="0.5"
+      min="0" max="1" step="0.001"
+      style="width: 140px; border: 1px solid #cccccc;"
+      id="tempfreq">100%.
+    <br>
+  </div> <!-- panel: system-params -->
 
 
 
   <div class="params-panel" id="wham-params">
-  <div class="panel-title">WHAM parameter</div>
+    <div class="panel-title">WHAM parameter</div>
 
-  Tolerance:
-  10<sup>&minus;12</sup><input type="range" value="-7"
-    min="-12" max="0" step="0.1"
-    style="width: 140px; border: 1px solid #cccccc;"
-    id="log10tol">1.
-  <br>
+    Tolerance:
+    10<sup>&minus;12</sup><input type="range" value="-7"
+      min="-12" max="0" step="0.1"
+      style="width: 140px; border: 1px solid #cccccc;"
+      id="log10tol">1.
+    <br>
 
-  Number of bases <span class="math"><i>M</i></span>:
-  <input type="range" value="5"
-    min="1" max="30" step="1"
-    style="width: 200px; border: 1px solid #cccccc;"
-    id="mdiis_nbases" onchange="changeparams()">.
-  &nbsp;
-  <br>
+    Number of bases <span class="math"><i>M</i></span>:
+    <input type="range" value="5"
+      min="1" max="30" step="1"
+      style="width: 200px; border: 1px solid #cccccc;"
+      id="mdiis_nbases" onchange="changeparams()">.
+    &nbsp;
+    <br>
 
-  </div>
+  </div> <!-- panel: wham-params -->
 
 
   <div id="sinfo"></div>
@@ -137,15 +155,11 @@
   <p>The source code can be found at
   <ul>
     <li>
-      <a href="http://github.com/cheng2zhang/fclus">GitHub</a>
+      <a href="http://github.com/3ki5tj/invt">GitHub</a>
       (source code).
     </li>
     <li>
-      <a href="https://www.dropbox.com/sh/1918tkacrp5stuo/AADMxMNMTKs_Zp1zDHRMObGra">Dropbox</a>
-      (source code plus some extra files).
-    </li>
-    <li>
-      <span class="code">/Bossman/cz1/fclus</span>
+      <span class="code">/Bossman/cz1/invt</span>
       (Pettitt group internal link).
     </li>
   </ul>

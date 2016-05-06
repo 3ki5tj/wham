@@ -136,11 +136,16 @@ static void shiftang(double (*x)[D], double (*v)[D],
 __inline static double md_ekin(double (*v)[D], const double *m, int n)
 {
   int i;
-  double ek = 0, wt;
+  double ek = 0;
 
-  for ( i = 0; i < n; i++ ) {
-    wt = m ? m[i] : 1.0;
-    ek += wt * vsqr( v[i] );
+  if ( m == NULL ) {
+    for ( i = 0; i < n; i++ ) {
+      ek += vsqr( v[i] );
+    }
+  } else {
+    for ( i = 0; i < n; i++ ) {
+      ek += m[i] * vsqr( v[i] );
+    }
   }
   return ek * 0.5;
 }
@@ -198,6 +203,26 @@ __inline static double md_vscramble(double (*v)[D],
     }
   }
   return md_ekin(v, m, n);
+}
+
+
+
+static void md_langevin(double (*v)[D],
+    const double *m, int n, double tp, double dt)
+{
+  int i, k;
+  double s, v0;
+
+  s = exp(-dt);
+  v0 = sqrt( tp * (1 - s * s) );
+  for ( i = 0; i < n; i++ ) {
+    if ( m != NULL ) {
+      v0 /= sqrt( m[i] );
+    }
+    for ( k = 0; k < D; k++ ) {
+      v[i][k] = v[i][k] * s + v0 * randgaus();
+    }
+  }
 }
 
 

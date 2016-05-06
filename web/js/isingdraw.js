@@ -7,7 +7,8 @@
 
 /* draw all atoms in the box
  * `target` is the canvas  */
-function isingdraw(ising, target, userscale)
+function isingdraw(ising, target, userscale,
+    ballColor)
 {
   var c = grab(target);
   var ctx = c.getContext("2d");
@@ -24,6 +25,21 @@ function isingdraw(ising, target, userscale)
 
   // draw each spin
   var l = ising.l, id = 0;
+  var upColor, downColor;
+  if ( !ballColor ) {
+    upColor = "#202020";
+    downColor = "#cccccc";
+  } else {
+    upColor = ballColor;
+    downColor = "#cccccc";
+  }
+  var rgb = parseRGB(upColor);
+  var xmix = 0.8;
+  var upSpotColor = rgb2str(
+      Math.floor(rgb.r * (1 - xmix) + 255 * xmix),
+      Math.floor(rgb.g * (1 - xmix) + 255 * xmix),
+      Math.floor(rgb.b * (1 - xmix) + 255 * xmix));
+
   for ( var i = 0; i < l; i++ ) {
     for ( var j = 0; j < l; j++, id++ ) {
       var x = (i + 0.5 - 0.5*l) * dx + width * 0.5;
@@ -31,10 +47,10 @@ function isingdraw(ising, target, userscale)
       var radius = dx * 0.5;
       var spotcolor, color;
       if ( ising.s[id] > 0 ) {
-        color = "#202020";
-        spotcolor = "#808080";
+        color = upColor;
+        spotcolor = upSpotColor;
       } else {
-        color = "#aaaaaa";
+        color = downColor;
         spotcolor = "#ffffff";
       }
       paintBall(ctx, x, y, radius, color, spotcolor);
