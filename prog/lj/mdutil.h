@@ -207,7 +207,7 @@ __inline static double md_vscramble(double (*v)[D],
 
 
 
-static void md_langevin(double (*v)[D],
+__inline static void md_langevin(double (*v)[D],
     const double *m, int n, double tp, double dt)
 {
   int i, k;

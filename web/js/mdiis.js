@@ -383,10 +383,10 @@ function iter_mdiis(f, npt, getres, normalize, obj,
   for ( it = 0; it < itmax; it++ ) {
     // obtain a set of optimal coefficients of combination
     mdiis.solve();
-    /* generate a new f from the set of coefficients */
+    // generate a new f from the set of coefficients
     mdiis.gen(f, normalize, damp);
     err = mdiis.getres(obj, f, res);
-    /* add the new f into the basis */
+    // add the new f into the basis
     if ( update_method == "KTH" ) {
       ib = mdiis.update_kth(f, res, err, threshold);
     } else if ( update_method == "HP" ) {
@@ -409,7 +409,7 @@ function iter_mdiis(f, npt, getres, normalize, obj,
 
   if ( err < tol ) {
     success = 1;
-  } else { /* use the backup version */
+  } else { // use the backup version
     success = 0;
     cparr(f, mdiis.fbest, npt);
     err = mdiis.getres(obj, f, res);

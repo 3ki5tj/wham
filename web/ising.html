@@ -53,10 +53,22 @@
       class="smallbtn" style="color: #dd4020;"
     >&#9679;</span>
     <!-- Zoom: -->
+<!--
     <input id="animationboxscale" type="range" value="1.0"
       min="0.05" max="3.0" step="0.01"
       style="width: 400px; height: 10px; border: 1px solid #cccccc;"
       onchange="changescale()">
+-->
+    <input id="tpscale" type="range" value="0.0"
+      min="0.0" max="1.0" step="0.001"
+      style="width: 400px; height: 10px; border: 1px solid #cccccc;"
+      disabled>
+
+
+    <span style="font-size: 70%; font-weight: bold;">Run WHAM</span>
+    <span onclick="startsimul()" id="startwham"
+      class="smallbtn" style="color: #4040dd;"
+    >&#9654;</span>
     <br>
   </div>
 
@@ -79,14 +91,6 @@
     &nbsp;
     <br>
 
-<!--
-    Density,
-    <span class="math"><i>&rho;</i></span>:
-    <input type="text" size="6" value="0.35" id="density"
-      onchange="changeparams()">.
-    &nbsp;
--->
-
     Temperature range:
     <span class="math"><i>T</i><sub>min</sub></span>:
     <input type="text" size="6" value="1.5" id="tpmin"
@@ -103,12 +107,17 @@
     Monte Carlo (MC) algorithm:
     <select id="mc_algorithm" onchange="changeparams()">
       <option value="Metropolis">Metropolis algorithm</option>
-      <option value="Wolff">Wolff algorithm</option>
+      <option value="Wolff">Wolff cluster algorithm</option>
     </select>
     <br>
 
-    Number of MC steps per second:
-    <input type="text" size="6" value="10000" id="nstepspersecmc"
+    Number of MC steps per block (Metropolis):
+    <input type="text" size="6" value="10" id="blocksizemc"
+      onchange="changeparams()">
+    <br>
+
+    Number of MC blocks/steps per second:
+    <input type="text" size="6" value="1000" id="nstepspersecmc"
       onchange="changeparams()">
     <br>
 

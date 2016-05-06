@@ -20,6 +20,7 @@ var timer_interval = 100; // in milliseconds
 var ising_timer = null;
 var mc_algorithm = "Metropolis";
 
+var blocksizemc = 10; // number of steps for a block in the Metropolis algorithm
 var nstepspsmc = 1000; // number of steps per second for MC
 var nstepspfmc = 100;  // number of steps per frame for MC
 
@@ -69,6 +70,7 @@ function getparams()
 
   mc_algorithm = grab("mc_algorithm").value;
 
+  blocksizemc = get_int("blocksizemc", 10);
   nstepspsmc = get_int("nstepspersecmc", 10000);
   nstepspfmc = nstepspsmc * timer_interval / 1000;
 
@@ -104,13 +106,15 @@ function dotempering()
 
 function ising_metropolis()
 {
-  var istep, id;
+  var istep, j, id;
 
   for ( istep = 0; istep < nstepspfmc; istep++ ) {
-    id = ising.pick();
-    if ( ising.h <= 0
-      || rand01() < ising_proba[ibeta][ising.h] ) {
-      ising.flip(id);
+    for ( j = 0; j < blocksizemc; j++ ) {
+      id = ising.pick();
+      if ( ising.h <= 0
+        || rand01() < ising_proba[ibeta][ising.h] ) {
+        ising.flip(id);
+      }
     }
     dotempering();
   }
@@ -209,8 +213,9 @@ function pulse()
   } else if ( mc_algorithm === "Wolff" ) {
     ising_wolff();
   }
-  sinfo = "" + ibeta + "/" + simtemp.n + ", E " + ising.E
-        + ", tempering acc. ratio: " + (100.*tpmcacc/tpmctot).toPrecision(4) + "%";
+  grab("tpscale").value = ibeta/(simtemp.n - 1.0);
+  sinfo = "Temperature " + ibeta + "/" + simtemp.n + ", E " + ising.E
+        + "<br>Tempering acc. ratio: " + (100.*tpmcacc/tpmctot).toPrecision(4) + "%";
   grab("sinfo").innerHTML = sinfo;
 
   paint();
@@ -354,7 +359,8 @@ function resizecontainer(a)
   grab("simulbox").style.height = "" + h + "px";
   grab("simulbox").style.top = "" + hsbar + "px";
   grab("controlbox").style.top = "" + (h + hsbar) + "px";
-  grab("animationboxscale").style.width = "" + (w - 100) + "px";
+  //grab("animationboxscale").style.width = "" + (w - 100) + "px";
+  grab("tpscale").style.width = "" + (w - 220) + "px";
   histplot = null;
   grab("histplot").style.left = "" + w + "px";
   grab("histplot").style.width = "" + wr + "px";

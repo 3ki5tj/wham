@@ -182,7 +182,7 @@ static void wham_getav(wham_t *w, const char *fn)
   const hist_t *hist = w->hist;
   double T, b, e, ee, lne, lnz, slne, slnee, lnw;
   double de = hist->dx, emin = hist->xmin;
-  int i, j, nbeta = hist->rows;
+  int i, j, nbeta = hist->rows, imin = w->imin, imax = w->imax;
   FILE *fp = NULL;
 
   if ( fn != NULL && (fp = fopen(fn, "w")) == NULL )
@@ -192,7 +192,7 @@ static void wham_getav(wham_t *w, const char *fn)
     b = w->beta[j];
     T = 1 / b;
     lnz = slne = slnee = LOG0;
-    for ( i = w->imin; i < w->imax; i++ ) {
+    for ( i = imin; i < imax; i++ ) {
       if ( w->lndos[i] <= LOG0 ) continue;
       /* note: we do not add emin here for it may lead to
        * a negative energy whose logarithm is undefined */
@@ -264,6 +264,7 @@ static void wham_estimatelnz(wham_t *w, double *lnz)
 {
   const hist_t *hist = w->hist;
   int i, j, n = hist->n, nbeta = hist->rows;
+  int imin = w->imin, imax = w->imax;
   double db, e, h, s, dlnz;
 
   lnz[0] = 0;
@@ -278,7 +279,7 @@ static void wham_estimatelnz(wham_t *w, double *lnz)
      * = ---------------------------------------------
      *               Sum_E h_j(E)
      **/
-    for ( i = w->imin; i < w->imax; i++ ) {
+    for ( i = imin; i < imax; i++ ) {
       h = hist->arr[j*n + i];
       if ( h <= 0 ) continue;
       e = hist->xmin + (i + .5) * hist->dx;
@@ -298,11 +299,12 @@ static void wham_getlnz(wham_t *w, double *lnz)
 {
   const hist_t *hist = w->hist;
   int i, j, nbeta = hist->rows;
+  int imin = w->imin, imax = w->imax;
   double e;
 
   for ( j = 0; j < nbeta; j++ ) {
     lnz[j] = LOG0;
-    for ( i = w->imin; i < w->imax; i++ ) {
+    for ( i = imin; i < imax; i++ ) {
       if ( w->lndos[i] <= LOG0 ) continue;
       e = hist->xmin + (i + .5) * hist->dx;
       lnz[j] = wham_lnadd(lnz[j], w->lndos[i] - w->beta[j] * e);
@@ -318,9 +320,10 @@ static double wham_step(wham_t *w, double *lnz, double *res,
 {
   const hist_t *hist = w->hist;
   int i, j, n = hist->n, nbeta = hist->rows;
+  int imin = w->imin, imax = w->imax;
   double x, lnden, e, emin = hist->xmin, de = hist->dx, err;
 
-  for ( i = w->imin; i < w->imax; i++ ) {
+  for ( i = imin; i < imax; i++ ) {
     if ( w->htot[i] <= 0 ) {
       w->lndos[i] = LOG0;
       continue;
@@ -428,14 +431,13 @@ static double wham(const hist_t *hist,
 static void stwham_getlndos(wham_t *w)
 {
   const hist_t *hist = w->hist;
-  int i, j, imin, imax, n = hist->n, nbeta = hist->rows;
+  int i, j, n = hist->n, nbeta = hist->rows;
+  int imin = w->imin, imax = w->imax;
   double x, y, stbeta, de = hist->dx;
   clock_t t0, t1;
 
   t0 = clock();
 
-  imin = w->imin;
-  imax = w->imax;
   for ( i = imin; i < imax; i++ ) {
     if ( w->htot[i] <= 0 ) continue;
 
@@ -498,7 +500,7 @@ static void stwham_getlndos(wham_t *w)
   for ( i = 0; i < imin; i++ ) {
     w->lndos[i] = LOG0;
   }
-  for ( i = w->imax; i < n; i++ ) {
+  for ( i = imax; i < n; i++ ) {
     w->lndos[i] = LOG0;
   }
 
@@ -532,12 +534,13 @@ static void wham_gethave(wham_t *w)
 {
   const hist_t *hist = w->hist;
   int i, j, n = hist->n, nbeta = hist->rows;
+  int imin = w->imin, imax = w->imax;
   double tot, sx, sxx, x, y, de = hist->dx;
 
   /* compute averages and variance */
   for ( j = 0; j < nbeta; j++ ) {
     tot = sx = sxx = 0;
-    for ( i = w->imin; i < w->imax; i++ ) {
+    for ( i = imin; i < imax; i++ ) {
       y = hist->arr[j*n + i];
       x = hist->xmin + ( i + 0.5 ) * de;
       tot += y;
@@ -606,7 +609,7 @@ static void umbint_getlndos(wham_t *w)
   for ( i = 0; i < imin; i++ ) {
     w->lndos[i] = LOG0;
   }
-  for ( i = w->imax; i < n; i++ ) {
+  for ( i = imax; i < n; i++ ) {
     w->lndos[i] = LOG0;
   }
 
