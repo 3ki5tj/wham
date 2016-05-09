@@ -27,7 +27,7 @@ var nstepspsmc = 1000; // number of steps per second for MC
 var nstepspfmc = 100;  // number of steps per frame for MC
 
 var histplot = null;
-
+var vplot = null;
 
 function getparams()
 {
@@ -145,7 +145,7 @@ function paint()
   }
   // construct color from temperature
   var x = (ibeta + 0.5)/ simtemp.n;
-  var color = rgb2str(Math.floor(255 * x), 0, Math.floor(255 * (1-x)));
+  var color = rgb2str(Math.floor(204 * x), 0, Math.floor(204 * (1-x)));
   isingdraw(ising, "animationbox", 1.0, color);
 }
 
@@ -205,6 +205,8 @@ function updatehistplot()
   } else {
     histplot.updateOptions({file: dat});
   }
+
+  dat = null;
 }
 
 
@@ -244,6 +246,39 @@ function updatevplot()
 }
 
 
+
+/* draw a color bar */
+function drawcolorbar(target)
+{
+  var c = grab(target);
+  var ctx = c.getContext("2d");
+  var width = c.width;
+  var height = c.height;
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, width, height);
+
+  var grd = ctx.createLinearGradient(0, 0, width, 0);
+  grd.addColorStop(0, "#0000cc");
+  grd.addColorStop(1, "#cc0000");
+
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 4, width, height-4);
+
+  // draw grids
+  if ( simtemp ) {
+    var i, x;
+    for ( i = 0; i < simtemp.n; i++ ) {
+      x = width * i / (simtemp.n - 1.0);
+      drawLine(ctx, x, 4, x, height, "#808080", 1);
+    }
+    x = width * ibeta / (simtemp.n - 1.0);
+    drawLine(ctx, x, 0, x, height, "#000000", 3);
+  }
+}
+
+
+
 function pulse()
 {
   var sinfo;
@@ -253,7 +288,7 @@ function pulse()
   } else if ( mc_algorithm === "Wolff" ) {
     ising_wolff();
   }
-  grab("tpscale").value = ibeta/(simtemp.n - 1.0);
+  drawcolorbar("tpscale");
   sinfo = "Temperature " + ibeta + "/" + simtemp.n + ", E " + ising.E
         + "<br>Tempering acc. ratio: " + (100.*tpmcacc/tpmctot).toPrecision(4) + "%";
   grab("sinfo").innerHTML = sinfo;
@@ -331,16 +366,18 @@ function runwham()
   if ( simtemp ) {
     var wham_method = grab("WHAM-method").value;
     var wham_itmax = get_int("WHAM-itmax", 1000);
-    var wham_tol = get_float("WHAM-tol", 1e-8);
+    var wham_nlogtol = get_int("WHAM-tol", -7);
+    var wham_tol = Math.pow(10, wham_nlogtol);
     var wham_damp = get_float("WHAM-damp", 1.0);
     var mdiis_nbases = get_int("MDIIS-nbases", 5);
     var mdiis_method = grab("MDIIS-method").value;
     var kth_threshold = get_float("KTH-threshold", 10.0);
 
-    whamx(hist, simtemp.beta, lnz_wham, 0, null,
+    var err = whamx(hist, simtemp.beta, lnz_wham, 0, null,
         wham_damp, mdiis_nbases, mdiis_method,
         kth_threshold, 0, wham_itmax,
         wham_tol, 0, wham_method);
+    grab("sinfo").innerHTML = err;
     updatevplot();
     showtab("wham-params");
   }
@@ -428,6 +465,7 @@ function resizecontainer(a)
   grab("controlbox").style.top = "" + (h + hsbar) + "px";
   //grab("animationboxscale").style.width = "" + (w - 100) + "px";
   grab("tpscale").style.width = "" + (w - 220) + "px";
+  drawcolorbar("tpscale");
   histplot = null;
   grab("histplot").style.left = "" + w + "px";
   grab("histplot").style.width = "" + wr + "px";
@@ -454,6 +492,8 @@ function resizecontainer(a)
   grab("sinfo").style.top = "" + (h + hsbar + hcbar + htbar) + "px";
   grab("sinfo").style.left = "" + (wtab + 10) + "px";
   grab("sinfo").style.width = "" + (w + wr - wtab - 20) + "px";
+  grab("sinfo").innerHTML = "simulation information";
+
   grab("container").style.height = "" + (h + hsbar + hcbar + htbar + htab) + "px";
   grab("container").style.width = "" + (w + wr) + "px";
 }

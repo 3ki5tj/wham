@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 
-import os, sys, codecs
+import os, sys, glob, codecs
 
 
 
@@ -44,7 +44,11 @@ def translate(src, dic):
 def loadsrc(fn):
   ''' load a script or style sheet '''
 
-  src = open(fn).readlines()
+  try:
+    src = open(fn).readlines()
+  except:
+    print "cannot open", fn
+    raise
   for i in range(len(src)):
     ln = src[i].strip()
     if ln == "":
@@ -114,8 +118,13 @@ def htmlpack(fn, fntrans = None):
 
 
 if __name__ == "__main__":
-  fn = "ljmix.html"
   if len(sys.argv) > 1:
     fn = sys.argv[1]
+  else:
+    fns = glob.glob("*.html");
+    for fn in fns:
+      if not fn.endswith("_pack.html"):
+        break
+
   print fn
   htmlpack(fn)

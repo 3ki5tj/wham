@@ -289,7 +289,7 @@ WHAM.prototype.getlndos = function(lnz,
   for ( it = 0; it < itmax; it++ ) {
     err = this.step(lnz, this.res, damp);
     if ( verbose ) {
-      console.log("it " + it + ", err " + errp + " -> " + err + "\n");
+      console.log("it " + it + ", err " + errp + " -> " + err + ", tol " + tol);
     }
     if ( err < tol && it > itmin ) {
       break;
@@ -297,8 +297,7 @@ WHAM.prototype.getlndos = function(lnz,
     errp = err;
   }
 
-  console.log("WHAM converged in " + it + " steps, error " + err + "\n");
-  return err;
+  return "WHAM converged in " + it + " steps,<br>error " + err + "\n";
 }
 
 
@@ -396,6 +395,8 @@ WHAM.prototype.stwham_getlndos = function()
   for ( i = imax; i < n; i++ ) {
     this.lndos[i] = LOG0;
   }
+
+  return "ST-WHAM completed";
 }
 
 
@@ -405,11 +406,11 @@ function stwham(hist, beta, lnz, flags)
 {
   var w = new WHAM(beta, hist, flags);
 
-  w.stwham_getlndos();
+  var err = w.stwham_getlndos();
   w.getlnz(lnz);
   //w.getav();
   console.log("ST-WHAM", w.tot, lnz);
-  return 0.0;
+  return err;
 }
 
 
@@ -495,7 +496,7 @@ WHAM.prototype.umbint_getlndos = function()
     this.lndos[i] = LOG0;
   }
 
-  console.log("Umbrella integration completed");
+  return "Umbrella integration completed";
 }
 
 
@@ -505,11 +506,11 @@ function umbint(hist, beta, lnz, flags)
 {
   var w = new WHAM(beta, hist, flags);
 
-  w.umbint_getlndos();
+  var err = w.umbint_getlndos();
   w.getlnz(lnz);
   //w.getav();
   console.log("UI", w.tot, lnz);
-  return 0.0;
+  return err;
 }
 
 

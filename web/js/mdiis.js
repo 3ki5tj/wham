@@ -415,9 +415,10 @@ function iter_mdiis(f, npt, getres, normalize, obj,
     err = mdiis.getres(obj, f, res);
   }
 
-  console.log("MDIIS finished in ", it + 1, " steps, error ", err,
-      " (", (success ? "succeeded" : "failed"), ")");
-  return err;
+  return "MDIIS finished in " + (it + 1)
+       + " steps, error " + err
+       + " (" + (success ? "succeeded" : "failed")
+       + ")";
 }
 
 

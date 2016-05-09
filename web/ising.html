@@ -8,7 +8,6 @@
   <script type="text/javascript" src="./js/util.js"></script>
   <script type="text/javascript" src="./js/mtrand.js"></script>
   <script type="text/javascript" src="./js/draw.js"></script>
-  <script type="text/javascript" src="./js/mdutil.js"></script>
   <script type="text/javascript" src="./js/ising.js"></script>
   <script type="text/javascript" src="./js/simtemp.js"></script>
   <script type="text/javascript" src="./js/hist.js"></script>
@@ -63,11 +62,9 @@
       style="width: 400px; height: 10px; border: 1px solid #cccccc;"
       onchange="changescale()">
 -->
-    <input id="tpscale" type="range" value="0.0"
-      min="0.0" max="1.0" step="0.001"
-      style="width: 400px; height: 10px; border: 1px solid #cccccc;"
-      disabled>
 
+    <span class="math" style="font-size: 100%"><i>T</i>:</span>
+    <canvas id="tpscale" width="150" height="10"></canvas>
 
     <span style="font-size: 70%; font-weight: bold;"
       onclick="runwham()">Run WHAM</span>
@@ -192,9 +189,7 @@
     <br>
   </div> <!-- panel: wham-params -->
 
-
   <div id="sinfo"></div>
-
 
 </div> <!-- container -->
 
@@ -206,11 +201,11 @@
   <p>The source code can be found at
   <ul>
     <li>
-      <a href="http://github.com/3ki5tj/invt">GitHub</a>
+      <a href="http://github.com/3ki5tj/wham">GitHub</a>
       (source code).
     </li>
     <li>
-      <span class="code">/Bossman/cz1/invt</span>
+      <span class="code">/Bossman/cz1/wham</span>
       (Pettitt group internal link).
     </li>
   </ul>

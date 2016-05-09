@@ -16,8 +16,11 @@ function isingdraw(ising, target, userscale,
   var height = c.height;
 
   // the system dimension is L + 1
-  var dx = 1.0 * width / (ising.l + 1) * userscale;
-  var dy = 1.0 * height / (ising.l + 1) * userscale;
+  var dx = 1.0 * width / (ising.l) * userscale;
+  var dy = 1.0 * height / (ising.l) * userscale;
+  var dx1 = Math.floor(dx - 1), dy1 = Math.floor(dy - 1);
+  if ( dx1 < 1 ) dx1 = 1;
+  if ( dy1 < 1 ) dy1 = 1;
 
   // draw the background
   ctx.fillStyle = "#ffffff";
@@ -33,27 +36,23 @@ function isingdraw(ising, target, userscale,
     upColor = ballColor;
     downColor = "#cccccc";
   }
-  var rgb = parseRGB(upColor);
-  var xmix = 0.8;
-  var upSpotColor = rgb2str(
-      Math.floor(rgb.r * (1 - xmix) + 255 * xmix),
-      Math.floor(rgb.g * (1 - xmix) + 255 * xmix),
-      Math.floor(rgb.b * (1 - xmix) + 255 * xmix));
+
+  var grd_up = upColor;
+  var grd_down = downColor;
 
   for ( var i = 0; i < l; i++ ) {
     for ( var j = 0; j < l; j++, id++ ) {
-      var x = (i + 0.5 - 0.5*l) * dx + width * 0.5;
-      var y = (j + 0.5 - 0.5*l) * dy + height * 0.5;
-      var radius = dx * 0.5;
+      var x = Math.floor( (i - 0.5*l) * dx + width * 0.5 );
+      var y = Math.floor( (j - 0.5*l) * dy + height * 0.5 );
       var spotcolor, color;
       if ( ising.s[id] > 0 ) {
         color = upColor;
-        spotcolor = upSpotColor;
+        ctx.fillStyle = grd_up;
       } else {
         color = downColor;
-        spotcolor = "#ffffff";
+        ctx.fillStyle = grd_down;
       }
-      paintBall(ctx, x, y, radius, color, spotcolor);
+      ctx.fillRect(x, y, dx1, dy1)
     }
   }
 }
