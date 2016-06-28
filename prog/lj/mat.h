@@ -576,6 +576,7 @@ __inline static double vrmsd(double (*x)[D], double (*xf)[D],
   }
   vsmul(xc, 1.0/wtot);
   vsmul(yc, 1.0/wtot);
+  vdiff(t, yc, xc); /* t = yc - xc */
 
   /* 2. compute the asymmetric covariance matrix S = (x-xc) (y-yc)^T */
   for ( i = 0; i < n; i++ ) {
@@ -611,14 +612,13 @@ __inline static double vrmsd(double (*x)[D], double (*xf)[D],
   if ( dev < 0 ) {
     dev = 0;
   }
-  mmxv(xs, r, xc); /* xs = R xc */
-  vdiff(t, yc, xs); /* t = yc - R xc */
 
   /* 5. compute the rotated structure */
   if ( xf || dev < dev0 * 0.01 ) { /* if there's a large cancellation recompute the deviation */
     for ( dev = 0, i = 0; i < n; i++ ) {
-      mmxv(xs, r, x[i]); /* xs = R x */
-      vadd(xfi, xs, t); /* xfi = R x + t */
+      vdiff(xs, x[i], xc);
+      mmxv(ys, r, xs); /* ys = R xs = R (x - xc) */
+      vadd(xfi, ys, yc); /* xfi = R (x - xc) + yc */
       sq = vdist2(y[i], xfi);
       if ( xf ) vcopy(xf[i], xfi);
       dev +=  (w ? w[i] * sq : sq); /* recompute the deviation */

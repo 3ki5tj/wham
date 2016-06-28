@@ -387,11 +387,11 @@ function iter_mdiis(f, npt, getres, normalize, obj,
     mdiis.gen(f, normalize, obj, damp);
     err = mdiis.getres(obj, f, res);
     // add the new f into the basis
-    if ( update_method == "KTH" ) {
+    if ( update_method === "KTH" ) {
       ib = mdiis.update_kth(f, res, err, threshold);
-    } else if ( update_method == "HP" ) {
+    } else if ( update_method === "HP" ) {
       ib = mdiis.update_hp(f, res, err);
-    } else if ( update_method == "HPL" ) {
+    } else if ( update_method === "HPL" ) {
       ib = mdiis.update_hpl(f, res, err);
     } else {
       ib = mdiis.update(f, res, err);

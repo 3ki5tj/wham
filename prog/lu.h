@@ -1,3 +1,5 @@
+#include <float.h>
+
 /* solve A x = b by L U decomposition
  * on return, matrix `a' is destroyed, and vector `b' becomes `x' */
 __inline static int lusolve(double *a, double *b, int n, double tiny)

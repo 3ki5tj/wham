@@ -52,7 +52,7 @@ static void shiftang(double (*x)[D], double (*v)[D],
     wt = ( m != NULL ) ? m[i] : 1.0;
     vdiff(xi, x[i], xc);
     am += wt * vcross(xi, v[i]);
-    r2 += wt * vsqr(x[i]);
+    r2 += wt * vsqr(xi);
   }
 
   am = -am / r2;
@@ -177,6 +177,60 @@ __inline static double md_vrescale(double (*v)[D],
 
 
 
+/* Nose-Hoover chain thermostat */
+__inline static double md_nhchain(double (*v)[D],
+    const double *m, int n, int dof, double tp, double dt,
+    int nnhc, double *zeta, const double *zmass)
+{
+  int i, j;
+  double s, GQ, mvv;
+
+  mvv = md_ekin(v, m, n) * 2;
+
+  for ( j = nnhc - 1; j >= 0; j-- ) {
+    s = ( j == nnhc - 1 ) ? 1 : exp(-zeta[j+1]*dt*0.25);
+    GQ = ( j == 0 ) ? (mvv - dof * tp) : (zmass[j-1] * zeta[j-1] * zeta[j-1] - tp);
+    zeta[j] = (zeta[j] * s + GQ /zmass[j] * dt*0.5) * s;
+  }
+
+  s = exp( -zeta[0] * dt );
+  for ( i = 0; i < n; i++ ) {
+    vsmul(v[i], s);
+  }
+  mvv *= s * s;
+
+  for ( j = 0; j < nnhc; j++ ) {
+    s = ( j == nnhc - 1 ) ? 1 : exp(-zeta[j+1]*dt*0.25);
+    GQ = ( j == 0 ) ? (mvv - dof * tp) : (zmass[j-1] * zeta[j-1] * zeta[j-1] - tp);
+    zeta[j] = (zeta[j] * s + GQ /zmass[j] * dt*0.5) * s;
+  }
+
+  return mvv * 0.5;
+}
+
+
+
+
+__inline static void md_langevin(double (*v)[D],
+    const double *m, int n, double tp, double dt)
+{
+  int i, k;
+  double s, v0;
+
+  s = exp(-dt);
+  v0 = sqrt( tp * (1 - s * s) );
+  for ( i = 0; i < n; i++ ) {
+    if ( m != NULL ) {
+      v0 /= sqrt( m[i] );
+    }
+    for ( k = 0; k < D; k++ ) {
+      v[i][k] = v[i][k] * s + v0 * randgaus();
+    }
+  }
+}
+
+
+
 /* randomly swap the velocities of k pairs of particles */
 __inline static double md_vscramble(double (*v)[D],
     const double *m, int n, int k)
@@ -203,26 +257,6 @@ __inline static double md_vscramble(double (*v)[D],
     }
   }
   return md_ekin(v, m, n);
-}
-
-
-
-__inline static void md_langevin(double (*v)[D],
-    const double *m, int n, double tp, double dt)
-{
-  int i, k;
-  double s, v0;
-
-  s = exp(-dt);
-  v0 = sqrt( tp * (1 - s * s) );
-  for ( i = 0; i < n; i++ ) {
-    if ( m != NULL ) {
-      v0 /= sqrt( m[i] );
-    }
-    for ( k = 0; k < D; k++ ) {
-      v[i][k] = v[i][k] * s + v0 * randgaus();
-    }
-  }
 }
 
 
