@@ -32,7 +32,7 @@ static void rmcom(double (*x)[D], const double *m, int n)
 
 
 /* annihilate the total angular momentum */
-static void shiftang(double (*x)[D], double (*v)[D],
+__inline static void shiftang(double (*x)[D], double (*v)[D],
     const double *m, int n)
 {
   int i;
@@ -77,7 +77,7 @@ static void shiftang(double (*x)[D], double (*v)[D],
  * use a velocity field
  *    v' = v - c x r
  *   */
-static void shiftang(double (*x)[D], double (*v)[D],
+__inline static void shiftang(double (*x)[D], double (*v)[D],
     const double *m, int n)
 {
   int i;

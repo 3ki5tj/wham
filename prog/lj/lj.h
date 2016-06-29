@@ -170,7 +170,7 @@ static lj_t *lj_open(int n, double rho, double rcdef)
 
   xnew(lj, 1);
   lj->n = n;
-  lj->dof = n * D - D * (D+1)/2;
+  lj->dof = n * D - D; // * (D+1)/2;
   lj->rcdef = rcdef;
 
   xnew(lj->x, n);
@@ -191,7 +191,6 @@ static lj_t *lj_open(int n, double rho, double rcdef)
   }
 
   rmcom(lj->v, NULL, n);
-  shiftang(lj->x, lj->v, NULL, n);
 
   return lj;
 }
