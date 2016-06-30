@@ -81,17 +81,21 @@ def loadsrc(fn):
 def htmlpack(fn, fntrans = None):
   ''' embed scripts and stylesheets into the HTML file `fn` '''
 
+  p = fn.find("_pack.htm")
+  if p >= 0: fn = fn[:p] + fn[p+5:]
+  print "packing", fn
+
   s = open(fn).readlines()
   n = len(s)
   for i in range(n):
     ln = s[i].strip()
-    if ln.startswith("<script"):
+    if ln.startswith("<script") and not ln.startswith("<script>") and ln.find('src="http') < 0:
       p = ln.find('src="')
       p = ln.find('"', p)
       q = ln.find('"', p+1)
       fnsrc = ln[p+1:q]
       s[i] = ('<!-- %s -->\n' % fnsrc) + '<script>\n' + loadsrc(fnsrc) + '</script>\n'
-    elif ln.startswith('<link rel='):
+    elif ln.startswith('<link rel=') and ln.find('href="http') < 0:
       p = ln.find('href="')
       p = ln.find('"', p)
       q = ln.find('"', p+1)
@@ -119,12 +123,12 @@ def htmlpack(fn, fntrans = None):
 
 if __name__ == "__main__":
   if len(sys.argv) > 1:
-    fn = sys.argv[1]
+    fns = [ fn for fn in sys.argv[1:]
+            if fn.find(".htm") >= 0 ]
   else:
-    fns = glob.glob("*.html");
-    for fn in fns:
-      if not fn.endswith("_pack.html"):
-        break
+    fns  = [ fn for fn in glob.glob("*.htm")
+             if fn.find("_pack.htm") < 0 ]
+    fns += [ fn for fn in glob.glob("*.html")
+             if fn.find("_pack.html") < 0 ]
 
-  print fn
-  htmlpack(fn)
+  for fn in fns: htmlpack(fn)
