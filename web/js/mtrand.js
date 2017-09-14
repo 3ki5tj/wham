@@ -21,11 +21,12 @@ mtarr[0] = 5489; // the seed
 /* scramble the random number state */
 function mtscramble(seed)
 {
-  mtarr[0] = seed * 314159265 + 271828183;
+  mtarr[0] = ((seed * 314159265) | 0) + 271828183;
   for (var k = 1; k < MT_N; k++) { // the final mask is for 64-bit machines
-    mtarr[k] = 1812433253 * (mtarr[k - 1] ^ (mtarr[k - 1] >>> 30)) + k;
-    // mr->arr[k] = (mr->arr[k] + seed) * 22695477ul + 1ul;
-    mtarr[k] = (mtarr[k] + seed) * 314159265 + 1;
+    var x = (mtarr[k - 1] ^ (mtarr[k - 1] >>> 30))|0;
+    mtarr[k] = ((1812433253 * x)|0) + k;
+    mtarr[k] = (((mtarr[k] + seed) * 22695477) | 0) + 1;
+    //mtarr[k] = seed + k;
   }
   mtidx = MT_N; // request an update
   mtonce = 1; // scrambled
@@ -40,6 +41,7 @@ function mtrand()
   var x, k;
 
   if ( !mtonce ) mtscramble(new Date().getTime());
+  //if ( !mtonce ) mtscramble(12345);
 
   if (mtidx >= MT_N) { // generate MT_N words at one time
     for (k = 0; k < MT_N - MT_M; k++) {

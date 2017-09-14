@@ -1,4 +1,4 @@
-#ifndef MDTIL_H__
+#ifndef MDUTIL_H__
 #define MDUTIL_H__
 
 
@@ -8,18 +8,29 @@
 
 
 
-/* remove the center of mass motion */
-static void rmcom(double (*x)[D], const double *m, int n)
+/* compute the center of mass */
+static double getcom(double *xc, double (*x)[D], const double *m, int n)
 {
   int i;
-  double xc[D] = {0}, mtot = 0, wt;
+  double mtot = 0, wt;
 
+  vzero(xc);
   for ( i = 0; i < n; i++ ) {
-    wt = m ? m[i] : 1.0;
+    wt = (m != NULL) ? m[i] : 1.0;
     vsinc(xc, x[i], wt);
     mtot += wt;
   }
   vsmul(xc, 1.0 / mtot);
+  return mtot;
+}
+
+/* remove the center of mass motion */
+static void rmcom(double (*x)[D], const double *m, int n)
+{
+  int i;
+  double xc[D];
+
+  getcom(xc, x, m, n);
   for ( i = 0; i < n; i++ ) {
     vdec(x[i], xc);
   }
@@ -31,21 +42,51 @@ static void rmcom(double (*x)[D], const double *m, int n)
 
 
 
-/* annihilate the total angular momentum */
+/* annihilate the total angular momentum by rotating the velocities */
+__inline static void shiftangv(double (*x)[D], double (*v)[D],
+    const double *m, int n)
+{
+  double u[D], xc[D], dx[D], newv;
+  int i;
+
+  /* compute the center of mass */
+  getcom(xc, x, m, n);
+
+  vzero(u);
+  for ( i = 0; i < n; i++ ) {
+    vdiff(dx, x[i], xc);
+    /* u[0] and u[1] are the total angular momenta from
+     * the current velocities, v[i], and the 90-degree
+     * rotated velocities vi' = (-v[i][1], v[i][0])
+     * and dx x vi' = dx[0]*v[i][0] - dx[1]*(-v[i][1]) */
+    u[0] += m[i] * vcross(dx, v[i]);
+    u[1] += m[i] * vdot(dx, v[i]);
+  }
+  vnormalize(u);
+
+  /* if we now multiply the original velocity by u[1]
+   * and multiply the rotated velocity by -u[0]
+   * the total angular momentum would be zero
+   * this is equivalent to a rotation with
+   * cos(theta) = u[1] and sin(theta) = -u[0]
+   * This choice of sign (instead of sin(theta) = -u[1], cos(theta) = u[0])
+   * would ensure (v.x) is positive after the rotation */
+  for ( i = 0; i < n; i++ ) {
+    newv    =  u[1] * v[i][0] + u[0] * v[i][1];
+    v[i][1] = -u[0] * v[i][0] + u[1] * v[i][1];
+    v[i][0] = newv;
+  }
+}
+
+/* annihilate the total angular momentum by rotation */
 __inline static void shiftang(double (*x)[D], double (*v)[D],
     const double *m, int n)
 {
   int i;
-  double am, r2, xc[D] = {0, 0}, xi[D];
-  double mtot = 0, wt;
+  double am, r2, wt, xc[D] = {0, 0}, xi[D];
 
-  /* determine the center of mass */
-  for ( i = 0; i < n; i++ ) {
-    wt = ( m != NULL ) ? m[i] : 1.0;
-    vsinc(xc, x[i], wt);
-    mtot += wt;
-  }
-  vsmul(xc, 1.0 / mtot);
+  /* compute the center of mass */
+  getcom(xc, x, m, n);
 
   am = r2 = 0.0;
   for ( i = 0; i < n; i++ ) {
@@ -69,6 +110,94 @@ __inline static void shiftang(double (*x)[D], double (*v)[D],
 
 
 
+/* annihilate the total angular momentum */
+__inline static void shiftangv(double (*x)[D], double (*v)[D],
+    const double *m, int n)
+{
+  int i, j, k, round;
+  double xc[D], xi[D], ang[D], am[D], z[D], th, rot[D][D];
+  double wt, wdot, mat[D][D], vi[D], ama, aml;
+  //double swd = 0;
+  double tol = DBL_EPSILON * 1e3;
+
+  /* compute the center of mass */
+  getcom(xc, x, m, n);
+
+  for ( round = 0; round < 100; round++ ) {
+    /* compute the total angular momentum and
+     * determine the axis of rotation, omega, such that
+     *   Sum_i mi xi x vi is parallel to
+     *   Sum_i mi xi x (omega x vi)
+     *   = Sum_i mi [(vi.xi) - (vi::xi)] omega */
+    vzero(am);
+    mzero(mat);
+    ama = 0;
+    for ( i = 0; i < n; i++ ) {
+      wt = ( m != NULL ) ? m[i] : 1.0;
+      vdiff(xi, x[i], xc);
+      vcross(ang, xi, v[i]);
+      vsinc(am, ang, wt);
+      /* this sum is used to estimate the magnitude of the
+       * the angular momentum to establish an error threshold */
+      ama += wt * vnorm(ang);
+      wdot = wt * vdot(v[i], xi);
+      for ( j = 0; j < D; j++ ) {
+        mat[j][j] += wdot;
+        for ( k = 0; k < D; k++ ) {
+          mat[j][k] -= wt * v[i][j] * xi[k];
+        }
+      }
+      //swd += wdot;
+    }
+    aml = vnorm(am);
+    if ( aml < ama * tol ) break;
+    msolve(mat, am);
+    /* now the direction of `am` reprensent the axis of rotation,
+     * omega, around which an 90-degree rotation (omega x vi) with
+     * a scaling of |am| will produce the same angular momentum
+     * as the initial velocity, vi.
+     * which means the ratio of the old and new velocity field
+     * should be 1 to -|am| */
+    th = atan2(-vnorm(am), 1);
+    //printf("round %d, th %g, am %g, ama %g, |L| %g, x.v %g\n", round, th, vnorm(am), ama, aml, swd);
+    vnormalize(vcopy(z, am));
+
+    mrota(rot, z, th);
+
+    for ( i = 0; i < n; i++ ) {
+      mmxv(vi, rot, v[i]);
+      vcopy(v[i], vi);
+    }
+  }
+
+  /* additional 180-degree to maximize mi(ri.vi) */
+  {
+    double val[D], tr;
+    mzero(mat);
+    for ( i = 0; i < n; i++ ) {
+      wt = ( m != NULL ) ? m[i] : 1.0;
+      vdiff(xi, x[i], xc);
+      for ( j = 0; j < D; j++ ) {
+        for ( k = 0; k < D; k++ ) {
+          mat[j][k] += wt * xi[j] * v[i][k];
+        }
+      }
+    }
+    for ( tr = 0, j = 0; j < D; j++ ) tr += mat[j][j];
+    meigsys(val, rot, mat, 1);
+    if ( val[0] > tr ) {
+      /* rotate around rot[0] for 180 degrees */
+      for ( i = 0; i < n; i++ ) {
+        double dot = vdot(v[i], rot[0]);
+        vsinc(v[i], rot[0], -2*dot);
+        vneg(v[i]);
+      }
+    }
+  }
+}
+
+
+
 /* annihilate the total angular momentum
  * solve
  *   /  m (y^2 + z^2)   -m x y          -m x y        \
@@ -81,19 +210,15 @@ __inline static void shiftang(double (*x)[D], double (*v)[D],
     const double *m, int n)
 {
   int i;
-  double xc[D] = {0, 0, 0}, xi[D], ang[D], am[D] = {0, 0, 0};
-  double dv[D], mat[D][D], inv[D][D];
+  double xc[D], xi[D], ang[D], am[D];
+  double dv[D], mat[D][D];
   double xx = 0, yy = 0, zz = 0, xy = 0, zx = 0, yz = 0;
-  double mtot = 0, wt;
+  double wt;
 
-  /* determine the center of mass */
-  for ( i = 0; i < n; i++ ) {
-    wt = ( m != NULL ) ? m[i] : 1.0;
-    vsinc(xc, x[i], wt);
-    mtot += wt;
-  }
-  vsmul(xc, 1.0 / mtot);
+  /* compute the center of mass */
+  getcom(xc, x, m, n);
 
+  vzero(am);
   for ( i = 0; i < n; i++ ) {
     wt = ( m != NULL ) ? m[i] : 1.0;
     vdiff(xi, x[i], xc);
@@ -113,15 +238,14 @@ __inline static void shiftang(double (*x)[D], double (*v)[D],
   mat[0][1] = mat[1][0] = -xy;
   mat[1][2] = mat[2][1] = -yz;
   mat[0][2] = mat[2][0] = -zx;
-  minv(inv, mat);
 
-  /* ang is the solution of M^(-1) * L */
-  ang[0] = -vdot(inv[0], am);
-  ang[1] = -vdot(inv[1], am);
-  ang[2] = -vdot(inv[2], am);
+  /* the axis of rotation is the solution of -M^(-1) * L */
+  msolve(mat, am);
+  vneg(am);
+
   for ( i = 0; i < n; i++ ) {
     vdiff(xi, x[i], xc);
-    vcross(dv, ang, xi);
+    vcross(dv, am, xi);
     vinc(v[i], dv);
   }
 }
@@ -136,16 +260,11 @@ __inline static void shiftang(double (*x)[D], double (*v)[D],
 __inline static double md_ekin(double (*v)[D], const double *m, int n)
 {
   int i;
-  double ek = 0;
+  double ek = 0, wt;
 
-  if ( m == NULL ) {
-    for ( i = 0; i < n; i++ ) {
-      ek += vsqr( v[i] );
-    }
-  } else {
-    for ( i = 0; i < n; i++ ) {
-      ek += m[i] * vsqr( v[i] );
-    }
+  for ( i = 0; i < n; i++ ) {
+    wt = ( m != NULL ) ? m[i] : 1;
+    ek += wt * vsqr( v[i] );
   }
   return ek * 0.5;
 }
@@ -211,22 +330,23 @@ __inline static double md_nhchain(double (*v)[D],
 
 
 
-__inline static void md_langevin(double (*v)[D],
+__inline static double md_langevin(double (*v)[D],
     const double *m, int n, double tp, double dt)
 {
   int i, k;
-  double s, v0;
+  double s, v0, vi, wt, ek = 0;
 
   s = exp(-dt);
   v0 = sqrt( tp * (1 - s * s) );
   for ( i = 0; i < n; i++ ) {
-    if ( m != NULL ) {
-      v0 /= sqrt( m[i] );
-    }
+    wt = ( m != NULL ) ? m[i] : 1;
+    vi = v0 / sqrt( wt );
     for ( k = 0; k < D; k++ ) {
-      v[i][k] = v[i][k] * s + v0 * randgaus();
+      v[i][k] = v[i][k] * s + vi * randgaus();
     }
+    ek += 0.5 * wt * vsqr(v[i]);
   }
+  return ek;
 }
 
 
@@ -259,6 +379,67 @@ __inline static double md_vscramble(double (*v)[D],
   return md_ekin(v, m, n);
 }
 
+
+
+/* bond energy k (r - r0)^2 */
+__inline static double md_potbond(double *a, double *b,
+    double r0, double k, double *fa, double *fb)
+{
+  double dx[D], r, dr, amp;
+
+  r = vnorm( vdiff(dx, a, b) );
+  dr = r - r0;
+  if ( fa != NULL ) {
+    amp = 2 * k * dr / r;
+    vsinc(fa, dx, -amp);
+    vsinc(fb, dx,  amp);
+  }
+  return k * dr * dr;
+}
+
+/* harmonic angle k (ang - ang0)^2 */
+__inline static double md_potang(double *a, double *b, double *c,
+    double ang0, double k, double *fa, double *fb, double *fc)
+{
+  double dang, amp, ga[D], gb[D], gc[D];
+
+  dang = vang(a, b, c, ga, gb, gc) - ang0;
+  if ( fa != NULL ) {
+    amp = -2 * k * dang;
+    vsinc(fa, ga, amp);
+    vsinc(fb, gb, amp);
+    vsinc(fc, gc, amp);
+  }
+  return k * dang * dang;
+}
+
+
+
+#if D == 3
+/* 1-3 dihedral: k1 * (1 - cos(dang)) + k3 * (1 - cos(3*dang)) */
+__inline static double md_potdih13(double *a, double *b, double *c, double *d,
+    double ang0, double k1, double k3,
+    double *fa, double *fb, double *fc, double *fd)
+{
+  double dang, amp, ga[3], gb[3], gc[3], gd[3], u;
+
+  if ( fa != NULL ) {
+    dang = vdih(a, b, c, d, ga, gb, gc, gd) - ang0;
+    amp  = -k1 * sin(dang);
+    amp += -3 * k3 * sin(3*dang);
+    vsinc(fa, ga, amp);
+    vsinc(fb, gb, amp);
+    vsinc(fc, gc, amp);
+    vsinc(fd, gd, amp);
+  } else {
+    dang = vdih(a, b, c, d, NULL, NULL, NULL, NULL) - ang0;
+  }
+  u  = k1 * (1 - cos(dang));
+  u += k3 * (1 - cos(3 * dang));
+  return u;
+}
+
+#endif
 
 
 #endif /* MDUTIL_H__ */

@@ -31,6 +31,7 @@ __inline static void mtscramble(unsigned seed)
 
   mtarr[0] = (seed * 314159265u + 271828183u) & 0xfffffffful;
   for (k = 1; k < MT_N; k++) { /* the final mask is for 64-bit machines */
+    //mtarr[k] = seed + k;
     mtarr[k] = 1812433253ul * (mtarr[k - 1] ^ (mtarr[k - 1] >> 30)) + k;
     /* mr->arr[k] = (mr->arr[k] + seed) * 22695477ul + 1ul; */
     mtarr[k] = ((mtarr[k] + seed) * 314159265ul + 1ul) & 0xfffffffful;
@@ -217,5 +218,13 @@ __inline static int mtload(const char *fn, unsigned long seed)
 }
 
 
+/* randomly accept by probability exp(-de) */
+__inline int metroacc(double de)
+{
+  double r;
+  if ( de <= 0 ) return 1;
+  r = rand01();
+  return r <= exp(-de);
+}
 
 #endif
